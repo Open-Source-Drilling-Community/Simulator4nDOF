@@ -4,8 +4,6 @@
     public const double DEFAULT_VALUE = 999.25;
     public static string DEFAULT_NAME_Simulation = "Default Simulation Name";
     public static string DEFAULT_DESCR_Simulation = "Default Simulation Description";
-    public static string DEFAULT_NAME_ToBeRemoved = "Default ToBeRemoved Name";
-    public static string DEFAULT_DESCR_ToBeRemoved = "Default ToBeRemoved Description";
 
     // unit management
     public static class UnitAndReferenceParameters
@@ -24,17 +22,10 @@
     }
 
     // units and labels
-    public static readonly string SimulationToBeRemovedListLabel = "ToBeRemovedList";
     public static readonly string SimulationOutputParamLabel = "SimulationOutputParam";
     public static readonly string SimulationNameLabel = "Simulation name";
     public static readonly string SimulationDescrLabel = "Simulation description";
     public static readonly string SimulationOutputParamQty = "DepthDrilling";
-
-    public static readonly string ToBeRemovedNameLabel = "ToBeRemoved name";
-    public static readonly string ToBeRemovedParamLabel = "ToBeRemovedParam";
-    public static readonly string ToBeRemovedParamQty = "DepthDrilling";
-
-    public static readonly string ToBeRemovedTypeLabel = "ToBeRemoved type";
     public static readonly string DerivedData1Label = "DerivedData1 name";
     public static readonly string DerivedData1ParamLabel = "DerivedData1Param";
     public static readonly string DerivedData1ParamQty = "DepthDrilling";

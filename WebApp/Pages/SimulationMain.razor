@@ -14,21 +14,18 @@
     else
     {
         <div hidden="@isHiddenMainPanel">
-            <MudDataGrid T="Simulation" MultiSelection="true" Items="@SimulationList" SelectedItemsChanged="@SelectedItemsChanged"
+            <MudDataGrid T="Simulation" MultiSelection="false" Items="@SimulationList"
                          EditMode="DataGridEditMode.Cell"
                          Hover="true" RowClick="@RowClicked"
                          SortMode="SortMode.Multiple" QuickFilter="@_SimulationFilter" Filterable="false"
                          ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
                 <ToolBarContent>
                     <MudText Typo="Typo.h5">Simulation</MudText>
-                    <MudButton OnClick="@AddSimulation" Color="@Color.Success" Class="add-item-btn">Add</MudButton>
-                    <MudButton OnClick="@DeleteSelectedSimulation" Color="@Color.Error" Class="add-item-btn">Delete</MudButton>
                     <MudSpacer />
                     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>
                 <Columns>
-                    <SelectColumn T="Simulation" />
                     <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 30%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 30%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.MetaInfo.ID.ToString() " Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
@@ -102,10 +99,10 @@
                                 <MudItem xs="12">
                                     <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
                                 </MudItem>
-                                </MudGrid>
-                                <br> 
-                                <MudGrid>
-                                    <MudItem xs="2">
+                            </MudGrid>
+                            <br> 
+                            <MudGrid>
+                                <MudItem xs="2">
                                     <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.FluidDensity" Label="Fluid density" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
                                 </MudItem>
                                 <MudItem xs="2">
@@ -130,33 +127,36 @@
                                     <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.BitRadius" Label=" Bit radius" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
                                 </MudItem>
                             </MudGrid>
-                            if (newSimulation.SetPointsList.Count > 0)
-                            {
-                                <MudDataGrid T="SetPoints" MultiSelection="true" Items="newSimulation.SetPointsList" 
-                                             EditMode="DataGridEditMode.Cell"
-                                             ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
-                                    
-                                    <Columns>
-                                        <SelectColumn T="SetPoints" />
-                                        <PropertyColumn Property="x => x.TimeDuration" Title="Time duration" CellStyle="width: 30%;" Sortable="false" Editable="true" />
-                                        <PropertyColumn Property="x => x.SurfaceRPM" Title="Surface RPM" CellStyle="width: 30%;" Sortable="false" Editable="true" />
-                                        <PropertyColumn Property="x => x.TopOfStringVelocity" Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false" Editable="true" />
+                        }
+                        @if (newSimulation?.SetPointsList != null)
+                        {
+                            <br>
+                            <br>
+                            <MudText Typo="Typo.h6">Simulation set points </MudText>
+                            <br>
+                            <MudDataGrid T="SetPoints" MultiSelection="false" Items="newSimulation.SetPointsList" 
+                                         EditMode="DataGridEditMode.Cell"
+                                         ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
+                                
+                                <Columns>
+                                    <PropertyColumn Property="x => x.TimeDuration" Title="Time duration" CellStyle="width: 30%;" Sortable="false" Editable="true" />
+                                    <PropertyColumn Property="x => x.SurfaceRPM" Title="Surface RPM" CellStyle="width: 30%;" Sortable="false" Editable="true" />
+                                    <PropertyColumn Property="x => x.TopOfStringVelocity" Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false" Editable="true" />
 
-                                        <TemplateColumn CellStyle="width: 5%;">
-                                            <EditTemplate Context="item">
-                                                <MudIconButton Size="@Size.Small"
-                                                               Icon="@Icons.Material.Outlined.Delete"
-                                                               OnClick="async () => await DeleteSetPoints(item.Item)" />
-                                            </EditTemplate>
-                                        </TemplateColumn>
-                                    </Columns>
-                                    <PagerContent>
-                                        <MudDataGridPager T="SetPoints" />
-                                    </PagerContent>
-                                </MudDataGrid>
-                                <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
-                                <br>
-                            }
+                                    <TemplateColumn CellStyle="width: 5%;">
+                                        <EditTemplate Context="item">
+                                            <MudIconButton Size="@Size.Small"
+                                                           Icon="@Icons.Material.Outlined.Delete"
+                                                           OnClick="async () => await DeleteSetPoints(item.Item)" />
+                                        </EditTemplate>
+                                    </TemplateColumn>
+                                </Columns>
+                                <PagerContent>
+                                    <MudDataGridPager T="SetPoints" />
+                                </PagerContent>
+                            </MudDataGrid>
+                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
+                            <br>
                         }
                     </MudPaper>
                 </MudCollapse>  
@@ -184,16 +184,16 @@
     bool _expanded = true;
     bool _expandedAddPanel = false;
 
-private async Task DeleteSetPoints(SetPoints item)
-{
-    if (item != null)
+    private async Task DeleteSetPoints(SetPoints item)
     {
-        newSimulation.SetPointsList.Remove(item);
-    }
+        if (item != null)
+        {
+            newSimulation.SetPointsList.Remove(item);
+        }
 
-    // Optional UI refresh
-    await InvokeAsync(StateHasChanged);
-}
+        // Optional UI refresh
+        await InvokeAsync(StateHasChanged);
+    }
 
     private void UploadFile(InputFileChangeEventArgs e, Action<string> setFileName)
     {
@@ -333,49 +333,9 @@ private async Task DeleteSetPoints(SetPoints item)
         {
             MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
-            //Simulation currentSimulation = new()
-            //{
-            //    MetaInfo = metaInfo,
-            //    Name = DataUtils.DEFAULT_NAME_Simulation,
-            //    Description = DataUtils.DEFAULT_DESCR_Simulation,
-            //    CreationDate = creationDate,
-            //    LastModificationDate = creationDate,
-            //    ContextualData = new ContextualData()
-            //    {
-            //        TracjectoryFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Trajectory.txt",
-            //        AnnulusPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\AnnulusHydraulicProfiles.txt",
-            //        DrillstringPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\DrillstringHydraulicProfiles.txt",
-            //        DrillstringFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Drillstring.csv",
-            //        CasingShoeDepth = 2181,
-            //        LinerShoeDepth = 0,
-            //        CasingID = 9 * 0.0254,
-            //        LinerID = 0 * 0.0254,
-            //        WellheadDepth = 120,
-            //        RiserID = 21 * 0.0254,
-            //        BitRadius = 0.2159 / 2,
-            //    },
-            //    InitialValues = new InitialValues()
-            //    {
-            //        BitDepth = 2500,
-            //        HoleDepth = 2500,
-            //        TopOfStringPosition = 15
-            //    },
-            //    SetPointsList = new List<SetPoints>
-            //        {
-            //            new SetPoints
-            //            {
-            //                TimeDuration = 10,
-            //                SurfaceRPM = 138 * Math.PI / 30,
-            //                TopOfStringVelocity = 100.0 / 3600
-            //            },
-            //            new SetPoints
-            //            {
-            //                TimeDuration = 10,
-            //                SurfaceRPM = 150 * Math.PI / 30,
-            //                TopOfStringVelocity = 120.0 / 3600
-            //            }
-            //        },
-            //};
+            newSimulation.MetaInfo = metaInfo;
+            newSimulation.CreationDate = creationDate;
+            newSimulation.LastModificationDate = creationDate;
             await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.newSimulation);
             logger.LogInformation("Simulation posted successfully");
             Snackbar.Add("Simulation posted successfully", Severity.Success);
@@ -480,12 +440,6 @@ private async Task DeleteSetPoints(SetPoints item)
         //Activating Commit event capture with parameter CommittedItemChanges = "@CommittedItemChanges" in MudDataGrid; arguments are specified in OnClick="@context.Actions.CommittedEditingItem(...)"
     }
 
-    void SelectedItemsChanged(HashSet<Simulation>
-        items)
-    {
-        selectedSimulationList.Clear();
-        selectedSimulationList.InsertRange(0, items);
-    }
 
     private async void ShowMainPanel()
     {

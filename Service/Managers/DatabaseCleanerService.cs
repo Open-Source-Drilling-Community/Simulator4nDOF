@@ -49,7 +49,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         ///     - records are removed if LastModificationDate is null or older that DateTimeOffset.UtcNow-CleaningInterval
         ///     - CreationDate is not inspected
         /// </summary>
-        /// <returns>true if older ToBeRemoved were successfully deleted</returns>
+        /// <returns>true if older Simulation were successfully deleted</returns>
         private bool CleanDatabase(string dataTable)
         {
             var connection = _connectionManager.GetConnection();
@@ -74,7 +74,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 }
                 catch (SqliteException ex)
                 {
-                    _logger.LogError(ex, "Impossible to clean old ToBeRemoved from {table}", dataTable);
+                    _logger.LogError(ex, "Impossible to clean old Simulation from {table}", dataTable);
                 }
             }
             else
