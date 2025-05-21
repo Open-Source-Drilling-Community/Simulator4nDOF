@@ -14,7 +14,7 @@
     else
     {
         <div hidden="@isHiddenMainPanel">
-            <MudDataGrid T="Simulation" MultiSelection="false" Items="@SimulationList"
+            <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList"
                          EditMode="DataGridEditMode.Cell"
                          Hover="true" RowClick="@RowClicked"
                          SortMode="SortMode.Multiple" QuickFilter="@_SimulationFilter" Filterable="false"
@@ -37,7 +37,7 @@
                     </TemplateColumn>
                 </Columns>
                 <PagerContent>
-                    <MudDataGridPager T="Simulation" />
+                    <MudDataGridPager T="SimulationLight" />
                 </PagerContent>
             </MudDataGrid>
             <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
@@ -134,6 +134,7 @@
                             <br>
                             <MudText Typo="Typo.h6">Simulation set points </MudText>
                             <br>
+                            
                             <MudDataGrid T="SetPoints" MultiSelection="false" Items="newSimulation.SetPointsList" 
                                          EditMode="DataGridEditMode.Cell"
                                          ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
@@ -155,23 +156,56 @@
                                     <MudDataGridPager T="SetPoints" />
                                 </PagerContent>
                             </MudDataGrid>
-                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
+                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Update">Add set points </MudButton>
                             <br>
                         }
                     </MudPaper>
                 </MudCollapse>  
             </MudPaper>
         </div>
+        <div hidden="@isHiddenEditPanel">
+            @if (currentLightSimulation != null)
+            {
+                <MudPaper Class="pa-4">
+                    <div style="display: flex; gap: 12px;">
+                        <MudButton OnClick="@GetCurrentSimulationLight" IconColor="Color.Primary" Size="Size.Medium" Style="border-radius: 8px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">Get update light</MudButton>
+                        <MudButton OnClick="@GetCurrentSimulationHeavy" IconColor="Color.Primary" Size="Size.Medium" Style="border-radius: 8px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">Get update heavy</MudButton>
+                        <MudButton OnClick="@CloseAddPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
+                    </div>
+                </MudPaper>
+
+
+                <MudPaper Class="pa-4">
+                   <MudGrid> 
+                       <MudItem xs="2">
+                           <MudTextField @bind-Value=currentLightSimulation.Name ReadOnly="true" Label="Name" Variant="Variant.Text"></MudTextField>
+                       </MudItem>
+                       <MudItem xs="2">
+                           <MudTextField @bind-Value=currentLightSimulation.Description ReadOnly="true" Label="Description" Variant="Variant.Text"></MudTextField>
+                       </MudItem>
+                       <MudItem xs="3">
+                           <MudTextField @bind-Value=currentLightSimulation.MetaInfo.ID ReadOnly="true" Label="ID" Variant="Variant.Text"></MudTextField>
+                       </MudItem>
+                       <MudItem xs="2">
+                           <MudTextField @bind-Value=currentLightSimulation.Progress InputType="InputType.Number" ReadOnly="true" Label="Progress" T="double" Variant="Variant.Text"></MudTextField>
+                       </MudItem>
+                       <MudItem xs="2">
+                           <MudTextField @bind-Value=currentLightSimulation.TerminationState InputType="InputType.Number" ReadOnly="true" Label="Termination state" T="int" Variant="Variant.Text"></MudTextField>
+                       </MudItem>
+                   </MudGrid>
+                </MudPaper>
+            }
+        </div>
     }
 </MudUnitAndReferenceChoiceTag>
 
 @code {
     // Simulation related variables
-    private List<Simulation> SimulationList = new();
-    private List<Simulation> selectedSimulationList = new();
+    private List<SimulationLight> SimulationList = new();
+    private List<SimulationLight> selectedSimulationList = new();
+    private SimulationLight? currentLightSimulation;
     private Simulation? currentSimulation;
     private List<object?>? inputDataList = new(); // container used to pass input data to the SimulationEdit razor component without specifying content types (required by µservice Template)
-    // ToBeRemoved related variables
 
     private Simulation newSimulation = new();
 
@@ -209,6 +243,8 @@
     {
         _expanded = true;
         _expandedAddPanel = false;
+        isHiddenEditPanel = true;
+        isHiddenMainPanel = false;
     }
 
     private void OnExpandCollapseClickAddPanel()
@@ -225,13 +261,13 @@
             // Show main panel
             isHiddenMainPanel = false;
             isHiddenEditPanel = true;
-            currentSimulation = null;
+            currentLightSimulation = null;
 
             // Starting all loading tasks asynchronously
             logger.LogInformation("Trying to load list of ToBeRemoved from client: " + APIUtils.HostNameSimulator4nDOF);
             //var toBeRemovedTask = APIUtils.ClientSimulation.GetAllToBeRemovedAsync();
             logger.LogInformation("Trying to load list of Simulation from client: " + APIUtils.HostNameSimulator4nDOF);
-            var SimulationTask = APIUtils.ClientSimulator4nDOF.GetAllSimulationAsync();
+            var SimulationTask = APIUtils.ClientSimulator4nDOF.GetAllSimulationLightAsync();
 
             List<Task> loadingTaskList = new List<Task> { SimulationTask };
             //loadingTaskList.Add(toBeRemovedTask);
@@ -244,7 +280,7 @@
                 {
                     try
                     {
-                        SimulationList = (List<Simulation>)await SimulationTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        SimulationList = (List<SimulationLight>)await SimulationTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
                         if (SimulationList != null)
                         {
                             SimulationList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
@@ -354,17 +390,63 @@
         //}
     }
 
-    private async Task RowClicked(DataGridRowClickEventArgs<Simulation> args)
+    private async Task RowClicked(DataGridRowClickEventArgs<SimulationLight> args)
     {
         await EditSimulation(args.Item.MetaInfo.ID);
+    }
+
+    private async Task GetCurrentSimulationLight()
+    {
+        try
+        {
+            currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(currentLightSimulation.MetaInfo.ID);
+            if (currentLightSimulation != null)
+            {
+                isHiddenMainPanel = true;
+                isHiddenEditPanel = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            else
+            {
+                logger.LogWarning("Impossible to load Simulation");
+                Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load Simulation to be edited");
+        }
+    }
+
+     private async Task GetCurrentSimulationHeavy()
+    {
+        try
+        {
+            currentSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulationByIdAsync(currentLightSimulation.MetaInfo.ID);
+            if (currentLightSimulation != null)
+            {
+                isHiddenMainPanel = true;
+                isHiddenEditPanel = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            else
+            {
+                logger.LogWarning("Impossible to load Simulation");
+                Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load Simulation to be edited");
+        }
     }
 
     private async Task EditSimulation(Guid id)
     {
         try
         {
-            currentSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulationByIdAsync(id);
-            if (currentSimulation != null)
+            currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(id);
+            if (currentLightSimulation != null)
             {
                 isHiddenMainPanel = true;
                 isHiddenEditPanel = false;
@@ -395,25 +477,8 @@
         }
     }
 
-    private async Task DeleteSelectedSimulation()
-    {
-        try
-        {
-            foreach (Simulation Simulation in selectedSimulationList)
-            {
-                await APIUtils.ClientSimulator4nDOF.DeleteSimulationByIdAsync(Simulation.MetaInfo.ID);
-            }
-            await OnInitializedAsync();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Impossible to delete all Simulation");
-        }
-
-    }
-
     //Quick filter - filter gobally across multiple columns with the same input
-    private Func<Simulation, bool>
+    private Func<SimulationLight, bool>
     _SimulationFilter => x =>
     {
         if (string.IsNullOrWhiteSpace(_searchString))

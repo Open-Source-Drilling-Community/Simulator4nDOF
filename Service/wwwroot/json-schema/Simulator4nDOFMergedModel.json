@@ -83,6 +83,37 @@
         }
       }
     },
+    "/Simulation/Light/{id}\"": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetSimulatioLightById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationLight"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Simulation/{id}": {
       "get": {
         "tags": [

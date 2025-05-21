@@ -248,6 +248,77 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         }
 
         /// <summary>
+        /// Returns the Simulation identified by its Guid from the microservice database 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>the Simulation identified by its Guid from the microservice database</returns>
+        public Model.SimulationLight? GetSimulationLightById(Guid guid)
+        {
+            if (!guid.Equals(Guid.Empty))
+            {
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    Model.SimulationLight? simulation;
+                    var command = connection.CreateCommand();
+                    //command.CommandText = $"SELECT Simulation FROM SimulationTable WHERE ID = '{guid}'";
+                    command.CommandText = $"SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate, Progress, TerminationState FROM SimulationTable WHERE ID = '{guid}'";
+
+                    try
+                    {
+                        using var reader = command.ExecuteReader();
+                        if (reader.Read() && !reader.IsDBNull(0))
+                        {
+                            var metaInfoJson = reader["MetaInfo"]?.ToString();
+                            var metaInfo = string.IsNullOrEmpty(metaInfoJson) ? null : JsonSerializer.Deserialize<MetaInfo>(metaInfoJson);
+
+                            var name = reader["Name"]?.ToString();
+                            var description = reader["Description"]?.ToString();
+
+                            var creationDate = DateTimeOffset.TryParse(reader["CreationDate"]?.ToString(), out var cdt) ? cdt : (DateTimeOffset?)null;
+                            var lastModificationDate = DateTimeOffset.TryParse(reader["LastModificationDate"]?.ToString(), out var ldt) ? ldt : (DateTimeOffset?)null;
+
+                            var progress = reader["Progress"] is double d ? d : Convert.ToDouble(reader["Progress"]);
+                            var terminationState = Convert.ToInt32(reader["TerminationState"]);
+
+
+                            simulation = new Model.SimulationLight(metaInfo, name, description, creationDate, lastModificationDate)
+                            {
+                                Progress = progress,
+                                TerminationState = terminationState
+                            };
+                            //string data = reader.GetString(0);
+                            //simulation = JsonSerializer.Deserialize<Model.SimulationLight>(data, JsonSettings.Options);
+                            if (simulation != null && simulation.MetaInfo != null && !simulation.MetaInfo.ID.Equals(guid))
+                                throw new SqliteException("SQLite database corrupted: returned Simulation is null or has been jsonified with the wrong ID.", 1);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No Simulation of given ID in the database");
+                            return null;
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to get the Simulation with the given ID from SimulationTable");
+                        return null;
+                    }
+                    _logger.LogInformation("Returning the Simulation of given ID from SimulationTable");
+                    return simulation;
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The given Simulation ID is null or empty");
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Returns the list of all Simulation present in the microservice database 
         /// </summary>
         /// <returns>the list of all Simulation present in the microservice database</returns>

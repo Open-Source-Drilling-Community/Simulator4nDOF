@@ -58,6 +58,33 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id</returns>
+        [HttpGet("Light/{id}\"", Name = "GetSimulatioLightById")]
+        public ActionResult<Model.SimulationLight?> GetSimulatioLightById(Guid id)
+        {
+            if (!id.Equals(Guid.Empty))
+            {
+                var val = _simulationManager.GetSimulationLightById(id);
+                if (val != null)
+                {
+                    return Ok(val);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
         /// <summary>
         /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id
         /// </summary>
