@@ -1,0 +1,433 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "ModelShared (Service)",
+    "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
+    "version": "1.0"
+  },
+  "paths": {
+    "/Simulation": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulationId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "PostSimulation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Simulation/MetaInfo": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulationMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/{id}": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Simulation"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "DeleteSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Simulation/LightData": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulationLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimulationLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/HeavyData": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulation",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Simulation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ContextualData": {
+        "type": "object",
+        "properties": {
+          "TrajectoryFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillstringFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "AnnulusPressureFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillstringPressureFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "FluidDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "CasingShoeDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "LinerShoeDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "CasingID": {
+            "type": "number",
+            "format": "double"
+          },
+          "LinerID": {
+            "type": "number",
+            "format": "double"
+          },
+          "WellheadDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "RiserID": {
+            "type": "number",
+            "format": "double"
+          },
+          "BitRadius": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "InitialValues": {
+        "type": "object",
+        "properties": {
+          "BitDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "HoleDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringPosition": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Results": {
+        "type": "object",
+        "properties": {
+          "Time": {
+            "type": "number",
+            "format": "double"
+          },
+          "WOB": {
+            "type": "number",
+            "format": "double"
+          },
+          "TOB": {
+            "type": "number",
+            "format": "double"
+          },
+          "BitRPM": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopDriveRPM": {
+            "type": "number",
+            "format": "double"
+          },
+          "BitDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "HoleDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringPosition": {
+            "type": "number",
+            "format": "double"
+          },
+          "BitVelocity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "SetPoints": {
+        "type": "object",
+        "properties": {
+          "TimeDuration": {
+            "type": "number",
+            "format": "double"
+          },
+          "SurfaceRPM": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringVelocity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Simulation": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ContextualData": {
+            "$ref": "#/components/schemas/ContextualData"
+          },
+          "CurrentTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "InitialValues": {
+            "$ref": "#/components/schemas/InitialValues"
+          },
+          "Progress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TerminationState": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "SetPointsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SetPoints"
+            },
+            "nullable": true
+          },
+          "Results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Results"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SimulationLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Progress": {
+            "type": "number",
+            "format": "double"
+          },
+          "TerminationState": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

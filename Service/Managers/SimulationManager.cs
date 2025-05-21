@@ -1,0 +1,653 @@
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
+using OSDC.DotnetLibraries.General.DataManagement;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text.Json;
+
+namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
+{
+    /// <summary>
+    /// A manager for Simulation. The manager implements the singleton pattern as defined by 
+    /// Gamma, Erich, et al. "Design patterns: Abstraction and reuse of object-oriented design." 
+    /// European Conference on Object-Oriented Programming. Springer, Berlin, Heidelberg, 1993.
+    /// </summary>
+    public class SimulationManager
+    {
+        private static SimulationManager? _instance = null;
+        private readonly ILogger<SimulationManager> _logger;
+        private readonly object _lock = new();
+        private readonly SqlConnectionManager _connectionManager;
+
+        private SimulationManager(ILogger<SimulationManager> logger, SqlConnectionManager connectionManager)
+        {
+            _logger = logger;
+            _connectionManager = connectionManager;
+        }
+
+        public static SimulationManager GetInstance(ILogger<SimulationManager> logger, SqlConnectionManager connectionManager)
+        {
+            _instance ??= new SimulationManager(logger, connectionManager);
+            return _instance;
+        }
+
+        public int Count
+        {
+            get
+            {
+                int count = 0;
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT COUNT(*) FROM SimulationTable";
+                    try
+                    {
+                        using SqliteDataReader reader = command.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            count = (int)reader.GetInt64(0);
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to count records in the SimulationTable");
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+                return count;
+            }
+        }
+
+        public bool Clear()
+        {
+            var connection = _connectionManager.GetConnection();
+            if (connection != null)
+            {
+                bool success = false;
+                lock (_lock)
+                {
+                    using var transaction = connection.BeginTransaction();
+                    try
+                    {
+                        //empty SimulationTable
+                        var command = connection.CreateCommand();
+                        command.CommandText = "DELETE FROM SimulationTable";
+                        command.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        success = true;
+                    }
+                    catch (SqliteException ex)
+                    {
+                        transaction.Rollback();
+                        _logger.LogError(ex, "Impossible to clear the SimulationTable");
+                    }
+                }
+                return success;
+            }
+            else
+            {
+                _logger.LogWarning("Impossible to access the SQLite database");
+                return false;
+            }
+        }
+
+        public bool Contains(Guid guid)
+        {
+            int count = 0;
+            var connection = _connectionManager.GetConnection();
+            if (connection != null)
+            {
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT COUNT(*) FROM SimulationTable WHERE ID = '{guid}'";
+                try
+                {
+                    using SqliteDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        count = (int)reader.GetInt64(0);
+                    }
+                }
+                catch (SqliteException ex)
+                {
+                    _logger.LogError(ex, "Impossible to count rows from SimulationTable");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Impossible to access the SQLite database");
+            }
+            return count >= 1;
+        }
+
+        /// <summary>
+        /// Returns the list of Guid of all Simulation present in the microservice database 
+        /// </summary>
+        /// <returns>the list of Guid of all Simulation present in the microservice database</returns>
+        public List<Guid>? GetAllSimulationId()
+        {
+            List<Guid> ids = [];
+            var connection = _connectionManager.GetConnection();
+            if (connection != null)
+            {
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT ID FROM SimulationTable";
+                try
+                {
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read() && !reader.IsDBNull(0))
+                    {
+                        Guid id = reader.GetGuid(0);
+                        ids.Add(id);
+                    }
+                    _logger.LogInformation("Returning the list of ID of existing records from SimulationTable");
+                    return ids;
+                }
+                catch (SqliteException ex)
+                {
+                    _logger.LogError(ex, "Impossible to get IDs from SimulationTable");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Impossible to access the SQLite database");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the list of MetaInfo of all Simulation present in the microservice database 
+        /// </summary>
+        /// <returns>the list of MetaInfo of all Simulation present in the microservice database</returns>
+        public List<MetaInfo?>? GetAllSimulationMetaInfo()
+        {
+            List<MetaInfo?> metaInfos = new();
+            var connection = _connectionManager.GetConnection();
+            if (connection != null)
+            {
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT MetaInfo FROM SimulationTable";
+                try
+                {
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read() && !reader.IsDBNull(0))
+                    {
+                        string mInfo = reader.GetString(0);
+                        MetaInfo? metaInfo = JsonSerializer.Deserialize<MetaInfo>(mInfo, JsonSettings.Options);
+                        metaInfos.Add(metaInfo);
+                    }
+                    _logger.LogInformation("Returning the list of MetaInfo of existing records from SimulationTable");
+                    return metaInfos;
+                }
+                catch (SqliteException ex)
+                {
+                    _logger.LogError(ex, "Impossible to get IDs from SimulationTable");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Impossible to access the SQLite database");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the Simulation identified by its Guid from the microservice database 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>the Simulation identified by its Guid from the microservice database</returns>
+        public Model.Simulation? GetSimulationById(Guid guid)
+        {
+            if (!guid.Equals(Guid.Empty))
+            {
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    Model.Simulation? simulation;
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"SELECT Simulation FROM SimulationTable WHERE ID = '{guid}'";
+                    try
+                    {
+                        using var reader = command.ExecuteReader();
+                        if (reader.Read() && !reader.IsDBNull(0))
+                        {
+                            string data = reader.GetString(0);
+                            simulation = JsonSerializer.Deserialize<Model.Simulation>(data, JsonSettings.Options);
+                            if (simulation != null && simulation.MetaInfo != null && !simulation.MetaInfo.ID.Equals(guid))
+                                throw new SqliteException("SQLite database corrupted: returned Simulation is null or has been jsonified with the wrong ID.", 1);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No Simulation of given ID in the database");
+                            return null;
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to get the Simulation with the given ID from SimulationTable");
+                        return null;
+                    }
+                    _logger.LogInformation("Returning the Simulation of given ID from SimulationTable");
+                    return simulation;
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The given Simulation ID is null or empty");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the list of all Simulation present in the microservice database 
+        /// </summary>
+        /// <returns>the list of all Simulation present in the microservice database</returns>
+        public List<Model.Simulation?>? GetAllSimulation()
+        {
+            List<Model.Simulation?> vals = [];
+            var connection = _connectionManager.GetConnection();
+            if (connection != null)
+            {
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT Simulation FROM SimulationTable";
+                try
+                {
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read() && !reader.IsDBNull(0))
+                    {
+                        string data = reader.GetString(0);
+                        Model.Simulation? simulation = JsonSerializer.Deserialize<Model.Simulation>(data, JsonSettings.Options);
+                        vals.Add(simulation);
+                    }
+                    _logger.LogInformation("Returning the list of existing Simulation from SimulationTable");
+                    return vals;
+                }
+                catch (SqliteException ex)
+                {
+                    _logger.LogError(ex, "Impossible to get Simulation from SimulationTable");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Impossible to access the SQLite database");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the list of all SimulationLight present in the microservice database 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>the list of SimulationLight present in the microservice database</returns>
+        public List<Model.SimulationLight>? GetAllSimulationLight()
+        {
+            List<Model.SimulationLight>? simulationLightList = [];
+            var connection = _connectionManager.GetConnection();
+            if (connection != null)
+            {
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate FROM SimulationTable";
+                try
+                {
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read() && !reader.IsDBNull(0))
+                    {
+                        string metaInfoStr = reader.GetString(0);
+                        MetaInfo? metaInfo = JsonSerializer.Deserialize<MetaInfo>(metaInfoStr, JsonSettings.Options);
+                        string name = reader.GetString(1);
+                        string descr = reader.GetString(2);
+                        // make sure DateTimeOffset are properly instantiated when stored values are null (and parsed as empty string)
+                        DateTimeOffset? creationDate = null;
+                        if (DateTimeOffset.TryParse(reader.GetString(3), out DateTimeOffset cDate))
+                            creationDate = cDate;
+                        DateTimeOffset? lastModificationDate = null;
+                        if (DateTimeOffset.TryParse(reader.GetString(4), out DateTimeOffset lDate))
+                            lastModificationDate = lDate;
+                        simulationLightList.Add(new Model.SimulationLight(
+                                metaInfo,
+                                string.IsNullOrEmpty(name) ? null : name,
+                                string.IsNullOrEmpty(descr) ? null : descr,
+                                creationDate,
+                                lastModificationDate));
+                    }
+                    _logger.LogInformation("Returning the list of existing SimulationLight from SimulationTable");
+                    return simulationLightList;
+                }
+                catch (SqliteException ex)
+                {
+                    _logger.LogError(ex, "Impossible to get light datas from SimulationTable");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Impossible to access the SQLite database");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Performs calculation on the given Simulation and adds it to the microservice database
+        /// </summary>
+        /// <param name="simulation"></param>
+        /// <returns>true if the given Simulation has been added successfully to the microservice database</returns>
+        public bool AddSimulation(Model.Simulation? simulation)
+        {
+            if (simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID != Guid.Empty)
+            {
+                //calculate outputs
+                if (!simulation.Calculate())
+                {
+                    _logger.LogWarning("Impossible to calculate outputs for the given Simulation");
+                    return false;
+                }
+
+                //if successful, check if another parent data with the same ID was calculated/added during the calculation time
+                Model.Simulation? newSimulation = GetSimulationById(simulation.MetaInfo.ID);
+                if (newSimulation == null)
+                {
+                    //update SimulationTable
+                    var connection = _connectionManager.GetConnection();
+                    if (connection != null)
+                    {
+                        using SqliteTransaction transaction = connection.BeginTransaction();
+                        bool success = true;
+                        try
+                        {
+                            //add the Simulation to the SimulationTable
+                            string metaInfo = JsonSerializer.Serialize(simulation.MetaInfo, JsonSettings.Options);
+                            string? cDate = null;
+                            if (simulation.CreationDate != null)
+                                cDate = ((DateTimeOffset)simulation.CreationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                            string? lDate = null;
+                            if (simulation.LastModificationDate != null)
+                                lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                            string data = JsonSerializer.Serialize(simulation, JsonSettings.Options);
+                            var command = connection.CreateCommand();
+                            double progress = 0;
+                            int terminationState = 0;
+                            command.CommandText = "INSERT INTO SimulationTable (" +
+                                "ID, " +
+                                "MetaInfo, " +
+                                "Name, " +
+                                "Description, " +
+                                "CreationDate, " +
+                                "LastModificationDate, " +
+                                "Progress, " +
+                                "TerminationState, " +
+                                "Simulation" +
+                                ") VALUES (" +
+                                $"'{simulation.MetaInfo.ID}', " +
+                                $"'{metaInfo}', " +
+                                $"'{simulation.Name}', " +
+                                $"'{simulation.Description}', " +
+                                $"'{cDate}', " +
+                                $"'{lDate}', " +
+                                $"'{progress}', " +
+                                $"'{terminationState}', " +
+                                $"'{data}'" +
+                                ")";
+                            int count = command.ExecuteNonQuery();
+                            if (count != 1)
+                            {
+                                _logger.LogWarning("Impossible to insert the given Simulation into the SimulationTable");
+                                success = false;
+                            }
+                        }
+                        catch (SqliteException ex)
+                        {
+                            _logger.LogError(ex, "Impossible to add the given Simulation into SimulationTable");
+                            success = false;
+                        }
+                        //finalizing SQL transaction
+                        if (success)
+                        {
+                            transaction.Commit();
+                            _logger.LogInformation("Added the given Simulation of given ID into the SimulationTable successfully");
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                        }
+                        return success;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Impossible to access the SQLite database");
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to post Simulation. ID already found in database.");
+                    return false;
+                }
+
+            }
+            else
+            {
+                _logger.LogWarning("The Simulation ID or the ID of its input are null or empty");
+            }
+            return false;
+        }
+
+        public bool UpdateProgressSimulationById(Guid guid, Model.Simulation? simulation)
+        {
+            bool success = true;
+            if (guid != Guid.Empty && simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID == guid)
+            {
+                //calculate outputs
+                if (!simulation.Calculate())
+                {
+                    _logger.LogWarning("Impossible to calculate outputs of the given Simulation");
+                    return false;
+                }
+                //update SimulationTable
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    using SqliteTransaction transaction = connection.BeginTransaction();
+                    //update fields in SimulationTable
+                    try
+                    {
+                        string metaInfo = JsonSerializer.Serialize(simulation.MetaInfo, JsonSettings.Options);
+                        string? cDate = null;
+                        if (simulation.CreationDate != null)
+                            cDate = ((DateTimeOffset)simulation.CreationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                        string? lDate = null;
+                        if (simulation.LastModificationDate != null)
+                            lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                        //string data = JsonSerializer.Serialize(simulator, JsonSettings.Options);
+                        double progress = 0;//todo
+                        int terminationState = 0; // todo
+                        var command = connection.CreateCommand();
+                        command.CommandText = $"UPDATE SimulationTable SET " +
+                            $"MetaInfo = '{metaInfo}', " +
+                            $"Name = '{simulation.Name}', " +
+                            $"Description = '{simulation.Description}', " +
+                            $"CreationDate = '{cDate}', " +
+                            $"LastModificationDate = '{lDate}', " +
+                            $"Progress = '{progress}', " +
+                            $"TerminationState= '{terminationState}', " +
+                            $"WHERE ID = '{guid}'";
+                        int count = command.ExecuteNonQuery();
+                        if (count != 1)
+                        {
+                            _logger.LogWarning("Impossible to update the Simulator");
+                            success = false;
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to update the Simulator");
+                        success = false;
+                    }
+
+                    // Finalizing
+                    if (success)
+                    {
+                        transaction.Commit();
+                        _logger.LogInformation("Updated the given Simulator successfully");
+                        return true;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The Simulator ID or the ID of some of its attributes are null or empty");
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Performs calculation on the given Simulation and updates it in the microservice database
+        /// </summary>
+        /// <param name="simulation"></param>
+        /// <returns>true if the given Simulation has been updated successfully</returns>
+        public bool FinalUpdateSimulatorById(Guid guid, Model.Simulation? simulation)
+        {
+            bool success = true;
+            if (guid != Guid.Empty && simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID == guid)
+            {
+                //calculate outputs
+                if (!simulation.Calculate())
+                {
+                    _logger.LogWarning("Impossible to calculate outputs of the given Simulation");
+                    return false;
+                }
+                //update SimulationTable
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    using SqliteTransaction transaction = connection.BeginTransaction();
+                    //update fields in SimulationTable
+                    try
+                    {
+                        string metaInfo = JsonSerializer.Serialize(simulation.MetaInfo, JsonSettings.Options);
+                        string? cDate = null;
+                        if (simulation.CreationDate != null)
+                            cDate = ((DateTimeOffset)simulation.CreationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                        string? lDate = null;
+                        if (simulation.LastModificationDate != null)
+                            lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                        string data = JsonSerializer.Serialize(simulation, JsonSettings.Options);
+                        var command = connection.CreateCommand();
+                        double progress = 0;//todo
+                        int terminationState = 1; // todo
+                        command.CommandText = $"UPDATE SimulationTable SET " +
+                            $"MetaInfo = '{metaInfo}', " +
+                            $"Name = '{simulation.Name}', " +
+                            $"Description = '{simulation.Description}', " +
+                            $"CreationDate = '{cDate}', " +
+                            $"LastModificationDate = '{lDate}', " +
+                            $"Progress = '{progress}', " +
+                            $"TerminationState= '{terminationState}', " +
+                            $"Simulator = '{data}' " +
+                            $"WHERE ID = '{guid}'";
+                        int count = command.ExecuteNonQuery();
+                        if (count != 1)
+                        {
+                            _logger.LogWarning("Impossible to update the Simulation");
+                            success = false;
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to update the Simulation");
+                        success = false;
+                    }
+
+                    // Finalizing
+                    if (success)
+                    {
+                        transaction.Commit();
+                        _logger.LogInformation("Updated the given Simulation successfully");
+                        return true;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The Simulation ID or the ID of some of its attributes are null or empty");
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Deletes the Simulation of given ID from the microservice database
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>true if the Simulation was deleted from the microservice database</returns>
+        public bool DeleteSimulationById(Guid guid)
+        {
+            if (!guid.Equals(Guid.Empty))
+            {
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    using var transaction = connection.BeginTransaction();
+                    bool success = true;
+                    //delete Simulation from SimulationTable
+                    try
+                    {
+                        var command = connection.CreateCommand();
+                        command.CommandText = $"DELETE FROM SimulationTable WHERE ID = '{guid}'";
+                        int count = command.ExecuteNonQuery();
+                        if (count < 0)
+                        {
+                            _logger.LogWarning("Impossible to delete the Simulation of given ID from the SimulationTable");
+                            success = false;
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to delete the Simulation of given ID from SimulationTable");
+                        success = false;
+                    }
+                    if (success)
+                    {
+                        transaction.Commit();
+                        _logger.LogInformation("Removed the Simulation of given ID from the SimulationTable successfully");
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                    }
+                    return success;
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The Simulation ID is null or empty");
+            }
+            return false;
+        }
+    }
+}

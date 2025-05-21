@@ -1,0 +1,31 @@
+name: Build and Push Docker images
+
+on:
+  workflow_dispatch:
+  #push:
+    #branches: [ "main" ]
+
+jobs:
+
+  build:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Login to DockerHub
+      run: docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" -p="${{ secrets.DOCKERHUB_PASSWORD }}"
+      
+    - name: Build Service Docker image
+      run: docker build --file "${{ github.workspace }}/Service/Dockerfile" --tag digiwells/norcedrillingsimulator4ndofservice:stable .
+
+    - name: Push Docker image for Service to DockerHub
+      run: docker push digiwells/norcedrillingsimulator4ndofservice:stable
+
+    - name: Build WebApp Docker image
+      run: docker build --file "${{ github.workspace }}/WebApp/Dockerfile" --tag digiwells/norcedrillingsimulator4ndofwebappclient:stable .
+
+    - name: Push Docker image for WebApp to DockerHub
+      run: docker push digiwells/norcedrillingsimulator4ndofwebappclient:stable

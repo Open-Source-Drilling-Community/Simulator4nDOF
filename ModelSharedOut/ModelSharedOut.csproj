@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Authors>Energy Modelling and Automation group</Authors>
+		<Company>NORCE</Company>
+		<Title>Auto-generation of the API of the Simulator4nDOF microservice (distributed shared model approach)</Title>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.OpenApi.Readers" Version="1.6.24" />
+		<PackageReference Include="NSwag.CodeGeneration.CSharp" Version="14.4.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="json-schemas\" />
+	</ItemGroup>
+
+</Project>

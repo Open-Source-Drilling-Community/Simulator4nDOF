@@ -1,0 +1,140 @@
+﻿@implements IUnitAwareComponent
+@inject ILogger<SimulationEdit> logger
+@inject ISnackbar Snackbar
+
+<MudText Class="mt-4 mb-4" Typo="Typo.h6">Edit Simulation</MudText>
+<MudContainer Class="d-flex flex-row mt-4 mb-4">
+    <MudButton Class="me-1" Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+</MudContainer>
+
+<MudExpansionPanels Class="mt-4 mb-4">
+    <MudExpansionPanel Text="General">
+        <MudGrid>
+            <MudItem xs="4">
+                <MudTextField @bind-Value="@name" Label="Name" Variant="Variant.Filled"></MudTextField>
+            </MudItem>
+            <MudItem xs="4">
+                <MudTextField @bind-Value="@descr" Label="Description" Variant="Variant.Filled"></MudTextField>
+            </MudItem>
+        </MudGrid>
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="@DataUtils.SimulationToBeRemovedListLabel">
+        @if (CurrentSimulation != null && Parent != null)
+        {
+
+        }
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="View data (generated from output)">
+        <MudGrid>
+            <MudItem xs="2">
+                @if (CurrentSimulation != null && Parent != null)
+                {
+                    <MudField Label="@DataUtils.SimulationOutputParamLabel" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="@Parent.GetUnitLabel(DataUtils.SimulationOutputParamQty)">
+                        @Parent.FromSI(CurrentSimulation.Progress, DataUtils.SimulationOutputParamQty, false)
+                    </MudField>
+                }
+            </MudItem>
+            <MudItem xs="10">
+                <ScatterPlot NameList="@nameList" ModeFlagList="@modeFlagList" ColorList="@colorList"
+                             XValuesList="@xValuesList" YValuesList="@yValuesList"
+                             YAxisReversed="@false" AspectRatio="-1" PlotHeight="500" PlotWidth="500"
+                             PlotTitle="" XAxisTitle="@(DataUtils.OutputXValuesTitle + ", " + DataUtils.OutputXValuesQty)" YAxisTitle="@(DataUtils.OutputYValuesTitle + ", " + DataUtils.OutputYValuesQty)"
+                             XUnit="@DataUtils.OutputXValuesQty" YUnit="@DataUtils.OutputYValuesQty"
+                             @ref="@simulationPlot">
+                </ScatterPlot>
+            </MudItem>
+        </MudGrid>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+@code {
+    [CascadingParameter]
+    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    [Parameter]
+    public Simulation? CurrentSimulation { get; set; }
+
+
+    [Parameter]
+    public Action? OnUpdate { get; set; }
+
+    // Local variables used to retrieve user-defined parameters
+    private string? name;
+    private string? descr;
+    private double? tplChildDataParamValue;
+
+    // Plot variables
+    string[] colorScale = { "black", "blue", "grey", "red", "orange", "green", "yellow", "pink", "brown", "purple" };
+    ScatterPlot simulationPlot = new ScatterPlot();
+    List<string> nameList = new List<string>(); //name of each curve in the list to plot
+    List<int> modeFlagList = new List<int>(); //modeFlag of each curve in the list to plot (1 = lines; 2 = markers)
+    List<string> colorList = new List<string>(); //color of each curve in the list of curves to plot
+    List<List<object>> xValuesList = new List<List<object>>(); // list of x values for the list of curves to plot
+    List<List<object>> yValuesList = new List<List<object>>(); // list of y values for the list of curves to plot
+
+    // Labels
+    private string? inputParamUnitLabel = null;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (Parent == null)
+                throw new ArgumentNullException(nameof(Parent), "TargetEdit page must exist within a MudUnitAndReferenceChoiceTag");
+            Parent.Add(this);
+            ManageUnits();
+
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem on Simulation initialization");
+            Snackbar.Add("Problem on Simulation initialization", Severity.Error);
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    public void ManageUnits()
+    {
+
+    }
+
+
+    private void Cancel()
+    {
+        OnUpdate?.Invoke();
+    }
+
+    private void UpdatePlots()
+    {
+        if (CurrentSimulation != null)
+        {
+            //each list below is designed to contain N curves: in this case, we only plot 1 curve, corresponding to 1 trajectory
+           // nameList.Clear();
+           // modeFlagList.Clear();
+           // colorList.Clear();
+           // xValuesList.Clear();
+           // yValuesList.Clear();
+           //
+           // List<object> xValues = new List<object>();
+           // List<object> yValues = new List<object>();
+           //
+           // double value = CurrentSimulation.Progress;
+           //
+           // for (int i = 0; i < 100; ++i)
+           // {
+           //     xValues.Add(i);
+           //     yValues.Add(value * i);
+           // }
+           // xValuesList.Add(xValues);
+           // yValuesList.Add(yValues);
+           // nameList.Add($"{CurrentSimulation.Name}");
+           // modeFlagList.Add(1); //1 to 3
+           // colorList.Add(colorScale[0]);
+           //
+           // //plot curves
+           // simulationPlot.Plot();
+        }
+    }
+
+}

@@ -1,0 +1,219 @@
+﻿@implements IUnitAwareComponent
+
+<PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
+
+@code {
+    [CascadingParameter]
+    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    [Parameter]
+    public String? XUnit { get; set; }
+
+    [Parameter]
+    public String? YUnit { get; set; }
+
+    [Parameter]
+    public List<string>? NameList { get; set; }
+
+    [Parameter]
+    public List<int>? ModeFlagList { get; set; }
+
+    [Parameter]
+    public List<string>? ColorList { get; set; }
+
+    [Parameter]
+    public List<List<object>>? XValuesList { get; set; }
+
+    [Parameter]
+    public List<List<object>>? YValuesList { get; set; }
+
+    [Parameter]
+    public int PlotHeight { get; set; }
+
+    [Parameter]
+    public int PlotWidth { get; set; }
+
+    [Parameter]
+    public string? PlotTitle { get; set; }
+
+    [Parameter]
+    public string? XAxisTitle { get; set; }
+
+    [Parameter]
+    public string? YAxisTitle { get; set; }
+
+    [Parameter]
+    public bool XAxisReversed { get; set; }
+
+    [Parameter]
+    public bool YAxisReversed { get; set; }
+
+    [Parameter]
+    public decimal? AspectRatio { get; set; } = null;
+
+    private PlotlyChart? chart;
+    private Config config = new Config() { Responsive = true };
+    private Layout layout = new Layout
+        {
+            Title = new Plotly.Blazor.LayoutLib.Title { Text = "" },
+            XAxis = new List<XAxis>
+{
+            new XAxis
+            {
+                Title = new Plotly.Blazor.LayoutLib.XAxisLib.Title { Text = "" }
+            }
+        },
+            YAxis = new List<YAxis>
+{
+            new YAxis
+            {
+                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "" },
+            }
+        }
+        };
+
+    // Using of the interface IList is important for the event callback!
+    private IList<ITrace> data = new List<ITrace>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (Parent == null)
+            throw new ArgumentNullException(nameof(Parent), "ScatterPlot must exist within a UnitAndReferenceChoiceTag");
+        Parent.Add(this);
+        ManageUnits();
+    }
+
+    public void ManageUnits()
+    {
+        if (chart != null && layout != null)
+            Plot();
+    }
+
+    public void Plot()
+    {
+        if (chart != null)
+        {
+            //Update layout, including axis ranges due to unit choice set changes
+            ManageLayout();
+            //Update traces
+            ManageTraces();
+        }
+    }
+
+    private void ManageTraces()
+    {
+        if (Parent != null && XValuesList != null && XValuesList.Any() && YValuesList != null &&
+            XValuesList.Count == YValuesList.Count && chart != null && XUnit != null && YUnit != null)
+        {
+            //Remove existing traces
+            chart!.Clear();
+
+            Task.Run(async () =>
+            {
+                //Convert input values lists to the current unit choice set
+                for (int i = 0; i < XValuesList.Count; i++)
+                {
+                    List<object> XValuesInUserUnit = new List<object>();
+                    List<object> YValuesInUserUnit = new List<object>();
+                    foreach (object x in XValuesList[i])
+                    {
+                        double? X = null;
+                        if (x is double?)
+                            X = Parent.FromSI((double?)x, XUnit);
+                        if (x is int?)
+                            X = Parent.FromSI((int?)x, XUnit);
+                        if (X != null)
+                            XValuesInUserUnit.Add((double)X);
+                    }
+                    foreach (object y in YValuesList[i])
+                    {
+                        double? Y = null;
+                        if (y is double?)
+                            Y = Parent.FromSI((double?)y, YUnit);
+                        if (y is int?)
+                            Y = Parent.FromSI((int?)y, YUnit);
+                        if (Y != null)
+                            YValuesInUserUnit.Add((double)Y);
+                    }
+                    //Add converted input values to a trace
+                    if (XValuesInUserUnit.Count == YValuesInUserUnit.Count)
+                    {
+                        //pre-processing optional name attribute
+                        string name = (NameList != null && i < NameList.Count) ? NameList[i] : "";
+                        //pre-processing optional modeFlag attribute
+                        Plotly.Blazor.Traces.ScatterLib.ModeFlag modeFlag = (ModeFlagList != null && i < ModeFlagList.Count) ? (Plotly.Blazor.Traces.ScatterLib.ModeFlag)ModeFlagList[i] : Plotly.Blazor.Traces.ScatterLib.ModeFlag.Lines;
+                        //pre-processing optional color attribute
+                        Plotly.Blazor.Traces.ScatterLib.Marker marker;
+                        if (ColorList != null && i < ColorList.Count)
+                        {
+                            marker = new Marker { Color = ColorList[i] };
+                        }
+                        else
+                        {
+                            marker = new Marker { AutoColorScale = true };
+                        }
+                        //adding trace with attributes
+                        await InvokeAsync(async () => await chart.AddTrace(new Scatter
+                            {
+                                Name = name,
+                                Mode = modeFlag,
+                                Marker = marker,
+                                X = XValuesInUserUnit,
+                                Y = YValuesInUserUnit
+                            }));
+                        // Add the delay to keep the UI responsive
+                        await Task.Delay(10);
+                    }
+                }
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+
+    private void ManageLayout()
+    {
+        if (Parent != null && layout != null && XAxisTitle != null && YAxisTitle != null && chart != null && XUnit != null && YUnit != null)
+        {
+            string XUnitLabel = Parent.GetUnitLabel(XUnit);
+            string YUnitLabel = Parent.GetUnitLabel(YUnit);
+            XUnitLabel = XUnitLabel != null ? " (" + XUnitLabel + ")" : "";
+            YUnitLabel = YUnitLabel != null ? " (" + YUnitLabel + ")" : "";
+
+            layout.Height = PlotHeight;
+            layout.Width = PlotWidth;
+            layout.Title.Text = PlotTitle;
+            //updating the list of XAxis
+            for (int i = 0; i < layout.XAxis.Count; ++i)
+            {
+                layout.XAxis.ElementAt(i).Title.Text = XAxisTitle + XUnitLabel;
+                layout.XAxis.ElementAt(i).AutoRange = Plotly.Blazor.LayoutLib.XAxisLib.AutoRangeEnum.True;
+                layout.XAxis.ElementAt(i).RangeMode = Plotly.Blazor.LayoutLib.XAxisLib.RangeModeEnum.Normal;
+                if (XAxisReversed)
+                    layout.XAxis.ElementAt(i).AutoRange = Plotly.Blazor.LayoutLib.XAxisLib.AutoRangeEnum.Reversed;
+            }
+
+            //updating the list of YAxis
+            for (int i = 0; i < layout.YAxis.Count; ++i)
+            {
+                layout.XAxis.ElementAt(i).Title.Text = XAxisTitle + XUnitLabel;
+                layout.YAxis.ElementAt(i).Title.Text = YAxisTitle + YUnitLabel;
+                layout.YAxis.ElementAt(i).AutoRange = Plotly.Blazor.LayoutLib.YAxisLib.AutoRangeEnum.True;
+                layout.YAxis.ElementAt(i).RangeMode = Plotly.Blazor.LayoutLib.YAxisLib.RangeModeEnum.Normal;
+                if (YAxisReversed)
+                    layout.YAxis.ElementAt(i).AutoRange = Plotly.Blazor.LayoutLib.YAxisLib.AutoRangeEnum.Reversed;
+                if (AspectRatio != null && AspectRatio > 0)
+                {
+                    layout.YAxis.ElementAt(i).ScaleAnchor = "x";
+                    layout.YAxis.ElementAt(i).ScaleRatio = AspectRatio;
+                }
+            }
+            Task.Run(async () =>
+            {
+                // await chart.React();
+                await chart!.Relayout();
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+}

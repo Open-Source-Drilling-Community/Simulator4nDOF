@@ -1,0 +1,25 @@
+name: Update Docker Hub Description
+on:
+  push:
+    branches:
+      - main
+jobs:
+  dockerHubDescription:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Docker Hub Description for Service
+      uses: peter-evans/dockerhub-description@v4
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        repository: digiwells/norcedrillingsimulator4ndofservice
+        readme-filepath: ./Service/README.md
+    - name: Docker Hub Description for WebApp
+      uses: peter-evans/dockerhub-description@v4
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        repository: digiwells/norcedrillingsimulator4ndofwebappclient
+        readme-filepath: ./WebApp/README.md

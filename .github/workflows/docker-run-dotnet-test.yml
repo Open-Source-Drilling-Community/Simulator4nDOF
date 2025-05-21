@@ -1,0 +1,44 @@
+name: Docker run & .NET UnitTest
+
+on:
+  #workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  #pull_request:
+   # branches: [ "main" ]
+
+env:
+  # NORCE NuGet Packages Feed settings
+  NORCE_NUGET_USER: ${{ secrets.NORCE_NUGET_USER }}
+  NORCE_NUGET_APIKEY: ${{ secrets.NORCE_NUGET_APIKEY }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build Service docker image
+      run: docker build --file Service/Dockerfile --tag apiunittesting/service:latest .
+
+    - name: Run Service container
+      # mapping http port to 8080 (which is reached by the unit test in ServiceTest, see source code)
+      run: docker run -dt -p 8080:8080 apiunittesting/service:latest
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      # forcing Release configuration to avoid issue with writing Service OpenApiSchema on build from Service to ModelSharedForClient
+      run: dotnet build --no-restore --configuration 'Release'
+
+    - name: Run ServiceTest & ModelTest
+      # forcing Release configuration to avoid issue with the writing of auto-generated code on-build from Service to ModelSharedForClient
+      run: dotnet test --no-build --verbosity normal --configuration 'Release'
