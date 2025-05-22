@@ -1,4 +1,8 @@
-﻿using OSDC.DotnetLibraries.General.DataManagement;
+﻿using MathNet.Numerics.LinearAlgebra;
+using NORCE.Drilling.Simulator;
+using NORCE.Drilling.Simulator.DataModel;
+using NORCE.Drilling.Simulator.DataModel.ParametersModel;
+using OSDC.DotnetLibraries.General.DataManagement;
 using System;
 using System.Collections.Generic;
 
@@ -19,37 +23,85 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public List<SetPoints>? SetPointsList { get; set; }
         public List<Results>? Results { get; set; }
 
+        private Solver solver;
 
-        /// <summary>
-        /// an input list of SetPoints
-        /// </summary>
+        private double outerTimeStep;
 
-        //
+        public bool Initialize()
+        {
+            var config = new Configuration()
+            {
+                AnnulusPressureFile = ContextualData.AnnulusPressureFile,
+                TrajectoryFile = ContextualData.TrajectoryFile,
+                DrillstringFile = ContextualData.DrillstringFile,
+                StringPressureFile = ContextualData.DrillstringPressureFile,
+                BitDepth = InitialValues.BitDepth,                            // [m]
+                HoleDepth = InitialValues.HoleDepth,                           // [m]
+                TopOfStringPosition = InitialValues.TopOfStringPosition,                   // [m]
+                SurfaceRPM = SetPointsList?.Count > 0 ? SetPointsList[0].SurfaceRPM : 0,            // [rad/s]
+                TopOfStringVelocity = SetPointsList?.Count > 0 ? SetPointsList[0].TopOfStringVelocity : 0,         // [m/s] 
+                CasingShoeDepth = ContextualData.CasingShoeDepth,                     // [m] Casing shoe depth
+                LinerShoeDepth = ContextualData.LinerShoeDepth,                         // [m] Liner shoe depth, set to 0 if there is no liner
+                CasingID = ContextualData.CasingID,                        // [m] Casing inner diameter
+                LinerID = ContextualData.LinerID,                         // [m] Casing outer diameter
+                WellheadDepth = ContextualData.WellheadDepth,                        // [m] Well head depth
+                RiserID = ContextualData.RiserID,                        // [m]
+                BitRadius = ContextualData.BitRadius,                     // [m]
+                //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
+                SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
+                SensorDistanceFromBit = 63,
+                FluidDensity = 1200,                       // [kg/m3] Density of drilling mud
+                LengthBetweenLumpedElements = 30,
+            };
 
-        /// <summary>
-        /// an output parameter, result of the Calculate() method
-        /// </summary>
-        //public double? OutputParam { get; set; }
+            outerTimeStep = config.TimeStep;
 
-        /// <summary>
-        /// main calculation method of the Simulator
-        /// </summary>
-        /// <returns></returns>
+            var parameters = new Parameters(c: config);
+            
+            solver = new Solver(parameters, in config);
+
+            var success = true;
+            return success;
+        }
+ 
         public bool Calculate()
         {
             bool success = false;
-            //OutputParam = null;
-            // if (SetPointsList != null)
-            // {
-            // foreach (var setPoints in SetPointsList)
-            // {
-            //     OutputParam = (OutputParam ?? 0) +
-            //         (setPoints?.SetPointsParam?.DiracDistributionValue?.Value ?? 0) +
-            //         (setPoints?.DerivedData1?.DerivedData1Param?.DiracDistributionValue?.Value ?? 0) +
-            //         (setPoints?.DerivedData2?.DerivedData2Param ?? 0);
-            // }
-            success = true;
-            // }
+            Results = new List<Results>();
+            if (SetPointsList != null)
+            {
+                double totalDuration = 0;
+                foreach (var setPoints in SetPointsList)
+                {
+                    totalDuration = totalDuration + setPoints.TimeDuration;
+                }
+
+                foreach (var setPoints in SetPointsList)
+                {
+                    double duration = setPoints.TimeDuration;
+                    double steps = duration / outerTimeStep;
+
+                    for (int i = 0; i < steps; i++)
+                    {
+                        (var state, var output, var u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity);
+                        Results.Add(new Model.Results()
+                        {
+                            Time = state.step * outerTimeStep,
+                            BitDepth = state.BitDepth,
+                            BitVelocity = output.vb,
+                            WOB = output.wob,
+                            TOB = output.tob,
+                            BitRPM = output.omega_b,
+                            TopDriveRPM = output.omega_td,
+                            HoleDepth = state.HoleDepth,
+                            TopOfStringPosition = state.TopOfStringPosition,
+                        });
+                        Progress = state.step * outerTimeStep / totalDuration;
+                    }
+                }
+                TerminationState = 1;
+                success = true;
+            }
             return success;
         }
     }

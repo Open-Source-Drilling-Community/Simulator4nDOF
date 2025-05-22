@@ -1,10 +1,18 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using MathNet.Numerics.LinearAlgebra;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using NORCE.Drilling.Simulator;
+using NORCE.Drilling.Simulator.DataModel;
+using NORCE.Drilling.Simulator.DataModel.ParametersModel;
+using NORCE.Drilling.Simulator4nDOF.Model;
 using OSDC.DotnetLibraries.General.DataManagement;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 {
@@ -19,6 +27,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         private readonly ILogger<SimulationManager> _logger;
         private readonly object _lock = new();
         private readonly SqlConnectionManager _connectionManager;
+        private static readonly SemaphoreSlim _simulationSemaphore = new SemaphoreSlim(1); // limit to 1 concurrent simulations
 
         private SimulationManager(ILogger<SimulationManager> logger, SqlConnectionManager connectionManager)
         {
@@ -414,10 +423,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         {
             if (simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID != Guid.Empty)
             {
-                //calculate outputs
-                if (!simulation.Calculate())
+                Configuration config;
+                //initialize simulation
+                try
                 {
-                    _logger.LogWarning("Impossible to calculate outputs for the given Simulation");
+                    config = Initialize(simulation);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Impossible to intialize the 4ndof simulation: " + ex.ToString());
                     return false;
                 }
 
@@ -488,7 +502,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         {
                             transaction.Rollback();
                         }
-                        return success;
                     }
                     else
                     {
@@ -500,6 +513,36 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     _logger.LogWarning("Impossible to post Simulation. ID already found in database.");
                     return false;
                 }
+
+                // Run simulation in the background
+                Task.Run(async () =>
+                {
+                    bool acquired = false;
+                    try
+                    {
+                        await _simulationSemaphore.WaitAsync();
+                        acquired = true;
+
+                        if (await CalculateAsync(simulation, config))
+                        {
+                            FinalUpdateSimulatorById(simulation.MetaInfo.ID, simulation);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Background simulation failed");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Exception during background simulation");
+                    }
+                    finally
+                    {
+                        if (acquired)
+                            _simulationSemaphore.Release();
+                    }
+                });
+                return true; // ✅ Return immediately
 
             }
             else
@@ -514,12 +557,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             bool success = true;
             if (guid != Guid.Empty && simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID == guid)
             {
-                //calculate outputs
-                if (!simulation.Calculate())
-                {
-                    _logger.LogWarning("Impossible to calculate outputs of the given Simulation");
-                    return false;
-                }
+                
                 //update SimulationTable
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
@@ -536,8 +574,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         if (simulation.LastModificationDate != null)
                             lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
                         //string data = JsonSerializer.Serialize(simulator, JsonSettings.Options);
-                        double progress = 0;//todo
-                        int terminationState = 0; // todo
+                        double progress = simulation.Progress ?? 0;
+                        int terminationState = simulation.TerminationState ?? 0;
                         var command = connection.CreateCommand();
                         command.CommandText = $"UPDATE SimulationTable SET " +
                             $"MetaInfo = '{metaInfo}', " +
@@ -546,7 +584,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"CreationDate = '{cDate}', " +
                             $"LastModificationDate = '{lDate}', " +
                             $"Progress = '{progress}', " +
-                            $"TerminationState= '{terminationState}', " +
+                            $"TerminationState= '{terminationState}' " +
                             $"WHERE ID = '{guid}'";
                         int count = command.ExecuteNonQuery();
                         if (count != 1)
@@ -595,12 +633,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             bool success = true;
             if (guid != Guid.Empty && simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID == guid)
             {
-                //calculate outputs
-                if (!simulation.Calculate())
-                {
-                    _logger.LogWarning("Impossible to calculate outputs of the given Simulation");
-                    return false;
-                }
+                
                 //update SimulationTable
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
@@ -618,8 +651,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
                         string data = JsonSerializer.Serialize(simulation, JsonSettings.Options);
                         var command = connection.CreateCommand();
-                        double progress = 0;//todo
-                        int terminationState = 1; // todo
+                        double progress = simulation.Progress ?? 0;
+                        int terminationState = simulation.TerminationState ?? 0;
                         command.CommandText = $"UPDATE SimulationTable SET " +
                             $"MetaInfo = '{metaInfo}', " +
                             $"Name = '{simulation.Name}', " +
@@ -628,7 +661,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"LastModificationDate = '{lDate}', " +
                             $"Progress = '{progress}', " +
                             $"TerminationState= '{terminationState}', " +
-                            $"Simulator = '{data}' " +
+                            $"Simulation = '{data}' " +
                             $"WHERE ID = '{guid}'";
                         int count = command.ExecuteNonQuery();
                         if (count != 1)
@@ -720,5 +753,87 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             }
             return false;
         }
+
+
+
+        private double outerTimeStep;
+
+        public Configuration Initialize(Simulation simulation)
+        {
+            var config = new Configuration()
+            {
+                AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
+                TrajectoryFile = simulation.ContextualData.TrajectoryFile,
+                DrillstringFile = simulation.ContextualData.DrillstringFile,
+                StringPressureFile = simulation.ContextualData.DrillstringPressureFile,
+                BitDepth = simulation.InitialValues.BitDepth,                            // [m]
+                HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]
+                TopOfStringPosition = simulation.InitialValues.TopOfStringPosition,                   // [m]
+                SurfaceRPM = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].SurfaceRPM : 0,            // [rad/s]
+                TopOfStringVelocity = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].TopOfStringVelocity : 0,         // [m/s] 
+                CasingShoeDepth = simulation.ContextualData.CasingShoeDepth,                     // [m] Casing shoe depth
+                LinerShoeDepth = simulation.ContextualData.LinerShoeDepth,                         // [m] Liner shoe depth, set to 0 if there is no liner
+                CasingID = simulation.ContextualData.CasingID,                        // [m] Casing inner diameter
+                LinerID = simulation.ContextualData.LinerID,                         // [m] Casing outer diameter
+                WellheadDepth = simulation.ContextualData.WellheadDepth,                        // [m] Well head depth
+                RiserID = simulation.ContextualData.RiserID,                        // [m]
+                BitRadius = simulation.ContextualData.BitRadius,                     // [m]
+                //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
+                SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
+                SensorDistanceFromBit = 63,
+                FluidDensity = 1200,                       // [kg/m3] Density of drilling mud
+                LengthBetweenLumpedElements = 30,
+            };
+
+            outerTimeStep = config.TimeStep;
+
+            return config;
+        }
+
+        public async Task<bool> CalculateAsync(Simulation simulation, Configuration config)
+        {
+            var parameters = new Parameters(c: config);
+            Solver solver = new Solver(parameters, in config); ;
+            if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
+                return false;
+
+            simulation.Results = new List<Results>();
+            double totalDuration = simulation.SetPointsList.Sum(sp => sp.TimeDuration);
+
+            foreach (var setPoints in simulation.SetPointsList)
+            {
+                double duration = setPoints.TimeDuration;
+                int steps = (int)(duration / outerTimeStep);
+
+                for (int i = 0; i < steps; i++)
+                {
+                    // Simulate one step (assumed to be a fast, synchronous calculation)
+                    var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity);
+
+                    simulation.Results.Add(new Results
+                    {
+                        Time = state.step * outerTimeStep,
+                        BitDepth = state.BitDepth,
+                        BitVelocity = output.vb,
+                        WOB = output.wob,
+                        TOB = output.tob,
+                        BitRPM = output.omega_b,
+                        TopDriveRPM = output.omega_td,
+                        HoleDepth = state.HoleDepth,
+                        TopOfStringPosition = state.TopOfStringPosition
+                    });
+
+                    simulation.Progress = state.step * outerTimeStep / totalDuration;
+
+                    // Avoid blocking UI or database thread with repeated updates; optionally batch this
+                    await Task.Run(() => UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation));
+                }
+            }
+
+            simulation.TerminationState = 1;
+            return true;
+        }
+
+
     }
 }

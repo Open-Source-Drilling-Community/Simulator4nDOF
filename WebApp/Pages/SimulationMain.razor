@@ -26,10 +26,10 @@
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>
                 <Columns>
-                    <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 30%;" Sortable="true" Editable="false" />
-                    <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                    <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 20%;" Sortable="true" Editable="false" />
+                    <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.MetaInfo.ID.ToString() " Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
-
+                    <PropertyColumn Property="x => x.CreationDate.ToString() " Title="Creation date" CellStyle="width: 20%;" Sortable="true" Editable="false" /> 
                     <TemplateColumn CellStyle="width: 5%;">
                         <EditTemplate>
                             <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(() => DeleteSimulation(context.Item.MetaInfo.ID))" />
@@ -140,9 +140,21 @@
                                          ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
                                 
                                 <Columns>
-                                    <PropertyColumn Property="x => x.TimeDuration" Title="Time duration" CellStyle="width: 30%;" Sortable="false" Editable="true" />
-                                    <PropertyColumn Property="x => x.SurfaceRPM" Title="Surface RPM" CellStyle="width: 30%;" Sortable="false" Editable="true" />
-                                    <PropertyColumn Property="x => x.TopOfStringVelocity" Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false" Editable="true" />
+
+                                    <TemplateColumn Title="Time duration" CellStyle="width: 30%;" Sortable="false">
+                                        <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F1")</CellTemplate>
+                                        <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.TimeDuration" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true"  Format="F1" /></EditTemplate>
+                                    </TemplateColumn>
+             
+                                    <TemplateColumn Title="Surface RPM" CellStyle="width: 30%;" Sortable="false">
+                                        <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F4")</CellTemplate>
+                                        <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.SurfaceRPM" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true" Format="F4" /></EditTemplate>
+                                    </TemplateColumn>
+
+                                    <TemplateColumn Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false">
+                                        <CellTemplate Context="c">@c.Item.TopOfStringVelocity.ToString("F4")</CellTemplate>
+                                        <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.TopOfStringVelocity" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true" Format="F4" /></EditTemplate>
+                                    </TemplateColumn>
 
                                     <TemplateColumn CellStyle="width: 5%;">
                                         <EditTemplate Context="item">
@@ -339,8 +351,8 @@
             },
             InitialValues = new InitialValues()
             {
-                BitDepth = 2500,
-                HoleDepth = 2500,
+                BitDepth = 4084,
+                HoleDepth = 4085,
                 TopOfStringPosition = 15
             },
             SetPointsList = new List<SetPoints>
@@ -350,12 +362,6 @@
                         TimeDuration = 10,
                         SurfaceRPM = 138 * Math.PI / 30,
                         TopOfStringVelocity = 100.0 / 3600
-                    },
-                    new SetPoints
-                    {
-                        TimeDuration = 10,
-                        SurfaceRPM = 150 * Math.PI / 30,
-                        TopOfStringVelocity = 120.0 / 3600
                     }
                 },
         };
