@@ -6,9 +6,11 @@ using NORCE.Drilling.Simulator.DataModel;
 using NORCE.Drilling.Simulator.DataModel.ParametersModel;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using OSDC.DotnetLibraries.General.DataManagement;
+using OSDC.DotnetLibraries.General.Math;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -290,12 +292,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             var progress = reader["Progress"] is double d ? d : Convert.ToDouble(reader["Progress"]);
                             var terminationState = Convert.ToInt32(reader["TerminationState"]);
 
-
-                            simulation = new Model.SimulationLight(metaInfo, name, description, creationDate, lastModificationDate)
-                            {
-                                Progress = progress,
-                                TerminationState = terminationState
-                            };
+                            simulation = new Model.SimulationLight(metaInfo, name, description, creationDate, lastModificationDate, progress, terminationState);
                             //string data = reader.GetString(0);
                             //simulation = JsonSerializer.Deserialize<Model.SimulationLight>(data, JsonSettings.Options);
                             if (simulation != null && simulation.MetaInfo != null && !simulation.MetaInfo.ID.Equals(guid))
@@ -375,7 +372,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (connection != null)
             {
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate FROM SimulationTable";
+                command.CommandText = "SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate, Progress, TerminationState FROM SimulationTable";
                 try
                 {
                     using var reader = command.ExecuteReader();
@@ -392,12 +389,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         DateTimeOffset? lastModificationDate = null;
                         if (DateTimeOffset.TryParse(reader.GetString(4), out DateTimeOffset lDate))
                             lastModificationDate = lDate;
+
+                        double progress = 0;
+                        if (Double.TryParse(reader.GetString(5), NumberStyles.Any, CultureInfo.InvariantCulture, out double lprogress))
+                        {
+                            progress = lprogress;
+                        }
+                        int terminationState = 0;
+                        if (Int32.TryParse(reader.GetString(6), out int lterminationState))
+                            terminationState = lterminationState;
+
                         simulationLightList.Add(new Model.SimulationLight(
                                 metaInfo,
                                 string.IsNullOrEmpty(name) ? null : name,
                                 string.IsNullOrEmpty(descr) ? null : descr,
                                 creationDate,
-                                lastModificationDate));
+                                lastModificationDate,
+                                progress,
+                                terminationState));
                     }
                     _logger.LogInformation("Returning the list of existing SimulationLight from SimulationTable");
                     return simulationLightList;

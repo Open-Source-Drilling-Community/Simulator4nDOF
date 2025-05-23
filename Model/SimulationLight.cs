@@ -10,13 +10,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
     /// </summary>
     public class SimulationLight
     {
-        public SimulationLight(MetaInfo? metaInfo, string? name, string? description, DateTimeOffset? creationDate, DateTimeOffset? lastModificationDate)
+        public SimulationLight(MetaInfo? metaInfo, string? name, string? description, DateTimeOffset? creationDate, DateTimeOffset? lastModificationDate, double progress, int terminationState)
         {
             this.MetaInfo = metaInfo;
             this.Name = name;
             this.Description = description;
             this.CreationDate = creationDate;
             this.LastModificationDate = lastModificationDate;
+            this.Progress = progress;
+            this.TerminationState = terminationState;
         }
 
         public MetaInfo? MetaInfo { get; set; }

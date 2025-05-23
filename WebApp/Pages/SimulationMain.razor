@@ -26,16 +26,22 @@
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>
                 <Columns>
-                    <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 20%;" Sortable="true" Editable="false" />
+                    <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
-                    <PropertyColumn Property="x => x.MetaInfo.ID.ToString() " Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
-                    <PropertyColumn Property="x => x.CreationDate.ToString() " Title="Creation date" CellStyle="width: 20%;" Sortable="true" Editable="false" /> 
+                    <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                    <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
+
+                    <PropertyColumn Property="x => x.Progress.ToString()" Title="Progress" CellStyle="width: 10%;" Editable="false" />
+                    <PropertyColumn Property="x => x.TerminationState.ToString()" Title="Termination State" CellStyle="width: 10%;" Editable="false" />
+
+
                     <TemplateColumn CellStyle="width: 5%;">
-                        <EditTemplate>
+                        <EditTemplate Context="context">
                             <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(() => DeleteSimulation(context.Item.MetaInfo.ID))" />
                         </EditTemplate>
                     </TemplateColumn>
                 </Columns>
+
                 <PagerContent>
                     <MudDataGridPager T="SimulationLight" />
                 </PagerContent>
@@ -43,10 +49,10 @@
             <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
             <br>
         </div>
-        <div hidden="@isHiddenMainPanel">
+        <div hidden="@isHiddenEditSimulationPanel">
             <MudPaper Class="pa-4">
                 <MudCollapse Expanded="_expandedAddPanel">
-                    <MudText Typo="Typo.h6">Add new simulation </MudText>
+                    <MudText Typo="Typo.h5">Edit new simulation </MudText>
                     <MudToolBar>
                         <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
                         <MudButton OnClick="@CloseAddPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
@@ -156,6 +162,7 @@
                                         <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.TopOfStringVelocity" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true" Format="F4" /></EditTemplate>
                                     </TemplateColumn>
 
+
                                     <TemplateColumn CellStyle="width: 5%;">
                                         <EditTemplate Context="item">
                                             <MudIconButton Size="@Size.Small"
@@ -175,7 +182,7 @@
                 </MudCollapse>  
             </MudPaper>
         </div>
-        <div hidden="@isHiddenEditPanel">
+        <div hidden="@isHiddenShowSimulationPanel">
             @if (currentLightSimulation != null)
             {
                 <MudPaper Class="pa-4">
@@ -224,7 +231,8 @@
     // private List<ToBeRemoved>? toBeRemovedList;
     // UI related variables
     public bool isHiddenMainPanel;
-    public bool isHiddenEditPanel;
+    public bool isHiddenEditSimulationPanel;
+    public bool isHiddenShowSimulationPanel;
     private string? _searchString;
 
     bool _expanded = true;
@@ -255,7 +263,8 @@
     {
         _expanded = true;
         _expandedAddPanel = false;
-        isHiddenEditPanel = true;
+        isHiddenShowSimulationPanel = true;
+        isHiddenEditSimulationPanel = true;
         isHiddenMainPanel = false;
     }
 
@@ -264,6 +273,8 @@
         NewDefaultSimulation();
         _expanded = false;
         _expandedAddPanel = !_expandedAddPanel;
+        isHiddenEditSimulationPanel = false;
+        isHiddenMainPanel = true;
     }
 
     protected override async Task OnInitializedAsync()
@@ -272,7 +283,8 @@
         {
             // Show main panel
             isHiddenMainPanel = false;
-            isHiddenEditPanel = true;
+            isHiddenShowSimulationPanel = true;
+            isHiddenEditSimulationPanel = true;
             currentLightSimulation = null;
 
             // Starting all loading tasks asynchronously
@@ -409,7 +421,7 @@
             if (currentLightSimulation != null)
             {
                 isHiddenMainPanel = true;
-                isHiddenEditPanel = false;
+                isHiddenShowSimulationPanel = false;
                 await InvokeAsync(() => { StateHasChanged(); });
             }
             else
@@ -432,7 +444,7 @@
             if (currentLightSimulation != null)
             {
                 isHiddenMainPanel = true;
-                isHiddenEditPanel = false;
+                isHiddenShowSimulationPanel = false;
                 await InvokeAsync(() => { StateHasChanged(); });
             }
             else
@@ -455,7 +467,7 @@
             if (currentLightSimulation != null)
             {
                 isHiddenMainPanel = true;
-                isHiddenEditPanel = false;
+                isHiddenShowSimulationPanel = false;
                 await InvokeAsync(() => { StateHasChanged(); });
             }
             else
@@ -515,7 +527,7 @@
     private async void ShowMainPanel()
     {
         isHiddenMainPanel = false;
-        isHiddenEditPanel = true;
+        isHiddenShowSimulationPanel = true;
         await OnInitializedAsync();
     }
 }
