@@ -1,4 +1,5 @@
 ﻿@page "/Simulation"
+@using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationMain> logger
 @inject ISnackbar Snackbar
 
@@ -214,7 +215,7 @@
     private SimulationLight? currentLightSimulation;
     private Simulation? currentSimulation;
     private List<object?>? inputDataList = new(); // container used to pass input data to the SimulationEdit razor component without specifying content types (required by µservice Template)
-
+    private SimulationResults results;
     private Simulation newSimulation = new();
 
     // private List<ToBeRemoved>? toBeRemovedList;
@@ -248,7 +249,7 @@
             3 => Color.Warning,
             _ => Color.Default
         };
-}
+    }
 
     private async Task DeleteSetPoints(SetPoints item)
     {
@@ -451,20 +452,36 @@
                 }
             }
         }
-        
+
         catch (Exception ex)
         {
             logger.LogError(ex, "Impossible to load Simulation to be edited");
         }
     }
 
-     private async Task GetCurrentSimulationHeavy()
+    private async Task GetCurrentSimulationHeavy()
     {
         try
         {
             currentSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulationByIdAsync(currentLightSimulation.MetaInfo.ID);
             if (currentLightSimulation != null)
             {
+                results = new SimulationResults();
+
+                foreach (var result in currentSimulation.Results)
+                {
+                    results.Time.Add(result.Time);
+                    results.BitTorque.Add(result.TOB);
+                    //results.SurfaceTorque.Add(result.TopDriveTorque);
+                   // results.SSI.Add(result.SSI);
+                    results.WOB.Add(result.WOB);
+                    results.BitDepth.Add(result.BitDepth);
+                    results.BitRPM.Add(result.BitRPM);
+                    results.BitAxialVelocity.Add(result.BitVelocity);
+                    results.HoleDepth.Add(result.HoleDepth);
+                    results.SurfaceRPM.Add(result.TopDriveRPM);
+                }
+
                 isHiddenMainPanel = true;
                 isHiddenShowSimulationPanel = false;
                 await InvokeAsync(() => { StateHasChanged(); });

@@ -91,6 +91,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
                             BitVelocity = output.vb,
                             WOB = output.wob,
                             TOB = output.tob,
+                            TopDriveTorque = u.tau_Motor,
+                            SSI = output.ssi,
                             BitRPM = output.omega_b,
                             TopDriveRPM = output.omega_td,
                             HoleDepth = state.HoleDepth,

@@ -1,7 +1,7 @@
 ﻿
 namespace NORCE.Drilling.Simulator4nDOF.WebApp
 {
-    public class Results
+    public class SimulationResults
     {
         public double AvgCumulativeSSI = 0.0;
 

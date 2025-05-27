@@ -25,7 +25,7 @@
                   
                     <MudItem Class="pa-0 ma-0">
                         <MudTextField Label="Cumulative SSI [-]"
-                                      @bind-Value=@appState.AvgCumulativeSSI
+                                      @bind-Value=@results.AvgCumulativeSSI
                                       Variant=StartedVariant()
                                       Style="width:150px"
                                       Adornment="Adornment.Start"
@@ -119,7 +119,7 @@
 @code
 {
     [Parameter]
-    public NORCE.Drilling.Simulator4nDOF.WebApp.Results appState { get; set; }
+    public NORCE.Drilling.Simulator4nDOF.WebApp.SimulationResults results { get; set; }
 
     public MudTheme MyCustomTheme = new MudTheme
         {
@@ -290,7 +290,6 @@
         return Variant.Filled;
     }
 
-    
    
     
 
@@ -404,7 +403,7 @@
             PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
             while (await timer.WaitForNextTickAsync())
             {
-                if (appState.Time.Count > 0)
+                if (results.Time.Count > 0)
                 {
                     try
                     {
@@ -435,22 +434,21 @@
                         int startIndex = 0;
                         
 
-
                         if (activeTab == 0)
                         {
-                            for (int i = startIndex; i < appState.Time.Count; i++)
+                            for (int i = startIndex; i < results.Time.Count; i++)
                             {
-                                x.Add(appState.Time[i]);
-                                BitRPM.Add(appState.BitRPM[i] * 60 / 2 / Math.PI);
-                                SurfaceRPM.Add(appState.SurfaceRPM[i] * 60 / 2 / Math.PI);
-                                BitDepth.Add(appState.BitDepth[i]);
-                                HoleDepth.Add(appState.HoleDepth[i]);
-                                SurfaceTorque.Add(appState.SurfaceTorque[i] / 1000);
-                                BitTorque.Add(appState.BitTorque[i] / 1000);
-                                WOB.Add(appState.WOB[i] / 1000 / 9.81);
-                                SSI.Add(appState.SSI[i]);
-                                TopOfStringAxialVelocity.Add(appState.TopOfStringAxialVelocity[i] * 3600);
-                                BitAxialVelocity.Add(appState.BitAxialVelocity[i] * 3600);
+                                x.Add(results.Time[i]);
+                                BitRPM.Add(results.BitRPM[i] * 60 / 2 / Math.PI);
+                                SurfaceRPM.Add(results.SurfaceRPM[i] * 60 / 2 / Math.PI);
+                                BitDepth.Add(results.BitDepth[i]);
+                                HoleDepth.Add(results.HoleDepth[i]);
+                                SurfaceTorque.Add(results.SurfaceTorque[i] / 1000);
+                                BitTorque.Add(results.BitTorque[i] / 1000);
+                                WOB.Add(results.WOB[i] / 1000 / 9.81);
+                                SSI.Add(results.SSI[i]);
+                                TopOfStringAxialVelocity.Add(results.TopOfStringAxialVelocity[i] * 3600);
+                                BitAxialVelocity.Add(results.BitAxialVelocity[i] * 3600);
                             }
 
                             ((Plotly.Blazor.Traces.Scatter)_bitRpmTrace).X = x;
@@ -482,35 +480,35 @@
 
 
 
-                            var time = appState.Time.Last();
+                            var time = results.Time.Last();
 
                             _rpmLayout.Annotations = new List<Annotation>
                             {
-                            CreateAnnotation(appState.SurfaceRPM[^1] * 60 / (2 * Math.PI), time, $"Surface: {appState.SurfaceRPM[^1] * 60 / (2 * Math.PI):F4}", -40, -30),
-                            CreateAnnotation(appState.BitRPM[^1] * 60 / (2 * Math.PI), time, $"Bit: {appState.BitRPM[^1] * 60 / (2 * Math.PI):F4}", -40, 30)
+                            CreateAnnotation(results.SurfaceRPM[^1] * 60 / (2 * Math.PI), time, $"Surface: {results.SurfaceRPM[^1] * 60 / (2 * Math.PI):F4}", -40, -30),
+                            CreateAnnotation(results.BitRPM[^1] * 60 / (2 * Math.PI), time, $"Bit: {results.BitRPM[^1] * 60 / (2 * Math.PI):F4}", -40, 30)
                             };
 
                             _torqueLayout.Annotations = new List<Annotation>
                             {
-                            CreateAnnotation(appState.SurfaceTorque[^1] / 1000, time, $"Surface: {appState.SurfaceTorque[^1] / 1000:F4}", -40, -40),
-                            CreateAnnotation(appState.BitTorque[^1] / 1000, time, $"Bit: {appState.BitTorque[^1] / 1000:F4}", -40, 30)
+                            CreateAnnotation(results.SurfaceTorque[^1] / 1000, time, $"Surface: {results.SurfaceTorque[^1] / 1000:F4}", -40, -40),
+                            CreateAnnotation(results.BitTorque[^1] / 1000, time, $"Bit: {results.BitTorque[^1] / 1000:F4}", -40, 30)
                             };
 
                             _velocityLayout.Annotations = new List<Annotation>
                             {
-                            CreateAnnotation(appState.TopOfStringAxialVelocity[^1] * 3600, time, $"Surface: {appState.TopOfStringAxialVelocity[^1] * 3600:F4}", -40, -40),
-                            CreateAnnotation(appState.BitAxialVelocity[^1] * 3600, time, $"Bit: {appState.BitAxialVelocity[^1] * 3600:F4}", -40, 30)
+                            CreateAnnotation(results.TopOfStringAxialVelocity[^1] * 3600, time, $"Surface: {results.TopOfStringAxialVelocity[^1] * 3600:F4}", -40, -40),
+                            CreateAnnotation(results.BitAxialVelocity[^1] * 3600, time, $"Bit: {results.BitAxialVelocity[^1] * 3600:F4}", -40, 30)
                             };
 
                             _depthLayout.Annotations = new List<Annotation>
                             {
-                            CreateAnnotation(appState.BitDepth[^1], time, $"Bit: {appState.BitDepth[^1]:F4}", -40, -40),
-                            CreateAnnotation(appState.HoleDepth[^1], time, $"Hole: {appState.HoleDepth[^1]:F4}", -40, 30)
+                            CreateAnnotation(results.BitDepth[^1], time, $"Bit: {results.BitDepth[^1]:F4}", -40, -40),
+                            CreateAnnotation(results.HoleDepth[^1], time, $"Hole: {results.HoleDepth[^1]:F4}", -40, 30)
                             };
 
                             _wobLayout.Annotations = new List<Annotation>
                             {
-                            CreateAnnotation(appState.WOB[^1] / 1000 / 9.81, time, $"{appState.WOB[^1] / 1000 / 9.81:F4}", -40, -30),
+                            CreateAnnotation(results.WOB[^1] / 1000 / 9.81, time, $"{results.WOB[^1] / 1000 / 9.81:F4}", -40, -30),
                             };
 
                             await InvokeAsync(async () => await _rpmChart.React());
@@ -526,11 +524,11 @@
                             var SideForce = new List<object>();
                             var SideForceSoftString = new List<object>();
 
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                depths.Add(appState.Depth[i]);
-                                SideForce.Add(appState.SideForce[i] / 1000.0);
-                                SideForceSoftString.Add(appState.SideForceSoftString[i] / 1000.0);
+                                depths.Add(results.Depth[i]);
+                                SideForce.Add(results.SideForce[i] / 1000.0);
+                                SideForceSoftString.Add(results.SideForceSoftString[i] / 1000.0);
                             }
 
                         ((Plotly.Blazor.Traces.Scatter)_sideForceTrace).X = SideForce;
@@ -540,9 +538,9 @@
 
                             var PipeAngularVelocity = new List<object>();
 
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                PipeAngularVelocity.Add(appState.PipeAngularVelocity[i] * 60.0 / 2.0 / Math.PI);
+                                PipeAngularVelocity.Add(results.PipeAngularVelocity[i] * 60.0 / 2.0 / Math.PI);
                             }
 
                         ((Plotly.Blazor.Traces.Scatter)_pipeAngularVelocityTrace).X = PipeAngularVelocity;
@@ -551,10 +549,10 @@
                             var depthssleeves = new List<object>();
                             var SleevesAngularVelocity = new List<object>();
 
-                            for (int i = 0; i < appState.SleevesDepth.Count; i++)
+                            for (int i = 0; i < results.SleevesDepth.Count; i++)
                             {
-                                depthssleeves.Add(appState.SleevesDepth[i]);
-                                SleevesAngularVelocity.Add(appState.SleevesAngularVelocity[i] * 60.0 / 2.0 / Math.PI);
+                                depthssleeves.Add(results.SleevesDepth[i]);
+                                SleevesAngularVelocity.Add(results.SleevesAngularVelocity[i] * 60.0 / 2.0 / Math.PI);
                             }
 
 
@@ -565,11 +563,11 @@
                             var RadialClearanceR = new List<object>();
                             var LateralDisplacement = new List<object>();
 
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                RadialClearanceL.Add(appState.RadialClearance[i] * -1);
-                                RadialClearanceR.Add(appState.RadialClearance[i]);
-                                LateralDisplacement.Add(appState.LateralDisplacement[i]);
+                                RadialClearanceL.Add(results.RadialClearance[i] * -1);
+                                RadialClearanceR.Add(results.RadialClearance[i]);
+                                LateralDisplacement.Add(results.LateralDisplacement[i]);
                             }
 
                         ((Plotly.Blazor.Traces.Scatter)_radialClearanceLeftTrace).X = RadialClearanceL;
@@ -580,9 +578,9 @@
                             ((Plotly.Blazor.Traces.Scatter)_lateralDispTrace).Y = depths;
 
                             var BendingMoment = new List<object>();
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                BendingMoment.Add(appState.BendingMoment[i] / 1000);
+                                BendingMoment.Add(results.BendingMoment[i] / 1000);
                             }
                         ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).X = BendingMoment;
                             ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).Y = depths;
@@ -590,34 +588,34 @@
                             BendingMoment = new List<object>();
 
                             var depthAll = new List<object>();
-                            for (int i = 0; i < appState.DepthAll.Count; i++)
+                            for (int i = 0; i < results.DepthAll.Count; i++)
                             {
-                                BendingMoment.Add(appState.Torque[i] / 1000);
-                                depthAll.Add(appState.DepthAll[i]);
+                                BendingMoment.Add(results.Torque[i] / 1000);
+                                depthAll.Add(results.DepthAll[i]);
                             }
                         ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).X = BendingMoment;
                             ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).Y = depthAll;
 
                             var Tension = new List<object>();
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                Tension.Add(appState.Tension[i] / 1000);
+                                Tension.Add(results.Tension[i] / 1000);
                             }
                         ((Plotly.Blazor.Traces.Scatter)_tensionTrace).X = Tension;
                             ((Plotly.Blazor.Traces.Scatter)_tensionTrace).Y = depths;
 
                             var AxialVelocityD = new List<object>();
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                AxialVelocityD.Add(appState.AxialVelocityD[i] * 3600);
+                                AxialVelocityD.Add(results.AxialVelocityD[i] * 3600);
                             }
                         ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).X = AxialVelocityD;
                             ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).Y = depths;
 
                             var LateralDisplacementAngle = new List<object>();
-                            for (int i = 0; i < appState.Depth.Count; i++)
+                            for (int i = 0; i < results.Depth.Count; i++)
                             {
-                                LateralDisplacementAngle.Add(appState.LateralDisplacementAngle[i] / Math.PI * 180);
+                                LateralDisplacementAngle.Add(results.LateralDisplacementAngle[i] / Math.PI * 180);
                             }
                         ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).X = LateralDisplacementAngle;
                             ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).Y = depths;
@@ -634,18 +632,18 @@
 
                         else if (activeTab == 2)
                         {
-                            for (int i = startIndex; i < appState.Time.Count; i++)
+                            for (int i = startIndex; i < results.Time.Count; i++)
                             {
-                                x.Add(appState.Time[i]);
-                                SensorAngularVelocity.Add(appState.SensorAngularVelocity[i] / 2.0 / Math.PI * 60.0);
-                                SensorWhirlVelocity.Add(appState.SensorWhirlVelocity[i] / 2.0 / Math.PI * 60.0);
-                                SensorAxialVelocity.Add(appState.SensorAxialVelocity[i]);
-                                SensorRadialVelocity.Add(appState.SensorRadialVelocity[i]);
-                                SensorRadialAcc.Add(appState.SensorRadialAcc[i] / 9.81);
-                                SensorTangentialAcc.Add(appState.SensorTangentialAcc[i] / 9.81);
-                                SensorAxialAcc.Add(appState.SensorAxialAcc[i] / 9.81);
-                                SensorBendingMomentX.Add(appState.SensorBendingMomentX[i] / 1000.0);
-                                SensorBendingMomentY.Add(appState.SensorBendingMomentY[i] / 1000.0);
+                                x.Add(results.Time[i]);
+                                SensorAngularVelocity.Add(results.SensorAngularVelocity[i] / 2.0 / Math.PI * 60.0);
+                                SensorWhirlVelocity.Add(results.SensorWhirlVelocity[i] / 2.0 / Math.PI * 60.0);
+                                SensorAxialVelocity.Add(results.SensorAxialVelocity[i]);
+                                SensorRadialVelocity.Add(results.SensorRadialVelocity[i]);
+                                SensorRadialAcc.Add(results.SensorRadialAcc[i] / 9.81);
+                                SensorTangentialAcc.Add(results.SensorTangentialAcc[i] / 9.81);
+                                SensorAxialAcc.Add(results.SensorAxialAcc[i] / 9.81);
+                                SensorBendingMomentX.Add(results.SensorBendingMomentX[i] / 1000.0);
+                                SensorBendingMomentY.Add(results.SensorBendingMomentY[i] / 1000.0);
                             }
 
                             ((Plotly.Blazor.Traces.Scatter)_sensorAngularVelocityTrace).X = x;
@@ -676,18 +674,18 @@
                             ((Plotly.Blazor.Traces.Scatter)_sensorBendingMomentYTrace).Y = SensorBendingMomentY;
 
 
-                            var time = appState.Time.Last();
+                            var time = results.Time.Last();
 
-                            var latestSensorAngularVelocity = appState.SensorAngularVelocity[^1] * 60 / (2 * Math.PI);
-                            var latestSensorWhirlVelocity = appState.SensorWhirlVelocity[^1] * 60 / (2 * Math.PI);
+                            var latestSensorAngularVelocity = results.SensorAngularVelocity[^1] * 60 / (2 * Math.PI);
+                            var latestSensorWhirlVelocity = results.SensorWhirlVelocity[^1] * 60 / (2 * Math.PI);
                             _sensorVelocityALayout.Annotations = new List<Annotation>
                             {
                             CreateAnnotation(latestSensorAngularVelocity, time, $"Angular: {latestSensorAngularVelocity:F4}", -40, -40),
                             CreateAnnotation(latestSensorWhirlVelocity, time, $"Whirl: {latestSensorWhirlVelocity:F4}", -40, -20)
                             };
 
-                            var latestSensorAxialVelocity = appState.SensorAxialVelocity[^1];
-                            var latestSensorRadialVelocity = appState.SensorRadialVelocity[^1];
+                            var latestSensorAxialVelocity = results.SensorAxialVelocity[^1];
+                            var latestSensorRadialVelocity = results.SensorRadialVelocity[^1];
 
                             _sensorVelocityLayout.Annotations = new List<Annotation>
                             {
@@ -695,17 +693,17 @@
                             CreateAnnotation(latestSensorRadialVelocity, time, $"Radial: {latestSensorRadialVelocity:F4}", -40, 40)
                             };
 
-                            var latestSensorRadialAcc = appState.SensorRadialAcc[^1] / 9.81;
+                            var latestSensorRadialAcc = results.SensorRadialAcc[^1] / 9.81;
                             _sensorRadialAccLayout.Annotations = new List<Annotation> { CreateAnnotation(latestSensorRadialAcc, time, $"{latestSensorRadialAcc:F4}", -40, 20) };
 
-                            var latestSensorTangentialAcc = appState.SensorTangentialAcc[^1] / 9.81;
+                            var latestSensorTangentialAcc = results.SensorTangentialAcc[^1] / 9.81;
                             _sensorTangentialAccLayout.Annotations = new List<Annotation> { CreateAnnotation(latestSensorTangentialAcc, time, $"{latestSensorTangentialAcc:F4}", -40, 20) };
 
-                            var latestSensorAxialAcc = appState.SensorAxialAcc[^1] / 9.81;
+                            var latestSensorAxialAcc = results.SensorAxialAcc[^1] / 9.81;
                             _sensorAxialAccLayout.Annotations = new List<Annotation> { CreateAnnotation(latestSensorAxialAcc, time, $"{latestSensorAxialAcc:F4}", -40, 20) };
 
-                            var latestBendingMomentX = appState.SensorBendingMomentX[^1] / 1000.0;
-                            var latestBendingMomentY = appState.SensorBendingMomentY[^1] / 1000.0;
+                            var latestBendingMomentX = results.SensorBendingMomentX[^1] / 1000.0;
+                            var latestBendingMomentY = results.SensorBendingMomentY[^1] / 1000.0;
 
                             _sensorBendingMomentLayout.Annotations = new List<Annotation>
                             {

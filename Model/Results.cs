@@ -12,12 +12,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double Time { get; set; }
         public double WOB { get; set; }
         public double TOB { get; set; }
+        public double TopDriveTorque { get; set; }
         public double BitRPM { get; set; }
         public double TopDriveRPM { get; set; }
         public double BitDepth { get; set; }
         public double HoleDepth { get; set; }
         public double TopOfStringPosition { get; set; }
         public double BitVelocity { get; set; }
+        public double SSI { get; set; }
 
 
 
