@@ -294,10 +294,6 @@
                 }
 
                 resultsPanelRef?.Refresh();
-
-                isHiddenMainPanel = true;
-                autoUpdate = false;
-                updateResultGraphs = true;
                 await InvokeAsync(() => { StateHasChanged(); });
             }
             else

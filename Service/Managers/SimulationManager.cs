@@ -843,6 +843,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         WOB = output.wob,
                         TOB = output.tob,
                         BitRPM = output.omega_b,
+                        SSI = output.SSI,
+                        TopOfStringAxialVelocity = u.v0,
                         TopDriveRPM = output.omega_td,
                         HoleDepth = state.HoleDepth,
                         TopOfStringPosition = state.TopOfStringPosition
