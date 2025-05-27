@@ -59,7 +59,7 @@
 
                 @if (results != null)
                 {
-                    <SimulationResultsPanel Results="@results" UpdateResultGraphs = "@updateResultGraphs"/>
+                    <SimulationResultsPanel @ref="resultsPanelRef" Results="@results"/>
                 }
             </MudPaper>
         }
@@ -68,8 +68,12 @@
 
 @code {
 
+
     [Parameter]
     public Guid  id { get; set; }
+
+    private SimulationResultsPanel? resultsPanelRef;
+
 
     // Simulation related variables
     private List<SimulationLight> SimulationList = new();
@@ -289,7 +293,7 @@
                     results.SurfaceRPM.Add(result.TopDriveRPM);
                 }
 
-                //await simulationResultsPanelref.Refresh();
+                resultsPanelRef?.Refresh();
 
                 isHiddenMainPanel = true;
                 autoUpdate = false;
