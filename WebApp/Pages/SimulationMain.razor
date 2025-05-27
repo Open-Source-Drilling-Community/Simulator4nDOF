@@ -37,11 +37,16 @@
                         </CellTemplate>
                       </TemplateColumn>
 
-                    <TemplateColumn CellStyle="width: 5%;">
-                        <EditTemplate Context="context">
-                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(() => DeleteSimulation(context.Item.MetaInfo.ID))" />
-                        </EditTemplate>
-                    </TemplateColumn>
+                      <TemplateColumn Title="Actions" CellStyle="width: 5%;">
+                          <CellTemplate Context="context">
+                              <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                             Size="Size.Small"
+                                             Color="Color.Error"
+                                             OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
+                          </CellTemplate>
+                      </TemplateColumn>
+
+
                 </Columns>
                 <PagerContent>
                     <MudDataGridPager T="SimulationLight" />

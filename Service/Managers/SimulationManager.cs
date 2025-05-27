@@ -589,7 +589,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"Description = '{simulation.Description}', " +
                             $"CreationDate = '{cDate}', " +
                             $"LastModificationDate = '{lDate}', " +
-                            $"Progress = '{progress.ToString(CultureInfo.InvariantCulture)}', " +
+                            $"Progress = {progress.ToString(CultureInfo.InvariantCulture)}, " +
                             $"TerminationState= '{terminationState}' " +
                             $"WHERE ID = '{guid}'";
                         int count = command.ExecuteNonQuery();
@@ -665,7 +665,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"Description = '{simulation.Description}', " +
                             $"CreationDate = '{cDate}', " +
                             $"LastModificationDate = '{lDate}', " +
-                            $"Progress = '{progress}', " +
+                            $"Progress = {progress.ToString(CultureInfo.InvariantCulture)}, " +
                             $"TerminationState= '{terminationState}', " +
                             $"Simulation = '{data}' " +
                             $"WHERE ID = '{guid}'";
