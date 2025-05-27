@@ -55,7 +55,7 @@
                     <MudText Typo="Typo.h5">Edit new simulation </MudText>
                     <MudToolBar>
                         <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
-                        <MudButton OnClick="@CloseAddPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
+                        <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
                     </MudToolBar>
                     <MudPaper Class="pa-4">
                         
@@ -75,9 +75,23 @@
                             <MudText Typo="Typo.h6">Initial values </MudText>
                             <br>
                             <MudGrid>
-                                <MudItem xs="2">
-                                     <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.InitialValues.BitDepth" Label="Bit depth" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
-                                </MudItem>
+                            <MudItem xs="2">
+                                <MudNumericField 
+                                    HideSpinButtons="false" 
+                                    @bind-Value="newSimulation.InitialValues.BitDepth" 
+                                    Label="Bit depth" 
+                                    T="double" 
+                                    Variant="Variant.Text" 
+                                    Min="1" Max="10000" />
+                               
+                                <MudInputWithUnitAdornment 
+                                    VariantType="Variant.Text" 
+                                    QuantityLabel="Bit depth" 
+                                    QuantityName="Length" 
+                                    SIValue="newSimulation.InitialValues.BitDepth" 
+                                    SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.BitDepth = (double)val; }" /> 
+                            </MudItem>
+
                                 <MudItem xs="2">
                                     <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.InitialValues.HoleDepth" Label="Hole depth" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
                                 </MudItem>
@@ -141,40 +155,8 @@
                             <MudText Typo="Typo.h6">Simulation set points </MudText>
                             <br>
                             
-                            <MudDataGrid T="SetPoints" MultiSelection="false" Items="newSimulation.SetPointsList" 
-                                         EditMode="DataGridEditMode.Cell"
-                                         ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
-                                
-                                <Columns>
+                            <SetPointsEditor NewSimulation="@newSimulation"/>
 
-                                    <TemplateColumn Title="Time duration" CellStyle="width: 30%;" Sortable="false">
-                                        <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F1")</CellTemplate>
-                                        <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.TimeDuration" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true"  Format="F1" /></EditTemplate>
-                                    </TemplateColumn>
-             
-                                    <TemplateColumn Title="Surface RPM" CellStyle="width: 30%;" Sortable="false">
-                                        <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F4")</CellTemplate>
-                                        <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.SurfaceRPM" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true" Format="F4" /></EditTemplate>
-                                    </TemplateColumn>
-
-                                    <TemplateColumn Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false">
-                                        <CellTemplate Context="c">@c.Item.TopOfStringVelocity.ToString("F4")</CellTemplate>
-                                        <EditTemplate Context="c"><MudNumericField T="double" @bind-Value="c.Item.TopOfStringVelocity" Variant="Variant.Text" HideSpinButtons="false" Min="0" Max="10000" Immediate="true" Format="F4" /></EditTemplate>
-                                    </TemplateColumn>
-
-
-                                    <TemplateColumn CellStyle="width: 5%;">
-                                        <EditTemplate Context="item">
-                                            <MudIconButton Size="@Size.Small"
-                                                           Icon="@Icons.Material.Outlined.Delete"
-                                                           OnClick="async () => await DeleteSetPoints(item.Item)" />
-                                        </EditTemplate>
-                                    </TemplateColumn>
-                                </Columns>
-                                <PagerContent>
-                                    <MudDataGridPager T="SetPoints" />
-                                </PagerContent>
-                            </MudDataGrid>
                             <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Update">Add set points </MudButton>
                             <br>
                         }
@@ -187,12 +169,12 @@
             {
                 <MudPaper Class="pa-4">
                     <div style="display: flex; gap: 12px;">
+                        
                         <MudButton OnClick="@GetCurrentSimulationLight" IconColor="Color.Primary" Size="Size.Medium" Style="border-radius: 8px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">Get update light</MudButton>
                         <MudButton OnClick="@GetCurrentSimulationHeavy" IconColor="Color.Primary" Size="Size.Medium" Style="border-radius: 8px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">Get update heavy</MudButton>
-                        <MudButton OnClick="@CloseAddPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
+                        <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
                     </div>
                 </MudPaper>
-
 
                 <MudPaper Class="pa-4">
                    <MudGrid> 
@@ -238,6 +220,7 @@
     bool _expanded = true;
     bool _expandedAddPanel = false;
 
+
     private async Task DeleteSetPoints(SetPoints item)
     {
         if (item != null)
@@ -259,7 +242,7 @@
     }
 
 
-    private void CloseAddPanelOnClick()
+    private void CloseViewSimulationPanelOnClick()
     {
         _expanded = true;
         _expandedAddPanel = false;
@@ -393,6 +376,7 @@
             await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.newSimulation);
             logger.LogInformation("Simulation posted successfully");
             Snackbar.Add("Simulation posted successfully", Severity.Success);
+            ;
             await OnInitializedAsync();
         }
         catch (Exception ex)
@@ -417,19 +401,28 @@
     {
         try
         {
-            currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(currentLightSimulation.MetaInfo.ID);
-            if (currentLightSimulation != null)
+            while (currentLightSimulation != null && currentLightSimulation.TerminationState < 1)
             {
-                isHiddenMainPanel = true;
-                isHiddenShowSimulationPanel = false;
-                await InvokeAsync(() => { StateHasChanged(); });
-            }
-            else
-            {
-                logger.LogWarning("Impossible to load Simulation");
-                Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+                currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(currentLightSimulation.MetaInfo.ID);
+                if (currentLightSimulation != null)
+                {
+                    isHiddenMainPanel = true;
+                    isHiddenShowSimulationPanel = false;
+                    await InvokeAsync(() => { StateHasChanged(); });
+                }
+                else
+                {
+                    logger.LogWarning("Impossible to load Simulation");
+                    Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+                }
+                await Task.Delay(5000);
+                if (isHiddenShowSimulationPanel)
+                {
+                    break;
+                }
             }
         }
+        
         catch (Exception ex)
         {
             logger.LogError(ex, "Impossible to load Simulation to be edited");

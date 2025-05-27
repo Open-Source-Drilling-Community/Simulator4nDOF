@@ -1,0 +1,66 @@
+﻿
+<MudDataGrid T="SetPoints" MultiSelection="false" Items="NewSimulation.SetPointsList"
+             EditMode="DataGridEditMode.Cell"
+             ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
+
+    <Columns>
+        <TemplateColumn Title="Time duration" CellStyle="width: 30%;" Sortable="false">
+            <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F1")</CellTemplate>
+            <EditTemplate Context="c">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityName="Time"
+                                           SIValue="c.Item.TimeDuration"
+                                           SIValueNullableChanged="val => { if (val != null) c.Item.TimeDuration = (double)val; }" />
+            </EditTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Surface RPM" CellStyle="width: 30%;" Sortable="false">
+            <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F4")</CellTemplate>
+            <EditTemplate Context="c">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityName="Frequency"
+                                           SIValue="c.Item.SurfaceRPM"
+                                           SIValueNullableChanged="val => { if (val != null) c.Item.SurfaceRPM = (double)val; }" />
+            </EditTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false">
+            <CellTemplate Context="c">@c.Item.TopOfStringVelocity.ToString("F4")</CellTemplate>
+            <EditTemplate Context="c">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityName="Velocity"
+                                           SIValue="c.Item.TopOfStringVelocity"
+                                           SIValueNullableChanged="val => { if (val != null) c.Item.TopOfStringVelocity = (double)val; }" />
+            </EditTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn CellStyle="width: 5%;">
+            <EditTemplate Context="item">
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="async () => await DeleteSetPoints(item.Item)" />
+            </EditTemplate>
+        </TemplateColumn>
+    </Columns>
+
+    <PagerContent>
+        <MudDataGridPager T="SetPoints" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+
+    [Parameter]
+    public Simulation NewSimulation { get; set; }
+
+    private async Task DeleteSetPoints(SetPoints item)
+    {
+        if (item != null)
+        {
+            NewSimulation.SetPointsList.Remove(item);
+        }
+
+        // Optional UI refresh
+        await InvokeAsync(StateHasChanged);
+    }
+}
