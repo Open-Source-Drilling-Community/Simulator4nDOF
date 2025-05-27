@@ -390,11 +390,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         if (DateTimeOffset.TryParse(reader.GetString(4), out DateTimeOffset lDate))
                             lastModificationDate = lDate;
 
-                        double progress = 0;
-                        if (Double.TryParse(reader.GetString(5), NumberStyles.Any, CultureInfo.InvariantCulture, out double lprogress))
-                        {
-                            progress = lprogress;
-                        }
+                        double progress = reader.GetDouble(5);
+                        
                         int terminationState = 0;
                         if (Int32.TryParse(reader.GetString(6), out int lterminationState))
                             terminationState = lterminationState;
@@ -466,7 +463,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                                 lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
                             string data = JsonSerializer.Serialize(simulation, JsonSettings.Options);
                             var command = connection.CreateCommand();
-                            double progress = 0;
+                            double progress = 0.0;
                             int terminationState = 0;
                             command.CommandText = "INSERT INTO SimulationTable (" +
                                 "ID, " +
@@ -583,7 +580,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         if (simulation.LastModificationDate != null)
                             lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
                         //string data = JsonSerializer.Serialize(simulator, JsonSettings.Options);
-                        double progress = simulation.Progress ?? 0;
+                        double progress = simulation.Progress ?? 0.0;
                         int terminationState = simulation.TerminationState ?? 0;
                         var command = connection.CreateCommand();
                         command.CommandText = $"UPDATE SimulationTable SET " +
@@ -592,7 +589,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"Description = '{simulation.Description}', " +
                             $"CreationDate = '{cDate}', " +
                             $"LastModificationDate = '{lDate}', " +
-                            $"Progress = '{progress}', " +
+                            $"Progress = '{progress.ToString(CultureInfo.InvariantCulture)}', " +
                             $"TerminationState= '{terminationState}' " +
                             $"WHERE ID = '{guid}'";
                         int count = command.ExecuteNonQuery();
@@ -660,7 +657,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
                         string data = JsonSerializer.Serialize(simulation, JsonSettings.Options);
                         var command = connection.CreateCommand();
-                        double progress = simulation.Progress ?? 0;
+                        double progress = simulation.Progress ?? 0.0;
                         int terminationState = simulation.TerminationState ?? 0;
                         command.CommandText = $"UPDATE SimulationTable SET " +
                             $"MetaInfo = '{metaInfo}', " +
@@ -832,7 +829,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         TopOfStringPosition = state.TopOfStringPosition
                     });
 
-                    simulation.Progress = state.step * outerTimeStep / totalDuration;
+                    simulation.Progress = (double)state.step * outerTimeStep / totalDuration;
 
                     // Avoid blocking UI or database thread with repeated updates; optionally batch this
                     await Task.Run(() => UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation));

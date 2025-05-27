@@ -1,0 +1,735 @@
+﻿@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.Traces.ScatterLib
+@inherits LayoutComponentBase
+@namespace NORCE.Drilling.GUI
+
+
+<MudThemeProvider Theme="@MyCustomTheme" />
+<MudDialogProvider />
+<MudPopoverProvider />
+<MudSnackbarProvider />
+<MudPaper Elevation="1">
+    <MudLayout>
+        <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
+            <div Class="d-flex flex-grow-1 align-center pa-0 ma-0">
+                <MudGrid Class="pa-0 ma-0 gap-3 " Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+
+                    
+                    <MudItem Class="pa-2 ma-0">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Secondary"
+                                   OnClick="Refresh">
+                            Refresh
+                        </MudButton>
+                    </MudItem>
+                  
+                    <MudItem Class="pa-0 ma-0">
+                        <MudTextField Label="Cumulative SSI [-]"
+                                      @bind-Value=@appState.AvgCumulativeSSI
+                                      Variant=StartedVariant()
+                                      Style="width:150px"
+                                      Adornment="Adornment.Start"
+                                      AdornmentColor="Color.Warning"
+                                      Margin="MudBlazor.Margin.Dense"
+                                      Format="F3" />
+                    </MudItem>
+                </MudGrid>
+            </div>
+        </MudPaper>
+
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @bind-ActivePanelIndex="activeTab">
+
+            <MudTabPanel Text="Time graphs">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_depthLayout" @bind-Data="_depthTraces" @ref="_depthChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_rpmLayout" @bind-Data="_rpmTraces" @ref="_rpmChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_torqueLayout" @bind-Data="_torqueTraces" @ref="_torqueChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_velocityLayout" @bind-Data="_velocityTraces" @ref="_velocityChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_wobLayout" @bind-Data="_wobTraces" @ref="_wobChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_ssiLayout" @bind-Data="_ssiTraces" @ref="_ssiChart" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudTabPanel>
+            <MudTabPanel Text="Depth graphs ">
+                <MudGrid Class="pa-0 ma-0 gap-1 " Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
+                    </MudItem>
+                    <MudItem>
+                        <PlotlyChart style="height: 80vh; min-height: 350px; width: 11vw" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+            <MudTabPanel Text="Sensor measurements">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityALayout" @bind-Data="_sensorVelocityATraces" @ref="_sensorVelocityAChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityLayout" @bind-Data="_sensorVelocityTraces" @ref="_sensorVelocityChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorRadialAccLayout" @bind-Data="_sensorRadialAccTraces" @ref="_sensorRadialAccChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTangentialAccLayout" @bind-Data="_sensorTangentialAccTraces" @ref="_sensorTangentialAccChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorAxialAccLayout" @bind-Data="_sensorAxialAccTraces" @ref="_sensorAxialAccChart" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorBendingMomentLayout" @bind-Data="_sensorBendingMomentTraces" @ref="_sensorBendingMomentChart" />
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+        </MudTabs>
+    </MudLayout>
+</MudPaper>
+
+@code
+{
+    [Parameter]
+    public NORCE.Drilling.Simulator4nDOF.WebApp.Results appState { get; set; }
+
+    public MudTheme MyCustomTheme = new MudTheme
+        {
+            PaletteLight = new PaletteLight
+            //Palette = new Palette()
+            {
+                Primary = new MudBlazor.Utilities.MudColor("#2E888D"), // DigiWells green-blue
+                Secondary = new MudBlazor.Utilities.MudColor("#222742"), // DigiWells dark-blue
+                AppbarBackground = "#DAD7E0",
+                Background = "#DAD7E0",
+            },
+        };
+
+    private int activeTab = 0;
+
+    private string value { get; set; } = "All";
+
+    Plotly.Blazor.LayoutLib.Margin margin = new Plotly.Blazor.LayoutLib.Margin
+        {
+            L = 75,
+            R = 50,
+            B = 50,
+            T = 10,
+            Pad = 4
+        };
+
+    Plotly.Blazor.LayoutLib.Margin marginDepth = new Plotly.Blazor.LayoutLib.Margin
+        {
+            L = 52,
+            R = 2,
+            B = 50,
+            T = 10,
+            Pad = 4
+        };
+
+    Annotation CreateAnnotation(double y, object x, string text, int ax, int ay) =>
+    new Annotation { Y = y, X = x, Text = text, Ax = ax, Ay = ay };
+
+    private MudTheme Theme = new MudTheme();
+
+    private Config _config;
+
+    IList<ITrace> _rpmTraces = new List<ITrace>();
+    IList<ITrace> _depthTraces = new List<ITrace>();
+    IList<ITrace> _ropTraces = new List<ITrace>();
+    IList<ITrace> _wobTraces = new List<ITrace>();
+    IList<ITrace> _ssiTraces = new List<ITrace>();
+    IList<ITrace> _torqueTraces = new List<ITrace>();
+    IList<ITrace> _velocityTraces = new List<ITrace>();
+    IList<ITrace> _hookloadTraces = new List<ITrace>();
+    IList<ITrace> _fftTraces = new List<ITrace>();
+    IList<ITrace> _sideForceTraces = new List<ITrace>();
+    IList<ITrace> _angularVelocityTraces = new List<ITrace>();
+    IList<ITrace> _axialVelocityTraces = new List<ITrace>();
+    IList<ITrace> _lateralDispTraces = new List<ITrace>();
+    IList<ITrace> _lateralDispATraces = new List<ITrace>();
+    IList<ITrace> _bendingMomentTraces = new List<ITrace>();
+    IList<ITrace> _torqueDTraces = new List<ITrace>();
+    IList<ITrace> _tensionTraces = new List<ITrace>();
+
+    IList<ITrace> _sensorVelocityATraces = new List<ITrace>();
+    IList<ITrace> _sensorVelocityTraces = new List<ITrace>();
+    IList<ITrace> _sensorRadialAccTraces = new List<ITrace>();
+    IList<ITrace> _sensorTangentialAccTraces = new List<ITrace>();
+    IList<ITrace> _sensorAxialAccTraces = new List<ITrace>();
+    IList<ITrace> _sensorBendingMomentTraces = new List<ITrace>();
+
+    ITrace _bitRpmTrace = new Scatter() { Name = "Bit RPM", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _surfaceRpmTrace = new Scatter() { Name = "Surface RPM", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _bitDepthTrace = new Scatter() { Name = "Bit depth", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _holeDepthTrace = new Scatter() { Name = "Hole depth", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _ropTrace = new Scatter() { Name = "ROP", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _wobTrace = new Scatter() { Name = "WOB", ShowLegend = true, Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _ssiTrace = new Scatter() { Name = "SSI", ShowLegend = true, Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _bitTorqueTrace = new Scatter() { Name = "Bit torque", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _surfaceAxialVelocityTrace = new Scatter() { Name = "Top of string velocity", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _bitAxialVelocityTrace = new Scatter() { Name = "Bit axial velocity", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _surfaceTorqueTrace = new Scatter() { Name = "Surface torque", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _hookloadTrace = new Scatter() { Name = "Hookload", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _fftTrace = new Scatter() { Name = "Bit RPM FFT", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sideForceTrace = new Scatter() { Name = "Stiff", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>(), ShowLegend = false };
+    ITrace _sideForceTraceSoftstring = new Scatter() { Name = "Soft", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>(), ShowLegend = false };
+    ITrace _pipeAngularVelocityTrace = new Scatter() { Name = "Pipe", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _axialVelocityTrace = new Scatter() { Name = "Axial", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sleevesAngularVelocityTrace = new Scatter() { Name = "Sleeves", Mode = ModeFlag.Markers, X = new List<object>(), Y = new List<object>() };
+    ITrace _radialClearanceLeftTrace = new Scatter() { ShowLegend = false, Name = "Cl.", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>(), Line = new Line() { Shape = Plotly.Blazor.Traces.ScatterLib.LineLib.ShapeEnum.Linear, Dash = "2px" } };
+    ITrace _radialClearanceRightTrace = new Scatter() { ShowLegend = false, Name = "Cl.", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>(), Line = new Line() { Shape = Plotly.Blazor.Traces.ScatterLib.LineLib.ShapeEnum.Linear, Dash = "2px" } };
+    ITrace _lateralDispATrace = new Scatter() { Name = "Displ. (phi)", Mode = ModeFlag.Markers, X = new List<object>(), Y = new List<object>() };
+    ITrace _lateralDispTrace = new Scatter() { ShowLegend = false, Name = "Displ", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _bendingMomentTrace = new Scatter() { Name = "Bending Moment [kN]", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _torqueDTrace = new Scatter() { Name = "Torque", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _tensionTrace = new Scatter() { Name = "Tension", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+
+    ITrace _sensorAngularVelocityTrace = new Scatter() { Name = "Angular", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorWhirlVelocityTrace = new Scatter() { Name = "Whirl", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorAxialVelocityTrace = new Scatter() { Name = "Axial", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorRadialVelocityTrace = new Scatter() { Name = "Radial", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+
+    ITrace _sensorRadialAccTrace = new Scatter() { Name = "Radial", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorAxialAccTrace = new Scatter() { Name = "Axial", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorTangentialAccTrace = new Scatter() { Name = "Tangential", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorBendingMomentXTrace = new Scatter() { Name = "Mx", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+    ITrace _sensorBendingMomentYTrace = new Scatter() { Name = "My", Mode = ModeFlag.Lines, X = new List<object>(), Y = new List<object>() };
+
+    PlotlyChart _rpmChart;
+    Layout _rpmLayout = new Layout();
+
+    PlotlyChart _depthChart;
+    Layout _depthLayout = new Layout();
+
+    PlotlyChart _wobChart;
+    Layout _wobLayout = new Layout();
+
+    PlotlyChart _ssiChart;
+    Layout _ssiLayout = new Layout();
+
+    PlotlyChart _torqueChart;
+    Layout _torqueLayout = new Layout();
+
+    PlotlyChart _velocityChart;
+    Layout _velocityLayout = new Layout();
+
+    PlotlyChart _sideForceChart;
+    Layout _sideForceLayout = new Layout();
+
+    PlotlyChart _angularVelocityChart;
+    Layout _angularVelocityLayout = new Layout();
+
+    PlotlyChart _axialVelocityChart;
+    Layout _axialVelocityLayout = new Layout();
+
+    PlotlyChart _lateralDispChart;
+    Layout _lateralDispLayout = new Layout();
+
+    PlotlyChart _lateralDispAChart;
+    Layout _lateralDispALayout = new Layout();
+
+    PlotlyChart _bendingMomentChart;
+    Layout _bendingMomentLayout = new Layout();
+
+    PlotlyChart _tensionChart;
+    Layout _tensionLayout = new Layout();
+
+    PlotlyChart _torqueDChart;
+    Layout _torqueDLayout = new Layout();
+
+    PlotlyChart _sensorVelocityAChart;
+    Layout _sensorVelocityALayout = new Layout();
+    PlotlyChart _sensorVelocityChart;
+    Layout _sensorVelocityLayout = new Layout();
+    PlotlyChart _sensorRadialAccChart;
+    Layout _sensorRadialAccLayout = new Layout();
+    PlotlyChart _sensorTangentialAccChart;
+    Layout _sensorTangentialAccLayout = new Layout();
+    PlotlyChart _sensorAxialAccChart;
+    Layout _sensorAxialAccLayout = new Layout();
+    PlotlyChart _sensorBendingMomentChart;
+    Layout _sensorBendingMomentLayout = new Layout();
+
+    private async Task Refresh()
+    {
+        _ = Run();
+        await AfterSetValueAsync();
+    }
+
+    Variant StartedVariant()
+    {
+        return Variant.Filled;
+    }
+
+    
+   
+    
+
+    private Layout CreateLayout(string xTitle, string yTitle, bool reversedYAxis = true, double? minAllowed = null, IList<object> range = null, Plotly.Blazor.LayoutLib.Margin margin = null) =>
+    new Layout
+        {
+            Margin = margin ?? this.margin, // Allows different margin settings
+            XAxis = new[] { new XAxis { Side = Plotly.Blazor.LayoutLib.XAxisLib.SideEnum.Bottom,
+                                    Title = new Plotly.Blazor.LayoutLib.XAxisLib.Title { Text = xTitle } } },
+            YAxis = new[] { new YAxis { Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = yTitle },
+                                    AutoRange = reversedYAxis ? Plotly.Blazor.LayoutLib.YAxisLib.AutoRangeEnum.Reversed : null,
+                                    MinAllowed = minAllowed,
+                                    Range = range } },
+            Annotations = new List<Annotation>(),
+            Colorway = new List<object> { "#b7127c", "#07b2b2", "#0073ac", "#f88707" }
+        };
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _config = new Config
+            {
+                ShowLink = false,
+                Responsive = true,
+                DisplayLogo = false
+            };
+
+        _rpmTraces.Add(_bitRpmTrace);
+        _rpmTraces.Add(_surfaceRpmTrace);
+        _depthTraces.Add(_bitDepthTrace);
+        _depthTraces.Add(_holeDepthTrace);
+        _wobTraces.Add(_wobTrace);
+        _ssiTraces.Add(_ssiTrace);
+        _torqueTraces.Add(_surfaceTorqueTrace);
+        _torqueTraces.Add(_bitTorqueTrace);
+        _velocityTraces.Add(_surfaceAxialVelocityTrace);
+        _velocityTraces.Add(_bitAxialVelocityTrace);
+        _sideForceTraces.Add(_sideForceTrace);
+        _sideForceTraces.Add(_sideForceTraceSoftstring);
+        _angularVelocityTraces.Add(_pipeAngularVelocityTrace);
+        _angularVelocityTraces.Add(_sleevesAngularVelocityTrace);
+        _axialVelocityTraces.Add(_axialVelocityTrace);
+        _lateralDispTraces.Add(_lateralDispTrace);
+        _lateralDispTraces.Add(_radialClearanceLeftTrace);
+        _lateralDispTraces.Add(_radialClearanceRightTrace);
+        _lateralDispATraces.Add(_lateralDispATrace);
+        _bendingMomentTraces.Add(_bendingMomentTrace);
+        _torqueDTraces.Add(_torqueDTrace);
+        _tensionTraces.Add(_tensionTrace);
+        _sensorVelocityATraces.Add(_sensorAngularVelocityTrace);
+        _sensorVelocityATraces.Add(_sensorWhirlVelocityTrace);
+        _sensorVelocityTraces.Add(_sensorAxialVelocityTrace);
+        _sensorVelocityTraces.Add(_sensorRadialVelocityTrace);
+        _sensorRadialAccTraces.Add(_sensorRadialAccTrace);
+        _sensorTangentialAccTraces.Add(_sensorTangentialAccTrace);
+        _sensorAxialAccTraces.Add(_sensorAxialAccTrace);
+        _sensorBendingMomentTraces.Add(_sensorBendingMomentXTrace);
+        _sensorBendingMomentTraces.Add(_sensorBendingMomentYTrace);
+
+
+        // Depth-based layouts with marginDepth
+        _sideForceLayout = CreateLayout("Side force per element [kN]", "Depth (m)", true, 0.0001, null, marginDepth);
+        _angularVelocityLayout = CreateLayout("Angular Velocity", "Depth (m)", true, 0.0001, null, marginDepth);
+        _axialVelocityLayout = CreateLayout("Axial Velocity", "Depth (m)", true, 0.0001, null, marginDepth);
+        _lateralDispLayout = CreateLayout("Lateral Displacement (r)", "Depth (m)", true, 0.0001, null, marginDepth);
+        _lateralDispALayout = CreateLayout("Lateral Displacement (phi)", "Depth (m)", true, 0.0001, null, marginDepth);
+        _bendingMomentLayout = CreateLayout("Bending Moment [kN.m]", "Depth (m)", true, 0.0001, null, marginDepth);
+        _tensionLayout = CreateLayout("Tension [kN]", "Depth (m)", true, 0.0001, null, marginDepth);
+        _torqueDLayout = CreateLayout("Torque [kN.m]", "Depth (m)", true, 0.0001, null, marginDepth);
+
+        // Time-based layouts with default margin
+        _rpmLayout = CreateLayout("Time", "RPM", false);
+        _depthLayout = CreateLayout("Time", "Measured depth", false);
+        _wobLayout = CreateLayout("Time", "WOB [ton]", false);
+        _ssiLayout = CreateLayout("Time", "SSI [-]", false);
+        _velocityLayout = CreateLayout("Time", "Axial velocity [m/h]", false);
+        _torqueLayout = CreateLayout("Time", "Torque [kN.m]", false);
+
+        _sensorVelocityALayout = CreateLayout("Time", "Velocities [RPM]", false);
+        _sensorVelocityLayout = CreateLayout("Time", "Velocities [m/h]", false);
+        _sensorRadialAccLayout = CreateLayout("Time", "Radial acceleration [g]", false);
+        _sensorTangentialAccLayout = CreateLayout("Time", "Tangential acceleration [g]", false);
+        _sensorAxialAccLayout = CreateLayout("Time", "Axial acceleration [g]", false);
+        _sensorBendingMomentLayout = CreateLayout("Time", "BendingMoment [kN.m]", false);
+
+
+        base.OnInitialized();
+    }
+
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _ = Run();
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+
+    private async Task AfterSetValueAsync()
+    {
+        // fake async behaviour
+        await Task.Yield();
+    }
+
+    private Task Run()
+    {
+        return Task.Run(async () =>
+        {
+            PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+            while (await timer.WaitForNextTickAsync())
+            {
+                if (appState.Time.Count > 0)
+                {
+                    try
+                    {
+                        //await InvokeAsync(async () => await _rpmChart.ExtendTrace(appState.Time.Last(), appState.BitRPM.Last(), 0));
+                        var x = new List<object>();
+                        var BitRPM = new List<object>();
+                        var SurfaceRPM = new List<object>();
+                        var BitDepth = new List<object>();
+                        var HoleDepth = new List<object>();
+                        var SurfaceTorque = new List<object>();
+                        var BitTorque = new List<object>();
+                        var WOB = new List<object>();
+                        var SSI = new List<object>();
+                        var TopOfStringAxialVelocity = new List<object>();
+                        var BitAxialVelocity = new List<object>();
+                        var y10 = new List<object>();
+
+                        List<object> SensorAngularVelocity = new List<object>();
+                        List<object> SensorWhirlVelocity = new List<object>();
+                        List<object> SensorAxialVelocity = new List<object>();
+                        List<object> SensorRadialVelocity = new List<object>();
+                        List<object> SensorRadialAcc = new List<object>();
+                        List<object> SensorTangentialAcc = new List<object>();
+                        List<object> SensorAxialAcc = new List<object>();
+                        List<object> SensorBendingMomentX = new List<object>();
+                        List<object> SensorBendingMomentY = new List<object>();
+
+                        int startIndex = 0;
+                        
+
+
+                        if (activeTab == 0)
+                        {
+                            for (int i = startIndex; i < appState.Time.Count; i++)
+                            {
+                                x.Add(appState.Time[i]);
+                                BitRPM.Add(appState.BitRPM[i] * 60 / 2 / Math.PI);
+                                SurfaceRPM.Add(appState.SurfaceRPM[i] * 60 / 2 / Math.PI);
+                                BitDepth.Add(appState.BitDepth[i]);
+                                HoleDepth.Add(appState.HoleDepth[i]);
+                                SurfaceTorque.Add(appState.SurfaceTorque[i] / 1000);
+                                BitTorque.Add(appState.BitTorque[i] / 1000);
+                                WOB.Add(appState.WOB[i] / 1000 / 9.81);
+                                SSI.Add(appState.SSI[i]);
+                                TopOfStringAxialVelocity.Add(appState.TopOfStringAxialVelocity[i] * 3600);
+                                BitAxialVelocity.Add(appState.BitAxialVelocity[i] * 3600);
+                            }
+
+                            ((Plotly.Blazor.Traces.Scatter)_bitRpmTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_bitRpmTrace).Y = BitRPM;
+                            ((Plotly.Blazor.Traces.Scatter)_surfaceRpmTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_surfaceRpmTrace).Y = SurfaceRPM;
+
+                            ((Plotly.Blazor.Traces.Scatter)_bitDepthTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_bitDepthTrace).Y = BitDepth;
+                            ((Plotly.Blazor.Traces.Scatter)_holeDepthTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_holeDepthTrace).Y = HoleDepth;
+
+                            ((Plotly.Blazor.Traces.Scatter)_surfaceTorqueTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_surfaceTorqueTrace).Y = SurfaceTorque;
+                            ((Plotly.Blazor.Traces.Scatter)_bitTorqueTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_bitTorqueTrace).Y = BitTorque;
+
+                            ((Plotly.Blazor.Traces.Scatter)_wobTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_wobTrace).Y = WOB;
+
+                            ((Plotly.Blazor.Traces.Scatter)_ssiTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_ssiTrace).Y = SSI;
+
+                            ((Plotly.Blazor.Traces.Scatter)_surfaceAxialVelocityTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_surfaceAxialVelocityTrace).Y = TopOfStringAxialVelocity;
+
+                            ((Plotly.Blazor.Traces.Scatter)_bitAxialVelocityTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_bitAxialVelocityTrace).Y = BitAxialVelocity;
+
+
+
+                            var time = appState.Time.Last();
+
+                            _rpmLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(appState.SurfaceRPM[^1] * 60 / (2 * Math.PI), time, $"Surface: {appState.SurfaceRPM[^1] * 60 / (2 * Math.PI):F4}", -40, -30),
+                            CreateAnnotation(appState.BitRPM[^1] * 60 / (2 * Math.PI), time, $"Bit: {appState.BitRPM[^1] * 60 / (2 * Math.PI):F4}", -40, 30)
+                            };
+
+                            _torqueLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(appState.SurfaceTorque[^1] / 1000, time, $"Surface: {appState.SurfaceTorque[^1] / 1000:F4}", -40, -40),
+                            CreateAnnotation(appState.BitTorque[^1] / 1000, time, $"Bit: {appState.BitTorque[^1] / 1000:F4}", -40, 30)
+                            };
+
+                            _velocityLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(appState.TopOfStringAxialVelocity[^1] * 3600, time, $"Surface: {appState.TopOfStringAxialVelocity[^1] * 3600:F4}", -40, -40),
+                            CreateAnnotation(appState.BitAxialVelocity[^1] * 3600, time, $"Bit: {appState.BitAxialVelocity[^1] * 3600:F4}", -40, 30)
+                            };
+
+                            _depthLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(appState.BitDepth[^1], time, $"Bit: {appState.BitDepth[^1]:F4}", -40, -40),
+                            CreateAnnotation(appState.HoleDepth[^1], time, $"Hole: {appState.HoleDepth[^1]:F4}", -40, 30)
+                            };
+
+                            _wobLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(appState.WOB[^1] / 1000 / 9.81, time, $"{appState.WOB[^1] / 1000 / 9.81:F4}", -40, -30),
+                            };
+
+                            await InvokeAsync(async () => await _rpmChart.React());
+                            await InvokeAsync(async () => await _depthChart.React());
+                            await InvokeAsync(async () => await _torqueChart.React());
+                            await InvokeAsync(async () => await _velocityChart.React());
+                            await InvokeAsync(async () => await _wobChart.React());
+                            await InvokeAsync(async () => await _ssiChart.React());
+                        }
+                        else if (activeTab == 1)
+                        {
+                            var depths = new List<object>();
+                            var SideForce = new List<object>();
+                            var SideForceSoftString = new List<object>();
+
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                depths.Add(appState.Depth[i]);
+                                SideForce.Add(appState.SideForce[i] / 1000.0);
+                                SideForceSoftString.Add(appState.SideForceSoftString[i] / 1000.0);
+                            }
+
+                        ((Plotly.Blazor.Traces.Scatter)_sideForceTrace).X = SideForce;
+                            ((Plotly.Blazor.Traces.Scatter)_sideForceTrace).Y = depths;
+                            ((Plotly.Blazor.Traces.Scatter)_sideForceTraceSoftstring).X = SideForceSoftString;
+                            ((Plotly.Blazor.Traces.Scatter)_sideForceTraceSoftstring).Y = depths;
+
+                            var PipeAngularVelocity = new List<object>();
+
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                PipeAngularVelocity.Add(appState.PipeAngularVelocity[i] * 60.0 / 2.0 / Math.PI);
+                            }
+
+                        ((Plotly.Blazor.Traces.Scatter)_pipeAngularVelocityTrace).X = PipeAngularVelocity;
+                            ((Plotly.Blazor.Traces.Scatter)_pipeAngularVelocityTrace).Y = depths;
+
+                            var depthssleeves = new List<object>();
+                            var SleevesAngularVelocity = new List<object>();
+
+                            for (int i = 0; i < appState.SleevesDepth.Count; i++)
+                            {
+                                depthssleeves.Add(appState.SleevesDepth[i]);
+                                SleevesAngularVelocity.Add(appState.SleevesAngularVelocity[i] * 60.0 / 2.0 / Math.PI);
+                            }
+
+
+                        ((Plotly.Blazor.Traces.Scatter)_sleevesAngularVelocityTrace).X = SleevesAngularVelocity;
+                            ((Plotly.Blazor.Traces.Scatter)_sleevesAngularVelocityTrace).Y = depthssleeves;
+
+                            var RadialClearanceL = new List<object>();
+                            var RadialClearanceR = new List<object>();
+                            var LateralDisplacement = new List<object>();
+
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                RadialClearanceL.Add(appState.RadialClearance[i] * -1);
+                                RadialClearanceR.Add(appState.RadialClearance[i]);
+                                LateralDisplacement.Add(appState.LateralDisplacement[i]);
+                            }
+
+                        ((Plotly.Blazor.Traces.Scatter)_radialClearanceLeftTrace).X = RadialClearanceL;
+                            ((Plotly.Blazor.Traces.Scatter)_radialClearanceRightTrace).X = RadialClearanceR;
+                            ((Plotly.Blazor.Traces.Scatter)_lateralDispTrace).X = LateralDisplacement;
+                            ((Plotly.Blazor.Traces.Scatter)_radialClearanceLeftTrace).Y = depths;
+                            ((Plotly.Blazor.Traces.Scatter)_radialClearanceRightTrace).Y = depths;
+                            ((Plotly.Blazor.Traces.Scatter)_lateralDispTrace).Y = depths;
+
+                            var BendingMoment = new List<object>();
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                BendingMoment.Add(appState.BendingMoment[i] / 1000);
+                            }
+                        ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).X = BendingMoment;
+                            ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).Y = depths;
+
+                            BendingMoment = new List<object>();
+
+                            var depthAll = new List<object>();
+                            for (int i = 0; i < appState.DepthAll.Count; i++)
+                            {
+                                BendingMoment.Add(appState.Torque[i] / 1000);
+                                depthAll.Add(appState.DepthAll[i]);
+                            }
+                        ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).X = BendingMoment;
+                            ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).Y = depthAll;
+
+                            var Tension = new List<object>();
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                Tension.Add(appState.Tension[i] / 1000);
+                            }
+                        ((Plotly.Blazor.Traces.Scatter)_tensionTrace).X = Tension;
+                            ((Plotly.Blazor.Traces.Scatter)_tensionTrace).Y = depths;
+
+                            var AxialVelocityD = new List<object>();
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                AxialVelocityD.Add(appState.AxialVelocityD[i] * 3600);
+                            }
+                        ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).X = AxialVelocityD;
+                            ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).Y = depths;
+
+                            var LateralDisplacementAngle = new List<object>();
+                            for (int i = 0; i < appState.Depth.Count; i++)
+                            {
+                                LateralDisplacementAngle.Add(appState.LateralDisplacementAngle[i] / Math.PI * 180);
+                            }
+                        ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).X = LateralDisplacementAngle;
+                            ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).Y = depths;
+
+                            await InvokeAsync(async () => await _sideForceChart.React());
+                            await InvokeAsync(async () => await _angularVelocityChart.React());
+                            await InvokeAsync(async () => await _axialVelocityChart.React());
+                            await InvokeAsync(async () => await _lateralDispChart.React());
+                            await InvokeAsync(async () => await _lateralDispAChart.React());
+                            await InvokeAsync(async () => await _bendingMomentChart.React());
+                            await InvokeAsync(async () => await _torqueDChart.React());
+                            await InvokeAsync(async () => await _tensionChart.React());
+                        }
+
+                        else if (activeTab == 2)
+                        {
+                            for (int i = startIndex; i < appState.Time.Count; i++)
+                            {
+                                x.Add(appState.Time[i]);
+                                SensorAngularVelocity.Add(appState.SensorAngularVelocity[i] / 2.0 / Math.PI * 60.0);
+                                SensorWhirlVelocity.Add(appState.SensorWhirlVelocity[i] / 2.0 / Math.PI * 60.0);
+                                SensorAxialVelocity.Add(appState.SensorAxialVelocity[i]);
+                                SensorRadialVelocity.Add(appState.SensorRadialVelocity[i]);
+                                SensorRadialAcc.Add(appState.SensorRadialAcc[i] / 9.81);
+                                SensorTangentialAcc.Add(appState.SensorTangentialAcc[i] / 9.81);
+                                SensorAxialAcc.Add(appState.SensorAxialAcc[i] / 9.81);
+                                SensorBendingMomentX.Add(appState.SensorBendingMomentX[i] / 1000.0);
+                                SensorBendingMomentY.Add(appState.SensorBendingMomentY[i] / 1000.0);
+                            }
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorAngularVelocityTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorAngularVelocityTrace).Y = SensorAngularVelocity;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorWhirlVelocityTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorWhirlVelocityTrace).Y = SensorWhirlVelocity;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorAxialVelocityTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorAxialVelocityTrace).Y = SensorAxialVelocity;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorRadialVelocityTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorRadialVelocityTrace).Y = SensorRadialVelocity;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorRadialAccTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorRadialAccTrace).Y = SensorRadialAcc;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorTangentialAccTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorTangentialAccTrace).Y = SensorTangentialAcc;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorAxialAccTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorAxialAccTrace).Y = SensorAxialAcc;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorBendingMomentXTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorBendingMomentXTrace).Y = SensorBendingMomentX;
+
+                            ((Plotly.Blazor.Traces.Scatter)_sensorBendingMomentYTrace).X = x;
+                            ((Plotly.Blazor.Traces.Scatter)_sensorBendingMomentYTrace).Y = SensorBendingMomentY;
+
+
+                            var time = appState.Time.Last();
+
+                            var latestSensorAngularVelocity = appState.SensorAngularVelocity[^1] * 60 / (2 * Math.PI);
+                            var latestSensorWhirlVelocity = appState.SensorWhirlVelocity[^1] * 60 / (2 * Math.PI);
+                            _sensorVelocityALayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(latestSensorAngularVelocity, time, $"Angular: {latestSensorAngularVelocity:F4}", -40, -40),
+                            CreateAnnotation(latestSensorWhirlVelocity, time, $"Whirl: {latestSensorWhirlVelocity:F4}", -40, -20)
+                            };
+
+                            var latestSensorAxialVelocity = appState.SensorAxialVelocity[^1];
+                            var latestSensorRadialVelocity = appState.SensorRadialVelocity[^1];
+
+                            _sensorVelocityLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(latestSensorAxialVelocity, time, $"Axial: {latestSensorAxialVelocity:F4}", -40, 20),
+                            CreateAnnotation(latestSensorRadialVelocity, time, $"Radial: {latestSensorRadialVelocity:F4}", -40, 40)
+                            };
+
+                            var latestSensorRadialAcc = appState.SensorRadialAcc[^1] / 9.81;
+                            _sensorRadialAccLayout.Annotations = new List<Annotation> { CreateAnnotation(latestSensorRadialAcc, time, $"{latestSensorRadialAcc:F4}", -40, 20) };
+
+                            var latestSensorTangentialAcc = appState.SensorTangentialAcc[^1] / 9.81;
+                            _sensorTangentialAccLayout.Annotations = new List<Annotation> { CreateAnnotation(latestSensorTangentialAcc, time, $"{latestSensorTangentialAcc:F4}", -40, 20) };
+
+                            var latestSensorAxialAcc = appState.SensorAxialAcc[^1] / 9.81;
+                            _sensorAxialAccLayout.Annotations = new List<Annotation> { CreateAnnotation(latestSensorAxialAcc, time, $"{latestSensorAxialAcc:F4}", -40, 20) };
+
+                            var latestBendingMomentX = appState.SensorBendingMomentX[^1] / 1000.0;
+                            var latestBendingMomentY = appState.SensorBendingMomentY[^1] / 1000.0;
+
+                            _sensorBendingMomentLayout.Annotations = new List<Annotation>
+                            {
+                            CreateAnnotation(latestBendingMomentX, time, $"Mx: {latestBendingMomentX:F4}", -40, -20),
+                            CreateAnnotation(latestBendingMomentY, time, $"My: {latestBendingMomentY:F4}", -40, 20)
+                            };
+
+                            await InvokeAsync(async () => await _sensorVelocityAChart.React());
+                            await InvokeAsync(async () => await _sensorAxialAccChart.React());
+                            await InvokeAsync(async () => await _sensorBendingMomentChart.React());
+                            await InvokeAsync(async () => await _sensorRadialAccChart.React());
+                            await InvokeAsync(async () => await _sensorTangentialAccChart.React());
+                            await InvokeAsync(async () => await _sensorVelocityChart.React());
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
+
+                    InvokeAsync(() => StateHasChanged());
+                }
+            }
+        });
+    }
+}

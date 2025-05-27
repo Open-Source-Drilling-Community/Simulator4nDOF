@@ -14,26 +14,28 @@
     else
     {
         <div hidden="@isHiddenMainPanel">
-            <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList"
-                         EditMode="DataGridEditMode.Cell"
-                         Hover="true" RowClick="@RowClicked"
-                         SortMode="SortMode.Multiple" QuickFilter="@_SimulationFilter" Filterable="false"
-                         ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
-                <ToolBarContent>
-                    <MudText Typo="Typo.h5">Simulation</MudText>
-                    <MudSpacer />
-                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+              <ToolBarContent>
+                    <MudText Typo="Typo.h5">Simulations</MudText>
                 </ToolBarContent>
+            <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true"  ColumnResizeMode="ResizeMode.Column" Elevation="0">
                 <Columns>
                     <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
                     <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
 
-                    <PropertyColumn Property="x => x.Progress.ToString()" Title="Progress" CellStyle="width: 10%;" Editable="false" />
-                    <PropertyColumn Property="x => x.TerminationState.ToString()" Title="Termination State" CellStyle="width: 10%;" Editable="false" />
-
+                    <TemplateColumn Title="Progress" CellStyle="width: 10%;">
+                        <CellTemplate Context="context">
+                            @($"{context.Item.Progress:P2}")
+                        </CellTemplate>
+                     </TemplateColumn>
+                     <TemplateColumn Title="Termination State" CellStyle="width: 10%;">
+                        <CellTemplate Context="context">
+                            <MudChip Color="@GetTerminationColor(context.Item.TerminationState)">
+                                    @GetTerminationStateLabel(context.Item.TerminationState)
+                            </MudChip>
+                        </CellTemplate>
+                      </TemplateColumn>
 
                     <TemplateColumn CellStyle="width: 5%;">
                         <EditTemplate Context="context">
@@ -41,11 +43,11 @@
                         </EditTemplate>
                     </TemplateColumn>
                 </Columns>
-
                 <PagerContent>
                     <MudDataGridPager T="SimulationLight" />
                 </PagerContent>
             </MudDataGrid>
+
             <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
             <br>
         </div>
@@ -220,6 +222,28 @@
     bool _expanded = true;
     bool _expandedAddPanel = false;
 
+    private string GetTerminationStateLabel(int state)
+    {
+        return state switch
+        {
+            0 => "Running",
+            1 => "Completed",
+            2 => "Failed",
+            3 => "Cancelled",
+            _ => "Unknown"
+        };
+    }
+    private Color GetTerminationColor(int state)
+    {
+        return state switch
+        {
+            0 => Color.Info,
+            1 => Color.Success,
+            2 => Color.Error,
+            3 => Color.Warning,
+            _ => Color.Default
+        };
+}
 
     private async Task DeleteSetPoints(SetPoints item)
     {
