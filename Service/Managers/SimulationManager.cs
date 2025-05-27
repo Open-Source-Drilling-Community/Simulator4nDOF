@@ -8,6 +8,7 @@ using NORCE.Drilling.Simulator4nDOF.Model;
 using OSDC.DotnetLibraries.General.DataManagement;
 using OSDC.DotnetLibraries.General.Math;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -30,6 +31,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         private readonly object _lock = new();
         private readonly SqlConnectionManager _connectionManager;
         private static readonly SemaphoreSlim _simulationSemaphore = new SemaphoreSlim(1); // limit to 1 concurrent simulations
+
+
+        public static ConcurrentDictionary<Guid, Simulation> RunningSimulations = new();
 
         private SimulationManager(ILogger<SimulationManager> logger, SqlConnectionManager connectionManager)
         {
@@ -216,6 +220,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         {
             if (!guid.Equals(Guid.Empty))
             {
+
+                RunningSimulations.TryGetValue(guid, out var runningSimulation);
+                if (runningSimulation != null)
+                {
+                    if (runningSimulation.TerminationState == 0)
+                    {
+                        FinalUpdateSimulatorById(guid, runningSimulation);
+                    }
+                }
+
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
                 {
@@ -524,6 +538,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 Task.Run(async () =>
                 {
                     bool acquired = false;
+                    simulation.TerminationState = 0;
+                    RunningSimulations[simulation.MetaInfo.ID] = simulation;
                     try
                     {
                         await _simulationSemaphore.WaitAsync();
@@ -545,7 +561,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     finally
                     {
                         if (acquired)
+                        {
                             _simulationSemaphore.Release();
+                            RunningSimulations.TryRemove(simulation.MetaInfo.ID, out _);
+                        }
                     }
                 });
                 return true; // ✅ Return immediately
@@ -833,6 +852,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
                     // Avoid blocking UI or database thread with repeated updates; optionally batch this
                     await Task.Run(() => UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation));
+                    RunningSimulations[simulation.MetaInfo.ID] = simulation;
                 }
             }
 
@@ -842,4 +862,5 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
 
     }
+
 }

@@ -301,6 +301,10 @@
             "type": "number",
             "format": "double"
           },
+          "TopDriveTorque": {
+            "type": "number",
+            "format": "double"
+          },
           "BitRPM": {
             "type": "number",
             "format": "double"
@@ -322,6 +326,14 @@
             "format": "double"
           },
           "BitVelocity": {
+            "type": "number",
+            "format": "double"
+          },
+          "SSI": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringAxialVelocity": {
             "type": "number",
             "format": "double"
           }

@@ -842,6 +842,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("TOB")]
         public double TOB { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("TopDriveTorque")]
+        public double TopDriveTorque { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("BitRPM")]
         public double BitRPM { get; set; }
 
@@ -859,6 +862,12 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("BitVelocity")]
         public double BitVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SSI")]
+        public double SSI { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringAxialVelocity")]
+        public double TopOfStringAxialVelocity { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

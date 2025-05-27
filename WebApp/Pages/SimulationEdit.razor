@@ -1,135 +1,346 @@
-﻿@implements IUnitAwareComponent
-@inject ILogger<SimulationEdit> logger
+﻿@page "/Simulation/{id:guid}"
+@inject NavigationManager Navigation
+@using NORCE.Drilling.Simulator4nDOF.WebApp
+@inject ILogger<SimulationMain> logger
 @inject ISnackbar Snackbar
 
-<MudText Class="mt-4 mb-4" Typo="Typo.h6">Edit Simulation</MudText>
-<MudContainer Class="d-flex flex-row mt-4 mb-4">
-    <MudButton Class="me-1" Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
-</MudContainer>
+<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
+                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    @if (SimulationList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @if (currentLightSimulation != null)
+        {
+            <MudPaper Class="pa-4">
+                <div style="display: flex; gap: 12px;">
+                    
+                    <MudButton OnClick="@GetCurrentSimulationHeavy" IconColor="Color.Primary" Size="Size.Medium" Style="border-radius: 8px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">Get update heavy</MudButton>
+                    <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
+                </div>
+            </MudPaper>
 
-<MudExpansionPanels Class="mt-4 mb-4">
-    <MudExpansionPanel Text="General">
-        <MudGrid>
-            <MudItem xs="4">
-                <MudTextField @bind-Value="@name" Label="Name" Variant="Variant.Filled"></MudTextField>
-            </MudItem>
-            <MudItem xs="4">
-                <MudTextField @bind-Value="@descr" Label="Description" Variant="Variant.Filled"></MudTextField>
-            </MudItem>
-        </MudGrid>
-    </MudExpansionPanel>
+            <MudPaper Class="pa-4">
+                <MudGrid AlignItems="Center" GutterSize="16px">
+                    <MudItem xs="2">
+                        <MudText Typo="Typo.body1"><b>Name:</b></MudText>
+                        <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Name</MudText>
+                    </MudItem>
 
-    <MudExpansionPanel Text="View data (generated from output)">
-        <MudGrid>
-            <MudItem xs="2">
-                @if (CurrentSimulation != null && Parent != null)
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.body1"><b>Description:</b></MudText>
+                        <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Description</MudText>
+                    </MudItem>
+
+                    <MudItem xs="2">
+                        <MudText Typo="Typo.body1"><b>ID:</b></MudText>
+                        <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.MetaInfo.ID</MudText>
+                    </MudItem>
+
+                    <MudItem xs="2">
+                        <MudText Typo="Typo.body1"><b>Progress:</b></MudText>
+                        <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)" Class="ml-0">
+                            @($"{currentLightSimulation.Progress:P2}")
+                        </MudChip>
+                    </MudItem>
+
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.body1"><b>Termination State:</b></MudText>
+                        <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)" Class="ml-0">
+                            @GetTerminationStateLabel(currentLightSimulation.TerminationState)
+                        </MudChip>
+                    </MudItem>
+                 </MudGrid>
+
+                @if (results != null)
                 {
-                    <MudField Label="@DataUtils.SimulationOutputParamLabel" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="@Parent.GetUnitLabel(DataUtils.SimulationOutputParamQty)">
-                        @Parent.FromSI(CurrentSimulation.Progress, DataUtils.SimulationOutputParamQty, false)
-                    </MudField>
+                    <SimulationResultsPanel Results="@results" UpdateResultGraphs = "@updateResultGraphs"/>
                 }
-            </MudItem>
-            <MudItem xs="10">
-                <ScatterPlot NameList="@nameList" ModeFlagList="@modeFlagList" ColorList="@colorList"
-                             XValuesList="@xValuesList" YValuesList="@yValuesList"
-                             YAxisReversed="@false" AspectRatio="-1" PlotHeight="500" PlotWidth="500"
-                             PlotTitle="" XAxisTitle="@(DataUtils.OutputXValuesTitle + ", " + DataUtils.OutputXValuesQty)" YAxisTitle="@(DataUtils.OutputYValuesTitle + ", " + DataUtils.OutputYValuesQty)"
-                             XUnit="@DataUtils.OutputXValuesQty" YUnit="@DataUtils.OutputYValuesQty"
-                             @ref="@simulationPlot">
-                </ScatterPlot>
-            </MudItem>
-        </MudGrid>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+            </MudPaper>
+        }
+    }
+</MudUnitAndReferenceChoiceTag>
+
 @code {
-    [CascadingParameter]
-    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
 
     [Parameter]
-    public SimulationLight? CurrentSimulation { get; set; }
+    public Guid  id { get; set; }
+
+    // Simulation related variables
+    private List<SimulationLight> SimulationList = new();
+    private List<SimulationLight> selectedSimulationList = new();
+    private SimulationLight? currentLightSimulation;
+    private Simulation? currentSimulation;
+    private List<object?>? inputDataList = new(); // container used to pass input data to the SimulationEdit razor component without specifying content types (required by µservice Template)
+    private SimulationResults results;
+    private Simulation newSimulation = new();
+
+    // private List<ToBeRemoved>? toBeRemovedList;
+    // UI related variables
+    public bool isHiddenMainPanel;
+    public bool autoUpdate;
+    private string? _searchString;
 
 
-    [Parameter]
-    public Action? OnUpdate { get; set; }
+    bool updateResultGraphs = false;
 
-    // Local variables used to retrieve user-defined parameters
-    private string? name;
-    private string? descr;
-    private double? tplChildDataParamValue;
+    private Color GetProgressColor(double? progress)
+    {
+        if (progress == null) return Color.Default;
 
-    // Plot variables
-    string[] colorScale = { "black", "blue", "grey", "red", "orange", "green", "yellow", "pink", "brown", "purple" };
-    ScatterPlot simulationPlot = new ScatterPlot();
-    List<string> nameList = new List<string>(); //name of each curve in the list to plot
-    List<int> modeFlagList = new List<int>(); //modeFlag of each curve in the list to plot (1 = lines; 2 = markers)
-    List<string> colorList = new List<string>(); //color of each curve in the list of curves to plot
-    List<List<object>> xValuesList = new List<List<object>>(); // list of x values for the list of curves to plot
-    List<List<object>> yValuesList = new List<List<object>>(); // list of y values for the list of curves to plot
+        return progress switch
+        {
+            <= 0.25 => Color.Error,
+            <= 0.75 => Color.Warning,
+            < 1.0 => Color.Info,
+            _ => Color.Success
+        };
+    }
 
-    // Labels
-    private string? inputParamUnitLabel = null;
+    private string GetTerminationStateLabel(int state)
+    {
+        return state switch
+        {
+            0 => "Running",
+            1 => "Completed",
+            2 => "Failed",
+            3 => "Cancelled",
+            _ => "Unknown"
+        };
+    }
+    private Color GetTerminationColor(int state)
+    {
+        return state switch
+        {
+            0 => Color.Info,
+            1 => Color.Success,
+            2 => Color.Error,
+            3 => Color.Warning,
+            _ => Color.Default
+        };
+    }
 
+    private async Task DeleteSetPoints(SetPoints item)
+    {
+        if (item != null)
+        {
+            newSimulation.SetPointsList.Remove(item);
+        }
+
+        // Optional UI refresh
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void UploadFile(InputFileChangeEventArgs e, Action<string> setFileName)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            setFileName(file.Name);
+        }
+    }
+
+
+    private void CloseViewSimulationPanelOnClick()
+    {
+        autoUpdate = false;
+        Navigation.NavigateTo($"/Simulation/");
+    }
+
+    private void OnExpandCollapseClickAddPanel()
+    {
+        NewDefaultSimulation();
+    }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            if (Parent == null)
-                throw new ArgumentNullException(nameof(Parent), "TargetEdit page must exist within a MudUnitAndReferenceChoiceTag");
-            Parent.Add(this);
-            ManageUnits();
+            currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(id);
 
-
+            while (currentLightSimulation != null && currentLightSimulation.TerminationState < 1)
+            {
+                currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(currentLightSimulation.MetaInfo.ID);
+                if (currentLightSimulation != null)
+                {
+                    autoUpdate = true;
+                    await InvokeAsync(() => { StateHasChanged(); });
+                }
+                else
+                {
+                    logger.LogWarning("Impossible to load Simulation");
+                    Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+                }
+                await Task.Delay(5000);
+                if (!autoUpdate)
+                {
+                    break;
+                }
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Problem on Simulation initialization");
-            Snackbar.Add("Problem on Simulation initialization", Severity.Error);
+            logger.LogError(ex, "Problem Simulation initialization");
         }
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
-    public void ManageUnits()
+    private void AddSetPoint()
     {
-
+        newSimulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
     }
 
-
-    private void Cancel()
+    private void NewDefaultSimulation()
     {
-        OnUpdate?.Invoke();
-    }
-
-    private void UpdatePlots()
-    {
-        if (CurrentSimulation != null)
+        MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
+        DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+        newSimulation = new()
         {
-            //each list below is designed to contain N curves: in this case, we only plot 1 curve, corresponding to 1 trajectory
-           // nameList.Clear();
-           // modeFlagList.Clear();
-           // colorList.Clear();
-           // xValuesList.Clear();
-           // yValuesList.Clear();
-           //
-           // List<object> xValues = new List<object>();
-           // List<object> yValues = new List<object>();
-           //
-           // double value = CurrentSimulation.Progress;
-           //
-           // for (int i = 0; i < 100; ++i)
-           // {
-           //     xValues.Add(i);
-           //     yValues.Add(value * i);
-           // }
-           // xValuesList.Add(xValues);
-           // yValuesList.Add(yValues);
-           // nameList.Add($"{CurrentSimulation.Name}");
-           // modeFlagList.Add(1); //1 to 3
-           // colorList.Add(colorScale[0]);
-           //
-           // //plot curves
-           // simulationPlot.Plot();
+            MetaInfo = metaInfo,
+            Name = DataUtils.DEFAULT_NAME_Simulation,
+            Description = DataUtils.DEFAULT_DESCR_Simulation,
+            CreationDate = creationDate,
+            LastModificationDate = creationDate,
+            ContextualData = new ContextualData()
+            {
+                TrajectoryFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Trajectory.txt",
+                AnnulusPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\AnnulusHydraulicProfiles.txt",
+                DrillstringPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\DrillstringHydraulicProfiles.txt",
+                DrillstringFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Drillstring.csv",
+                CasingShoeDepth = 2181,
+                LinerShoeDepth = 0,
+                CasingID = 9 * 0.0254,
+                LinerID = 0 * 0.0254,
+                WellheadDepth = 120,
+                RiserID = 21 * 0.0254,
+                BitRadius = 0.2159 / 2,
+            },
+            InitialValues = new InitialValues()
+            {
+                BitDepth = 4084,
+                HoleDepth = 4085,
+                TopOfStringPosition = 15
+            },
+            SetPointsList = new List<SetPoints>
+                {
+                    new SetPoints
+                    {
+                        TimeDuration = 10,
+                        SurfaceRPM = 138 * Math.PI / 30,
+                        TopOfStringVelocity = 100.0 / 3600
+                    }
+                },
+        };
+    }
+
+    private async Task AddSimulation()
+    {
+        try
+        {
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
+            DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+            newSimulation.MetaInfo = metaInfo;
+            newSimulation.CreationDate = creationDate;
+            newSimulation.LastModificationDate = creationDate;
+            await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.newSimulation);
+            logger.LogInformation("Simulation posted successfully");
+            Snackbar.Add("Simulation posted successfully", Severity.Success);
+            ;
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to add a new Simulation");
+            Snackbar.Add("Impossible to add a new Simulation", Severity.Warning);
         }
     }
 
+    private async Task RowClicked(DataGridRowClickEventArgs<SimulationLight> args)
+    {
+        await EditSimulation(args.Item.MetaInfo.ID);
+    }
+
+    private async Task GetCurrentSimulationHeavy()
+    {
+        try
+        {
+            currentSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulationByIdAsync(currentLightSimulation.MetaInfo.ID);
+            if (currentSimulation != null)
+            {
+                results = new SimulationResults();
+
+                foreach (var result in currentSimulation.Results)
+                {
+                    results.Time.Add(result.Time);
+                    results.BitTorque.Add(result.TOB);
+                    results.SurfaceTorque.Add(result.TopDriveTorque);
+                    results.TopOfStringAxialVelocity.Add(result.TopOfStringAxialVelocity);
+                    results.SSI.Add(result.SSI);
+                    results.WOB.Add(result.WOB);
+                    results.BitDepth.Add(result.BitDepth);
+                    results.BitRPM.Add(result.BitRPM);
+                    results.BitAxialVelocity.Add(result.BitVelocity);
+                    results.HoleDepth.Add(result.HoleDepth);
+                    results.SurfaceRPM.Add(result.TopDriveRPM);
+                }
+
+                //await simulationResultsPanelref.Refresh();
+
+                isHiddenMainPanel = true;
+                autoUpdate = false;
+                updateResultGraphs = true;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            else
+            {
+                logger.LogWarning("Impossible to load Simulation");
+                Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load Simulation to be edited");
+        }
+    }
+
+    private async Task EditSimulation(Guid id)
+    {
+        try
+        {
+            currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(id);
+            if (currentLightSimulation != null)
+            {
+                isHiddenMainPanel = true;
+                autoUpdate = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            else
+            {
+                logger.LogWarning("Impossible to load Simulation");
+                Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load Simulation to be edited");
+        }
+    }
+
+    private async Task DeleteSimulation(Guid id)
+    {
+        try
+        {
+            await APIUtils.ClientSimulator4nDOF.DeleteSimulationByIdAsync(id);
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to delete Simulation");
+        }
+    }
 }

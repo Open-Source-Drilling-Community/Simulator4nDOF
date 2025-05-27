@@ -20,6 +20,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double TopOfStringPosition { get; set; }
         public double BitVelocity { get; set; }
         public double SSI { get; set; }
+        public double TopOfStringAxialVelocity { get; set; }
 
 
 
