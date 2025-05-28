@@ -833,41 +833,110 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
     public partial class Results
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("Time")]
-        public double Time { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("AvgCumulativeSSI")]
+        public double AvgCumulativeSSI { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("WOB")]
-        public double WOB { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TOB")]
-        public double TOB { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopDriveTorque")]
-        public double TopDriveTorque { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitRPM")]
-        public double BitRPM { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopDriveRPM")]
-        public double TopDriveRPM { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitDepth")]
-        public double BitDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HoleDepth")]
-        public double HoleDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringPosition")]
-        public double TopOfStringPosition { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitVelocity")]
-        public double BitVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SSI")]
-        public double SSI { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("BitAxialVelocity")]
+        public System.Collections.Generic.ICollection<double> BitAxialVelocity { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("TopOfStringAxialVelocity")]
-        public double TopOfStringAxialVelocity { get; set; }
+        public System.Collections.Generic.ICollection<double> TopOfStringAxialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WOB")]
+        public System.Collections.Generic.ICollection<double> WOB { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitRPM")]
+        public System.Collections.Generic.ICollection<double> BitRPM { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfaceRPM")]
+        public System.Collections.Generic.ICollection<double> SurfaceRPM { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitDepth")]
+        public System.Collections.Generic.ICollection<double> BitDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HoleDepth")]
+        public System.Collections.Generic.ICollection<double> HoleDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfaceTorque")]
+        public System.Collections.Generic.ICollection<double> SurfaceTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitTorque")]
+        public System.Collections.Generic.ICollection<double> BitTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAngularVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorAngularVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorWhirlVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorWhirlVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAxialVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorAxialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorRadialVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorRadialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorRadialAcc")]
+        public System.Collections.Generic.ICollection<double> SensorRadialAcc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTangentialAcc")]
+        public System.Collections.Generic.ICollection<double> SensorTangentialAcc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAxialAcc")]
+        public System.Collections.Generic.ICollection<double> SensorAxialAcc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentX")]
+        public System.Collections.Generic.ICollection<double> SensorBendingMomentX { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentY")]
+        public System.Collections.Generic.ICollection<double> SensorBendingMomentY { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Time")]
+        public System.Collections.Generic.ICollection<double> Time { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SSI")]
+        public System.Collections.Generic.ICollection<double> SSI { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
+        public System.Collections.Generic.ICollection<double> Depth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DepthAll")]
+        public System.Collections.Generic.ICollection<double> DepthAll { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SleevesDepth")]
+        public System.Collections.Generic.ICollection<double> SleevesDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SideForce")]
+        public System.Collections.Generic.ICollection<double> SideForce { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SideForceSoftString")]
+        public System.Collections.Generic.ICollection<double> SideForceSoftString { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PipeAngularVelocity")]
+        public System.Collections.Generic.ICollection<double> PipeAngularVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SleevesAngularVelocity")]
+        public System.Collections.Generic.ICollection<double> SleevesAngularVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RadialClearance")]
+        public System.Collections.Generic.ICollection<double> RadialClearance { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LateralDisplacement")]
+        public System.Collections.Generic.ICollection<double> LateralDisplacement { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LateralDisplacementAngle")]
+        public System.Collections.Generic.ICollection<double> LateralDisplacementAngle { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BendingMoment")]
+        public System.Collections.Generic.ICollection<double> BendingMoment { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Torque")]
+        public System.Collections.Generic.ICollection<double> Torque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Tension")]
+        public System.Collections.Generic.ICollection<double> Tension { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("AxialVelocityD")]
+        public System.Collections.Generic.ICollection<double> AxialVelocityD { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
@@ -942,7 +1011,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         public System.Collections.Generic.ICollection<SetPoints> SetPointsList { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("Results")]
-        public System.Collections.Generic.ICollection<Results> Results { get; set; }
+        public Results Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

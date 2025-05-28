@@ -1,4 +1,4 @@
-﻿@page "/Simulation"
+﻿@page "/Simulations"
 @using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationMain> logger
 @inject NavigationManager Navigation
@@ -16,42 +16,44 @@
     else
     {
         <div hidden="@isHiddenMainPanel">
-            <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true"  ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked">
-                <Columns>
-                    <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
-                    <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
-                    <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
-                    <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
+             <MudPaper Class="pa-4">
+                <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true"  ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
 
-                    <TemplateColumn Title="Progress" CellStyle="width: 10%;">
-                        <CellTemplate Context="context">
-                            @($"{context.Item.Progress:P2}")
-                        </CellTemplate>
-                     </TemplateColumn>
-                     <TemplateColumn Title="Termination State" CellStyle="width: 10%;">
-                        <CellTemplate Context="context">
-                            <MudChip Color="@GetTerminationColor(context.Item.TerminationState)">
-                                    @GetTerminationStateLabel(context.Item.TerminationState)
-                            </MudChip>
-                        </CellTemplate>
-                      </TemplateColumn>
+                        <TemplateColumn Title="Progress" CellStyle="width: 10%;">
+                            <CellTemplate Context="context">
+                                @($"{context.Item.Progress:P2}")
+                            </CellTemplate>
+                         </TemplateColumn>
+                         <TemplateColumn Title="Termination State" CellStyle="width: 10%;">
+                            <CellTemplate Context="context">
+                                <MudChip Color="@GetTerminationColor(context.Item.TerminationState)">
+                                        @GetTerminationStateLabel(context.Item.TerminationState)
+                                </MudChip>
+                            </CellTemplate>
+                          </TemplateColumn>
 
-                      <TemplateColumn Title="Actions" CellStyle="width: 5%;">
-                          <CellTemplate Context="context">
-                              <MudIconButton Icon="@Icons.Material.Outlined.Delete"
-                                             Size="Size.Small"
-                                             Color="Color.Error"
-                                             OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
-                          </CellTemplate>
-                      </TemplateColumn>
-                </Columns>
-                <PagerContent>
-                    <MudDataGridPager T="SimulationLight" />
-                </PagerContent>
-            </MudDataGrid>
+                          <TemplateColumn Title="Actions" CellStyle="width: 5%;">
+                              <CellTemplate Context="context">
+                                  <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                                 Size="Size.Small"
+                                                 Color="Color.Error"
+                                                 OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
+                              </CellTemplate>
+                          </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="SimulationLight" />
+                    </PagerContent>
+                </MudDataGrid>
 
-            <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
-            <br>
+                <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
+                <br>
+            </MudPaper>
         </div>
         <div hidden="@isHiddenEditSimulationPanel">
             <MudPaper Class="pa-4">
@@ -80,14 +82,6 @@
                             <br>
                             <MudGrid>
                             <MudItem xs="2">
-                                <MudNumericField 
-                                    HideSpinButtons="false" 
-                                    @bind-Value="newSimulation.InitialValues.BitDepth" 
-                                    Label="Bit depth" 
-                                    T="double" 
-                                    Variant="Variant.Text" 
-                                    Min="1" Max="10000" />
-                           
                                 <MudInputWithUnitAdornment 
                                     VariantType="Variant.Text" 
                                     QuantityLabel="Bit depth" 
@@ -97,10 +91,20 @@
                             </MudItem>
 
                                 <MudItem xs="2">
-                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.InitialValues.HoleDepth" Label="Hole depth" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Bit depth" 
+                                        QuantityName="Length" 
+                                        SIValue="newSimulation.InitialValues.HoleDepth" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.HoleDepth = (double)val; }" /> 
                                 </MudItem>
                                 <MudItem xs="2">
-                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.InitialValues.TopOfStringPosition" Label="Top of string position" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Bit depth" 
+                                        QuantityName="Length" 
+                                        SIValue="newSimulation.InitialValues.TopOfStringPosition" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.TopOfStringPosition = (double)val; }" /> 
                                 </MudItem>
                             </MudGrid>
                         }
@@ -312,7 +316,7 @@
 
     private void NewDefaultSimulation()
     {
-        MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
+        MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
         DateTimeOffset creationDate = DateTimeOffset.UtcNow;
         newSimulation = new()
         {
@@ -357,7 +361,7 @@
     {
         try
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             newSimulation.MetaInfo = metaInfo;
             newSimulation.CreationDate = creationDate;
@@ -381,7 +385,7 @@
 
         try
         {
-            Navigation.NavigateTo($"/Simulation/{id}");
+            Navigation.NavigateTo($"/Simulations/{id}");
         }
         catch (Exception ex)
         {

@@ -10,9 +10,11 @@ using OSDC.DotnetLibraries.General.Math;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -211,6 +213,68 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return null;
         }
 
+        private static readonly object _simulationLock = new();
+
+        private Model.Simulation DeepCopySimulation(Model.Simulation original)
+        {
+            return new Model.Simulation
+            {
+                CreationDate = original.CreationDate,
+                TerminationState = original.TerminationState,
+                CurrentTime = original.CurrentTime,
+                Progress = original.Progress,
+                ContextualData = original.ContextualData, // You might want to deep copy this too
+                InitialValues = original.InitialValues,   // Same here, deep copy if it's mutable
+                LastModificationDate = original.LastModificationDate,
+                Name = original.Name,
+                Description = original.Description,
+                MetaInfo = original.MetaInfo,             // Same here if needed
+
+                Results = new Model.Results
+                {
+                    AvgCumulativeSSI = original.Results.AvgCumulativeSSI,
+
+                    Time = original.Results.Time.ToList(),
+                    SurfaceRPM = original.Results.SurfaceRPM.ToList(),
+                    BitRPM = original.Results.BitRPM.ToList(),
+                    BitDepth = original.Results.BitDepth.ToList(),
+                    HoleDepth = original.Results.HoleDepth.ToList(),
+                    SurfaceTorque = original.Results.SurfaceTorque.ToList(),
+                    BitTorque = original.Results.BitTorque.ToList(),
+                    TopOfStringAxialVelocity = original.Results.TopOfStringAxialVelocity.ToList(),
+                    BitAxialVelocity = original.Results.BitAxialVelocity.ToList(),
+                    WOB = original.Results.WOB.ToList(),
+                    SSI = original.Results.SSI.ToList(),
+
+                    SensorAngularVelocity = original.Results.SensorAngularVelocity.ToList(),
+                    SensorWhirlVelocity = original.Results.SensorWhirlVelocity.ToList(),
+                    SensorAxialVelocity = original.Results.SensorAxialVelocity.ToList(),
+                    SensorRadialVelocity = original.Results.SensorRadialVelocity.ToList(),
+                    SensorRadialAcc = original.Results.SensorRadialAcc.ToList(),
+                    SensorTangentialAcc = original.Results.SensorTangentialAcc.ToList(),
+                    SensorAxialAcc = original.Results.SensorAxialAcc.ToList(),
+                    SensorBendingMomentX = original.Results.SensorBendingMomentX.ToList(),
+                    SensorBendingMomentY = original.Results.SensorBendingMomentY.ToList(),
+
+                    Depth = original.Results.Depth.ToList(),
+                    DepthAll = original.Results.DepthAll.ToList(),
+                    SleevesDepth = original.Results.SleevesDepth.ToList(),
+                    SideForce = original.Results.SideForce.ToList(),
+                    SideForceSoftString = original.Results.SideForceSoftString.ToList(),
+                    PipeAngularVelocity = original.Results.PipeAngularVelocity.ToList(),
+                    SleevesAngularVelocity = original.Results.SleevesAngularVelocity.ToList(),
+                    RadialClearance = original.Results.RadialClearance.ToList(),
+                    LateralDisplacement = original.Results.LateralDisplacement.ToList(),
+                    LateralDisplacementAngle = original.Results.LateralDisplacementAngle.ToList(),
+                    BendingMoment = original.Results.BendingMoment.ToList(),
+                    Torque = original.Results.Torque.ToList(),
+                    Tension = original.Results.Tension.ToList(),
+                    AxialVelocityD = original.Results.AxialVelocityD.ToList()
+                }
+            };
+        }
+
+
         /// <summary>
         /// Returns the Simulation identified by its Guid from the microservice database 
         /// </summary>
@@ -224,11 +288,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 RunningSimulations.TryGetValue(guid, out var runningSimulation);
                 if (runningSimulation != null)
                 {
-                    if (runningSimulation.TerminationState == 0)
+                    lock (_simulationLock) // Only lock long enough to copy
                     {
-                        FinalUpdateSimulatorById(guid, runningSimulation);
-                    }
+                        if (runningSimulation?.TerminationState == 0)
+                        {
+                            return DeepCopySimulation(runningSimulation);
+                        }
+                    } 
                 }
+                
 
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
@@ -822,8 +890,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
                 return false;
 
-            simulation.Results = new List<Results>();
+            simulation.Results = new Results();
             double totalDuration = simulation.SetPointsList.Sum(sp => sp.TimeDuration);
+
+            var newRestults = new Results();
 
             foreach (var setPoints in simulation.SetPointsList)
             {
@@ -835,22 +905,58 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     // Simulate one step (assumed to be a fast, synchronous calculation)
                     var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity);
 
-                    simulation.Results.Add(new Results
+                    double Mb_x = output.sensorMb_x;
+                    double Mb_y = output.sensorMb_y;
+                    newRestults.Time.Add(state.step * outerTimeStep);
+                    newRestults.SurfaceRPM.Add(output.omega_td);
+                    newRestults.BitRPM.Add(output.omega_b);
+                    newRestults.BitDepth.Add(state.BitDepth);
+                    newRestults.HoleDepth.Add(state.HoleDepth);
+                    newRestults.SurfaceTorque.Add(u.tau_Motor);
+                    newRestults.BitTorque.Add(output.tob);
+                    newRestults.TopOfStringAxialVelocity.Add(u.v0);
+                    newRestults.BitAxialVelocity.Add(output.vb);
+                    newRestults.WOB.Add(output.wob);
+                    newRestults.SSI.Add(output.SSI);
+                    newRestults.AvgCumulativeSSI = output.average_cumulative_ssi;
+                    newRestults.SensorAngularVelocity.Add(output.sensorAngularVelocity);
+                    newRestults.SensorWhirlVelocity.Add(output.sensorWhirlSpeed);
+                    newRestults.SensorAxialVelocity.Add(output.sensorAxialVelocity);
+                    newRestults.SensorRadialVelocity.Add(output.sensorRadialSpeed);
+                    newRestults.SensorRadialAcc.Add(output.sensorRadialAccelerationLocalFrame);
+                    newRestults.SensorTangentialAcc.Add(output.sensorTangentialAccelerationLocalFrame);
+                    newRestults.SensorAxialAcc.Add(output.sensorAxialAccelerationLocalFrame);
+                    newRestults.SensorBendingMomentX.Add(output.sensorBendingMomentX);
+                    newRestults.SensorBendingMomentY.Add(output.sensorBendingMomentY);
+
+                    // depth based values
+                    newRestults.SideForce = Utilities.ExtendVectorStart(0, output.F_N).ToList();
+                    newRestults.SideForceSoftString = Utilities.ExtendVectorStart(0, output.F_N_softstring).ToList();
+                    newRestults.Depth = output.depths.ToList();
+
+                    if (!config.UseMudMotor)
+                        newRestults.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, state.OL).Append(output.omega_b).ToList();
+                    else
                     {
-                        Time = state.step * outerTimeStep,
-                        BitDepth = state.BitDepth,
-                        BitVelocity = output.vb,
-                        WOB = output.wob,
-                        TOB = output.tob,
-                        BitRPM = output.omega_b,
-                        SSI = output.SSI,
-                        TopOfStringAxialVelocity = u.v0,
-                        TopDriveRPM = output.omega_td,
-                        HoleDepth = state.HoleDepth,
-                        TopOfStringPosition = state.TopOfStringPosition
-                    });
+                        var OLMinusLast = state.OL.SubVector(1, state.OL.Count - 1);
+                        newRestults.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, Utilities.ToVector(OLMinusLast.Append(output.omega_b).ToArray())).ToList();
+                    }
+                    newRestults.SleevesAngularVelocity = state.OS.ToList();
+                    var SleevesDepth = parameters.ds.iS.Select(index => parameters.lc.xL[(int)index]).ToArray();
+                    newRestults.SleevesDepth = SleevesDepth.ToList();
+                    newRestults.RadialClearance = parameters.w.rc.Append(0).ToList();
+                    newRestults.LateralDisplacement = output.rc.Append(0).ToList();
+                    newRestults.BendingMoment = output.Mb.Append(0).ToList();
+                    newRestults.DepthAll = parameters.dc.x.ToList();
+                    newRestults.Torque = output.torque.ToList();
+                    newRestults.Tension = output.tension.ToList();
+                    newRestults.AxialVelocityD = Utilities.ExtendVectorStart(u.v0, state.VL).ToList();
+                    newRestults.LateralDisplacementAngle = output.phi.Append(0).ToList();
+
+                    simulation.Results = newRestults;
 
                     simulation.Progress = (double)state.step * outerTimeStep / totalDuration;
+
 
                     // Avoid blocking UI or database thread with repeated updates; optionally batch this
                     await Task.Run(() => UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation));

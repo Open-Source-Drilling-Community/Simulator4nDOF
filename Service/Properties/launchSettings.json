@@ -12,7 +12,7 @@
     "Service": {
       "commandName": "Project",
       "launchBrowser": false,
-      "launchUrl": "Simulator4nDOF/api/Simulation",
+      "launchUrl": "Simulator4nDOF/api/Simulations",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -21,11 +21,11 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": false,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Simulator4nDOF/api/Simulation"
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Simulator4nDOF/api/Simulations"
     },
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchUrl": "Simulator4nDOF/api/Simulation",
+      "launchUrl": "Simulator4nDOF/api/Simulations",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

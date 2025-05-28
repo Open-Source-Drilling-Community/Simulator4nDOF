@@ -1,4 +1,4 @@
-﻿@page "/Simulation/{id:guid}"
+﻿@page "/Simulations/{id:guid}"
 @inject NavigationManager Navigation
 @using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationMain> logger
@@ -18,15 +18,29 @@
         @if (currentLightSimulation != null)
         {
             <MudPaper Class="pa-4">
-                <div style="display: flex; gap: 12px;">
-                    
-                    <MudButton OnClick="@GetCurrentSimulationHeavy" IconColor="Color.Primary" Size="Size.Medium" Style="border-radius: 8px;" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh">Get update heavy</MudButton>
-                    <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
-                </div>
-            </MudPaper>
-
-            <MudPaper Class="pa-4">
                 <MudGrid AlignItems="Center" GutterSize="16px">
+                    <!-- Buttons Row -->
+                    <MudItem xs="12">
+                        <div style="display: flex; gap: 12px;">
+                            <MudButton OnClick="@GetCurrentSimulationHeavy"
+                                       IconColor="Color.Primary"
+                                       Size="Size.Medium"
+                                       Style="border-radius: 8px;"
+                                       Variant="Variant.Filled"
+                                       StartIcon="@Icons.Material.Filled.Refresh">
+                                Get update heavy
+                            </MudButton>
+
+                            <MudButton OnClick="@CloseViewSimulationPanelOnClick"
+                                       Color="Color.Error"
+                                       Class="add-item-btn"
+                                       StartIcon="@Icons.Material.Filled.Close">
+                                Cancel
+                            </MudButton>
+                        </div>
+                    </MudItem>
+
+                    <!-- Simulation Details -->
                     <MudItem xs="2">
                         <MudText Typo="Typo.body1"><b>Name:</b></MudText>
                         <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Name</MudText>
@@ -55,13 +69,14 @@
                             @GetTerminationStateLabel(currentLightSimulation.TerminationState)
                         </MudChip>
                     </MudItem>
-                 </MudGrid>
-
-                @if (results != null)
-                {
-                    <SimulationResultsPanel @ref="resultsPanelRef" Results="@results"/>
-                }
+                </MudGrid>
             </MudPaper>
+
+            @if (results != null)
+            {
+                <SimulationResultsPanel @ref="resultsPanelRef" Results="@results" />
+            }
+
         }
     }
 </MudUnitAndReferenceChoiceTag>
@@ -81,7 +96,7 @@
     private SimulationLight? currentLightSimulation;
     private Simulation? currentSimulation;
     private List<object?>? inputDataList = new(); // container used to pass input data to the SimulationEdit razor component without specifying content types (required by µservice Template)
-    private SimulationResults results;
+    private Results results;
     private Simulation newSimulation = new();
 
     // private List<ToBeRemoved>? toBeRemovedList;
@@ -153,7 +168,7 @@
     private void CloseViewSimulationPanelOnClick()
     {
         autoUpdate = false;
-        Navigation.NavigateTo($"/Simulation/");
+        Navigation.NavigateTo($"/Simulations/");
     }
 
     private void OnExpandCollapseClickAddPanel()
@@ -180,7 +195,7 @@
                     logger.LogWarning("Impossible to load Simulation");
                     Snackbar.Add("Impossible to load Simulation", Severity.Warning);
                 }
-                await Task.Delay(5000);
+                await Task.Delay(1000);
                 if (!autoUpdate)
                 {
                     break;
@@ -201,7 +216,7 @@
 
     private void NewDefaultSimulation()
     {
-        MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
+        MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
         DateTimeOffset creationDate = DateTimeOffset.UtcNow;
         newSimulation = new()
         {
@@ -246,7 +261,7 @@
     {
         try
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulation/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             newSimulation.MetaInfo = metaInfo;
             newSimulation.CreationDate = creationDate;
@@ -276,22 +291,7 @@
             currentSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulationByIdAsync(currentLightSimulation.MetaInfo.ID);
             if (currentSimulation != null)
             {
-                results = new SimulationResults();
-
-                foreach (var result in currentSimulation.Results)
-                {
-                    results.Time.Add(result.Time);
-                    results.BitTorque.Add(result.TOB);
-                    results.SurfaceTorque.Add(result.TopDriveTorque);
-                    results.TopOfStringAxialVelocity.Add(result.TopOfStringAxialVelocity);
-                    results.SSI.Add(result.SSI);
-                    results.WOB.Add(result.WOB);
-                    results.BitDepth.Add(result.BitDepth);
-                    results.BitRPM.Add(result.BitRPM);
-                    results.BitAxialVelocity.Add(result.BitVelocity);
-                    results.HoleDepth.Add(result.HoleDepth);
-                    results.SurfaceRPM.Add(result.TopDriveRPM);
-                }
+                results = currentSimulation.Results;
 
                 resultsPanelRef?.Refresh();
                 await InvokeAsync(() => { StateHasChanged(); });
