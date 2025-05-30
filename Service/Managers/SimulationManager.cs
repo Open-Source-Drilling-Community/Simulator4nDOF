@@ -696,7 +696,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     if (success)
                     {
                         transaction.Commit();
-                        _logger.LogInformation("Updated the given Simulator successfully");
+                        //_logger.LogInformation("Updated the given Simulator successfully");
                         return true;
                     }
                     else
@@ -773,7 +773,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     if (success)
                     {
                         transaction.Commit();
-                        _logger.LogInformation("Updated the given Simulation successfully");
+                        _logger.LogInformation("Simulation finished. Updated successfully");
                         return true;
                     }
                     else

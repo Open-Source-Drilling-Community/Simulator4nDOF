@@ -114,7 +114,7 @@
         }
       }
     },
-    "/Simulation/{id}": {
+    "/Simulation/Heavy/{id}\"": {
       "get": {
         "tags": [
           "Simulation"
@@ -141,28 +141,6 @@
                 }
               }
             }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Simulation"
-        ],
-        "operationId": "DeleteSimulationById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         }
       }
@@ -209,6 +187,30 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/Simulation/{id}": {
+      "delete": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "DeleteSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

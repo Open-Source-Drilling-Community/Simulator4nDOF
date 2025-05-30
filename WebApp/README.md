@@ -18,9 +18,9 @@ https://app.digiwells.no/Simulator4nDOF/api/swagger (production server)
 
 The webapp itself is available at:
 
-https://dev.digiwells.no/Simulator4nDOF/webapp/Simulations
+https://dev.digiwells.no/Simulator4nDOF/webapp/Simulation
 
-https://app.digiwells.no/Simulator4nDOF/webapp/Simulations
+https://app.digiwells.no/Simulator4nDOF/webapp/Simulation
 
 # Funding
 

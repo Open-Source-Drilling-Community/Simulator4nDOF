@@ -1,4 +1,4 @@
-﻿@page "/Simulations/{id:guid}"
+﻿@page "/Simulation/{id:guid}"
 @inject NavigationManager Navigation
 @using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationMain> logger
@@ -24,17 +24,18 @@
                         <div style="display: flex; gap: 12px;">
                             <MudButton OnClick="@GetCurrentSimulationHeavy"
                                        IconColor="Color.Primary"
-                                       Size="Size.Medium"
-                                       Style="border-radius: 8px;"
-                                       Variant="Variant.Filled"
-                                       StartIcon="@Icons.Material.Filled.Refresh">
+                                        IconColor="Color.Primary"
+                                        Size="Size.Medium"
+                                        Style="border-radius: 8px;"
+                                        Variant="Variant.Filled"
+                                        StartIcon="@Icons.Material.Filled.Refresh">
                                 Get update heavy
                             </MudButton>
 
                             <MudButton OnClick="@CloseViewSimulationPanelOnClick"
-                                       Color="Color.Error"
-                                       Class="add-item-btn"
-                                       StartIcon="@Icons.Material.Filled.Close">
+                                        Color="Color.Error"
+                                        Class="add-item-btn"
+                                        StartIcon="@Icons.Material.Filled.Close">
                                 Cancel
                             </MudButton>
                         </div>
@@ -82,13 +83,10 @@
 </MudUnitAndReferenceChoiceTag>
 
 @code {
-
-
     [Parameter]
     public Guid  id { get; set; }
 
     private SimulationResultsPanel? resultsPanelRef;
-
 
     // Simulation related variables
     private List<SimulationLight> SimulationList = new();
@@ -168,7 +166,7 @@
     private void CloseViewSimulationPanelOnClick()
     {
         autoUpdate = false;
-        Navigation.NavigateTo($"/Simulations/");
+        Navigation.NavigateTo($"/Simulation/");
     }
 
     private void OnExpandCollapseClickAddPanel()

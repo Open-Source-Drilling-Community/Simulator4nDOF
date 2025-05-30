@@ -1,4 +1,4 @@
-﻿@page "/Simulations"
+﻿@page "/Simulation"
 @using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationMain> logger
 @inject NavigationManager Navigation
@@ -385,7 +385,7 @@
 
         try
         {
-            Navigation.NavigateTo($"/Simulations/{id}");
+            Navigation.NavigateTo($"/Simulation/{id}");
         }
         catch (Exception ex)
         {

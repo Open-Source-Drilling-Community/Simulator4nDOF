@@ -3,7 +3,7 @@
     "WebApp": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "Simulator4nDOF/webapp/Simulations",
+      "launchUrl": "Simulator4nDOF/webapp/Simulation",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -13,7 +13,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": false,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Simulator4nDOF/webapp/Simulations",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Simulator4nDOF/webapp/Simulation",
       "publishAllPorts": true,
       "useSSL": true
     },

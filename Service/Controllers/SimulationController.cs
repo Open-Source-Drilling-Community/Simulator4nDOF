@@ -90,7 +90,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// </summary>
         /// <param name="guid"></param>
         /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id</returns>
-        [HttpGet("{id}", Name = "GetSimulationById")]
+        [HttpGet("Heavy/{id}\"", Name = "GetSimulationById")]
         public ActionResult<Model.Simulation?> GetSimulationById(Guid id)
         {
             if (!id.Equals(Guid.Empty))
@@ -229,21 +229,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         [HttpDelete("{id}", Name = "DeleteSimulationById")]
         public ActionResult DeleteSimulationById(Guid id)
         {
-            if (_simulationManager.GetSimulationById(id) != null)
+            if (_simulationManager.DeleteSimulationById(id))
             {
-                if (_simulationManager.DeleteSimulationById(id))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError);
-                }
+                return Ok();
             }
             else
             {
-                _logger.LogWarning("The Simulation of given ID does not exist");
-                return NotFound();
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
