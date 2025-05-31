@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using NORCE.Drilling.Simulator;
@@ -223,53 +224,61 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 TerminationState = original.TerminationState,
                 CurrentTime = original.CurrentTime,
                 Progress = original.Progress,
-                ContextualData = original.ContextualData, // You might want to deep copy this too
-                InitialValues = original.InitialValues,   // Same here, deep copy if it's mutable
+                ContextualData = original.ContextualData, // Consider deep copy if needed
+                InitialValues = original.InitialValues,   // Consider deep copy if mutable
                 LastModificationDate = original.LastModificationDate,
                 Name = original.Name,
                 Description = original.Description,
-                MetaInfo = original.MetaInfo,             // Same here if needed
+                MetaInfo = original.MetaInfo,             // Consider deep copy if needed
 
                 Results = new Model.Results
                 {
-                    AvgCumulativeSSI = original.Results.AvgCumulativeSSI,
+                    Scalars = new Model.Scalars
+                    {
+                        AvgCumulativeSSI = original.Results.Scalars.AvgCumulativeSSI,
 
-                    Time = original.Results.Time.ToList(),
-                    SurfaceRPM = original.Results.SurfaceRPM.ToList(),
-                    BitRPM = original.Results.BitRPM.ToList(),
-                    BitDepth = original.Results.BitDepth.ToList(),
-                    HoleDepth = original.Results.HoleDepth.ToList(),
-                    SurfaceTorque = original.Results.SurfaceTorque.ToList(),
-                    BitTorque = original.Results.BitTorque.ToList(),
-                    TopOfStringAxialVelocity = original.Results.TopOfStringAxialVelocity.ToList(),
-                    BitAxialVelocity = original.Results.BitAxialVelocity.ToList(),
-                    WOB = original.Results.WOB.ToList(),
-                    SSI = original.Results.SSI.ToList(),
+                        Time = original.Results.Scalars.Time.ToList(),
+                        SurfaceRPM = original.Results.Scalars.SurfaceRPM.ToList(),
+                        BitRPM = original.Results.Scalars.BitRPM.ToList(),
+                        BitDepth = original.Results.Scalars.BitDepth.ToList(),
+                        HoleDepth = original.Results.Scalars.HoleDepth.ToList(),
+                        SurfaceTorque = original.Results.Scalars.SurfaceTorque.ToList(),
+                        BitTorque = original.Results.Scalars.BitTorque.ToList(),
+                        TopOfStringAxialVelocity = original.Results.Scalars.TopOfStringAxialVelocity.ToList(),
+                        BitAxialVelocity = original.Results.Scalars.BitAxialVelocity.ToList(),
+                        WOB = original.Results.Scalars.WOB.ToList(),
+                        SSI = original.Results.Scalars.SSI.ToList(),
+                        SensorAngularVelocity = original.Results.Scalars.SensorAngularVelocity.ToList(),
+                        SensorWhirlVelocity = original.Results.Scalars.SensorWhirlVelocity.ToList(),
+                        SensorAxialVelocity = original.Results.Scalars.SensorAxialVelocity.ToList(),
+                        SensorRadialVelocity = original.Results.Scalars.SensorRadialVelocity.ToList(),
+                        SensorRadialAcc = original.Results.Scalars.SensorRadialAcc.ToList(),
+                        SensorTangentialAcc = original.Results.Scalars.SensorTangentialAcc.ToList(),
+                        SensorAxialAcc = original.Results.Scalars.SensorAxialAcc.ToList(),
+                        SensorBendingMomentX = original.Results.Scalars.SensorBendingMomentX.ToList(),
+                        SensorBendingMomentY = original.Results.Scalars.SensorBendingMomentY.ToList(),
+                    },
 
-                    SensorAngularVelocity = original.Results.SensorAngularVelocity.ToList(),
-                    SensorWhirlVelocity = original.Results.SensorWhirlVelocity.ToList(),
-                    SensorAxialVelocity = original.Results.SensorAxialVelocity.ToList(),
-                    SensorRadialVelocity = original.Results.SensorRadialVelocity.ToList(),
-                    SensorRadialAcc = original.Results.SensorRadialAcc.ToList(),
-                    SensorTangentialAcc = original.Results.SensorTangentialAcc.ToList(),
-                    SensorAxialAcc = original.Results.SensorAxialAcc.ToList(),
-                    SensorBendingMomentX = original.Results.SensorBendingMomentX.ToList(),
-                    SensorBendingMomentY = original.Results.SensorBendingMomentY.ToList(),
-
-                    Depth = original.Results.Depth.ToList(),
-                    DepthAll = original.Results.DepthAll.ToList(),
-                    SleevesDepth = original.Results.SleevesDepth.ToList(),
-                    SideForce = original.Results.SideForce.ToList(),
-                    SideForceSoftString = original.Results.SideForceSoftString.ToList(),
-                    PipeAngularVelocity = original.Results.PipeAngularVelocity.ToList(),
-                    SleevesAngularVelocity = original.Results.SleevesAngularVelocity.ToList(),
-                    RadialClearance = original.Results.RadialClearance.ToList(),
-                    LateralDisplacement = original.Results.LateralDisplacement.ToList(),
-                    LateralDisplacementAngle = original.Results.LateralDisplacementAngle.ToList(),
-                    BendingMoment = original.Results.BendingMoment.ToList(),
-                    Torque = original.Results.Torque.ToList(),
-                    Tension = original.Results.Tension.ToList(),
-                    AxialVelocityD = original.Results.AxialVelocityD.ToList()
+                    Profiles = original.Results.Profiles
+                        .Select(p => new Model.Profiles
+                        {
+                            Time = p.Time,
+                            Depth = p.Depth.ToList(),
+                            DepthAll = p.DepthAll.ToList(),
+                            SleevesDepth = p.SleevesDepth.ToList(),
+                            SideForce = p.SideForce.ToList(),
+                            SideForceSoftString = p.SideForceSoftString.ToList(),
+                            PipeAngularVelocity = p.PipeAngularVelocity.ToList(),
+                            SleevesAngularVelocity = p.SleevesAngularVelocity.ToList(),
+                            RadialClearance = p.RadialClearance.ToList(),
+                            LateralDisplacement = p.LateralDisplacement.ToList(),
+                            LateralDisplacementAngle = p.LateralDisplacementAngle.ToList(),
+                            BendingMoment = p.BendingMoment.ToList(),
+                            Torque = p.Torque.ToList(),
+                            Tension = p.Tension.ToList(),
+                            AxialVelocityD = p.AxialVelocityD.ToList()
+                        })
+                        .ToList()
                 }
             };
         }
@@ -294,9 +303,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         {
                             return DeepCopySimulation(runningSimulation);
                         }
-                    } 
+                    }
                 }
-                
+
 
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
@@ -473,7 +482,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             lastModificationDate = lDate;
 
                         double progress = reader.GetDouble(5);
-                        
+
                         int terminationState = 0;
                         if (Int32.TryParse(reader.GetString(6), out int lterminationState))
                             terminationState = lterminationState;
@@ -650,7 +659,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             bool success = true;
             if (guid != Guid.Empty && simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID == guid)
             {
-                
+
                 //update SimulationTable
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
@@ -726,7 +735,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             bool success = true;
             if (guid != Guid.Empty && simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID == guid)
             {
-                
+
                 //update SimulationTable
                 var connection = _connectionManager.GetConnection();
                 if (connection != null)
@@ -878,6 +887,82 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
             return config;
         }
+
+        private Profiles CreateProfile(double time, Output output, State state, Parameters parameters, Input u,Configuration config)
+        {
+            return new Profiles
+            {
+                Time = time,
+                Depth = output.depths.ToList(),
+                DepthAll = parameters.dc.x.ToList(),
+                SleevesDepth = parameters.ds.iS.Select(index => parameters.lc.xL[(int)index]).ToList(),
+                SideForce = Utilities.ExtendVectorStart(0, output.F_N).ToList(),
+                SideForceSoftString = Utilities.ExtendVectorStart(0, output.F_N_softstring).ToList(),
+                PipeAngularVelocity = !config.UseMudMotor
+                    ? Utilities.ExtendVectorStart(state.Otd, state.OL).Append(output.omega_b).ToList()
+                    : Utilities.ExtendVectorStart(state.Otd,
+                        Utilities.ToVector(state.OL.SubVector(1, state.OL.Count - 1).Append(output.omega_b).ToArray())).ToList(),
+                SleevesAngularVelocity = state.OS.ToList(),
+                RadialClearance = parameters.w.rc.Append(0).ToList(),
+                LateralDisplacement = output.rc.Append(0).ToList(),
+                BendingMoment = output.Mb.Append(0).ToList(),
+                Torque = output.torque.ToList(),
+                Tension = output.tension.ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(u.v0, state.VL).ToList(),
+                LateralDisplacementAngle = output.phi.Append(0).ToList()
+            };
+        }
+
+        private void LogScalarValues(Scalars scalars, double time, Output output, State state, Input u)
+        {
+            // Ensure Scalars is initialized
+            scalars ??= new Scalars();
+
+            scalars.Time.Add(time);
+            scalars.SurfaceRPM.Add(output.omega_td);
+            scalars.BitRPM.Add(output.omega_b);
+            scalars.BitDepth.Add(state.BitDepth);
+            scalars.HoleDepth.Add(state.HoleDepth);
+            scalars.SurfaceTorque.Add(u.tau_Motor);
+            scalars.BitTorque.Add(output.tob);
+            scalars.TopOfStringAxialVelocity.Add(u.v0);
+            scalars.BitAxialVelocity.Add(output.vb);
+            scalars.WOB.Add(output.wob);
+            scalars.SSI.Add(output.SSI);
+            scalars.AvgCumulativeSSI = output.average_cumulative_ssi;
+            scalars.SensorAngularVelocity.Add(output.sensorAngularVelocity);
+            scalars.SensorWhirlVelocity.Add(output.sensorWhirlSpeed);
+            scalars.SensorAxialVelocity.Add(output.sensorAxialVelocity);
+            scalars.SensorRadialVelocity.Add(output.sensorRadialSpeed);
+            scalars.SensorRadialAcc.Add(output.sensorRadialAccelerationLocalFrame);
+            scalars.SensorTangentialAcc.Add(output.sensorTangentialAccelerationLocalFrame);
+            scalars.SensorAxialAcc.Add(output.sensorAxialAccelerationLocalFrame);
+            scalars.SensorBendingMomentX.Add(output.sensorBendingMomentX);
+            scalars.SensorBendingMomentY.Add(output.sensorBendingMomentY);
+        }
+
+
+        /// <summary>
+        /// Executes the main simulation loop for the given Simulation and Configuration.
+        /// 
+        /// Key Responsibilities:
+        /// - Initializes simulation state and solver.
+        /// - Iterates over SetPoints using fixed outer time steps.
+        /// - Logs scalar values (time-based) at defined intervals.
+        /// - Logs profile values (depth-based) with the following behavior:
+        ///     - A new profile is added on the first scalar log after a profile log.
+        ///     - That profile is then updated at each scalar log.
+        ///     - If the current time matches the profile logging interval, the last profile is finalized.
+        /// - Ensures time starts at 0 by adjusting currentTime = (state.step - 1) * outerTimeStep.
+        /// - Periodically updates progress and simulation result in the database.
+        /// - Finalizes the last scalar and profile entry if needed.
+        /// 
+        /// This structure ensures:
+        /// - Accurate logging according to defined intervals.
+        /// - Efficient updates during simulation (one DB write per interval).
+        /// - Real-time access to up-to-date scalar and profile results throughout the run.
+        /// </summary>
+
         public async Task<bool> CalculateAsync(Simulation simulation, Configuration config)
         {
             if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
@@ -885,20 +970,33 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
             var parameters = new Parameters(c: config);
             var solver = new Solver(parameters, in config);
-            var results = new Results();
-            double totalDuration = simulation.SetPointsList.Sum(sp => sp.TimeDuration);
+            simulation.Results = new Results { Scalars = new Scalars() };
 
-            // Setup logging interval
-            double logInterval = simulation.LoggingIntervalScalarValues;
+            double totalDuration = simulation.SetPointsList.Sum(sp => sp.TimeDuration);
             double outerTimeStep = config.TimeStep;
 
-            if (logInterval < outerTimeStep)
-                logInterval = outerTimeStep;
-            else
-                logInterval = Math.Round(logInterval / outerTimeStep) * outerTimeStep;
+            // Setup scalar logging interval
+            double scalarIntervalRaw = simulation.LoggingIntervalScalarValues;
+            double scalarInterval = (scalarIntervalRaw <= 0 || scalarIntervalRaw < outerTimeStep)
+                ? outerTimeStep
+                : Math.Round(scalarIntervalRaw / outerTimeStep) * outerTimeStep;
 
-            double nextLogTime = 0.0;
+            // Setup profile logging interval
+            double profileIntervalRaw = simulation.LoggingIntervalProfiles;
+            bool logProfilesAtFixedInterval = profileIntervalRaw >= outerTimeStep;
+            double profileInterval = logProfilesAtFixedInterval
+                ? Math.Round(profileIntervalRaw / outerTimeStep) * outerTimeStep
+                : double.MaxValue;
+
+            double nextScalarLogTime = 0.0;
+            double nextProfileLogTime = 0.0;
             double currentTime = 0.0;
+
+            State lastState = null;
+            Output lastOutput = null;
+            Input lastControl = null;
+
+            bool shouldAddNewProfile = true;
 
             foreach (var setPoints in simulation.SetPointsList)
             {
@@ -908,64 +1006,49 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 for (int i = 0; i < steps; i++)
                 {
                     var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity);
-                    currentTime = state.step * outerTimeStep;
+                    currentTime = (state.step - 1) * outerTimeStep; // start with 0 sec
+                    simulation.Progress = currentTime / totalDuration;
 
-                    // Log to DB only at intervals
-                    if (currentTime >= nextLogTime)
+                    lastState = state;
+                    lastOutput = output;
+                    lastControl = u;
+
+                    bool logScalar = currentTime >= nextScalarLogTime;
+                    bool logProfile = logProfilesAtFixedInterval && currentTime + 0.5 * outerTimeStep >= nextProfileLogTime;
+
+                    if (logScalar)
                     {
-                        // Append scalar outputs
-                        results.Time.Add(currentTime);
-                        results.SurfaceRPM.Add(output.omega_td);
-                        results.BitRPM.Add(output.omega_b);
-                        results.BitDepth.Add(state.BitDepth);
-                        results.HoleDepth.Add(state.HoleDepth);
-                        results.SurfaceTorque.Add(u.tau_Motor);
-                        results.BitTorque.Add(output.tob);
-                        results.TopOfStringAxialVelocity.Add(u.v0);
-                        results.BitAxialVelocity.Add(output.vb);
-                        results.WOB.Add(output.wob);
-                        results.SSI.Add(output.SSI);
-                        results.AvgCumulativeSSI = output.average_cumulative_ssi;
-                        results.SensorAngularVelocity.Add(output.sensorAngularVelocity);
-                        results.SensorWhirlVelocity.Add(output.sensorWhirlSpeed);
-                        results.SensorAxialVelocity.Add(output.sensorAxialVelocity);
-                        results.SensorRadialVelocity.Add(output.sensorRadialSpeed);
-                        results.SensorRadialAcc.Add(output.sensorRadialAccelerationLocalFrame);
-                        results.SensorTangentialAcc.Add(output.sensorTangentialAccelerationLocalFrame);
-                        results.SensorAxialAcc.Add(output.sensorAxialAccelerationLocalFrame);
-                        results.SensorBendingMomentX.Add(output.sensorBendingMomentX);
-                        results.SensorBendingMomentY.Add(output.sensorBendingMomentY);
+                        nextScalarLogTime += scalarInterval;
+                        LogScalarValues(simulation.Results.Scalars, currentTime, output, state, u);
 
-                        // Depth-based values (still overwrite per step for now)
-                        results.SideForce = Utilities.ExtendVectorStart(0, output.F_N).ToList();
-                        results.SideForceSoftString = Utilities.ExtendVectorStart(0, output.F_N_softstring).ToList();
-                        results.Depth = output.depths.ToList();
+                        double profileLogTime = Math.Floor(currentTime / profileInterval) * profileInterval;
 
-                        if (!config.UseMudMotor)
+                        if (logProfile)
                         {
-                            results.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, state.OL).Append(output.omega_b).ToList();
+                            // At a logging point, just finalize the profile by updating the last one
+                            if (simulation.Results.Profiles.Any())
+                            {
+                                simulation.Results.Profiles[^1] = CreateProfile(currentTime, output, state, parameters, u, config);
+                            }
+                            else
+                            {
+                                simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, u, config));
+                            }
+
+                            nextProfileLogTime += profileInterval;
+                            shouldAddNewProfile = true;
                         }
-                        else
+                        else if (shouldAddNewProfile)
                         {
-                            var OLMinusLast = state.OL.SubVector(1, state.OL.Count - 1);
-                            results.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, Utilities.ToVector(OLMinusLast.Append(output.omega_b).ToArray())).ToList();
+                            // First scalar log after a profile log: add a new profile
+                            simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, u, config));
+                            shouldAddNewProfile = false;
                         }
-
-                        results.SleevesAngularVelocity = state.OS.ToList();
-                        results.SleevesDepth = parameters.ds.iS.Select(index => parameters.lc.xL[(int)index]).ToList();
-                        results.RadialClearance = parameters.w.rc.Append(0).ToList();
-                        results.LateralDisplacement = output.rc.Append(0).ToList();
-                        results.BendingMoment = output.Mb.Append(0).ToList();
-                        results.DepthAll = parameters.dc.x.ToList();
-                        results.Torque = output.torque.ToList();
-                        results.Tension = output.tension.ToList();
-                        results.AxialVelocityD = Utilities.ExtendVectorStart(u.v0, state.VL).ToList();
-                        results.LateralDisplacementAngle = output.phi.Append(0).ToList();
-
-                        simulation.Results = results;
-                        simulation.Progress = currentTime / totalDuration;
-
-                        nextLogTime += logInterval;
+                        else if (simulation.Results.Profiles.Any())
+                        {
+                            // Continue updating the last profile
+                            simulation.Results.Profiles[^1] = CreateProfile(currentTime, output, state, parameters, u, config);
+                        }
 
                         await Task.Run(() =>
                         {
@@ -976,7 +1059,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 }
             }
 
-            // Final update (ensure last progress is saved)
+            // Final scalar log if not already up-to-date
+            if (lastOutput != null && lastState != null && lastControl != null)
+            {
+                LogScalarValues(simulation.Results.Scalars, totalDuration, lastOutput, lastState, lastControl);
+
+                if (simulation.Results.Profiles.Count == 0 || simulation.Results.Profiles[^1].Time < totalDuration)
+                {
+                    var finalProfileTime = logProfilesAtFixedInterval
+                        ? Math.Floor(totalDuration / profileInterval) * profileInterval
+                        : totalDuration;
+
+                    var finalProfile = CreateProfile(finalProfileTime, lastOutput, lastState, parameters, lastControl, config);
+                    if (shouldAddNewProfile)
+                        simulation.Results.Profiles.Add(finalProfile);
+                    else
+                        simulation.Results.Profiles[^1] = finalProfile;
+                }
+            }
+
             simulation.TerminationState = 1;
             simulation.Progress = 1;
 
@@ -986,8 +1087,5 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return true;
         }
 
-
-
     }
-
 }

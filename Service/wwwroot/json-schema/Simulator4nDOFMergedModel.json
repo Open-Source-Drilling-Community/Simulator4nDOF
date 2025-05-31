@@ -288,7 +288,147 @@
           }
         }
       },
+      "Profiles": {
+        "type": "object",
+        "properties": {
+          "Time": {
+            "type": "number",
+            "format": "double"
+          },
+          "Depth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "DepthAll": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SleevesDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SideForce": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SideForceSoftString": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "PipeAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SleevesAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "RadialClearance": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "LateralDisplacement": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "LateralDisplacementAngle": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BendingMoment": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Torque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Tension": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "AxialVelocityD": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        }
+      },
       "Results": {
+        "type": "object",
+        "properties": {
+          "AvgCumulativeSSI": {
+            "type": "number",
+            "format": "double"
+          },
+          "Scalars": {
+            "$ref": "#/components/schemas/Scalars"
+          },
+          "Profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Profiles"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Scalars": {
         "type": "object",
         "properties": {
           "AvgCumulativeSSI": {
@@ -448,118 +588,6 @@
             "nullable": true
           },
           "SSI": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Depth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "DepthAll": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SleevesDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SideForce": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SideForceSoftString": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "PipeAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SleevesAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "RadialClearance": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "LateralDisplacement": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "LateralDisplacementAngle": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BendingMoment": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Torque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Tension": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "AxialVelocityD": {
             "type": "array",
             "items": {
               "type": "number",
