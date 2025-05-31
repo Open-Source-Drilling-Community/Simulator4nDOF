@@ -3,8 +3,9 @@
 @using Plotly.Blazor.Traces.ScatterLib
 @inherits LayoutComponentBase
 
-<MudText Class="mt-4 mb-4" Typo="Typo.h6">Simulation results</MudText>
+@*<MudText Class="mt-4 mb-4" Typo="Typo.h6">Simulation results</MudText>*@
 <MudLayout>
+    @*
     <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
         <div Class="d-flex flex-grow-1 align-center pa-0 ma-0">
             <MudGrid Class="pa-0 ma-0 gap-3 " Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
@@ -21,6 +22,7 @@
             </MudGrid>
         </div>
     </MudPaper>
+    *@
 
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndex="@activeTab" ActivePanelIndexChanged="OnTabChanged">
 
@@ -106,7 +108,7 @@
     public Results Results { get; set; }
 
     [CascadingParameter]
-    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
 
     public MudTheme MyCustomTheme = new MudTheme
     {
@@ -351,29 +353,30 @@
     private void CreateLayouts()
     {
         // Depth-based layouts with marginDepth
-        _sideForceLayout = CreateLayout("Side force per element [" + Parent.GetUnitLabel("Force") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _angularVelocityLayout = CreateLayout("Angular Velocity [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _axialVelocityLayout = CreateLayout("Axial Velocity [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _lateralDispLayout = CreateLayout("Lateral Displacement [" + Parent.GetUnitLabel("DepthDrilling") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _lateralDispALayout = CreateLayout("Lateral Displacement [" + Parent.GetUnitLabel("DepthDrilling") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _bendingMomentLayout = CreateLayout("Bending Moment [" + Parent.GetUnitLabel("TorqueDrilling") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _tensionLayout = CreateLayout("Tension [" + Parent.GetUnitLabel("Force") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
-        _torqueDLayout = CreateLayout("Torque [" + Parent.GetUnitLabel("TorqueDrilling") + "]", "Depth (m)" + Parent.GetUnitLabel("DepthDrilling"), true, 0.0001, null, marginDepth);
+        _sideForceLayout = CreateLayout("Side force [" + Parent.GetUnitLabel("Force") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _angularVelocityLayout = CreateLayout("Angular velocity [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _axialVelocityLayout = CreateLayout("Axial velocity [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _lateralDispLayout = CreateLayout("Lateral displ. [" + Parent.GetUnitLabel("DepthDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _lateralDispALayout = CreateLayout("Lateral displ. [" + Parent.GetUnitLabel("DepthDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _bendingMomentLayout = CreateLayout("Bending moment [" + Parent.GetUnitLabel("TorqueDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _tensionLayout = CreateLayout("Tension [" + Parent.GetUnitLabel("Force") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _torqueDLayout = CreateLayout("Torque [" + Parent.GetUnitLabel("TorqueDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
 
         // Time-based layouts with default margin
         _rpmLayout = CreateLayout("Time", "RPM [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
         _depthLayout = CreateLayout("Time", "Measured depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", false);
-        _wobLayout = CreateLayout("Time", "WOB [" + Parent.GetUnitLabel("WeightOnBitDrilling") + "]", false);
+        _wobLayout = CreateLayout("Time", "WOB [" + Parent.GetUnitLabel("MassDrilling") + "]", false);
         _ssiLayout = CreateLayout("Time", "SSI [-]", false);
-        _velocityLayout = CreateLayout("Time", "Axial velocit [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", false);
+        _velocityLayout = CreateLayout("Time", "Axial velocity [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", false);
         _torqueLayout = CreateLayout("Time", "Torque [" + Parent.GetUnitLabel("TorqueDrilling") + "]", false);
 
-        _sensorVelocityALayout = CreateLayout("Time", "Velocities [RPM]" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling), false);
-        _sensorVelocityLayout = CreateLayout("Time", "Velocities [m/h]" + Parent.GetUnitLabel("RateOfPenetrationDrilling"), false);
-        _sensorRadialAccLayout = CreateLayout("Time", "Radial acceleration [g]" + Parent.GetUnitLabel("AccelerationDrilling"), false);
-        _sensorTangentialAccLayout = CreateLayout("Time", "Tangential acceleration [g]" + Parent.GetUnitLabel("AccelerationDrilling"), false);
-        _sensorAxialAccLayout = CreateLayout("Time", "Axial acceleration [g]" + Parent.GetUnitLabel("AccelerationDrilling"), false);
-        _sensorBendingMomentLayout = CreateLayout("Time", "BendingMoment [kN.m]" + Parent.GetUnitLabel("TorqueDrilling"), false);
+        _sensorVelocityALayout = CreateLayout("Time", "Velocities [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
+        _sensorVelocityLayout = CreateLayout("Time", "Velocities [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", false);
+        _sensorRadialAccLayout = CreateLayout("Time", "Radial acc. [" + Parent.GetUnitLabel("AccelerationDrilling") + "]", false);
+        _sensorTangentialAccLayout = CreateLayout("Time", "Tangential acc. [" + Parent.GetUnitLabel("AccelerationDrilling") + "]", false);
+        _sensorAxialAccLayout = CreateLayout("Time", "Axial acc. [" + Parent.GetUnitLabel("AccelerationDrilling") + "]", false);
+        _sensorBendingMomentLayout = CreateLayout("Time", "Bending moment [" + Parent.GetUnitLabel("TorqueDrilling") + "]", false);
+
     }
 
 
@@ -436,7 +439,7 @@
                     var label = Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
                     var testval2 = Parent.FromSI(1000, "Frequency");
                     var label2 = Parent.GetUnitLabel("Frequency");
-                    var testval3 = Parent.FromSI(1000, "WeightOnBitDrilling");
+                    var testval3 = Parent.FromSI(1000, "MassDrilling");
                     var label3 = Parent.GetUnitLabel("WeightOnBitDrilling");
 
                     if (activeTab == 0)
@@ -450,7 +453,7 @@
                             HoleDepth.Add(Parent.FromSI(Results.HoleDepth.ElementAt(i), "DepthDrilling"));
                             SurfaceTorque.Add(Parent.FromSI(Results.SurfaceTorque.ElementAt(i), "TorqueDrilling"));
                             BitTorque.Add(Parent.FromSI(Results.BitTorque.ElementAt(i), "TorqueDrilling"));
-                            WOB.Add(Parent.FromSI(Results.WOB.ElementAt(i) / 9.81, "WeightOnBitDrilling"));
+                            WOB.Add(Parent.FromSI(Results.WOB.ElementAt(i) / 9.81, "MassDrilling"));
                             TopOfStringAxialVelocity.Add(Parent.FromSI(Results.TopOfStringAxialVelocity.ElementAt(i), "RateOfPenetrationDrilling"));
                             BitAxialVelocity.Add(Parent.FromSI(Results.BitAxialVelocity.ElementAt(i), "RateOfPenetrationDrilling"));
 
@@ -514,7 +517,7 @@
 
                         _wobLayout.Annotations = new List<Annotation>
                         {
-                            CreateAnnotation(Parent.FromSI(Results.WOB.Last() / 9.81, "WeightOnBitDrilling"), time, $"{Parent.FromSI(Results.WOB.Last() / 9.81, "WeightOnBitDrilling"):F4}", -40, -30)
+                            CreateAnnotation(Parent.FromSI(Results.WOB.Last() / 9.81, "MassDrilling"), time, $"{Parent.FromSI(Results.WOB.Last() / 9.81, "MassDrilling"):F4}", -40, -30)
                         };
 
 

@@ -32,7 +32,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         private readonly ILogger<SimulationManager> _logger;
         private readonly object _lock = new();
         private readonly SqlConnectionManager _connectionManager;
-        private static readonly SemaphoreSlim _simulationSemaphore = new SemaphoreSlim(1); // limit to 1 concurrent simulations
+        private static readonly SemaphoreSlim _simulationSemaphore = new SemaphoreSlim(2); // limit to 1 concurrent simulations
 
 
         public static ConcurrentDictionary<Guid, Simulation> RunningSimulations = new();
@@ -848,9 +848,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         }
 
 
-
-        private double outerTimeStep;
-
         public Configuration Initialize(Simulation simulation)
         {
             var config = new Configuration()
@@ -878,22 +875,30 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 LengthBetweenLumpedElements = 30,
             };
 
-            outerTimeStep = config.TimeStep;
 
             return config;
         }
-
         public async Task<bool> CalculateAsync(Simulation simulation, Configuration config)
         {
-            var parameters = new Parameters(c: config);
-            Solver solver = new Solver(parameters, in config); ;
             if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
                 return false;
 
-            simulation.Results = new Results();
+            var parameters = new Parameters(c: config);
+            var solver = new Solver(parameters, in config);
+            var results = new Results();
             double totalDuration = simulation.SetPointsList.Sum(sp => sp.TimeDuration);
 
-            var newRestults = new Results();
+            // Setup logging interval
+            double logInterval = simulation.LoggingIntervalScalarValues;
+            double outerTimeStep = config.TimeStep;
+
+            if (logInterval < outerTimeStep)
+                logInterval = outerTimeStep;
+            else
+                logInterval = Math.Round(logInterval / outerTimeStep) * outerTimeStep;
+
+            double nextLogTime = 0.0;
+            double currentTime = 0.0;
 
             foreach (var setPoints in simulation.SetPointsList)
             {
@@ -902,71 +907,85 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
                 for (int i = 0; i < steps; i++)
                 {
-                    // Simulate one step (assumed to be a fast, synchronous calculation)
                     var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity);
+                    currentTime = state.step * outerTimeStep;
 
-                    double Mb_x = output.sensorMb_x;
-                    double Mb_y = output.sensorMb_y;
-                    newRestults.Time.Add(state.step * outerTimeStep);
-                    newRestults.SurfaceRPM.Add(output.omega_td);
-                    newRestults.BitRPM.Add(output.omega_b);
-                    newRestults.BitDepth.Add(state.BitDepth);
-                    newRestults.HoleDepth.Add(state.HoleDepth);
-                    newRestults.SurfaceTorque.Add(u.tau_Motor);
-                    newRestults.BitTorque.Add(output.tob);
-                    newRestults.TopOfStringAxialVelocity.Add(u.v0);
-                    newRestults.BitAxialVelocity.Add(output.vb);
-                    newRestults.WOB.Add(output.wob);
-                    newRestults.SSI.Add(output.SSI);
-                    newRestults.AvgCumulativeSSI = output.average_cumulative_ssi;
-                    newRestults.SensorAngularVelocity.Add(output.sensorAngularVelocity);
-                    newRestults.SensorWhirlVelocity.Add(output.sensorWhirlSpeed);
-                    newRestults.SensorAxialVelocity.Add(output.sensorAxialVelocity);
-                    newRestults.SensorRadialVelocity.Add(output.sensorRadialSpeed);
-                    newRestults.SensorRadialAcc.Add(output.sensorRadialAccelerationLocalFrame);
-                    newRestults.SensorTangentialAcc.Add(output.sensorTangentialAccelerationLocalFrame);
-                    newRestults.SensorAxialAcc.Add(output.sensorAxialAccelerationLocalFrame);
-                    newRestults.SensorBendingMomentX.Add(output.sensorBendingMomentX);
-                    newRestults.SensorBendingMomentY.Add(output.sensorBendingMomentY);
-
-                    // depth based values
-                    newRestults.SideForce = Utilities.ExtendVectorStart(0, output.F_N).ToList();
-                    newRestults.SideForceSoftString = Utilities.ExtendVectorStart(0, output.F_N_softstring).ToList();
-                    newRestults.Depth = output.depths.ToList();
-
-                    if (!config.UseMudMotor)
-                        newRestults.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, state.OL).Append(output.omega_b).ToList();
-                    else
+                    // Log to DB only at intervals
+                    if (currentTime >= nextLogTime)
                     {
-                        var OLMinusLast = state.OL.SubVector(1, state.OL.Count - 1);
-                        newRestults.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, Utilities.ToVector(OLMinusLast.Append(output.omega_b).ToArray())).ToList();
+                        // Append scalar outputs
+                        results.Time.Add(currentTime);
+                        results.SurfaceRPM.Add(output.omega_td);
+                        results.BitRPM.Add(output.omega_b);
+                        results.BitDepth.Add(state.BitDepth);
+                        results.HoleDepth.Add(state.HoleDepth);
+                        results.SurfaceTorque.Add(u.tau_Motor);
+                        results.BitTorque.Add(output.tob);
+                        results.TopOfStringAxialVelocity.Add(u.v0);
+                        results.BitAxialVelocity.Add(output.vb);
+                        results.WOB.Add(output.wob);
+                        results.SSI.Add(output.SSI);
+                        results.AvgCumulativeSSI = output.average_cumulative_ssi;
+                        results.SensorAngularVelocity.Add(output.sensorAngularVelocity);
+                        results.SensorWhirlVelocity.Add(output.sensorWhirlSpeed);
+                        results.SensorAxialVelocity.Add(output.sensorAxialVelocity);
+                        results.SensorRadialVelocity.Add(output.sensorRadialSpeed);
+                        results.SensorRadialAcc.Add(output.sensorRadialAccelerationLocalFrame);
+                        results.SensorTangentialAcc.Add(output.sensorTangentialAccelerationLocalFrame);
+                        results.SensorAxialAcc.Add(output.sensorAxialAccelerationLocalFrame);
+                        results.SensorBendingMomentX.Add(output.sensorBendingMomentX);
+                        results.SensorBendingMomentY.Add(output.sensorBendingMomentY);
+
+                        // Depth-based values (still overwrite per step for now)
+                        results.SideForce = Utilities.ExtendVectorStart(0, output.F_N).ToList();
+                        results.SideForceSoftString = Utilities.ExtendVectorStart(0, output.F_N_softstring).ToList();
+                        results.Depth = output.depths.ToList();
+
+                        if (!config.UseMudMotor)
+                        {
+                            results.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, state.OL).Append(output.omega_b).ToList();
+                        }
+                        else
+                        {
+                            var OLMinusLast = state.OL.SubVector(1, state.OL.Count - 1);
+                            results.PipeAngularVelocity = Utilities.ExtendVectorStart(state.Otd, Utilities.ToVector(OLMinusLast.Append(output.omega_b).ToArray())).ToList();
+                        }
+
+                        results.SleevesAngularVelocity = state.OS.ToList();
+                        results.SleevesDepth = parameters.ds.iS.Select(index => parameters.lc.xL[(int)index]).ToList();
+                        results.RadialClearance = parameters.w.rc.Append(0).ToList();
+                        results.LateralDisplacement = output.rc.Append(0).ToList();
+                        results.BendingMoment = output.Mb.Append(0).ToList();
+                        results.DepthAll = parameters.dc.x.ToList();
+                        results.Torque = output.torque.ToList();
+                        results.Tension = output.tension.ToList();
+                        results.AxialVelocityD = Utilities.ExtendVectorStart(u.v0, state.VL).ToList();
+                        results.LateralDisplacementAngle = output.phi.Append(0).ToList();
+
+                        simulation.Results = results;
+                        simulation.Progress = currentTime / totalDuration;
+
+                        nextLogTime += logInterval;
+
+                        await Task.Run(() =>
+                        {
+                            UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation);
+                            RunningSimulations[simulation.MetaInfo.ID] = simulation;
+                        });
                     }
-                    newRestults.SleevesAngularVelocity = state.OS.ToList();
-                    var SleevesDepth = parameters.ds.iS.Select(index => parameters.lc.xL[(int)index]).ToArray();
-                    newRestults.SleevesDepth = SleevesDepth.ToList();
-                    newRestults.RadialClearance = parameters.w.rc.Append(0).ToList();
-                    newRestults.LateralDisplacement = output.rc.Append(0).ToList();
-                    newRestults.BendingMoment = output.Mb.Append(0).ToList();
-                    newRestults.DepthAll = parameters.dc.x.ToList();
-                    newRestults.Torque = output.torque.ToList();
-                    newRestults.Tension = output.tension.ToList();
-                    newRestults.AxialVelocityD = Utilities.ExtendVectorStart(u.v0, state.VL).ToList();
-                    newRestults.LateralDisplacementAngle = output.phi.Append(0).ToList();
-
-                    simulation.Results = newRestults;
-
-                    simulation.Progress = (double)state.step * outerTimeStep / totalDuration;
-
-
-                    // Avoid blocking UI or database thread with repeated updates; optionally batch this
-                    await Task.Run(() => UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation));
-                    RunningSimulations[simulation.MetaInfo.ID] = simulation;
                 }
             }
 
+            // Final update (ensure last progress is saved)
             simulation.TerminationState = 1;
+            simulation.Progress = 1;
+
+            await Task.Run(() => UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation));
+            RunningSimulations[simulation.MetaInfo.ID] = simulation;
+
             return true;
         }
+
 
 
     }

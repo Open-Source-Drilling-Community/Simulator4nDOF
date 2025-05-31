@@ -600,6 +600,18 @@
             "type": "string",
             "nullable": true
           },
+          "VirtualSensorPositionFromBit": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalScalarValues": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalProfiles": {
+            "type": "number",
+            "format": "double"
+          },
           "CreationDate": {
             "type": "string",
             "format": "date-time",

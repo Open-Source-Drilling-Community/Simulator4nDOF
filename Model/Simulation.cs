@@ -15,6 +15,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public MetaInfo MetaInfo { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
+        public double VirtualSensorPositionFromBit { get; set; }
+        public double LoggingIntervalScalarValues { get; set; }
+        public double LoggingIntervalProfiles { get; set; }
         public DateTimeOffset? CreationDate { get; set; }
         public DateTimeOffset? LastModificationDate { get; set; }
         public ContextualData ContextualData { get; set; }

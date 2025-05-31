@@ -18,7 +18,7 @@
             <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F4")</CellTemplate>
             <EditTemplate Context="c">
                 <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                           QuantityName="RotationalFrequency"
+                                           QuantityName="AngularVelocityDrilling"
                                            SIValue="c.Item.SurfaceRPM"
                                            SIValueNullableChanged="val => { if (val != null) c.Item.SurfaceRPM = (double)val; }" />
             </EditTemplate>

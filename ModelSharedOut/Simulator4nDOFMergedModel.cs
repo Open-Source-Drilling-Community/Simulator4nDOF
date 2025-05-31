@@ -987,6 +987,15 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("Description")]
         public string Description { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("VirtualSensorPositionFromBit")]
+        public double VirtualSensorPositionFromBit { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalScalarValues")]
+        public double LoggingIntervalScalarValues { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalProfiles")]
+        public double LoggingIntervalProfiles { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
         public System.DateTimeOffset? CreationDate { get; set; }
 
