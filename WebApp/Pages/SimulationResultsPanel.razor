@@ -357,7 +357,7 @@
     {
         // Depth-based layouts
         _sideForceLayout = CreateLayout("Side force [" + Parent.GetUnitLabel("Force") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
-        _angularVelocityLayout = CreateLayout("Angular velocity [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
+        _angularVelocityLayout = CreateLayout("Angular velocity [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
         _axialVelocityLayout = CreateLayout("Axial velocity [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
         _lateralDispLayout = CreateLayout("Lateral displ. [" + Parent.GetUnitLabel("DepthDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
         _lateralDispALayout = CreateLayout("Lateral displ. [" + Parent.GetUnitLabel("DepthDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
@@ -366,7 +366,7 @@
         _torqueDLayout = CreateLayout("Torque [" + Parent.GetUnitLabel("TorqueDrilling") + "]", "Depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", true, 0.0001, null, marginDepth);
 
         // Time-based layouts 
-        _rpmLayout = CreateLayout("Time", "RPM [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
+        _rpmLayout = CreateLayout("Time", "RPM [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
         _depthLayout = CreateLayout("Time", "Measured depth [" + Parent.GetUnitLabel("DepthDrilling") + "]", false);
         _wobLayout = CreateLayout("Time", "WOB [" + Parent.GetUnitLabel("MassDrilling") + "]", false);
         _ssiLayout = CreateLayout("Time", "SSI [-]", false);
@@ -374,7 +374,7 @@
         _torqueLayout = CreateLayout("Time", "Torque [" + Parent.GetUnitLabel("TorqueDrilling") + "]", false);
 
         // Sensor-based layouts
-        _sensorVelocityALayout = CreateLayout("Time", "Velocities [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
+        _sensorVelocityALayout = CreateLayout("Time", "Velocities [" + Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
         _sensorVelocityLayout = CreateLayout("Time", "Velocities [" + Parent.GetUnitLabel("RateOfPenetrationDrilling") + "]", false);
         _sensorRadialAccLayout = CreateLayout("Time", "Radial acc. [" + Parent.GetUnitLabel("AccelerationDrilling") + "]", false);
         _sensorTangentialAccLayout = CreateLayout("Time", "Tangential acc. [" + Parent.GetUnitLabel("AccelerationDrilling") + "]", false);
@@ -405,7 +405,7 @@
         //var label = Parent.GetUnitLabel("ForceDrilling");
         return Task.Run(async () =>
         {
-            if (Results.Scalars.Time.Count > 0)
+            if (Results?.Scalars?.Time?.Count > 0)
             {
                 try
                 {
@@ -437,8 +437,8 @@
 
                     var test = Parent.UnitSystemName;
                     Parent.HttpHost = "https://dev.digiwells.no/";
-                    var testval = Parent.FromSI(1000, OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
-                    var label = Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
+                    var testval = Parent.FromSI(1000, OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
+                    var label = Parent.GetUnitLabel(OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
                     var testval2 = Parent.FromSI(1000, "Frequency");
                     var label2 = Parent.GetUnitLabel("Frequency");
                     var testval3 = Parent.FromSI(1000, "MassDrilling");
@@ -449,8 +449,8 @@
                         for (int i = startIndex; i < Results.Scalars.Time.Count; i++)
                         {
                             x.Add(Results.Scalars.Time.ElementAt(i));
-                            BitRPM.Add(Parent.FromSI(Results.Scalars.BitRPM.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
-                            SurfaceRPM.Add(Parent.FromSI(Results.Scalars.SurfaceRPM.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                            BitRPM.Add(Parent.FromSI(Results.Scalars.BitRPM.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                            SurfaceRPM.Add(Parent.FromSI(Results.Scalars.SurfaceRPM.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
                             BitDepth.Add(Parent.FromSI(Results.Scalars.BitDepth.ElementAt(i), "DepthDrilling"));
                             HoleDepth.Add(Parent.FromSI(Results.Scalars.HoleDepth.ElementAt(i), "DepthDrilling"));
                             SurfaceTorque.Add(Parent.FromSI(Results.Scalars.SurfaceTorque.ElementAt(i), "TorqueDrilling"));
@@ -497,14 +497,14 @@
                         _rpmLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.SurfaceRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
+                                Parent.FromSI(Results.Scalars.SurfaceRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
                                 time,
-                                $"Surface: {Parent.FromSI(Results.Scalars.SurfaceRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling):F4}",
+                                $"Surface: {Parent.FromSI(Results.Scalars.SurfaceRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling):F4}",
                                 -40, -30),
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.BitRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
+                                Parent.FromSI(Results.Scalars.BitRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
                                 time,
-                                $"Bit: {Parent.FromSI(Results.Scalars.BitRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling):F4}",
+                                $"Bit: {Parent.FromSI(Results.Scalars.BitRPM.Last(), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling):F4}",
                                 -40, 30)
                         };
 
@@ -588,7 +588,7 @@
 
                         for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
                         {
-                            PipeAngularVelocity.Add(Parent.FromSI(Results.Profiles.Last().PipeAngularVelocity.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                            PipeAngularVelocity.Add(Parent.FromSI(Results.Profiles.Last().PipeAngularVelocity.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
                         }
 
                         ((Plotly.Blazor.Traces.Scatter)_pipeAngularVelocityTrace).X = PipeAngularVelocity;
@@ -601,7 +601,7 @@
                         for (int i = 0; i < Results.Profiles.Last().SleevesDepth.Count; i++)
                         {
                             depthssleeves.Add(Parent.FromSI(Results.Profiles.Last().SleevesDepth.ElementAt(i), "DepthDrilling"));
-                            SleevesAngularVelocity.Add(Parent.FromSI(Results.Profiles.Last().SleevesAngularVelocity.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                            SleevesAngularVelocity.Add(Parent.FromSI(Results.Profiles.Last().SleevesAngularVelocity.ElementAt(i), OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
 
                         }
 
@@ -686,11 +686,11 @@
                             SensorRadialAcc.Add(Results.Scalars.SensorRadialAcc.ElementAt(i) / 9.81);
                             SensorAngularVelocity.Add(Parent.FromSI(
                                 Results.Scalars.SensorAngularVelocity.ElementAt(i),
-                                OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                                OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
 
                             SensorWhirlVelocity.Add(Parent.FromSI(
                                 Results.Scalars.SensorWhirlVelocity.ElementAt(i),
-                                OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                                OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
 
                             SensorAxialVelocity.Add(Parent.FromSI(Results.Scalars.SensorAxialVelocity.ElementAt(i), "RateOfPenetrationDrilling"));
                             SensorRadialVelocity.Add(Parent.FromSI(Results.Scalars.SensorRadialVelocity.ElementAt(i), "RateOfPenetrationDrilling"));
@@ -734,11 +734,11 @@
                         // Sensor Angular & Whirl Velocity
                         var latestSensorAngularVelocity = Parent.FromSI(
                             Results.Scalars.SensorAngularVelocity.Last(),
-                            OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
+                            OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
 
                         var latestSensorWhirlVelocity = Parent.FromSI(
                             Results.Scalars.SensorWhirlVelocity.Last(),
-                            OSDC.UnitConversion.Conversion.DrillingEngineering.PhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
+                            OSDC.UnitConversion.Conversion.DrillingEngineering.DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
 
                         _sensorVelocityALayout.Annotations = new List<Annotation>
                         {
