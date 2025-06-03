@@ -4,214 +4,208 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
-<div style="max-width: 200px;"> @* Limit tag area *@
-    <MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
-                                  HttpBasePath=@APIUtils.HostBasePathUnitConversion
-                                  HttpController="UnitSystem/"
-                                  UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
-                                  UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
-        <div style="position: relative;">
-            <div style="position: absolute; left: 0; right: 0; width: 100vw; padding: 0px;">
-                @if (SimulationList == null)
-                {
-                    <p><em>Loading...</em></p>
-                }
-                else
-                {
-                    <div hidden="@isHiddenMainPanel">
-                         <MudPaper Class="pa-4">
-                            <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true"  ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked">
-                                <Columns>
-                                    <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
-                                    <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
-                                    <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
-                                    <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
+<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
+                                HttpBasePath=@APIUtils.HostBasePathUnitConversion
+                                HttpController="UnitSystem/"
+                                UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                                UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    @if (SimulationList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div hidden="@isHiddenMainPanel">
+                <MudPaper Class="pa-4">
+                <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true"  ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
 
-                                    <TemplateColumn Title="Progress" CellStyle="width: 10%;">
-                                        <CellTemplate Context="context">
-                                            @($"{context.Item.Progress:P2}")
-                                        </CellTemplate>
-                                     </TemplateColumn>
-                                     <TemplateColumn Title="Termination State" CellStyle="width: 10%;">
-                                        <CellTemplate Context="context">
-                                            <MudChip Color="@GetTerminationColor(context.Item.TerminationState)">
-                                                    @GetTerminationStateLabel(context.Item.TerminationState)
-                                            </MudChip>
-                                        </CellTemplate>
-                                      </TemplateColumn>
+                        <TemplateColumn Title="Progress" CellStyle="width: 10%;">
+                            <CellTemplate Context="context">
+                                @($"{context.Item.Progress:P2}")
+                            </CellTemplate>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Termination State" CellStyle="width: 10%;">
+                            <CellTemplate Context="context">
+                                <MudChip Color="@GetTerminationColor(context.Item.TerminationState)">
+                                        @GetTerminationStateLabel(context.Item.TerminationState)
+                                </MudChip>
+                            </CellTemplate>
+                            </TemplateColumn>
 
-                                      <TemplateColumn Title="Actions" CellStyle="width: 5%;">
-                                          <CellTemplate Context="context">
-                                              <MudIconButton Icon="@Icons.Material.Outlined.Delete"
-                                                             Size="Size.Small"
-                                                             Color="Color.Error"
-                                                             OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
-                                          </CellTemplate>
-                                      </TemplateColumn>
-                                </Columns>
-                                <PagerContent>
-                                    <MudDataGridPager T="SimulationLight" />
-                                </PagerContent>
-                            </MudDataGrid>
+                            <TemplateColumn Title="Actions" CellStyle="width: 5%;">
+                                <CellTemplate Context="context">
+                                    <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                                    Size="Size.Small"
+                                                    Color="Color.Error"
+                                                    OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
+                                </CellTemplate>
+                            </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="SimulationLight" />
+                    </PagerContent>
+                </MudDataGrid>
 
-                            <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
-                            <br>
-                        </MudPaper>
-                    </div>
-                    <div hidden="@isHiddenEditSimulationPanel">
-                        <MudPaper Class="pa-4">
-                            <MudCollapse Expanded=true>
-                                <MudText Typo="Typo.h5">Edit new simulation </MudText>
-                                <MudToolBar>
-                                    <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
-                                    <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
-                                </MudToolBar>
-                                <MudPaper Class="pa-4">
-                    
-                                    <MudGrid> 
-                                        <MudItem xs="2">
-                                            <MudTextField @bind-Value=newSimulation.Name Label="Name" Variant="Variant.Text"></MudTextField>
-                                        </MudItem>
-                                        <MudItem xs="2">
-                                            <MudTextField @bind-Value=newSimulation.Description Label="Description" Variant="Variant.Text"></MudTextField>
-                                        </MudItem>
-                                    </MudGrid>
-                    
-                                    @if (newSimulation?.InitialValues != null)
-                                    {
-                                        <br>
-                                        <br>
-                                        <MudText Typo="Typo.h6">Initial values </MudText>
-                                        <br>
-                                        <MudGrid>
-                                            <MudItem xs="2">
-                                                <MudInputWithUnitAdornment 
-                                                    VariantType="Variant.Text" 
-                                                    QuantityLabel="Bit depth" 
-                                                    QuantityName="Length" 
-                                                    SIValue="newSimulation.InitialValues.BitDepth" 
-                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.BitDepth = (double)val; }" /> 
-                                            </MudItem>
-
-                                            <MudItem xs="2">
-                                                <MudInputWithUnitAdornment 
-                                                    VariantType="Variant.Text" 
-                                                    QuantityLabel="Hole depth" 
-                                                    QuantityName="Length" 
-                                                    SIValue="newSimulation.InitialValues.HoleDepth" 
-                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.HoleDepth = (double)val; }" /> 
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudInputWithUnitAdornment 
-                                                    VariantType="Variant.Text" 
-                                                    QuantityLabel="Top of string position" 
-                                                    QuantityName="Length" 
-                                                    SIValue="newSimulation.InitialValues.TopOfStringPosition" 
-                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.TopOfStringPosition = (double)val; }" /> 
-                                            </MudItem>
-                                        </MudGrid>
-                                    }
-
-                                    <br>
-                                    <br>
-                                    <MudText Typo="Typo.h6">Configuration </MudText>
-                                    <br>
-                                    <MudGrid>
-                                            <MudItem xs="2">
-                                                <MudInputWithUnitAdornment 
-                                                    VariantType="Variant.Text" 
-                                                    QuantityLabel="Virtual sensor position from bit" 
-                                                    QuantityName="Length" 
-                                                    SIValue="newSimulation.VirtualSensorPositionFromBit" 
-                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.VirtualSensorPositionFromBit = (double)val; }" /> 
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudInputWithUnitAdornment 
-                                                    VariantType="Variant.Text" 
-                                                    QuantityLabel="Logging interval scalar values" 
-                                                    QuantityName="Time" 
-                                                    SIValue="newSimulation.LoggingIntervalScalarValues" 
-                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.LoggingIntervalScalarValues = (double)val; }" /> 
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudInputWithUnitAdornment 
-                                                    VariantType="Variant.Text" 
-                                                    QuantityLabel="Logging interval profiles" 
-                                                    QuantityName="Time" 
-                                                    SIValue="newSimulation.LoggingIntervalProfiles" 
-                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.LoggingIntervalProfiles = (double)val; }" /> 
-                                            </MudItem>
-                                        </MudGrid>
-
-                                    @if (newSimulation?.ContextualData != null)
-                                    {
-                                        <br>
-                                        <br>
-                                        <MudText Typo="Typo.h6">Contextual data </MudText>
-                                        <br>
-                                        <MudGrid>
-                                            <MudItem xs="12">
-                                                <MudTextField @bind-Value="newSimulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringFile" Label="Drillstring file name" Variant="Variant.Text"></MudTextField>
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField @bind-Value="newSimulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>
-                                            </MudItem>
-                                            <MudItem xs="12">
-                                                <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
-                                            </MudItem>
-                                        </MudGrid>
-                                        <br> 
-                                        <MudGrid>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.FluidDensity" Label="Fluid density" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.CasingShoeDepth" Label="Casing shoe depth" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.LinerShoeDepth" Label="Liner shoe depth" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.CasingID" Label="Casing ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.LinerID" Label="Liner ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.RiserID" Label=" Riser ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.WellheadDepth" Label=" Wellhead depth" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
-                                            </MudItem>
-                                            <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.BitRadius" Label=" Bit radius" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
-                                            </MudItem>
-                                        </MudGrid>
-                                    }
-                                    @if (newSimulation?.SetPointsList != null)
-                                    {
-                                        <br>
-                                        <br>
-                                        <MudText Typo="Typo.h6">Set points </MudText>
-                                        <br>
-                        
-                                        <SetPointsEditor NewSimulation="@newSimulation"/>
-
-                                        <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Update">Add set points </MudButton>
-                                        <br>
-                                    }
-                                </MudPaper>
-                            </MudCollapse>  
-                    </MudPaper>
-                    </div>
-                }
-            </div>
+                <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
+                <br>
+            </MudPaper>
         </div>
-    </MudUnitAndReferenceChoiceTag>
-</div>
+        <div hidden="@isHiddenEditSimulationPanel">
+            <MudPaper Class="pa-4">
+                <MudCollapse Expanded=true>
+                    <MudText Typo="Typo.h5">Edit new simulation </MudText>
+                    <MudToolBar>
+                        <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
+                        <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
+                    </MudToolBar>
+                    <MudPaper Class="pa-4">
+                    
+                        <MudGrid> 
+                            <MudItem xs="2">
+                                <MudTextField @bind-Value=newSimulation.Name Label="Name" Variant="Variant.Text"></MudTextField>
+                            </MudItem>
+                            <MudItem xs="2">
+                                <MudTextField @bind-Value=newSimulation.Description Label="Description" Variant="Variant.Text"></MudTextField>
+                            </MudItem>
+                        </MudGrid>
+                    
+                        @if (newSimulation?.InitialValues != null)
+                        {
+                            <br>
+                            <br>
+                            <MudText Typo="Typo.h6">Initial values </MudText>
+                            <br>
+                            <MudGrid>
+                                <MudItem xs="2">
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Bit depth" 
+                                        QuantityName="Length" 
+                                        SIValue="newSimulation.InitialValues.BitDepth" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.BitDepth = (double)val; }" /> 
+                                </MudItem>
+
+                                <MudItem xs="2">
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Hole depth" 
+                                        QuantityName="Length" 
+                                        SIValue="newSimulation.InitialValues.HoleDepth" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.HoleDepth = (double)val; }" /> 
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Top of string position" 
+                                        QuantityName="Length" 
+                                        SIValue="newSimulation.InitialValues.TopOfStringPosition" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.InitialValues.TopOfStringPosition = (double)val; }" /> 
+                                </MudItem>
+                            </MudGrid>
+                        }
+
+                        <br>
+                        <br>
+                        <MudText Typo="Typo.h6">Configuration </MudText>
+                        <br>
+                        <MudGrid>
+                                <MudItem xs="2">
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Virtual sensor position from bit" 
+                                        QuantityName="Length" 
+                                        SIValue="newSimulation.VirtualSensorPositionFromBit" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.VirtualSensorPositionFromBit = (double)val; }" /> 
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Logging interval scalar values" 
+                                        QuantityName="Time" 
+                                        SIValue="newSimulation.LoggingIntervalScalarValues" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.LoggingIntervalScalarValues = (double)val; }" /> 
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudInputWithUnitAdornment 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Logging interval profiles" 
+                                        QuantityName="Time" 
+                                        SIValue="newSimulation.LoggingIntervalProfiles" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.LoggingIntervalProfiles = (double)val; }" /> 
+                                </MudItem>
+                            </MudGrid>
+
+                        @if (newSimulation?.ContextualData != null)
+                        {
+                            <br>
+                            <br>
+                            <MudText Typo="Typo.h6">Contextual data </MudText>
+                            <br>
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="newSimulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringFile" Label="Drillstring file name" Variant="Variant.Text"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="newSimulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
+                                </MudItem>
+                            </MudGrid>
+                            <br> 
+                            <MudGrid>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.FluidDensity" Label="Fluid density" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.CasingShoeDepth" Label="Casing shoe depth" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.LinerShoeDepth" Label="Liner shoe depth" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.CasingID" Label="Casing ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.LinerID" Label="Liner ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.RiserID" Label=" Riser ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.WellheadDepth" Label=" Wellhead depth" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                </MudItem>
+                                <MudItem xs="2">
+                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.BitRadius" Label=" Bit radius" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                </MudItem>
+                            </MudGrid>
+                        }
+                        @if (newSimulation?.SetPointsList != null)
+                        {
+                            <br>
+                            <br>
+                            <MudText Typo="Typo.h6">Set points </MudText>
+                            <br>
+                        
+                            <SetPointsEditor NewSimulation="@newSimulation"/>
+
+                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Update">Add set points </MudButton>
+                            <br>
+                        }
+                    </MudPaper>
+                </MudCollapse>  
+        </MudPaper>
+        </div>
+    }
+</MudUnitAndReferenceChoiceTag>
 @code {
 
     // Simulation related variables
@@ -425,7 +419,7 @@
 
         try
         {
-            Navigation.NavigateTo($"/Simulation/{id}");
+            Navigation.NavigateTo($"/Simulator4nDOF/webapp/Simulation/{id}");
         }
         catch (Exception ex)
         {

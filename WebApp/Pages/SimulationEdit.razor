@@ -4,91 +4,80 @@
 @inject ILogger<SimulationMain> logger
 @inject ISnackbar Snackbar
 
-<div style="max-width: 200px;"> @* Limit tag area *@
-    <MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
-                                  HttpBasePath=@APIUtils.HostBasePathUnitConversion
-                                  HttpController="UnitSystem/"
-                                  UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
-                                  UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
-       
-        <div style="position: relative;">
-            <div style="position: absolute; left: 0; right: 0; width: 100vw; padding: 0px;">
-                @if (SimulationList == null)
-                {
-                    <p><em>Loading...</em></p>
-                }
-                else
-                {
-                    @if (currentLightSimulation != null)
-                    {
-                        <MudPaper Class="pa-4">
-                            <MudGrid AlignItems="Center" GutterSize="16px">
-                                <!-- Buttons Row -->
-                                <MudItem xs="12">
-                                    <div style="display: flex; gap: 12px;">
-                                        <MudButton OnClick="@GetCurrentSimulationHeavy"
-                                                    IconColor="Color.Primary"
-                                                    Size="Size.Medium"
-                                                    Style="border-radius: 8px;"
-                                                    Variant="Variant.Filled"
-                                                    StartIcon="@Icons.Material.Filled.Refresh">
-                                            Get update heavy
-                                        </MudButton>
+<MudUnitAndReferenceChoiceTag HttpHost="@APIUtils.HostNameUnitConversion"
+                              HttpBasePath="@APIUtils.HostBasePathUnitConversion"
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@UpdateUnitSystemName">
 
-                                        <MudButton OnClick="@CloseViewSimulationPanelOnClick"
-                                                    Color="Color.Error"
-                                                    Class="add-item-btn"
-                                                    StartIcon="@Icons.Material.Filled.Close">
-                                            Cancel
-                                        </MudButton>
-                                    </div>
-                                </MudItem>
+    <!-- Full-width container for simulation content -->
+    @if (SimulationList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (currentLightSimulation != null)
+    {
+        <MudPaper Class="pa-4">
+            <MudGrid AlignItems="Center" GutterSize="16px">
+                <!-- Buttons Row -->
+                <MudItem xs="12">
+                    <div style="display: flex; gap: 12px;">
+                        <MudButton OnClick="@GetCurrentSimulationHeavy"
+                                    IconColor="Color.Primary"
+                                    Size="Size.Medium"
+                                    Style="border-radius: 8px;"
+                                    Variant="Variant.Filled"
+                                    StartIcon="@Icons.Material.Filled.Refresh">
+                            Get update heavy
+                        </MudButton>
 
-                                <!-- Simulation Details -->
-                                <MudItem xs="2">
-                                    <MudText Typo="Typo.body1"><b>Name:</b></MudText>
-                                    <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Name</MudText>
-                                </MudItem>
+                        <MudButton OnClick="@CloseViewSimulationPanelOnClick"
+                                    Color="Color.Error"
+                                    Class="add-item-btn"
+                                    StartIcon="@Icons.Material.Filled.Close">
+                            Cancel
+                        </MudButton>
+                    </div>
+                </MudItem>
 
-                                <MudItem xs="3">
-                                    <MudText Typo="Typo.body1"><b>Description:</b></MudText>
-                                    <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Description</MudText>
-                                </MudItem>
+                <!-- Simulation Details -->
+                <MudItem xs="2">
+                    <MudText Typo="Typo.body1"><b>Name:</b></MudText>
+                    <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Name</MudText>
+                </MudItem>
 
-                                <MudItem xs="2">
-                                    <MudText Typo="Typo.body1"><b>ID:</b></MudText>
-                                    <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.MetaInfo.ID</MudText>
-                                </MudItem>
+                <MudItem xs="3">
+                    <MudText Typo="Typo.body1"><b>Description:</b></MudText>
+                    <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.Description</MudText>
+                </MudItem>
 
-                                <MudItem xs="2">
-                                    <MudText Typo="Typo.body1"><b>Progress:</b></MudText>
-                                    <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)" Class="ml-0">
-                                        @($"{currentLightSimulation.Progress:P2}")
-                                    </MudChip>
-                                </MudItem>
+                <MudItem xs="2">
+                    <MudText Typo="Typo.body1"><b>ID:</b></MudText>
+                    <MudText Typo="Typo.body1" Class="ml-0 mt-2">@currentLightSimulation.MetaInfo.ID</MudText>
+                </MudItem>
 
-                                <MudItem xs="3">
-                                    <MudText Typo="Typo.body1"><b>Termination State:</b></MudText>
-                                    <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)" Class="ml-0">
-                                        @GetTerminationStateLabel(currentLightSimulation.TerminationState)
-                                    </MudChip>
-                                </MudItem>
-                            </MudGrid>
-                        </MudPaper>
-                    
+                <MudItem xs="2">
+                    <MudText Typo="Typo.body1"><b>Progress:</b></MudText>
+                    <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)" Class="ml-0">
+                        @($"{currentLightSimulation.Progress:P2}")
+                    </MudChip>
+                </MudItem>
 
-                        @if (results != null)
-                        {
-                            <SimulationResultsPanel @ref="resultsPanelRef" Results="@results" />
-                        }
-                    
+                <MudItem xs="3">
+                    <MudText Typo="Typo.body1"><b>Termination State:</b></MudText>
+                    <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)" Class="ml-0">
+                        @GetTerminationStateLabel(currentLightSimulation.TerminationState)
+                    </MudChip>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
 
-                    }
-                }
-            </div>
-         </div>
-    </MudUnitAndReferenceChoiceTag>
-</div>
+        @if (results != null)
+        {
+            <SimulationResultsPanel @ref="resultsPanelRef" Results="@results" />
+        }
+    }
+</MudUnitAndReferenceChoiceTag>
 
 @code {
     [Parameter]
@@ -113,6 +102,16 @@
 
 
     bool updateResultGraphs = false;
+
+    public void UpdateUnitSystemName(string val)
+    {
+        DataUtils.UnitAndReferenceParameters.UnitSystemName = (string)val;
+
+        if (results != null && resultsPanelRef != null)
+        {
+            resultsPanelRef.Refresh();
+        }
+    }
 
     private Color GetProgressColor(double? progress)
     {
@@ -174,7 +173,7 @@
     private void CloseViewSimulationPanelOnClick()
     {
         autoUpdate = false;
-        Navigation.NavigateTo($"/Simulation/");
+        Navigation.NavigateTo($"/Simulator4nDOF/webapp/Simulation/");
     }
 
     private void OnExpandCollapseClickAddPanel()
