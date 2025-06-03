@@ -166,28 +166,84 @@
                                         <br> 
                                         <MudGrid>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.FluidDensity" Label="Fluid density" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel= "Drilling Fluid Density" 
+                                                    QuantityName="MassDensityDrilling" 
+                                                    MinValue=1
+                                                    MaxValue=2500
+                                                    SIValue="newSimulation.ContextualData.FluidDensity" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.FluidDensity = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.CasingShoeDepth" Label="Casing shoe depth" T="double" Variant="Variant.Text" Min="1" Max="10000"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Casing Shoe Depth" 
+                                                    QuantityName="DepthDrilling"
+                                                                  MinValue=-1000
+                                                    MaxValue=25000
+                                                    SIValue="newSimulation.ContextualData.CasingShoeDepth" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.CasingShoeDepth = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.LinerShoeDepth" Label="Liner shoe depth" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Liner shoe Depth" 
+                                                    QuantityName="DepthDrilling"
+                                                    MinValue=-1000
+                                                    MaxValue=25000
+                                                    SIValue="newSimulation.ContextualData.LinerShoeDepth" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.LinerShoeDepth = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.CasingID" Label="Casing ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Casing ID" 
+                                                    QuantityName="DiameterPipeDrilling" 
+                                                    MinValue=0
+                                                    MaxValue=1.016
+                                                    SIValue="newSimulation.ContextualData.CasingID" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.CasingID = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.LinerID" Label="Liner ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Liner ID" 
+                                                    QuantityName="DiameterPipeDrilling" 
+                                                    MinValue=0
+                                                    MaxValue=1.016
+                                                    SIValue="newSimulation.ContextualData.LinerID" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.LinerID = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.RiserID" Label=" Riser ID" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Riser ID" 
+                                                    QuantityName="DiameterPipeDrilling" 
+                                                    MinValue=0
+                                                    MaxValue=1.016
+                                                    SIValue="newSimulation.ContextualData.RiserID" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.RiserID = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.WellheadDepth" Label=" Wellhead depth" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Well-head Depth" 
+                                                    QuantityName="DepthDrilling"
+                                                                  MinValue=-1000
+                                                    MaxValue=25000
+                                                    SIValue="newSimulation.ContextualData.WellheadDepth" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.WellheadDepth = val.Value; }" />
                                             </MudItem>
                                             <MudItem xs="2">
-                                                <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.ContextualData.BitRadius" Label=" Bit radius" T="double" Variant="Variant.Text" Min="1" Max="40"> </MudNumericField>
+                                                <MudInputWithUnit 
+                                                    VariantType="Variant.Text" 
+                                                    QuantityLabel="Bit radius" 
+                                                    QuantityName="DiameterPipeDrilling" 
+                                                    MinValue=0
+                                                    MaxValue=0.508
+                                                    SIValue="newSimulation.ContextualData.BitRadius" 
+                                                    SIValueNullableChanged="val => { if (val != null) newSimulation.ContextualData.BitRadius = val.Value; }" />
                                             </MudItem>
                                         </MudGrid>
                                     }

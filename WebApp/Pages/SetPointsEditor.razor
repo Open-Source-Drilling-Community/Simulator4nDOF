@@ -1,44 +1,59 @@
 ﻿
 <MudDataGrid T="SetPoints" MultiSelection="false" Items="NewSimulation.SetPointsList"
-             EditMode="DataGridEditMode.Cell"
-             ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
+EditMode="DataGridEditMode.Cell"
+ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
 
     <Columns>
         <TemplateColumn Title="Time duration" CellStyle="width: 30%;" Sortable="false">
-            <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F1")</CellTemplate>
+            <HeaderTemplate>
+                <div>
+                    Time Duration<br/>
+                    @TimeUnit
+                </div>
+            </HeaderTemplate>
             <EditTemplate Context="c">
-                <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                           QuantityName="Time"
-                                           SIValue="c.Item.TimeDuration"
-                                           SIValueNullableChanged="val => { if (val != null) c.Item.TimeDuration = (double)val; }" />
+                <MudInputWithUnit VariantType="Variant.Text"
+                   QuantityName="Time"
+                   SIValue="c.Item.TimeDuration"
+                   SIValueNullableChanged="val => { if (val != null) c.Item.TimeDuration = (double)val; }" />
             </EditTemplate>
         </TemplateColumn>
 
-        <TemplateColumn Title="Surface RPM" CellStyle="width: 30%;" Sortable="false">
-            <CellTemplate Context="c">@c.Item.SurfaceRPM.ToString("F4")</CellTemplate>
+        <TemplateColumn Title="Surface Rotational Speed" CellStyle="width: 30%;" Sortable="false">
+            <HeaderTemplate>
+                <div>
+                    Surface Rotational Speed<br />
+                    @RotationalVelocityUnit
+                </div>
+            </HeaderTemplate>
             <EditTemplate Context="c">
-                <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                           QuantityName="AngularVelocityDrilling"
-                                           SIValue="c.Item.SurfaceRPM"
-                                           SIValueNullableChanged="val => { if (val != null) c.Item.SurfaceRPM = (double)val; }" />
+                <MudInputWithUnit VariantType="Variant.Text"
+                   QuantityName="AngularVelocityDrilling"
+                   SIValue="c.Item.SurfaceRPM"
+                   SIValueNullableChanged="val => { if (val != null) c.Item.SurfaceRPM = (double)val; }" />
             </EditTemplate>
         </TemplateColumn>
 
         <TemplateColumn Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false">
-            <CellTemplate Context="c">@c.Item.TopOfStringVelocity.ToString("F4")</CellTemplate>
+            <HeaderTemplate>
+                <div>
+                    Top of string velocity<br />
+                    @AxialVelocityUnit
+                </div>
+            </HeaderTemplate>
             <EditTemplate Context="c">
-                <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                           QuantityName="Velocity"
-                                           SIValue="c.Item.TopOfStringVelocity"
-                                           SIValueNullableChanged="val => { if (val != null) c.Item.TopOfStringVelocity = (double)val; }" />
+                <MudInputWithUnit VariantType="Variant.Text"
+                   QuantityName="AxialVelocityDrilling"
+                   SIValue="c.Item.TopOfStringVelocity"
+                   SIValueNullableChanged="val => { if (val != null) c.Item.TopOfStringVelocity = (double)val; }" />
             </EditTemplate>
         </TemplateColumn>
 
         <TemplateColumn CellStyle="width: 5%;">
             <EditTemplate Context="item">
                 <MudIconButton Size="@Size.Small"
-                               Icon="@Icons.Material.Outlined.Delete"
-                               OnClick="async () => await DeleteSetPoints(item.Item)" />
+                Icon="@Icons.Material.Outlined.Delete"
+                OnClick="async () => await DeleteSetPoints(item.Item)" />
             </EditTemplate>
         </TemplateColumn>
     </Columns>
@@ -52,6 +67,24 @@
 
     [Parameter]
     public Simulation NewSimulation { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    private string TimeUnit { get; set; } = string.Empty;
+    private string RotationalVelocityUnit { get; set; } = string.Empty;
+    private string AxialVelocityUnit { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (Parent != null)
+        {
+            TimeUnit = "[" + Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.Time) + "]";
+            RotationalVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]";
+            AxialVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AxialVelocityDrilling) + "]";
+        }
+    }
 
     private async Task DeleteSetPoints(SetPoints item)
     {

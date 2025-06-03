@@ -19,7 +19,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="NORCE.AxialTorsionalLateralTransientTorqueAndDrag" Version="1.0.1" />
-		<PackageReference Include="OSDC.DotnetLibraries.Drilling.DrillingProperties" Version="10.2.2-build.89" />
+		<PackageReference Include="OSDC.DotnetLibraries.Drilling.DrillingProperties" Version="10.2.2-build.95" />
 		<PackageReference Include="OSDC.DotnetLibraries.General.Common" Version="1.0.9" />
 		<PackageReference Include="OSDC.DotnetLibraries.General.DataManagement" Version="2.1.0" />
 		<PackageReference Include="OSDC.DotnetLibraries.General.Statistics" Version="3.1.1" />
