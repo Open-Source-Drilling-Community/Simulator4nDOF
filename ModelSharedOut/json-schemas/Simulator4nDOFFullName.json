@@ -217,6 +217,44 @@
   },
   "components": {
     "schemas": {
+      "NORCE.Drilling.Simulator4nDOF.Model.Config": {
+        "type": "object",
+        "properties": {
+          "VirtualSensorPositionFromBit": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalScalarValues": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalProfiles": {
+            "type": "number",
+            "format": "double"
+          },
+          "CoulombStaticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "CoulombKineticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeaveAmplitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeavePeriod": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopDriveController": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "NORCE.Drilling.Simulator4nDOF.Model.ContextualData": {
         "type": "object",
         "properties": {
@@ -633,17 +671,8 @@
             "type": "string",
             "nullable": true
           },
-          "VirtualSensorPositionFromBit": {
-            "type": "number",
-            "format": "double"
-          },
-          "LoggingIntervalScalarValues": {
-            "type": "number",
-            "format": "double"
-          },
-          "LoggingIntervalProfiles": {
-            "type": "number",
-            "format": "double"
+          "Config": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Config"
           },
           "CreationDate": {
             "type": "string",
