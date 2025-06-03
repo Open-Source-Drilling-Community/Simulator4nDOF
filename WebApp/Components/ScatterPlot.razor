@@ -52,7 +52,7 @@
     public decimal? AspectRatio { get; set; } = null;
 
     private PlotlyChart? chart;
-    private Config config = new Config() { Responsive = true };
+    private Plotly.Blazor.Config config = new Plotly.Blazor.Config() { Responsive = true };
     private Layout layout = new Layout
         {
             Title = new Plotly.Blazor.LayoutLib.Title { Text = "" },

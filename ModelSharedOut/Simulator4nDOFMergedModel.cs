@@ -756,6 +756,45 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Config
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("VirtualSensorPositionFromBit")]
+        public double VirtualSensorPositionFromBit { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalScalarValues")]
+        public double LoggingIntervalScalarValues { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalProfiles")]
+        public double LoggingIntervalProfiles { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CoulombStaticFriction")]
+        public double CoulombStaticFriction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CoulombKineticFriction")]
+        public double CoulombKineticFriction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HeaveAmplitude")]
+        public double HeaveAmplitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HeavePeriod")]
+        public double HeavePeriod { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopDriveController")]
+        public int TopDriveController { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ContextualData
     {
 
@@ -1029,14 +1068,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("Description")]
         public string Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("VirtualSensorPositionFromBit")]
-        public double VirtualSensorPositionFromBit { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalScalarValues")]
-        public double LoggingIntervalScalarValues { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalProfiles")]
-        public double LoggingIntervalProfiles { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("Config")]
+        public Config Config { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
         public System.DateTimeOffset? CreationDate { get; set; }

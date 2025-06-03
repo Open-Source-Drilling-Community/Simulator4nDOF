@@ -879,11 +879,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 BitRadius = simulation.ContextualData.BitRadius,                     // [m]
                 //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
-                SensorDistanceFromBit = 63,
+                SensorDistanceFromBit = simulation.Config.VirtualSensorPositionFromBit,
                 FluidDensity = 1200,                       // [kg/m3] Density of drilling mud
                 LengthBetweenLumpedElements = 30,
+                CoulombKineticFriction = simulation.Config.CoulombKineticFriction,
+                CoulombStaticFriction = simulation.Config.CoulombStaticFriction,
+                HeaveAmplitude = simulation.Config.HeaveAmplitude,
+                HeavePeriod = simulation.Config.HeavePeriod,
+                TopDriveController = simulation.Config.TopDriveController,
             };
-
 
             return config;
         }
@@ -976,13 +980,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             double outerTimeStep = config.TimeStep;
 
             // Setup scalar logging interval
-            double scalarIntervalRaw = simulation.LoggingIntervalScalarValues;
+            double scalarIntervalRaw = simulation.Config.LoggingIntervalScalarValues;
             double scalarInterval = (scalarIntervalRaw <= 0 || scalarIntervalRaw < outerTimeStep)
                 ? outerTimeStep
                 : Math.Round(scalarIntervalRaw / outerTimeStep) * outerTimeStep;
 
             // Setup profile logging interval
-            double profileIntervalRaw = simulation.LoggingIntervalProfiles;
+            double profileIntervalRaw = simulation.Config.LoggingIntervalProfiles;
             bool logProfilesAtFixedInterval = profileIntervalRaw >= outerTimeStep;
             double profileInterval = logProfilesAtFixedInterval
                 ? Math.Round(profileIntervalRaw / outerTimeStep) * outerTimeStep

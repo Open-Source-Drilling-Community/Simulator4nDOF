@@ -149,7 +149,7 @@
 
     private MudTheme Theme = new MudTheme();
 
-    private Config _config;
+    private Plotly.Blazor.Config _config;
 
     IList<ITrace> _rpmTraces = new List<ITrace>();
     IList<ITrace> _depthTraces = new List<ITrace>();
@@ -310,7 +310,7 @@
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        _config = new Config
+        _config = new Plotly.Blazor.Config
         {
             ShowLink = false,
             Responsive = true,

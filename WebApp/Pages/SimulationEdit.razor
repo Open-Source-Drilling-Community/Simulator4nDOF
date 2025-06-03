@@ -176,10 +176,10 @@
         Navigation.NavigateTo($"/Simulator4nDOF/webapp/Simulation/");
     }
 
-    private void OnExpandCollapseClickAddPanel()
-    {
-        NewDefaultSimulation();
-    }
+    //private void OnExpandCollapseClickAddPanel()
+    //{
+    //    NewDefaultSimulation();
+    //}
 
     protected override async Task OnInitializedAsync()
     {
@@ -219,48 +219,59 @@
         newSimulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
     }
 
-    private void NewDefaultSimulation()
-    {
-        MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
-        DateTimeOffset creationDate = DateTimeOffset.UtcNow;
-        newSimulation = new()
-        {
-            MetaInfo = metaInfo,
-            Name = DataUtils.DEFAULT_NAME_Simulation,
-            Description = DataUtils.DEFAULT_DESCR_Simulation,
-            CreationDate = creationDate,
-            LastModificationDate = creationDate,
-            ContextualData = new ContextualData()
-            {
-                TrajectoryFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Trajectory.txt",
-                AnnulusPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\AnnulusHydraulicProfiles.txt",
-                DrillstringPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\DrillstringHydraulicProfiles.txt",
-                DrillstringFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Drillstring.csv",
-                CasingShoeDepth = 2181,
-                LinerShoeDepth = 0,
-                CasingID = 9 * 0.0254,
-                LinerID = 0 * 0.0254,
-                WellheadDepth = 120,
-                RiserID = 21 * 0.0254,
-                BitRadius = 0.2159 / 2,
-            },
-            InitialValues = new InitialValues()
-            {
-                BitDepth = 4084,
-                HoleDepth = 4085,
-                TopOfStringPosition = 15
-            },
-            SetPointsList = new List<SetPoints>
-                {
-                    new SetPoints
-                    {
-                        TimeDuration = 10,
-                        SurfaceRPM = 138 * Math.PI / 30,
-                        TopOfStringVelocity = 100.0 / 3600
-                    }
-                },
-        };
-    }
+    //private void NewDefaultSimulation()
+    //{
+    //    MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
+    //    DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+    //    newSimulation = new()
+    //    {
+    //        MetaInfo = metaInfo,
+    //        Name = DataUtils.DEFAULT_NAME_Simulation,
+    //        Description = DataUtils.DEFAULT_DESCR_Simulation,
+    //        CreationDate = creationDate,
+    //        LastModificationDate = creationDate,
+    //        ContextualData = new ContextualData()
+    //        {
+    //            TrajectoryFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Trajectory.txt",
+    //            AnnulusPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\AnnulusHydraulicProfiles.txt",
+    //            DrillstringPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\DrillstringHydraulicProfiles.txt",
+    //            DrillstringFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Drillstring.csv",
+    //            CasingShoeDepth = 2181,
+    //            LinerShoeDepth = 0,
+    //            CasingID = 9 * 0.0254,
+    //            LinerID = 0 * 0.0254,
+    //            WellheadDepth = 120,
+    //            RiserID = 21 * 0.0254,
+    //            BitRadius = 0.2159 / 2,
+    //        },
+    //        Configuration = new NORCE.Drilling.Simulator4nDOF.ModelShared.Configuration()
+    //        {
+    //            VirtualSensorPositionFromBit = 63,
+    //            LoggingIntervalScalarValues = 0.1,
+    //            LoggingIntervalProfiles = 0.0,
+    //            CoulombStaticFriction = 0.3,
+    //            CoulombKineticFriction = 0.2,
+    //            HeaveAmplitude = 0.07,
+    //            HeavePeriod  = 11,
+    //            TopDriveController = 1,
+    //        },
+    //        InitialValues = new InitialValues()
+    //        {
+    //            BitDepth = 4084,
+    //            HoleDepth = 4085,
+    //            TopOfStringPosition = 15
+    //        },
+    //        SetPointsList = new List<SetPoints>
+    //            {
+    //                new SetPoints
+    //                {
+    //                    TimeDuration = 10,
+    //                    SurfaceRPM = 138 * Math.PI / 30,
+    //                    TopOfStringVelocity = 100.0 / 3600
+    //                }
+    //            },
+    //    };
+    //}
 
     private async Task AddSimulation()
     {
