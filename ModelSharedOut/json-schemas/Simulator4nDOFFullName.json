@@ -251,6 +251,54 @@
           "TopDriveController": {
             "type": "integer",
             "format": "int32"
+          },
+          "VFDFilterTimeconstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "EncoderTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "AccelerationFilterTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "TorqueHighPassFilterTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "TorqueLowPassFilterTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "AdditionalTuningFactorZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "InertiaCorrectionFactorZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "KpSoftTorqueSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "KiSoftTorqueSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "TuningFrequenceySoftTorqueSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "KpStiffAndZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "KiStiffAndZTorque": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
