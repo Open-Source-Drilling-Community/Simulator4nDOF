@@ -154,16 +154,26 @@
                                         SIValueNullableChanged="val => { if (val != null) newSimulation.Config.HeavePeriod = (double)val; }" /> 
                                 </MudItem>
                                 <MudItem Style="width:250px;">
-                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.Config.CoulombStaticFriction" Label="Coulomb static friction"  T="double" Variant="Variant.Text" Min="0" Max="1"> </MudNumericField>
+                                    <MudInputWithUnit 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Coulomb static friction" 
+                                        QuantityName="Dimensionless" 
+                                        SIValue="newSimulation.Config.CoulombKineticFriction" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.Config.CoulombKineticFriction = (double)val; }" /> 
                                 </MudItem>
                                 <MudItem Style="width:250px;">
-                                    <MudNumericField HideSpinButtons="false" @bind-Value="newSimulation.Config.CoulombKineticFriction" Label="Coulomb kinetic friction"  T="double" Variant="Variant.Text" Min="0" Max="1"> </MudNumericField>
+                                    <MudInputWithUnit 
+                                        VariantType="Variant.Text" 
+                                        QuantityLabel="Coulomb kinetic friction" 
+                                        QuantityName="Dimensionless" 
+                                        SIValue="newSimulation.Config.CoulombStaticFriction" 
+                                        SIValueNullableChanged="val => { if (val != null) newSimulation.Config.CoulombStaticFriction = (double)val; }" /> 
                                 </MudItem>
                             </MudGrid>
                             <MudGrid RowSpacing="0" Style="margin-top:-0px;">
                                 <MudItem Style="width:250px;">
                                     <MudSelect @bind-Value="newSimulation.Config.TopDriveController"
-                                               Label="Top Drive Controller"
+                                               Label="Top drive controller"
                                                Variant="Variant.Text"
                                                T="int">
                                         <MudSelectItem Value="1">Stiff PI Controller</MudSelectItem>
@@ -215,7 +225,7 @@
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
                                             VariantType="Variant.Text" 
-                                            QuantityLabel="Tuning Frequency" 
+                                            QuantityLabel="Tuning frequency" 
                                             QuantityName="Frequency" 
                                             SIValue="newSimulation.Config.TuningFrequenceySoftTorqueSpeed" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.TuningFrequenceySoftTorqueSpeed = (double)val; }" /> 
@@ -243,7 +253,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="VFD Filter Time Constant" 
+                                            QuantityLabel="VFD filter time constant" 
                                             QuantityName="Time" 
                                             SIValue="newSimulation.Config.VFDFilterTimeconstantZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.VFDFilterTimeconstantZTorque = (double)val; }" />
@@ -251,7 +261,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="Encoder Time Constant" 
+                                            QuantityLabel="Encoder time constant" 
                                             QuantityName="Time" 
                                             SIValue="newSimulation.Config.EncoderTimeConstantZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.EncoderTimeConstantZTorque = (double)val; }" />
@@ -259,7 +269,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="Acceleration Filter Time Constant" 
+                                            QuantityLabel="Acceleration filter time constant" 
                                             QuantityName="Time" 
                                             SIValue="newSimulation.Config.AccelerationFilterTimeConstantZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.AccelerationFilterTimeConstantZTorque = (double)val; }" />
@@ -267,7 +277,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="Torque High Pass Filter Time Constant" 
+                                            QuantityLabel="Torque high-pass filter time constant" 
                                             QuantityName="Time" 
                                             SIValue="newSimulation.Config.TorqueHighPassFilterTimeConstantZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.TorqueHighPassFilterTimeConstantZTorque = (double)val; }" />
@@ -275,7 +285,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="Torque Low Pass Filter Time Constant" 
+                                            QuantityLabel="Torque low-pass filter time constant" 
                                             QuantityName="Time" 
                                             SIValue="newSimulation.Config.TorqueLowPassFilterTimeConstantZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.TorqueLowPassFilterTimeConstantZTorque = (double)val; }" />
@@ -283,7 +293,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="Additional Tuning Factor" 
+                                            QuantityLabel="Additional tuning factor" 
                                             QuantityName="Dimensionless" 
                                             SIValue="newSimulation.Config.AdditionalTuningFactorZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.AdditionalTuningFactorZTorque = (double)val; }" />
@@ -291,7 +301,7 @@
 
                                     <MudItem Style="width:250px;">
                                         <MudInputWithUnit 
-                                            QuantityLabel="Inertia Correction Factor" 
+                                            QuantityLabel="Inertia correction factor" 
                                             QuantityName="Dimensionless" 
                                             SIValue="newSimulation.Config.InertiaCorrectionFactorZTorque" 
                                             SIValueNullableChanged="val => { if (val != null) newSimulation.Config.InertiaCorrectionFactorZTorque = (double)val; }" />
@@ -383,7 +393,7 @@
                                 <MudItem Style="width:250px;">
                                     <MudInputWithUnit 
                                         VariantType="Variant.Text" 
-                                        QuantityLabel="Well-head Depth" 
+                                        QuantityLabel="Well-head depth" 
                                         QuantityName="DepthDrilling"
                                         MinValue=-1000
                                         MaxValue=25000
@@ -405,11 +415,11 @@
                         @if (newSimulation?.SetPointsList != null)
                         {
                             <br>
-                            <MudText Typo="Typo.h6" >Set points </MudText>
+                            <MudText Typo="Typo.h6" >Set points</MudText>
                         
                             <SetPointsEditor NewSimulation="@newSimulation"/>
 
-                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Update">Add set points </MudButton>
+                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
                         }
                         
                     </MudPaper>
