@@ -887,6 +887,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 HeaveAmplitude = simulation.Config.HeaveAmplitude,
                 HeavePeriod = simulation.Config.HeavePeriod,
                 TopDriveController = simulation.Config.TopDriveController,
+                VFDFilterTimeconstantZTorque = simulation.Config.VFDFilterTimeconstantZTorque,
+                EncoderTimeConstantZTorque = simulation.Config.EncoderTimeConstantZTorque,
+                AccelerationFilterTimeConstantZTorque = simulation.Config.AccelerationFilterTimeConstantZTorque,
+                TorqueHighPassFilterTimeConstantZTorque = simulation.Config.TorqueHighPassFilterTimeConstantZTorque,
+                TorqueLowPassFilterTimeConstantZTorque = simulation.Config.TorqueLowPassFilterTimeConstantZTorque,
+                AdditionalTuningFactorZTorque = simulation.Config.AdditionalTuningFactorZTorque,
+                InertiaCorrectionFactorZTorque = simulation.Config.InertiaCorrectionFactorZTorque,
+                KpSoftTorqueSpeed = simulation.Config.KpSoftTorqueSpeed,
+                KiSoftTorqueSpeed = simulation.Config.KiSoftTorqueSpeed,
+                TuningFrequenceySoftTorqueSpeed = simulation.Config.TuningFrequenceySoftTorqueSpeed,
+                KpStiffAndZTorque = simulation.Config.KpStiffAndZTorque,
+                KiStiffAndZTorque = simulation.Config.KiStiffAndZTorque,
+
             };
 
             return config;

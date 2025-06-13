@@ -6,9 +6,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
 {
     public class SetPoints
     {
-        public double TimeDuration { get; set; }               // [sec]
-        public double SurfaceRPM { get; set; }                 // [rad/s]
-        public double TopOfStringVelocity { get; set; }        // [m/s] 
+        public double TimeDuration { get; set; } = 1;              // [sec]
+        public double SurfaceRPM { get; set; } = 0;                // [rad/s]
+        public double TopOfStringVelocity { get; set; } = 0;       // [m/s] 
 
     }
 }

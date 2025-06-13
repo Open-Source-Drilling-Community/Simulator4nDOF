@@ -783,6 +783,42 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("TopDriveController")]
         public int TopDriveController { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("VFDFilterTimeconstantZTorque")]
+        public double VFDFilterTimeconstantZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EncoderTimeConstantZTorque")]
+        public double EncoderTimeConstantZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("AccelerationFilterTimeConstantZTorque")]
+        public double AccelerationFilterTimeConstantZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TorqueHighPassFilterTimeConstantZTorque")]
+        public double TorqueHighPassFilterTimeConstantZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TorqueLowPassFilterTimeConstantZTorque")]
+        public double TorqueLowPassFilterTimeConstantZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("AdditionalTuningFactorZTorque")]
+        public double AdditionalTuningFactorZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InertiaCorrectionFactorZTorque")]
+        public double InertiaCorrectionFactorZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("KpSoftTorqueSpeed")]
+        public double KpSoftTorqueSpeed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("KiSoftTorqueSpeed")]
+        public double KiSoftTorqueSpeed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TuningFrequenceySoftTorqueSpeed")]
+        public double TuningFrequenceySoftTorqueSpeed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("KpStiffAndZTorque")]
+        public double KpStiffAndZTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("KiStiffAndZTorque")]
+        public double KiStiffAndZTorque { get; set; }
+
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
