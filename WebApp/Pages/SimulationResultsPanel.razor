@@ -2,29 +2,72 @@
 @using OSDC.UnitConversion.Conversion.DrillingEngineering
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.Traces.ScatterLib
+@using MudBlazor
 @inherits LayoutComponentBase
 
 @*<MudText Class="mt-4 mb-4" Typo="Typo.h6">Simulation results</MudText>*@
 <MudLayout>
-    @*
-    <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
-        <div Class="d-flex flex-grow-1 align-center pa-0 ma-0">
-            <MudGrid Class="pa-0 ma-0 gap-3 " Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                <MudItem Class="pa-0 ma-0">
-                    <MudTextField Label="Cumulative SSI [-]"
-                                  @bind-Value=@Results.AvgCumulativeSSI
-                                  Variant=Variant.Filled
-                                  Style="width:150px"
-                                  Adornment="Adornment.Start"
-                                  AdornmentColor="Color.Warning"
-                                  Margin="MudBlazor.Margin.Dense"
-                                  Format="F3" />
+
+    @if (activeTab == 0 || activeTab == 2)
+    {
+        <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
+            <div class="d-flex align-center gap-4 flex-wrap">
+
+                <!-- Start Index -->
+                <MudSlider T="double"
+                           Value="@startIndex"
+                           ValueChanged="OnStartIndexChanged"
+                           Min="0"
+                           Max="@maxIndex"
+                           Step="1"
+                           Immediate="true"
+                           Color="Color.Primary"
+                           Style="width: 200px;" />
+                <MudText Typo="Typo.body2">Start: @timeStart.ToString("F2") s</MudText>
+
+                <!-- End Index -->
+                <MudSlider T="double"
+                           Value="@endIndex"
+                           ValueChanged="OnEndIndexChanged"
+                           Min="0"
+                           Max="@maxIndex"
+                           Step="1"
+                           Immediate="true"
+                           Color="Color.Secondary"
+                           Style="width: 200px;" />
+                <MudText Typo="Typo.body2">End: @timeEnd.ToString("F2") s</MudText>
+
+            </div>
+        </MudPaper>
+    }
+
+
+    @if (activeTab == 1)
+    {
+        <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
+            <MudGrid Class="pa-0 ma-0" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                <MudItem>
+                    <MudSlider T="double"
+                               Value="@selectedProfileIndex"
+                               ValueChanged="OnProfileChanged"
+                               Min="0"
+                               Max="@((Results?.Profiles?.Count ?? 1) - 1)"
+                               Step="1"
+                               Immediate="true"
+                               Color="Color.Primary"
+                               Style="width: 200px;" />
+                </MudItem>
+
+                <MudItem>
+                    <MudText Typo="Typo.subtitle2" Class="ml-2">
+                        Time (s): @selectedProfileTime.ToString("F2")
+                    </MudText>
                 </MudItem>
             </MudGrid>
-        </div>
-    </MudPaper>
-    *@
+        </MudPaper>
+    }
 
+   
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndex="@activeTab" ActivePanelIndexChanged="OnTabChanged">
 
         <MudTabPanel Text="Time graphs">
@@ -106,7 +149,21 @@
 @code
 {
     [Parameter]
-    public Results Results { get; set; }
+    public Results Results
+    {
+        get => _results;
+        set
+        {
+            _results = value;
+            if (_results?.Scalars?.Time?.Count > 0)
+            {
+                startIndex = 0;
+                endIndex = _results.Scalars.Time.Count - 1;
+            }
+        }
+    }
+    private Results _results;
+
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
@@ -123,9 +180,34 @@
         },
     };
 
+    private int selectedProfileIndex;
+    private double selectedProfileTime;
+
     private int activeTab = 0;
 
     private string value { get; set; } = "All";
+
+    private int startIndex = 0;
+    private int endIndex;
+
+    private double timeStart => Results?.Scalars?.Time?.ElementAtOrDefault(startIndex) ?? 0;
+    private double timeEnd => Results?.Scalars?.Time?.ElementAtOrDefault(endIndex) ?? 0;
+
+    private int maxIndex => (Results?.Scalars?.Time?.Count ?? 1) - 1;
+
+
+    private async Task OnStartIndexChanged(double value)
+    {
+        startIndex = Math.Min((int)value, endIndex);
+        await Refresh();
+    }
+
+    private async Task OnEndIndexChanged(double value)
+    {
+        endIndex = Math.Max((int)value, startIndex);
+        await Refresh();
+    }
+
 
     Plotly.Blazor.LayoutLib.Margin margin = new Plotly.Blazor.LayoutLib.Margin
     {
@@ -293,6 +375,13 @@
         await Refresh();
     }
 
+    private async Task OnProfileChanged(double value)
+    {
+        selectedProfileIndex = (int)value;
+
+        await Refresh();
+    }
+
 
     private Layout CreateLayout(string xTitle, string yTitle, bool reversedYAxis = true, double? minAllowed = null, IList<object> range = null, Plotly.Blazor.LayoutLib.Margin margin = null) =>
     new Layout
@@ -351,6 +440,13 @@
         _sensorBendingMomentTraces.Add(_sensorBendingMomentYTrace);
 
         CreateLayouts();
+        if (Results?.Scalars?.Time?.Count > 0)
+        {
+            startIndex = 0;
+            endIndex = Results.Scalars.Time.Count - 1;
+        }
+
+        selectedProfileIndex = Results?.Profiles?.Count > 0 ? Results.Profiles.Count - 1 : 0;
         base.OnInitialized();
     }
 
@@ -430,10 +526,9 @@
                     List<object> SensorBendingMomentX = new List<object>();
                     List<object> SensorBendingMomentY = new List<object>();
 
-                    int startIndex = 0;
                     if (activeTab == 0)
                     {
-                        for (int i = startIndex; i < Results.Scalars.Time.Count; i++)
+                        for (int i = startIndex; i <= endIndex && i < Results.Scalars.Time.Count; i++)
                         {
                             x.Add(Results.Scalars.Time.ElementAt(i));
                             BitRPM.Add(Parent.FromSI(Results.Scalars.BitRPM.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
@@ -479,70 +574,70 @@
 
 
 
-                        var time = Results.Scalars.Time.Last();
+                        var time = x.Last();
 
                         _rpmLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.SurfaceRPM.Last(), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
+                                Parent.FromSI(Results.Scalars.SurfaceRPM.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
                                 time,
-                                "Surface: " + Parent.FromSI(Results.Scalars.SurfaceRPM.Last(), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling, false),
+                                "Surface: " + Parent.FromSI(Results.Scalars.SurfaceRPM.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling, false),
                                 -40, -30),
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.BitRPM.Last(), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
+                                Parent.FromSI(Results.Scalars.BitRPM.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling),
                                 time,
-                                "Bit: " + Parent.FromSI(Results.Scalars.BitRPM.Last(), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling, false),
+                                "Bit: " + Parent.FromSI(Results.Scalars.BitRPM.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling, false),
                                 -40, 30)
                         };
 
                         _torqueLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.SurfaceTorque.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling),
+                                Parent.FromSI(Results.Scalars.SurfaceTorque.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling),
                                 time,
-                                "Surface: " + Parent.FromSI(Results.Scalars.SurfaceTorque.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false),
+                                "Surface: " + Parent.FromSI(Results.Scalars.SurfaceTorque.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false),
                                 -40, -40),
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.BitTorque.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling),
+                                Parent.FromSI(Results.Scalars.BitTorque.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling),
                                 time,
-                                "Bit: " + Parent.FromSI(Results.Scalars.BitTorque.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false),
+                                "Bit: " + Parent.FromSI(Results.Scalars.BitTorque.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false),
                                 -40, 30)
                         };
 
                         _velocityLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.TopOfStringAxialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling),
+                                Parent.FromSI(Results.Scalars.TopOfStringAxialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling),
                                 time,
-                                "Surface: " + Parent.FromSI(Results.Scalars.TopOfStringAxialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false),
+                                "Surface: " + Parent.FromSI(Results.Scalars.TopOfStringAxialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false),
                                 -40, -40),
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.BitAxialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling),
+                                Parent.FromSI(Results.Scalars.BitAxialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling),
                                 time,
-                                "Bit: " + Parent.FromSI(Results.Scalars.BitAxialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false),
+                                "Bit: " + Parent.FromSI(Results.Scalars.BitAxialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false),
                                 -40, 30)
                         };
 
                         _depthLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.BitDepth.Last(), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling),
+                                Parent.FromSI(Results.Scalars.BitDepth.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling),
                                 time,
-                                "Bit: " + Parent.FromSI(Results.Scalars.BitDepth.Last(), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling, false),
+                                "Bit: " + Parent.FromSI(Results.Scalars.BitDepth.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling, false),
                                 -40, -40),
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.HoleDepth.Last(), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling),
+                                Parent.FromSI(Results.Scalars.HoleDepth.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling),
                                 time,
-                                "Hole: " + Parent.FromSI(Results.Scalars.HoleDepth.Last(), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling, false),
+                                "Hole: " + Parent.FromSI(Results.Scalars.HoleDepth.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling, false),
                                 -40, 30)
                         };
 
                         _wobLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(
-                                Parent.FromSI(Results.Scalars.WOB.Last() , DrillingPhysicalQuantity.QuantityEnum.WeightOnBitDrilling),
+                                Parent.FromSI(Results.Scalars.WOB.ElementAt(endIndex) , DrillingPhysicalQuantity.QuantityEnum.WeightOnBitDrilling),
                                 time,
-                                "WOB: " + Parent.FromSI(Results.Scalars.WOB.Last() , DrillingPhysicalQuantity.QuantityEnum.WeightOnBitDrilling, false),
+                                "WOB: " + Parent.FromSI(Results.Scalars.WOB.ElementAt(endIndex) , DrillingPhysicalQuantity.QuantityEnum.WeightOnBitDrilling, false),
                                 -40, -30)
                         };
 
@@ -558,12 +653,14 @@
                         var depths = new List<object>();
                         var SideForce = new List<object>();
                         var SideForceSoftString = new List<object>();
+                        var profile = Results.Profiles.ElementAt(selectedProfileIndex);
+                        selectedProfileTime = profile.Time;
 
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            depths.Add(Parent.FromSI(Results.Profiles.Last().Depth.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
-                            SideForce.Add(Parent.FromSI(Results.Profiles.Last().SideForce.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
-                            SideForceSoftString.Add(Parent.FromSI(Results.Profiles.Last().SideForceSoftString.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
+                            depths.Add(Parent.FromSI(profile.Depth.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
+                            SideForce.Add(Parent.FromSI(profile.SideForce.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
+                            SideForceSoftString.Add(Parent.FromSI(profile.SideForceSoftString.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
                         }
 
                         ((Plotly.Blazor.Traces.Scatter)_sideForceTrace).X = SideForce;
@@ -573,9 +670,9 @@
 
                         var PipeAngularVelocity = new List<object>();
 
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            PipeAngularVelocity.Add(Parent.FromSI(Results.Profiles.Last().PipeAngularVelocity.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                            PipeAngularVelocity.Add(Parent.FromSI(profile.PipeAngularVelocity.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
                         }
 
                         ((Plotly.Blazor.Traces.Scatter)_pipeAngularVelocityTrace).X = PipeAngularVelocity;
@@ -585,10 +682,10 @@
                         var SleevesAngularVelocity = new List<object>();
 
 
-                        for (int i = 0; i < Results.Profiles.Last().SleevesDepth.Count; i++)
+                        for (int i = 0; i < profile.SleevesDepth.Count; i++)
                         {
-                            depthssleeves.Add(Parent.FromSI(Results.Profiles.Last().SleevesDepth.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
-                            SleevesAngularVelocity.Add(Parent.FromSI(Results.Profiles.Last().SleevesAngularVelocity.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
+                            depthssleeves.Add(Parent.FromSI(profile.SleevesDepth.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
+                            SleevesAngularVelocity.Add(Parent.FromSI(profile.SleevesAngularVelocity.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
 
                         }
 
@@ -596,12 +693,12 @@
                         var RadialClearanceR = new List<object>();
                         var LateralDisplacement = new List<object>();
 
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            var clearance = Parent.FromSI(Results.Profiles.Last().RadialClearance.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling);
+                            var clearance = Parent.FromSI(profile.RadialClearance.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling);
                             RadialClearanceL.Add(-1 * clearance);
                             RadialClearanceR.Add(clearance);
-                            LateralDisplacement.Add(Parent.FromSI(Results.Profiles.Last().LateralDisplacement.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
+                            LateralDisplacement.Add(Parent.FromSI(profile.LateralDisplacement.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
                         }
 
 
@@ -613,43 +710,43 @@
                         ((Plotly.Blazor.Traces.Scatter)_lateralDispTrace).Y = depths;
 
                         var BendingMoment = new List<object>();
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            BendingMoment.Add(Parent.FromSI(Results.Profiles.Last().BendingMoment.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling));
+                            BendingMoment.Add(Parent.FromSI(profile.BendingMoment.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling));
                         }
                         ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).X = BendingMoment;
                         ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).Y = depths;
 
                         BendingMoment = new List<object>();
                         var depthAll = new List<object>();
-                        for (int i = 0; i < Results.Profiles.Last().DepthAll.Count; i++)
+                        for (int i = 0; i < profile.DepthAll.Count; i++)
                         {
-                            BendingMoment.Add(Parent.FromSI(Results.Profiles.Last().Torque.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling));
-                            depthAll.Add(Parent.FromSI(Results.Profiles.Last().DepthAll.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
+                            BendingMoment.Add(Parent.FromSI(profile.Torque.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling));
+                            depthAll.Add(Parent.FromSI(profile.DepthAll.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
                         }
                         ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).X = BendingMoment;
                         ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).Y = depthAll;
 
                         var Tension = new List<object>();
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            Tension.Add(Parent.FromSI(Results.Profiles.Last().Tension.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
+                            Tension.Add(Parent.FromSI(profile.Tension.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
                         }
                         ((Plotly.Blazor.Traces.Scatter)_tensionTrace).X = Tension;
                         ((Plotly.Blazor.Traces.Scatter)_tensionTrace).Y = depths;
 
                         var AxialVelocityD = new List<object>();
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            AxialVelocityD.Add(Results.Profiles.Last().AxialVelocityD.ElementAt(i) * 3600);
+                            AxialVelocityD.Add(profile.AxialVelocityD.ElementAt(i) * 3600);
                         }
                         ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).X = AxialVelocityD;
                         ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).Y = depths;
 
                         var LateralDisplacementAngle = new List<object>();
-                        for (int i = 0; i < Results.Profiles.Last().Depth.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            LateralDisplacementAngle.Add(Parent.FromSI(Results.Profiles.Last().LateralDisplacementAngle.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.PlaneAngleDrilling));
+                            LateralDisplacementAngle.Add(Parent.FromSI(profile.LateralDisplacementAngle.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.PlaneAngleDrilling));
                         }
                         ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).X = LateralDisplacementAngle;
                         ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).Y = depths;
@@ -666,7 +763,7 @@
 
                     else if (activeTab == 2)
                     {
-                        for (int i = startIndex; i < Results.Scalars.Time.Count; i++)
+                        for (int i = startIndex; i <= endIndex && i < Results.Scalars.Time.Count; i++)
                         {
                             x.Add(Results.Scalars.Time.ElementAt(i));
 
@@ -716,21 +813,21 @@
                         ((Plotly.Blazor.Traces.Scatter)_sensorBendingMomentYTrace).Y = SensorBendingMomentY;
 
 
-                        var time = Results.Scalars.Time.Last();
+                        var time = x.Last();
 
                         // Sensor Angular & Whirl Velocity
                         var latestSensorAngularVelocity = Parent.FromSI(
-                            Results.Scalars.SensorAngularVelocity.Last(),
+                            Results.Scalars.SensorAngularVelocity.ElementAt(endIndex),
                             DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
                         var latestSensorAngularVelocityString = Parent.FromSI(
-                            Results.Scalars.SensorAngularVelocity.Last(),
+                            Results.Scalars.SensorAngularVelocity.ElementAt(endIndex),
                             DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling, false);
 
                         var latestSensorWhirlVelocity = Parent.FromSI(
-                            Results.Scalars.SensorWhirlVelocity.Last(),
+                            Results.Scalars.SensorWhirlVelocity.ElementAt(endIndex),
                             DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
                         var latestSensorWhirlVelocityString = Parent.FromSI(
-                            Results.Scalars.SensorWhirlVelocity.Last(),
+                            Results.Scalars.SensorWhirlVelocity.ElementAt(endIndex),
                             DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling, false);
 
                         _sensorVelocityALayout.Annotations = new List<Annotation>
@@ -740,10 +837,10 @@
                         };
 
                         // Sensor Axial & Radial Velocity
-                        var latestSensorAxialVelocity = Parent.FromSI(Results.Scalars.SensorAxialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling);
-                        var latestSensorAxialVelocityString = Parent.FromSI(Results.Scalars.SensorAxialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false);
-                        var latestSensorRadialVelocity = Parent.FromSI(Results.Scalars.SensorRadialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling);
-                        var latestSensorRadialVelocityString = Parent.FromSI(Results.Scalars.SensorRadialVelocity.Last(), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false);
+                        var latestSensorAxialVelocity = Parent.FromSI(Results.Scalars.SensorAxialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling);
+                        var latestSensorAxialVelocityString = Parent.FromSI(Results.Scalars.SensorAxialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false);
+                        var latestSensorRadialVelocity = Parent.FromSI(Results.Scalars.SensorRadialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling);
+                        var latestSensorRadialVelocityString = Parent.FromSI(Results.Scalars.SensorRadialVelocity.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling, false);
 
                         _sensorVelocityLayout.Annotations = new List<Annotation>
                         {
@@ -752,32 +849,32 @@
                         };
 
                         // Sensor Accelerations
-                        var latestSensorRadialAcc = Parent.FromSI(Results.Scalars.SensorRadialAcc.Last(), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
-                        var latestSensorRadialAccString = Parent.FromSI(Results.Scalars.SensorRadialAcc.Last(), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling, false);
+                        var latestSensorRadialAcc = Parent.FromSI(Results.Scalars.SensorRadialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
+                        var latestSensorRadialAccString = Parent.FromSI(Results.Scalars.SensorRadialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling, false);
                         _sensorRadialAccLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(latestSensorRadialAcc, time, latestSensorRadialAccString, -40, 20)
                         };
 
-                        var latestSensorTangentialAcc = Parent.FromSI(Results.Scalars.SensorTangentialAcc.Last(), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
-                        var latestSensorTangentialAccString = Parent.FromSI(Results.Scalars.SensorTangentialAcc.Last(), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling, false);
+                        var latestSensorTangentialAcc = Parent.FromSI(Results.Scalars.SensorTangentialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
+                        var latestSensorTangentialAccString = Parent.FromSI(Results.Scalars.SensorTangentialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling, false);
                         _sensorTangentialAccLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(latestSensorTangentialAcc, time, latestSensorTangentialAccString, -40, 20)
                         };
 
-                        var latestSensorAxialAcc = Parent.FromSI(Results.Scalars.SensorAxialAcc.Last(), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
-                        var latestSensorAxialAccString = Parent.FromSI(Results.Scalars.SensorAxialAcc.Last(), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling,false);
+                        var latestSensorAxialAcc = Parent.FromSI(Results.Scalars.SensorAxialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
+                        var latestSensorAxialAccString = Parent.FromSI(Results.Scalars.SensorAxialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling,false);
                         _sensorAxialAccLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(latestSensorAxialAcc, time, latestSensorAxialAccString, -40, 20)
                         };
 
                         // Sensor Bending Moments
-                        var latestBendingMomentX = Parent.FromSI(Results.Scalars.SensorBendingMomentX.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
-                        var latestBendingMomentXString = Parent.FromSI(Results.Scalars.SensorBendingMomentX.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false);
-                        var latestBendingMomentY = Parent.FromSI(Results.Scalars.SensorBendingMomentY.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
-                        var latestBendingMomentYString = Parent.FromSI(Results.Scalars.SensorBendingMomentY.Last(), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false);
+                        var latestBendingMomentX = Parent.FromSI(Results.Scalars.SensorBendingMomentX.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
+                        var latestBendingMomentXString = Parent.FromSI(Results.Scalars.SensorBendingMomentX.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false);
+                        var latestBendingMomentY = Parent.FromSI(Results.Scalars.SensorBendingMomentY.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
+                        var latestBendingMomentYString = Parent.FromSI(Results.Scalars.SensorBendingMomentY.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling, false);
 
                         _sensorBendingMomentLayout.Annotations = new List<Annotation>
                         {
