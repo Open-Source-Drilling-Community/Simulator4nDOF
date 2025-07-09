@@ -23,8 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\AxialTorsionalLateralTransientTorqueAndDrag\Simulator\Simulator.csproj" />
 		<ProjectReference Include="..\Model\Model.csproj" />
+		<ProjectReference Include="..\Simulator\Simulator.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

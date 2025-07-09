@@ -2,9 +2,9 @@
 using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using NORCE.Drilling.Simulator;
-using NORCE.Drilling.Simulator.DataModel;
-using NORCE.Drilling.Simulator.DataModel.ParametersModel;
+using NORCE.Drilling.Simulator4nDOF.Simulator;
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using OSDC.DotnetLibraries.General.DataManagement;
 using OSDC.DotnetLibraries.General.Math;
@@ -529,7 +529,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     return false;
                 }
 
-                NORCE.Drilling.Simulator.DataModel.Configuration config;
+                Simulator.DataModel.Configuration config;
                 //initialize simulation
                 try
                 {
@@ -866,10 +866,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         }
 
 
-        public NORCE.Drilling.Simulator.DataModel.Configuration Initialize(Simulation simulation)
+        public Simulator.DataModel.Configuration Initialize(Simulation simulation)
         {
 
-            var config = new NORCE.Drilling.Simulator.DataModel.Configuration()
+            var config = new Simulator.DataModel.Configuration()
             {
                 AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
                 TrajectoryFile = simulation.ContextualData.TrajectoryFile,
@@ -915,7 +915,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return config;
         }
 
-        private Profiles CreateProfile(double time, Output output, State state, Parameters parameters, Input u, NORCE.Drilling.Simulator.DataModel.Configuration config)
+        private Profiles CreateProfile(double time, Output output, State state, Parameters parameters, Input u, Simulator.DataModel.Configuration config)
         {
             return new Profiles
             {
@@ -990,7 +990,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         /// - Real-time access to up-to-date scalar and profile results throughout the run.
         /// </summary>
 
-        public async Task<bool> CalculateAsync(Simulation simulation, NORCE.Drilling.Simulator.DataModel.Configuration config)
+        public async Task<bool> CalculateAsync(Simulation simulation, Simulator.DataModel.Configuration config)
         {
             if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
                 return false;
