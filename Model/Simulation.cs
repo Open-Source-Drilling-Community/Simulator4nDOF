@@ -1,8 +1,4 @@
-﻿using MathNet.Numerics.LinearAlgebra;
-using NORCE.Drilling.Simulator;
-using NORCE.Drilling.Simulator.DataModel;
-using NORCE.Drilling.Simulator.DataModel.ParametersModel;
-using OSDC.DotnetLibraries.General.DataManagement;
+﻿using OSDC.DotnetLibraries.General.DataManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;

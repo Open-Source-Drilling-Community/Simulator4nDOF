@@ -31,7 +31,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
     {
         private static SimulationManager? _instance = null;
         private readonly ILogger<SimulationManager> _logger;
-        private readonly object _lock = new();
         private readonly SqlConnectionManager _connectionManager;
         private static readonly SemaphoreSlim _simulationSemaphore = new SemaphoreSlim(2); // limit to 1 concurrent simulations
 
@@ -87,25 +86,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (connection != null)
             {
                 bool success = false;
-                lock (_lock)
+                
+                using var transaction = connection.BeginTransaction();
+                try
                 {
-                    using var transaction = connection.BeginTransaction();
-                    try
-                    {
-                        //empty SimulationTable
-                        var command = connection.CreateCommand();
-                        command.CommandText = "DELETE FROM SimulationTable";
-                        command.ExecuteNonQuery();
+                    //empty SimulationTable
+                    var command = connection.CreateCommand();
+                    command.CommandText = "DELETE FROM SimulationTable";
+                    command.ExecuteNonQuery();
 
-                        transaction.Commit();
-                        success = true;
-                    }
-                    catch (SqliteException ex)
-                    {
-                        transaction.Rollback();
-                        _logger.LogError(ex, "Impossible to clear the SimulationTable");
-                    }
+                    transaction.Commit();
+                    success = true;
                 }
+                catch (SqliteException ex)
+                {
+                    transaction.Rollback();
+                    _logger.LogError(ex, "Impossible to clear the SimulationTable");
+                }
+                
                 return success;
             }
             else
@@ -516,11 +514,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         /// </summary>
         /// <param name="simulation"></param>
         /// <returns>true if the given Simulation has been added successfully to the microservice database</returns>
-        public bool AddSimulation(Model.Simulation? simulation)
+        public async Task<bool> AddSimulation(Model.Simulation? simulation)
         {
             if (simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID != Guid.Empty)
             {
-                Configuration config;
+                // get drillstring from MS
+                try
+                {
+                    var drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Impossible to get the drillstring for the 4ndof simulation: " + ex.ToString());
+                    return false;
+                }
+
+                NORCE.Drilling.Simulator.DataModel.Configuration config;
                 //initialize simulation
                 try
                 {
@@ -857,9 +866,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         }
 
 
-        public Configuration Initialize(Simulation simulation)
+        public NORCE.Drilling.Simulator.DataModel.Configuration Initialize(Simulation simulation)
         {
-            var config = new Configuration()
+
+            var config = new NORCE.Drilling.Simulator.DataModel.Configuration()
             {
                 AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
                 TrajectoryFile = simulation.ContextualData.TrajectoryFile,
@@ -905,7 +915,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return config;
         }
 
-        private Profiles CreateProfile(double time, Output output, State state, Parameters parameters, Input u,Configuration config)
+        private Profiles CreateProfile(double time, Output output, State state, Parameters parameters, Input u, NORCE.Drilling.Simulator.DataModel.Configuration config)
         {
             return new Profiles
             {
@@ -960,7 +970,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
 
         /// <summary>
-        /// Executes the main simulation loop for the given Simulation and Configuration.
+        /// Executes the main simulation loop for the given Simulation and ServiceConfiguration.
         /// 
         /// Key Responsibilities:
         /// - Initializes simulation state and solver.
@@ -980,7 +990,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         /// - Real-time access to up-to-date scalar and profile results throughout the run.
         /// </summary>
 
-        public async Task<bool> CalculateAsync(Simulation simulation, Configuration config)
+        public async Task<bool> CalculateAsync(Simulation simulation, NORCE.Drilling.Simulator.DataModel.Configuration config)
         {
             if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
                 return false;

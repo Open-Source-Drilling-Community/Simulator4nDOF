@@ -353,6 +353,10 @@
           "BitRadius": {
             "type": "number",
             "format": "double"
+          },
+          "DrillStringID": {
+            "type": "string",
+            "format": "uuid"
           }
         },
         "additionalProperties": false

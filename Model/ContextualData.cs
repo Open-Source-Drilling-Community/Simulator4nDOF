@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OSDC.DotnetLibraries.General.DataManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,5 +21,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double WellheadDepth { get; set; }
         public double RiserID { get; set; }
         public double BitRadius { get; set; }
+
+        public Guid DrillStringID { get; set; }
+        // ID 066505f3-bbeb-47e1-a0c9-b48b16a1f3aa
+        //HttpHostName  https://dev.digiwells.no/
+        //HttpHostBasePath DrillString/api/
+        //HttpEndPoint DrillString/
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using NORCE.Drilling.Simulator4nDOF.Service;
 using NORCE.Drilling.Simulator4nDOF.Service.Managers;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,9 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedProto
 });
+
+if (!String.IsNullOrEmpty(builder.Configuration["DrillStringHostURL"]))
+    ServiceConfiguration.DrillStringHostURL = builder.Configuration["DrillStringHostURL"];
 
 if (builder.Environment.IsDevelopment())
 {

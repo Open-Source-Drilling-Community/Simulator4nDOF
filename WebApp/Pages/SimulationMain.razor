@@ -322,6 +322,9 @@
                                     <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringFile" Label="Drillstring file name" Variant="Variant.Text"></MudTextField>
                                 </MudItem>
                                 <MudItem xs="12">
+                                    <MudTextField @bind-Value="newSimulation.ContextualData.DrillStringID" Label="Drillstring id" Variant="Variant.Text"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12">
                                     <MudTextField @bind-Value="newSimulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>
                                 </MudItem>
                                 <MudItem xs="12">
@@ -610,6 +613,7 @@
                 AnnulusPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\AnnulusHydraulicProfiles.txt",
                 DrillstringPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\DrillstringHydraulicProfiles.txt",
                 DrillstringFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Drillstring.csv",
+                DrillStringID = new Guid("066505f3-bbeb-47e1-a0c9-b48b16a1f3aa"),
                 CasingShoeDepth = 2181,
                 LinerShoeDepth = 0,
                 CasingID = 9 * 0.0254,

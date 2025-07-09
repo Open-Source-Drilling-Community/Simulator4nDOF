@@ -870,6 +870,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("BitRadius")]
         public double BitRadius { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringID")]
+        public System.Guid DrillStringID { get; set; }
+
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]

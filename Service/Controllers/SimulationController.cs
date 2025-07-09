@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OSDC.DotnetLibraries.General.DataManagement;
 using NORCE.Drilling.Simulator4nDOF.Service.Managers;
+using System.Threading.Tasks;
 
 namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
 {
@@ -153,7 +154,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="simulation"></param>
         /// <returns>true if the given Simulation has been added successfully to the microservice database, at the endpoint Simulator4nDOF/api/Simulation</returns>
         [HttpPost(Name = "PostSimulation")]
-        public ActionResult PostSimulation([FromBody] Model.Simulation? data)
+        public async Task<ActionResult> PostSimulation([FromBody] Model.Simulation? data)
         {
             // Check if simulation exists in the database through ID
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID != Guid.Empty)
@@ -163,7 +164,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
                 {   
                     //  If simulation was not found, call AddSimulation, where the simulation.Calculate()
                     // method is called. 
-                    if (_simulationManager.AddSimulation(data))
+                    if (await _simulationManager.AddSimulation(data))
                     {
                         return Ok(); // status=OK is used rather than status=Created because NSwag auto-generated controllers use 200 (OK) rather than 201 (Created) as return codes
                     }
