@@ -11,7 +11,6 @@ RUN chmod 644 /usr/local/share/ca-certificates/foo.crt && update-ca-certificates
 
 WORKDIR /src
 COPY ["WebApp/WebApp.csproj", "WebApp/"]
-COPY ./nuget.config .
 RUN dotnet restore "WebApp/WebApp.csproj"
 
 COPY . .

@@ -11,7 +11,6 @@ RUN chmod 644 /usr/local/share/ca-certificates/foo.crt && update-ca-certificates
 
 WORKDIR /src
 COPY ["Service/Service.csproj", "Service/"]
-COPY ./nuget.config .
 RUN dotnet restore "Service/Service.csproj"
 
 COPY . .
