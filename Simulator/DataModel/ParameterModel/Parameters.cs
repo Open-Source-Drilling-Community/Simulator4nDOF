@@ -25,6 +25,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ds = new Drillstring(lc, 
                                  fluid, 
                                  c.DrillstringFile, 
+                                 c.DrillString,
                                  c.BitDepth, 
                                  c.BitRadius, 
                                  c.SensorDistanceFromBit, 

@@ -2,10 +2,11 @@
 using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using NORCE.Drilling.Simulator4nDOF.Model;
+using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using NORCE.Drilling.Simulator4nDOF.Simulator;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using NORCE.Drilling.Simulator4nDOF.Model;
 using OSDC.DotnetLibraries.General.DataManagement;
 using OSDC.DotnetLibraries.General.Math;
 using System;
@@ -19,6 +20,7 @@ using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using MetaInfo = OSDC.DotnetLibraries.General.DataManagement.MetaInfo;
 
 namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 {
@@ -519,9 +521,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID != Guid.Empty)
             {
                 // get drillstring from MS
+                DrillString drillString;
                 try
                 {
-                    var drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
+                    drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
                 }
                 catch (Exception ex)
                 {
@@ -533,7 +536,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 //initialize simulation
                 try
                 {
-                    config = Initialize(simulation);
+                    config = Initialize(simulation, drillString);
                 }
                 catch (Exception ex)
                 {
@@ -621,6 +624,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 }
 
                 // Run simulation in the background
+                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 Task.Run(async () =>
                 {
                     bool acquired = false;
@@ -653,6 +657,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         }
                     }
                 });
+                #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 return true; // ✅ Return immediately
 
             }
@@ -866,7 +871,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         }
 
 
-        public Simulator.DataModel.Configuration Initialize(Simulation simulation)
+        public Simulator.DataModel.Configuration Initialize(Simulation simulation, DrillString drillString)
         {
 
             var config = new Simulator.DataModel.Configuration()
@@ -874,6 +879,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
                 TrajectoryFile = simulation.ContextualData.TrajectoryFile,
                 DrillstringFile = simulation.ContextualData.DrillstringFile,
+                DrillString = drillString,
                 StringPressureFile = simulation.ContextualData.DrillstringPressureFile,
                 BitDepth = simulation.InitialValues.BitDepth,                            // [m]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]

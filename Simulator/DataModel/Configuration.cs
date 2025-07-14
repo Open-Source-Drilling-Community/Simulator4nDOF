@@ -67,6 +67,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required double TopOfStringVelocity;
         public required string TrajectoryFile;
         public required string DrillstringFile;
+        public required ModelShared.DrillString DrillString;
         public required string StringPressureFile;
         public required string AnnulusPressureFile;
         public required double CasingShoeDepth;
