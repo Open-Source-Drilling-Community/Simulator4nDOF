@@ -44,6 +44,9 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 if (!String.IsNullOrEmpty(builder.Configuration["DrillStringHostURL"]))
     ServiceConfiguration.DrillStringHostURL = builder.Configuration["DrillStringHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["DrillStringOpenLabHostURL"]))
+    ServiceConfiguration.DrillStringOpenLabHostURL = builder.Configuration["DrillStringOpenLabHostURL"];
+
 
 if (builder.Environment.IsDevelopment())
 {
