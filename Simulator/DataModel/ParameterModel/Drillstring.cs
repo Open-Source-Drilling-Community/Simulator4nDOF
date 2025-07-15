@@ -1,6 +1,9 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using Model;
+using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using NORCE.Drilling.Simulator4nDOF.Simulator;
+using SharpYaml.Serialization.Logging;
 using System.Globalization;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
@@ -92,9 +95,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double sensorRadialDistance; // [m] radial distance from centerline of the tool to the accelerometer
 
         public Drillstring(LumpedCells lc, 
-                           Fluid fluid, 
+                           Fluid fluid,
+                           DrillStringSourceType DrillStringSource,
                            string drillstringFile, 
                            DrillString drillString,
+                           DrillStringOpenLab drillStringOpenLab,
                            double MD, 
                            double Rb, 
                            double sensorDistanceFromBit, 
@@ -126,143 +131,288 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             bool readFromMS = true;
             double scaleFactor = readFromMS ? Constants.in2m : 1.0;
 
-            if (readFromMS)
+            switch (DrillStringSource)
             {
-                foreach (var section in drillString.DrillStringSectionList)
-                {
-                    var compCount = section.Count;
-                    // If same component in a section then simplify and insert one component with length adjusted
-                    var repetitions = section.SectionComponentList.Count == 1 ? 1 : compCount;
-
-                    for (int i = 0; i < repetitions; i++)
+                case DrillStringSourceType.DrillStringOpenLabFile:
+                    List<string[]> data = new List<string[]>();
+                    using (StreamReader sr = new StreamReader(drillstringFile))
                     {
-                        foreach (var comp in section.SectionComponentList)
+                        string line;
+                        // Skip header line
+                        sr.ReadLine();
+                        while ((line = sr.ReadLine()) != null)
                         {
-                            var type = comp.Type;
-                            var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
-                            var mass = 0.0;
-                            var connectionID = double.MaxValue;
-                            var connectionOD = double.MinValue;
-                            var connectionLength = double.MaxValue;
-
-                            foreach (var part in comp.PartList)
-                            {
-                                mass += part.Mass;
-                                connectionID = Math.Min(connectionID, part.InnerDiameter);
-                                connectionOD = Math.Max(connectionOD, part.OuterDiameter);
-                                connectionLength = Math.Min(connectionLength, part.TotalLength);
-                            }
-
-                            var partList = comp.PartList.ToList();
-                            var iD = (partList.Count == 3) ? partList[1].InnerDiameter : connectionID;
-                            var oD = (partList.Count == 3) ? partList[1].OuterDiameter : connectionOD;
-
-                            var adjustedType = type switch
-                            {
-                                DrillStringComponentTypes.DrillPipe => "Drillpipe",
-                                DrillStringComponentTypes.HeavyWeightDrillPipe => "HW drillpipe",
-                                _ => type.ToString()
-                            };
-
-                            component_type.Add(adjustedType);
-                            component_length.Add(length);
-                            connection_id.Add(connectionID);
-                            connection_od.Add(connectionOD);
-                            connection_length.Add(connectionLength);
-                            id.Add(iD);
-                            od.Add(oD);
-                            linear_weight.Add(mass / length);
+                            string[] values = line.Split(';');
+                            data.Add(values);
                         }
                     }
-                }
 
-                component_type.Reverse();
-                component_length.Reverse();
-                connection_id.Reverse();
-                connection_od.Reverse();
-                connection_length.Reverse();
-                id.Reverse();
-                od.Reverse();
-                linear_weight.Reverse();
-            }
-            else
-            {
-                List<string[]> data = new List<string[]>();
-                using (StreamReader sr = new StreamReader(drillstringFile))
-                {
-                    string line;
-                    // Skip header line
-                    sr.ReadLine();
-                    while ((line = sr.ReadLine()) != null)
+                    foreach (var row in data)
                     {
-                        string[] values = line.Split(';');
-                        data.Add(values);
+                        component_type.Add(row[7]);
                     }
-                }
 
-                foreach (var row in data)
-                {
-                    component_type.Add(row[7]);
-                }
+                    foreach (var row in data)
+                    {
+                        var str = row[10];
+                        if (str == "N/A")
+                            component_length.Add(double.NaN);
+                        else
+                            component_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                    }
 
-                foreach (var row in data)
-                {
-                    var str = row[10];
-                    if (str == "N/A")
-                        component_length.Add(double.NaN);
-                    else
-                        component_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
+                    foreach (var row in data)
+                    {
+                        var str = row[0];
+                        if (str == "N/A")
+                            connection_id.Add(double.NaN);
+                        else
+                            connection_id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                    }
 
-                foreach (var row in data)
-                {
-                    var str = row[0];
-                    if (str == "N/A")
-                        connection_id.Add(double.NaN);
-                    else
-                        connection_id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
+                    foreach (var row in data)
+                    {
+                        var str = row[5];
+                        if (str == "N/A")
+                            connection_od.Add(double.NaN);
+                        else
+                            connection_od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                    }
 
-                foreach (var row in data)
-                {
-                    var str = row[5];
-                    if (str == "N/A")
-                        connection_od.Add(double.NaN);
-                    else
-                        connection_od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
+                    foreach (var row in data)
+                    {
+                        var str = row[4];
+                        if (str == "N/A")
+                            connection_length.Add(double.NaN);
+                        else
+                            connection_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                    }
 
-                foreach (var row in data)
-                {
-                    var str = row[4];
-                    if (str == "N/A")
-                        connection_length.Add(double.NaN);
-                    else
-                        connection_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
+                    foreach (var row in data)
+                    {
+                        var str = row[12];
+                        if (str == "N/A")
+                            id.Add(double.NaN);
+                        else
+                            id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                    }
 
-                foreach (var row in data)
-                {
-                    var str = row[12];
-                    if (str == "N/A")
-                        id.Add(double.NaN);
-                    else
-                        id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
+                    foreach (var row in data)
+                    {
+                        var str = row[6];
+                        if (str == "N/A")
+                            od.Add(double.NaN);
+                        else
+                            od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                    }
+                    foreach (var row in data)
+                    {
+                        linear_weight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
+                    }
+                    break;
 
-                foreach (var row in data)
-                {
-                    var str = row[6];
-                    if (str == "N/A")
-                        od.Add(double.NaN);
-                    else
-                        od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-                foreach (var row in data)
-                {
-                    linear_weight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
-                }
+                case DrillStringSourceType.DrillStringOpenLabMS:
+                    
+
+                case DrillStringSourceType.DrillStringMS:
+                    foreach (var section in drillString.DrillStringSectionList)
+                    {
+                        var compCount = section.Count;
+                        // If same component in a section then simplify and insert one component with length adjusted
+                        var repetitions = section.SectionComponentList.Count == 1 ? 1 : compCount;
+
+                        for (int i = 0; i < repetitions; i++)
+                        {
+                            foreach (var comp in section.SectionComponentList)
+                            {
+                                var type = comp.Type;
+                                var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
+                                var mass = 0.0;
+                                var connectionID = double.MaxValue;
+                                var connectionOD = double.MinValue;
+                                var connectionLength = double.MaxValue;
+
+                                foreach (var part in comp.PartList)
+                                {
+                                    mass += part.Mass;
+                                    connectionID = Math.Min(connectionID, part.InnerDiameter);
+                                    connectionOD = Math.Max(connectionOD, part.OuterDiameter);
+                                    connectionLength = Math.Min(connectionLength, part.TotalLength);
+                                }
+
+                                var partList = comp.PartList.ToList();
+                                var iD = (partList.Count == 3) ? partList[1].InnerDiameter : connectionID;
+                                var oD = (partList.Count == 3) ? partList[1].OuterDiameter : connectionOD;
+
+                                var adjustedType = type switch
+                                {
+                                    DrillStringComponentTypes.DrillPipe => "Drillpipe",
+                                    DrillStringComponentTypes.HeavyWeightDrillPipe => "HW drillpipe",
+                                    _ => type.ToString()
+                                };
+
+                                component_type.Add(adjustedType);
+                                component_length.Add(length);
+                                connection_id.Add(connectionID);
+                                connection_od.Add(connectionOD);
+                                connection_length.Add(connectionLength);
+                                id.Add(iD);
+                                od.Add(oD);
+                                linear_weight.Add(mass / length);
+                            }
+                        }
+                    }
+
+                    component_type.Reverse();
+                    component_length.Reverse();
+                    connection_id.Reverse();
+                    connection_od.Reverse();
+                    connection_length.Reverse();
+                    id.Reverse();
+                    od.Reverse();
+                    linear_weight.Reverse();
+                    break;
+
             }
+
+
+           // if (readFromMS)
+           // {
+           //     foreach (var section in drillString.DrillStringSectionList)
+           //     {
+           //         var compCount = section.Count;
+           //         // If same component in a section then simplify and insert one component with length adjusted
+           //         var repetitions = section.SectionComponentList.Count == 1 ? 1 : compCount;
+           //
+           //         for (int i = 0; i < repetitions; i++)
+           //         {
+           //             foreach (var comp in section.SectionComponentList)
+           //             {
+           //                 var type = comp.Type;
+           //                 var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
+           //                 var mass = 0.0;
+           //                 var connectionID = double.MaxValue;
+           //                 var connectionOD = double.MinValue;
+           //                 var connectionLength = double.MaxValue;
+           //
+           //                 foreach (var part in comp.PartList)
+           //                 {
+           //                     mass += part.Mass;
+           //                     connectionID = Math.Min(connectionID, part.InnerDiameter);
+           //                     connectionOD = Math.Max(connectionOD, part.OuterDiameter);
+           //                     connectionLength = Math.Min(connectionLength, part.TotalLength);
+           //                 }
+           //
+           //                 var partList = comp.PartList.ToList();
+           //                 var iD = (partList.Count == 3) ? partList[1].InnerDiameter : connectionID;
+           //                 var oD = (partList.Count == 3) ? partList[1].OuterDiameter : connectionOD;
+           //
+           //                 var adjustedType = type switch
+           //                 {
+           //                     DrillStringComponentTypes.DrillPipe => "Drillpipe",
+           //                     DrillStringComponentTypes.HeavyWeightDrillPipe => "HW drillpipe",
+           //                     _ => type.ToString()
+           //                 };
+           //
+           //                 component_type.Add(adjustedType);
+           //                 component_length.Add(length);
+           //                 connection_id.Add(connectionID);
+           //                 connection_od.Add(connectionOD);
+           //                 connection_length.Add(connectionLength);
+           //                 id.Add(iD);
+           //                 od.Add(oD);
+           //                 linear_weight.Add(mass / length);
+           //             }
+           //         }
+           //     }
+           //
+           //     component_type.Reverse();
+           //     component_length.Reverse();
+           //     connection_id.Reverse();
+           //     connection_od.Reverse();
+           //     connection_length.Reverse();
+           //     id.Reverse();
+           //     od.Reverse();
+           //     linear_weight.Reverse();
+           // }
+           // else
+           // {
+           //     List<string[]> data = new List<string[]>();
+           //     using (StreamReader sr = new StreamReader(drillstringFile))
+           //     {
+           //         string line;
+           //         // Skip header line
+           //         sr.ReadLine();
+           //         while ((line = sr.ReadLine()) != null)
+           //         {
+           //             string[] values = line.Split(';');
+           //             data.Add(values);
+           //         }
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         component_type.Add(row[7]);
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         var str = row[10];
+           //         if (str == "N/A")
+           //             component_length.Add(double.NaN);
+           //         else
+           //             component_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         var str = row[0];
+           //         if (str == "N/A")
+           //             connection_id.Add(double.NaN);
+           //         else
+           //             connection_id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         var str = row[5];
+           //         if (str == "N/A")
+           //             connection_od.Add(double.NaN);
+           //         else
+           //             connection_od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         var str = row[4];
+           //         if (str == "N/A")
+           //             connection_length.Add(double.NaN);
+           //         else
+           //             connection_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         var str = row[12];
+           //         if (str == "N/A")
+           //             id.Add(double.NaN);
+           //         else
+           //             id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+           //     }
+           //
+           //     foreach (var row in data)
+           //     {
+           //         var str = row[6];
+           //         if (str == "N/A")
+           //             od.Add(double.NaN);
+           //         else
+           //             od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+           //     }
+           //     foreach (var row in data)
+           //     {
+           //         linear_weight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
+           //     }
+           // }
 
             int n = component_type.Count();
             List<double> LcBha = new List<double>();            // [m] BHA component length vector

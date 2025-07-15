@@ -2,6 +2,7 @@
 using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using Model;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using NORCE.Drilling.Simulator4nDOF.Simulator;
@@ -521,22 +522,67 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (simulation != null && simulation.MetaInfo != null && simulation.MetaInfo.ID != Guid.Empty)
             {
                 // get drillstring from MS
-                DrillString drillString;
-                try
+                DrillString drillString = null;
+                //try
+                //{
+                //    drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogWarning("Impossible to get the drillstring for the 4ndof simulation: " + ex.ToString());
+                //    return false;
+                //}
+
+                DrillStringOpenLab drillStringOpenLab = null;
+               
+                //try
+                //{
+                //    drillString = await APIUtils.ClientDrillStringOpenLab.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogWarning("Impossible to get the drillstring for the 4ndof simulation: " + ex.ToString());
+                //    return false;
+                //}
+                switch (simulation.ContextualData.DrillStringSource)
                 {
-                    drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
+                    case DrillStringSourceType.DrillStringOpenLabFile:
+                        // Use AnnulusPressureFile (assumed used elsewhere in your logic)
+                        break;
+
+                    case DrillStringSourceType.DrillStringOpenLabMS:
+                        try
+                        {
+                            drillStringOpenLab = await APIUtils.ClientDrillStringOpenLab.GetDrillStringOpenLabByIdAsync(simulation.ContextualData.DrillStringOpenLabID);
+                        }
+
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning("Unable to get the drillstring from OpenLab MS for the 4ndof simulation: " + ex);
+                            return false;
+                        }
+                        break;
+
+                    case DrillStringSourceType.DrillStringMS:
+                        try
+                        {
+                            drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning("Unable to get the drillstring from MS for the 4ndof simulation: " + ex);
+                            return false;
+                        }
+                        break;
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning("Impossible to get the drillstring for the 4ndof simulation: " + ex.ToString());
-                    return false;
-                }
+
+
 
                 Simulator.DataModel.Configuration config;
                 //initialize simulation
                 try
                 {
-                    config = Initialize(simulation, drillString);
+                    config = Initialize(simulation, drillString, drillStringOpenLab, simulation.ContextualData.DrillStringSource);
                 }
                 catch (Exception ex)
                 {
@@ -871,15 +917,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         }
 
 
-        public Simulator.DataModel.Configuration Initialize(Simulation simulation, DrillString drillString)
+        public Simulator.DataModel.Configuration Initialize(Simulation simulation, DrillString drillString, DrillStringOpenLab drillStringOpenLab, DrillStringSourceType DrillStringSource)
         {
 
             var config = new Simulator.DataModel.Configuration()
             {
                 AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
                 TrajectoryFile = simulation.ContextualData.TrajectoryFile,
+                DrillStringSourceType = DrillStringSource,
                 DrillstringFile = simulation.ContextualData.DrillstringFile,
                 DrillString = drillString,
+                DrillStringOpenLab = drillStringOpenLab,
                 StringPressureFile = simulation.ContextualData.DrillstringPressureFile,
                 BitDepth = simulation.InitialValues.BitDepth,                            // [m]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]

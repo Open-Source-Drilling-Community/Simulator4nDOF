@@ -1,4 +1,5 @@
-﻿using OSDC.DotnetLibraries.General.DataManagement;
+﻿using Model;
+using OSDC.DotnetLibraries.General.DataManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
     {
         public string TrajectoryFile { get; set; }
         public string DrillstringFile { get; set; }
-        public string AnnulusPressureFile { get; set; }
         public string DrillstringPressureFile { get; set; }
         public double FluidDensity { get; set; }
         public double CasingShoeDepth { get; set; }
@@ -23,9 +23,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double BitRadius { get; set; }
 
         public Guid DrillStringID { get; set; }
+        public Guid DrillStringOpenLabID { get; set; }
+        public string AnnulusPressureFile { get; set; }
+
+        public DrillStringSourceType DrillStringSource { get; set; } = DrillStringSourceType.DrillStringMS;
+
+
         // ID 066505f3-bbeb-47e1-a0c9-b48b16a1f3aa
         //HttpHostName  https://dev.digiwells.no/
         //HttpHostBasePath DrillString/api/
         //HttpEndPoint DrillString/
     }
+
+    
 }

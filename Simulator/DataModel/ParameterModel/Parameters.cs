@@ -24,8 +24,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             lc = new LumpedCells(c.BitDepth, c.LengthBetweenLumpedElements);
             ds = new Drillstring(lc, 
                                  fluid, 
+                                 c.DrillStringSourceType,
                                  c.DrillstringFile, 
                                  c.DrillString,
+                                 c.DrillStringOpenLab,
                                  c.BitDepth, 
                                  c.BitRadius, 
                                  c.SensorDistanceFromBit, 

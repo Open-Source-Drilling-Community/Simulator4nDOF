@@ -10,6 +10,11 @@ public static class APIUtils
     public static readonly HttpClient HttpClientDrillString = APIUtils.SetHttpClient(HostNameDrillString, HostBasePathDrillString);
     public static readonly Client ClientDrillString = new Client(APIUtils.HttpClientDrillString.BaseAddress!.ToString(), APIUtils.HttpClientDrillString);
 
+    public static readonly string HostNameDrillStringOpenLab = NORCE.Drilling.Simulator4nDOF.Service.ServiceConfiguration.DrillStringOpenLabHostURL!;
+    public static readonly string HostBasePathDrillStringOpenLab = "DrillStringOpenLab/api/";
+    public static readonly HttpClient HttpClientDrillStringOpenLab = APIUtils.SetHttpClient(HostNameDrillStringOpenLab, HostBasePathDrillStringOpenLab);
+    public static readonly Client ClientDrillStringOpenLab = new Client(APIUtils.HttpClientDrillStringOpenLab.BaseAddress!.ToString(), APIUtils.HttpClientDrillStringOpenLab);
+
     // API utility methods
     public static HttpClient SetHttpClient(string host, string microServiceUri)
     {

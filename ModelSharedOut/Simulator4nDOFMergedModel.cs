@@ -756,6 +756,21 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum DrillStringSourceType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DrillStringOpenLabFile")]
+        DrillStringOpenLabFile = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DrillStringOpenLabMS")]
+        DrillStringOpenLabMS = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DrillStringMS")]
+        DrillStringMS = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Config
     {
 
@@ -840,9 +855,6 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("DrillstringFile")]
         public string DrillstringFile { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("AnnulusPressureFile")]
-        public string AnnulusPressureFile { get; set; }
-
         [System.Text.Json.Serialization.JsonPropertyName("DrillstringPressureFile")]
         public string DrillstringPressureFile { get; set; }
 
@@ -872,6 +884,16 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("DrillStringID")]
         public System.Guid DrillStringID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringOpenLabID")]
+        public System.Guid DrillStringOpenLabID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("AnnulusPressureFile")]
+        public string AnnulusPressureFile { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringSource")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public DrillStringSourceType DrillStringSource { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

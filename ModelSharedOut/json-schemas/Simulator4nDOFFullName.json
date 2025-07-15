@@ -217,6 +217,14 @@
   },
   "components": {
     "schemas": {
+      "Model.DrillStringSourceType": {
+        "enum": [
+          "DrillStringOpenLabFile",
+          "DrillStringOpenLabMS",
+          "DrillStringMS"
+        ],
+        "type": "string"
+      },
       "NORCE.Drilling.Simulator4nDOF.Model.Config": {
         "type": "object",
         "properties": {
@@ -314,10 +322,6 @@
             "type": "string",
             "nullable": true
           },
-          "AnnulusPressureFile": {
-            "type": "string",
-            "nullable": true
-          },
           "DrillstringPressureFile": {
             "type": "string",
             "nullable": true
@@ -357,6 +361,17 @@
           "DrillStringID": {
             "type": "string",
             "format": "uuid"
+          },
+          "DrillStringOpenLabID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "AnnulusPressureFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillStringSource": {
+            "$ref": "#/components/schemas/Model.DrillStringSourceType"
           }
         },
         "additionalProperties": false

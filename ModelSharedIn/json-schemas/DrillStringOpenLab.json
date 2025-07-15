@@ -1,0 +1,748 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ModelShared (Service)",
+    "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://dev.digiwells.no/DrillStringOpenLab/api/swagger/merged/swagger.json"
+    }
+  ],
+  "paths": {
+    "/DrillStringComponentOpenLab": {
+      "get": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "GetAllDrillStringComponentOpenLabId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "PostDrillStringComponentOpenLab",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringComponentOpenLab/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "GetAllDrillStringComponentOpenLabMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringComponentOpenLab/{id}": {
+      "get": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "GetDrillStringComponentOpenLabById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "PutDrillStringComponentOpenLabById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "DeleteDrillStringComponentOpenLabById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringComponentOpenLab/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillStringComponentOpenLab"
+        ],
+        "operationId": "GetAllDrillStringComponentOpenLab",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringOpenLab": {
+      "get": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "GetAllDrillStringOpenLabId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "PostDrillStringOpenLab",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringOpenLab"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringOpenLab"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringOpenLab"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringOpenLab/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "GetAllDrillStringOpenLabMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringOpenLab/{id}": {
+      "get": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "GetDrillStringOpenLabById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillStringOpenLab"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "PutDrillStringOpenLabById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringOpenLab"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringOpenLab"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringOpenLab"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "DeleteDrillStringOpenLabById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringOpenLab/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillStringOpenLab"
+        ],
+        "operationId": "GetAllDrillStringOpenLab",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillStringOpenLab"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlongStringMeasurementOpenLab": {
+        "type": "object"
+      },
+      "BitOpenLab": {
+        "type": "object",
+        "properties": {
+          "BitAggresivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "DrillingEfficiencyFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Mass": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "NozzleDiameters": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "CrossOverOpenLab": {
+        "type": "object",
+        "properties": {
+          "ConnectionIDBottom": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionIDTop": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionODBottom": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionODTop": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrillCollarOpenLab": {
+        "type": "object"
+      },
+      "DrillPipeOpenLab": {
+        "type": "object",
+        "properties": {
+          "AverageJointLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionID": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionOD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringComponentOpenLab": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "BodyID": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BodyOD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LinearWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BitOpenLab": {
+            "$ref": "#/components/schemas/BitOpenLab"
+          },
+          "SteerableRotaryToolOpenLab": {
+            "$ref": "#/components/schemas/SteerableRotaryToolOpenLab"
+          },
+          "FloatSubOpenLab": {
+            "$ref": "#/components/schemas/FloatSubOpenLab"
+          },
+          "CrossOverOpenLab": {
+            "$ref": "#/components/schemas/CrossOverOpenLab"
+          },
+          "StabilizerOpenLab": {
+            "$ref": "#/components/schemas/StabilizerOpenLab"
+          },
+          "PWDOpenLab": {
+            "$ref": "#/components/schemas/PWDOpenLab"
+          },
+          "DrillCollarOpenLab": {
+            "$ref": "#/components/schemas/DrillCollarOpenLab"
+          },
+          "LWDOpenLab": {
+            "$ref": "#/components/schemas/LWDOpenLab"
+          },
+          "MWDOpenLab": {
+            "$ref": "#/components/schemas/MWDOpenLab"
+          },
+          "JarOpenLab": {
+            "$ref": "#/components/schemas/JarOpenLab"
+          },
+          "HWDPOpenLab": {
+            "$ref": "#/components/schemas/HWDPOpenLab"
+          },
+          "AlongStringMeasurementOpenLab": {
+            "$ref": "#/components/schemas/AlongStringMeasurementOpenLab"
+          },
+          "DrillPipeOpenLab": {
+            "$ref": "#/components/schemas/DrillPipeOpenLab"
+          },
+          "Type": {
+            "$ref": "#/components/schemas/DrillStringComponentTypeOpenLab"
+          }
+        }
+      },
+      "DrillStringComponentTypeOpenLab": {
+        "enum": [
+          "BitOpenLab",
+          "SteerableRotaryToolOpenLab",
+          "FloatSubOpenLab",
+          "CrossOverOpenLab",
+          "StabilizerOpenLab",
+          "PWDOpenLab",
+          "DrillCollarOpenLab",
+          "LWDOpenLab",
+          "MWDOpenLab",
+          "JarOpenLab",
+          "HWDPOpenLab",
+          "AlongStringMeasurementOpenLab",
+          "DrillPipeOpenLab"
+        ],
+        "type": "string"
+      },
+      "DrillStringOpenLab": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillStringComponentOpenLabList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponentOpenLab"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "FloatSubOpenLab": {
+        "type": "object"
+      },
+      "HWDPOpenLab": {
+        "type": "object",
+        "properties": {
+          "AverageJointLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionID": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionOD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "JarOpenLab": {
+        "type": "object",
+        "properties": {
+          "AverageJointLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionID": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ConnectionOD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "LWDOpenLab": {
+        "type": "object"
+      },
+      "MWDOpenLab": {
+        "type": "object",
+        "properties": {
+          "MakeUpTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstant": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TurbineImpellerArea": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "PWDOpenLab": {
+        "type": "object"
+      },
+      "StabilizerOpenLab": {
+        "type": "object",
+        "properties": {
+          "BladeODMax": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "SteerableRotaryToolOpenLab": {
+        "type": "object"
+      },
+      "MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

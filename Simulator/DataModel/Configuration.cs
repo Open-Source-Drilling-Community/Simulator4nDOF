@@ -1,5 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
-using System.Runtime.InteropServices;
+using Model;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 {
@@ -68,6 +68,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required string TrajectoryFile;
         public required string DrillstringFile;
         public required ModelShared.DrillString DrillString;
+        public required ModelShared.DrillStringOpenLab DrillStringOpenLab;
+        public required DrillStringSourceType DrillStringSourceType;
         public required string StringPressureFile;
         public required string AnnulusPressureFile;
         public required double CasingShoeDepth;
