@@ -523,27 +523,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             {
                 // get drillstring from MS
                 DrillString drillString = null;
-                try
-                {
-                    drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning("Impossible to get the drillstring for the 4ndof simulation: " + ex.ToString());
-                    return false;
-                }
 
                 DrillStringOpenLab drillStringOpenLab = null;
-
-                try
-                {
-                    drillString = await APIUtils.ClientDrillStringOpenLab.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning("Impossible to get the drillstring for the 4ndof simulation: " + ex.ToString());
-                    return false;
-                }
                 switch (simulation.ContextualData.DrillStringSource)
                 {
                     case DrillStringSourceType.DrillStringOpenLabFile:
