@@ -925,7 +925,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
                 SensorDistanceFromBit = simulation.Config.VirtualSensorPositionFromBit,
-                FluidDensity = 1200,                       // [kg/m3] Density of drilling mud
+                FluidDensity = simulation.ContextualData.FluidDensity,                       // [kg/m3] Density of drilling mud
                 LengthBetweenLumpedElements = 30,
                 CoulombKineticFriction = simulation.Config.CoulombKineticFriction,
                 CoulombStaticFriction = simulation.Config.CoulombStaticFriction,

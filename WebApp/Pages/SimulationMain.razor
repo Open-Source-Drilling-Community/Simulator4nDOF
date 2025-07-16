@@ -42,8 +42,13 @@
                                     <MudIconButton Icon="@Icons.Material.Outlined.Delete"
                                                     Size="Size.Small"
                                                     Color="Color.Error"
-                                                    OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
+                                                    OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)"/>
+                                    <MudIconButton Icon="@Icons.Material.Outlined.Visibility"
+                                                    Size="Size.Small"
+                                                    Color="Color.Success"
+                                                    OnClick="() => ViewSimulation(context.Item.MetaInfo.ID)"/>
                                 </CellTemplate>
+
                         </TemplateColumn>
                     </Columns>
                     <PagerContent>
@@ -61,7 +66,7 @@
                     <MudText Typo="Typo.h5">Edit new simulation </MudText>
                     <MudToolBar>
                         <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
-                        <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Close">Cancel</MudButton>
+                        <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.ArrowBackIosNew">Back</MudButton>
                     </MudToolBar>
                     <MudPaper Class="pa-4">
                     
@@ -316,21 +321,19 @@
                             <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Contextual data </MudText>
 
                             <MudGrid RowSpacing="0" Style="margin-top:-0px;">
-                                
-                                <MudText Typo="Typo.body1">Selected: @newSimulation.ContextualData.DrillStringSource (@Convert.ToInt32(newSimulation.ContextualData.DrillStringSource))</MudText>
-                                <MudItem xs="12">
+                                <MudItem Style="width:250px;">
                                     <MudSelect Style="width:250px;"
                                            Label="DrillString Source"
                                            @bind-Value="newSimulation.ContextualData.DrillStringSource"
                                            Variant="Variant.Text">
-                                        <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabFile">DrillString OpenLab File</MudSelectItem>
-                                        <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabMS">DrillString OpenLab MS id</MudSelectItem>
-                                        <MudSelectItem Value="@DrillStringSourceType.DrillStringMS">DrillString MS id</MudSelectItem>
+                                        <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabFile">DrillString OpenLab file</MudSelectItem>
+                                        <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabMS">DrillString OpenLab micro service</MudSelectItem>
+                                        <MudSelectItem Value="@DrillStringSourceType.DrillStringMS">DrillString micro service</MudSelectItem>
                                     </MudSelect>
                                 </MudItem>
                                 @if (newSimulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringOpenLabFile)
                                 {
-                                    <MudItem xs="12">
+                                    <MudItem Style="width:500px;">
                                         <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringFile" 
                                                       Label="Drillstring file name" 
                                                       Variant="Variant.Text" />
@@ -338,7 +341,7 @@
                                 }
                                 else if (newSimulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS)
                                 {
-                                    <MudItem xs="12">
+                                    <MudItem Style="width:500px;">
                                         <MudTextField @bind-Value="newSimulation.ContextualData.DrillStringOpenLabID" 
                                                       Label="Drillstring OpenLab id" 
                                                       Variant="Variant.Text" />
@@ -346,7 +349,7 @@
                                 }
                                 else if (newSimulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringMS)
                                 {
-                                    <MudItem xs="12">
+                                    <MudItem Style="width:500px;">
                                         <MudTextField @bind-Value="newSimulation.ContextualData.DrillStringID" 
                                                       Label="Drillstring id" 
                                                       Variant="Variant.Text" />
@@ -363,7 +366,6 @@
                                     <MudTextField @bind-Value="newSimulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
                                 </MudItem>
                             </MudGrid>
-                            <br> 
                             <MudGrid RowSpacing="0"  Style="margin-top:-0px;">
                                 <MudItem Style="width:250px;">
                                     <MudInputWithUnit 
@@ -474,6 +476,7 @@
     private Simulation newSimulation = new();
     public bool isHiddenMainPanel;
     public bool isHiddenEditSimulationPanel;
+    public bool autoUpdate;
 
     private Color GetProgressColor(double? progress)
     {
@@ -535,6 +538,7 @@
     {
         isHiddenEditSimulationPanel = true;
         isHiddenMainPanel = false;
+        autoUpdate = true;
     }
 
     private void OnExpandCollapseClickAddPanel()
@@ -542,25 +546,23 @@
         NewDefaultSimulation();
         isHiddenEditSimulationPanel = false;
         isHiddenMainPanel = true;
+        autoUpdate = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Show main panel
             isHiddenMainPanel = false;
             isHiddenEditSimulationPanel = true;
             currentLightSimulation = null;
 
             // Starting all loading tasks asynchronously
             logger.LogInformation("Trying to load list of ToBeRemoved from client: " + APIUtils.HostNameSimulator4nDOF);
-            //var toBeRemovedTask = APIUtils.ClientSimulation.GetAllToBeRemovedAsync();
             logger.LogInformation("Trying to load list of Simulation from client: " + APIUtils.HostNameSimulator4nDOF);
             var SimulationTask = APIUtils.ClientSimulator4nDOF.GetAllSimulationLightAsync();
 
             List<Task> loadingTaskList = new List<Task> { SimulationTask };
-            //loadingTaskList.Add(toBeRemovedTask);
 
             // Awaiting tasks and retrieve results as they become available
             while (loadingTaskList.Count > 0)
@@ -570,7 +572,8 @@
                 {
                     try
                     {
-                        SimulationList = (List<SimulationLight>)await SimulationTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        SimulationList = (List<SimulationLight>)await SimulationTask;
+
                         if (SimulationList != null)
                         {
                             SimulationList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
@@ -579,6 +582,28 @@
                         {
                             logger.LogWarning("Returned list of Simulation were null on initialization");
                             Snackbar.Add("Returned list of Simulation were null on initialization", Severity.Warning);
+                        }
+
+                        while (SimulationList != null && SimulationList.Any(s => s.TerminationState < 1))
+                        {
+                            SimulationTask = APIUtils.ClientSimulator4nDOF.GetAllSimulationLightAsync();
+                            SimulationList = (List<SimulationLight>)await SimulationTask; 
+
+                            if (SimulationList != null)
+                            {
+                                autoUpdate = true;
+                                await InvokeAsync(() => { StateHasChanged(); });
+                            }
+                            else
+                            {
+                                logger.LogWarning("Impossible to load Simulations");
+                                Snackbar.Add("Impossible to load Simulations", Severity.Warning);
+                            }
+                            await Task.Delay(1000);
+                            if (!autoUpdate)
+                            {
+                                break;
+                            }
                         }
                     }
                     catch (ApiException ex)
@@ -647,7 +672,7 @@
                 DrillstringPressureFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\DrillstringHydraulicProfiles.txt",
                 DrillstringFile = "C:\\NORCE\\AxialTorsionalLateralTransientTorqueAndDrag\\WellboreConfigurations\\Run900\\BitDepth4085m\\Drillstring.csv",
                 DrillStringID = new Guid("fee4592a-8ed9-4937-86b5-53489c55957e"),
-                DrillStringOpenLabID = new Guid("d5e3b949-9031-46d6-8a59-7348c3329d8d"),
+                DrillStringOpenLabID = new Guid("c5cf7441-7e9b-4c18-84c7-e0707f13ee1a"),
                 CasingShoeDepth = 2181,
                 LinerShoeDepth = 0,
                 CasingID = 9 * 0.0254,
@@ -655,6 +680,7 @@
                 WellheadDepth = 120,
                 RiserID = 21 * 0.0254,
                 BitRadius = 0.2159 / 2,
+                FluidDensity = 1200,
             },
             InitialValues = new InitialValues()
             {
@@ -686,8 +712,8 @@
             await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.newSimulation);
             logger.LogInformation("Simulation posted successfully");
             Snackbar.Add("Simulation posted successfully", Severity.Success);
-            ;
             await OnInitializedAsync();
+            autoUpdate = true;
         }
         catch (Exception ex)
         {
@@ -696,9 +722,24 @@
         }
     }
 
+    private async Task ViewSimulation(Guid id)
+    {
+        autoUpdate = false;
+
+        try
+        {
+            Navigation.NavigateTo($"/Simulator4nDOF/webapp/Simulation/{id}");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load Simulation to be edited");
+        }
+    }
+
     private async Task RowClicked(DataGridRowClickEventArgs<SimulationLight> args)
     {
         var id = args.Item.MetaInfo.ID;
+        autoUpdate = false;
 
         try
         {
