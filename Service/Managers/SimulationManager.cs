@@ -89,7 +89,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (connection != null)
             {
                 bool success = false;
-                
+
                 using var transaction = connection.BeginTransaction();
                 try
                 {
@@ -106,7 +106,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     transaction.Rollback();
                     _logger.LogError(ex, "Impossible to clear the SimulationTable");
                 }
-                
+
                 return success;
             }
             else
@@ -651,7 +651,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 }
 
                 // Run simulation in the background
-                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 Task.Run(async () =>
                 {
                     bool acquired = false;
@@ -684,7 +684,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         }
                     }
                 });
-                #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 return true; // ✅ Return immediately
 
             }
@@ -926,7 +926,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
                 SensorDistanceFromBit = simulation.Config.VirtualSensorPositionFromBit,
                 FluidDensity = simulation.ContextualData.FluidDensity,                       // [kg/m3] Density of drilling mud
-                LengthBetweenLumpedElements = 30,
+                LengthBetweenLumpedElements = simulation.Config.LengthBetweenLumpedElements,
                 CoulombKineticFriction = simulation.Config.CoulombKineticFriction,
                 CoulombStaticFriction = simulation.Config.CoulombStaticFriction,
                 HeaveAmplitude = simulation.Config.HeaveAmplitude,
@@ -1067,7 +1067,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
                 for (int i = 0; i < steps; i++)
                 {
-                    var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity);
+                    var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity, setPoints.BottomExtraSideForce, setPoints.DifferenceStaticKineticFriction, setPoints.StribeckCriticalVelocity, setPoints.Sticking);
                     currentTime = (state.step - 1) * outerTimeStep; // start with 0 sec
                     simulation.Progress = currentTime / totalDuration;
 
@@ -1082,36 +1082,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     {
                         nextScalarLogTime += scalarInterval;
                         LogScalarValues(simulation.Results.Scalars, currentTime, output, state, u);
+                    }
 
-                        double profileLogTime = Math.Floor(currentTime / profileInterval) * profileInterval;
+                    if (logProfile)
+                    {
+                        nextProfileLogTime += profileInterval;
+                        simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, u, config));
+                    }
 
-                        if (logProfile)
-                        {
-                            // At a logging point, just finalize the profile by updating the last one
-                            if (simulation.Results.Profiles.Any())
-                            {
-                                simulation.Results.Profiles[^1] = CreateProfile(currentTime, output, state, parameters, u, config);
-                            }
-                            else
-                            {
-                                simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, u, config));
-                            }
-
-                            nextProfileLogTime += profileInterval;
-                            shouldAddNewProfile = true;
-                        }
-                        else if (shouldAddNewProfile)
-                        {
-                            // First scalar log after a profile log: add a new profile
-                            simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, u, config));
-                            shouldAddNewProfile = false;
-                        }
-                        else if (simulation.Results.Profiles.Any())
-                        {
-                            // Continue updating the last profile
-                            simulation.Results.Profiles[^1] = CreateProfile(currentTime, output, state, parameters, u, config);
-                        }
-
+                    if (logProfile || logScalar)
+                    {
                         await Task.Run(() =>
                         {
                             UpdateProgressSimulationById(simulation.MetaInfo.ID, simulation);

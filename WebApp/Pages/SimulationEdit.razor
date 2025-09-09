@@ -308,7 +308,18 @@
             if (currentSimulation != null)
             {
                 results = currentSimulation.Results;
-
+                if (results != null && results.Scalars != null)
+                {
+                    using (StreamWriter writer = new StreamWriter("C:\\Users\\erca\\NORCE\\P102854_SFI DigiWells - Epic Automated Well Engineering External - Epic Automated Well Engineering External\\Studies\\HarbourEnergy\\JarFailure\\results.txt"))
+                    {
+                        var scalars = results.Scalars;
+                        int count = scalars.Time.Count;
+                        for (int i = 0; i < count; i++)
+                        {
+                            writer.WriteLine(scalars.Time.ElementAt<double>(i) + "\t" + scalars.BitRPM.ElementAt<double>(i) + "\t" + scalars.SensorAngularVelocity.ElementAt<double>(i) + "\t" + scalars.SensorBendingMomentX.ElementAt<double>(i) + "\t" + scalars.SensorBendingMomentY.ElementAt<double>(i) + "\t" + scalars.SensorWhirlVelocity.ElementAt<double>(i) + "\t" + scalars.SurfaceRPM.ElementAt<double>(i) + "\t" + scalars.SurfaceTorque.ElementAt<double>(i));  
+                        }
+                    }
+                }
                 resultsPanelRef?.Refresh();
                 await InvokeAsync(() => { StateHasChanged(); });
             }

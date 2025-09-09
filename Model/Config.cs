@@ -34,5 +34,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double KpStiffAndZTorque { get; set; } = 50;
         public double KiStiffAndZTorque { get; set; } = 5;
 
+        public double LengthBetweenLumpedElements { get; set; } = 30;
     }
 }

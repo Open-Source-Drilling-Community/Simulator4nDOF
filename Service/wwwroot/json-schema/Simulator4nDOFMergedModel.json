@@ -308,6 +308,10 @@
           "KiStiffAndZTorque": {
             "type": "number",
             "format": "double"
+          },
+          "LengthBetweenLumpedElements": {
+            "type": "number",
+            "format": "double"
           }
         }
       },
@@ -715,6 +719,21 @@
           "TopOfStringVelocity": {
             "type": "number",
             "format": "double"
+          },
+          "BottomExtraSideForce": {
+            "type": "number",
+            "format": "double"
+          },
+          "StribeckCriticalVelocity": {
+            "type": "number",
+            "format": "double"
+          },
+          "DifferenceStaticKineticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "Sticking": {
+            "type": "boolean"
           }
         }
       },

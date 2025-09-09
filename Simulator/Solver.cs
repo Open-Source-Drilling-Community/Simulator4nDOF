@@ -1,11 +1,13 @@
-﻿using System;
-using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
+﻿using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
-using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using MathNet.Numerics.Distributions;
+using OSDC.DotnetLibraries.General.Common;
+using System;
+using System.Reflection;
 using System.Reflection.Metadata;
+using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
@@ -22,7 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Solver(Parameters p, in DataModel.Configuration c)
         {
             this.p = p;
-            this.c = c;            
+            this.c = c;
 
             u = new Input();
             u.omega_surf = c.SurfaceRPM;
@@ -31,13 +33,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             state = new State(in p, c.BitDepth, c.HoleDepth, c.TopOfStringPosition);
             output = new Output(in p, in c);
             topdriveController = new TopdriveController(in c, in p);
-            drawworksAndTopdrive =  new DrawworksAndTopdrive();
+            drawworksAndTopdrive = new DrawworksAndTopdrive();
         }
 
-        public (State, Output, Input) OuterStep(double SurfaceRPM, double TopOfStringVelocity)
+        public (State, Output, Input) OuterStep(double SurfaceRPM, double TopOfStringVelocity, double bottomExtraVerticalForce, double differenceStaticKineticFriction, double stribeckCriticalVelocity, bool sticking)
         {
             u.omega_surf = SurfaceRPM;
             u.v0 = TopOfStringVelocity;
+            u.BottomExtraNormalForce = bottomExtraVerticalForce;
+            u.differenceStaticKineticFriction = differenceStaticKineticFriction;
+            u.sticking = sticking;
+
+            if (stribeckCriticalVelocity > 0)
+            {
+                u.stribeckCriticalVelocity = stribeckCriticalVelocity;
+                p.f.stribeck = 1.0 / u.stribeckCriticalVelocity;
+            }
+            if (p.f.mu_s.Count == p.f.mu_k.Count)
+            {
+                for (int i = 0; i < p.f.mu_s.Count; i++)
+                {
+                    p.f.mu_s[i] = p.f.mu_k[i] + u.differenceStaticKineticFriction;
+                }
+            }
 
             // Calculate u.v0 and u.omega_sp 
             drawworksAndTopdrive.Step(in c, state, u);
@@ -51,7 +69,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             {
                 // update axial position of distributed and lumped elements to simulate moving drillstring
                 p.dc.x = p.dc.x + ToVector(state.v.ToColumnMajorArray()) * c.TimeStep;
-                p.lc.xL[0] = p.lc.xL[0] + u.v0 * c.TimeStep; 
+                p.lc.xL[0] = p.lc.xL[0] + u.v0 * c.TimeStep;
                 p.lc.xL.SetSubVector(1, p.lc.xL.Count() - 1, p.lc.xL.SubVector(1, p.lc.xL.Count - 1) + state.VL * c.TimeStep);
 
                 // update trajectory parameters and buoyancy force calculations
@@ -66,7 +84,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // if the top most element has traveled more than the distance between
                 // elements, we create a new lumped element and corresponding distributed section;
                 // we also need to reconstruct the parameter and state vectors to include the new elements
-                if (p.lc.xL[0] > p.lc.dxL)                
+                if (p.lc.xL[0] > p.lc.dxL)
                 {
                     AddNewLumpedElement();
                     p.t.UpdateTrajectory(p.lc);
@@ -75,14 +93,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     p.ds.idx_sensor = p.ds.idx_sensor + 1;
                 }
             }
-
             InnerStep();
 
             output.UpdateSSI(state.step * c.TimeStep);
 
             state.step = state.step + 1;
 
-            return (state, output,u);
+            return (state, output, u);
         }
 
         public void UpdateDepths()
@@ -216,7 +233,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> elementWiseProduct = p.ds.E.PointwiseMultiply(p.ds.A);
             Matrix<double> scalingMatrix = Vector<double>.Build.Dense(p.lc.PL, 1).ToColumnMatrix();
             Matrix<double> dragMatrix = scalingMatrix * elementWiseProduct.ToRowMatrix();
-            dragMatrix = state.e.PointwiseMultiply(dragMatrix);             
+            dragMatrix = state.e.PointwiseMultiply(dragMatrix);
             Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
             Vector<double> drag = LinearInterpolate(p.dc.x, drag_flattened, p.lc.xL);
 
@@ -261,7 +278,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> torsionExtended = ExtendVectorStart(p.t.torsion[0], p.t.torsion);
             Vector<double> torsion_dotExtended = ExtendVectorStart(p.t.torsion_dot[0], p.t.torsion_dot);
 
-            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque)/ p.lc.dxL);
+            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / p.lc.dxL);
 
             Vector<double> fB =
                 p.b.Wb.PointwiseMultiply(bzExtended) +
@@ -330,7 +347,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> inverted_slip_condition = Vector<double>.Build.Dense(p.lc.NL);
 
             Vector<double> Fstatic_t = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Fstatic_a = Vector<double>.Build.Dense(p.lc.NL); 
+            Vector<double> Fstatic_a = Vector<double>.Build.Dense(p.lc.NL);
 
             double wb = 0.0;
             double tb = 0.0;
@@ -432,58 +449,58 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                     else
                     {
-                        // Set tb and wb to 0
                         tb = 0;
                         wb = 0;
                     }
                 }
+                
                 // Augment Riemann invariants with interface values
                 var a_pad = aa_left.ToRowMatrix().Stack(aa);
 
-              //  var rows = aa.RowCount + 1; // Extra row for aa_left
-              //  var cols = aa.ColumnCount;
+                //  var rows = aa.RowCount + 1; // Extra row for aa_left
+                //  var cols = aa.ColumnCount;
 
                 // Create the final stacked matrix
-              //  var a_pad = Matrix<double>.Build.Dense(rows, cols);
-              //
-              //  // Set the first row from aa_left
-              //  a_pad.SetRow(0, aa_left.ToArray());
-              //
-              //  // Set the remaining rows from aa
-              //  for (int i = 0; i < aa.RowCount; i++)
-              //  {
-              //      a_pad.SetRow(i + 1, aa.Row(i));
-              //  }
-              //
-              //  // Create the final stacked matrix
-              //  var u_pad = Matrix<double>.Build.Dense(rows, cols);
-              //
-              //  // Set the first row from aa_left
-              //  u_pad.SetRow(0, uu_left.ToArray());
-              //
-              //  // Set the remaining rows from aa
-              //  for (int i = 0; i < uu.RowCount; i++)
-              //  {
-              //      u_pad.SetRow(i + 1, uu.Row(i));
-              //  }
+                //  var a_pad = Matrix<double>.Build.Dense(rows, cols);
+                //
+                //  // Set the first row from aa_left
+                //  a_pad.SetRow(0, aa_left.ToArray());
+                //
+                //  // Set the remaining rows from aa
+                //  for (int i = 0; i < aa.RowCount; i++)
+                //  {
+                //      a_pad.SetRow(i + 1, aa.Row(i));
+                //  }
+                //
+                //  // Create the final stacked matrix
+                //  var u_pad = Matrix<double>.Build.Dense(rows, cols);
+                //
+                //  // Set the first row from aa_left
+                //  u_pad.SetRow(0, uu_left.ToArray());
+                //
+                //  // Set the remaining rows from aa
+                //  for (int i = 0; i < uu.RowCount; i++)
+                //  {
+                //      u_pad.SetRow(i + 1, uu.Row(i));
+                //  }
 
                 var b_pad = bb.Stack(bb_right.ToRowMatrix());
                 var u_pad = uu_left.ToRowMatrix().Stack(uu);
                 var v_pad = vv.Stack(vv_right.ToRowMatrix());
                 // Stack a row vector bb_right on top of matrix bb
-               // var b_pad = Matrix<double>.Build.Dense(rows, cols);
-               // b_pad.SetRow(0, bb_right.ToArray());  // Set the first row from bb_right
-               // for (int i = 0; i < bb.RowCount; i++)  // Set remaining rows from bb
-               // {
-               //     b_pad.SetRow(i + 1, bb.Row(i));
-               // }
-               // var v_pad = Matrix<double>.Build.Dense(rows, cols);
-               //
-               // v_pad.SetRow(0, vv_right.ToArray());  // Set the first row from bb_right
-               // for (int i = 0; i < vv.RowCount; i++)  // Set remaining rows from bb
-               // {
-               //     v_pad.SetRow(i + 1, vv.Row(i));
-               // }
+                // var b_pad = Matrix<double>.Build.Dense(rows, cols);
+                // b_pad.SetRow(0, bb_right.ToArray());  // Set the first row from bb_right
+                // for (int i = 0; i < bb.RowCount; i++)  // Set remaining rows from bb
+                // {
+                //     b_pad.SetRow(i + 1, bb.Row(i));
+                // }
+                // var v_pad = Matrix<double>.Build.Dense(rows, cols);
+                //
+                // v_pad.SetRow(0, vv_right.ToArray());  // Set the first row from bb_right
+                // for (int i = 0; i < vv.RowCount; i++)  // Set remaining rows from bb
+                // {
+                //     v_pad.SetRow(i + 1, vv.Row(i));
+                // }
 
 
                 // Update states using Upwind scheme
@@ -522,6 +539,45 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Create a new vector tau_p with a length equal to the sum of the lengths of temp and tb
                 Vector<double> tau_p;
 
+                if (!state.onBottom)
+                {
+                    if (u.sticking)
+                    {
+                        wb = 0;
+                        int lastIndex = p.ds.G.Count - 1;
+                        Vector<double> a = aa.Row(p.lc.PL - 1);
+                        tb = p.ds.J[lastIndex] * p.ds.G[lastIndex] / p.ds.c_t * a[a.Count-1];
+                    }
+                    else
+                    {
+                        double normalForce_ = u.BottomExtraNormalForce;
+                        if (normalForce_ > 0)
+                        {
+                            double ro_ = p.ds.ro[p.ds.ro.Count - 1];
+                            double Fs_ = normalForce_ * 1.0;
+                            double Fc_ = normalForce_ * 0.5;
+                            double va_ = state.VL[state.VL.Count - 1];
+                            double omega_ = state.OL[state.OL.Count - 1];
+                            double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_);
+                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / p.f.v_c)) * v_ / Math.Sqrt(v_ * v_ + 0.001 * 0.001);
+                            if (Math.Abs(v_) < 1e-6)
+                            {
+                                tb = 0;
+                                wb = 0;
+                            }
+                            else
+                            {
+                                tb = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
+                                wb = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
+                            }
+                        }
+                        else
+                        {
+                            tb = 0;
+                            wb = 0;
+                        }
+                    }
+                }
                 if (!c.UseMudMotor)
                 {
                     tm = 0;
@@ -563,7 +619,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     phi[i] = Math.Atan2(state.Yc[i], state.Xc[i]);
                 }
                 r_dot = state.Xc_dot.PointwiseMultiply(phi.PointwiseCos()) + state.Yc_dot.PointwiseMultiply(phi.PointwiseSin());
-                
+
 
                 // Compute iC = (rc >= p.rc) (element-wise condition)
                 Vector<double> iC = Vector<double>.Build.Dense(p.w.rc.Count);
@@ -579,8 +635,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (F_N.Count > 1)
                     F_N[F_N.Count - 2] += u.Fshock;
 
+
                 phi_dot = (state.Yc_dot.PointwiseMultiply(state.Xc) - state.Xc_dot.PointwiseMultiply(state.Yc)).PointwiseDivide(Square(rc) + Constants.eps);
-                
+
                 Xc_iMinus1 = ExtendVectorStart(0, state.Xc.SubVector(0, state.Xc.Count - 1));
                 Xc_iPlus1 = Vector<double>.Build.DenseOfArray(state.Xc.SubVector(1, state.Xc.Count - 1).Append(0).ToArray());
                 Yc_iMinus1 = ExtendVectorStart(0, state.Yc.SubVector(0, state.Yc.Count - 1));
@@ -596,7 +653,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 var Fk_y = -(kb1 + kb2).PointwiseMultiply(state.Yc) +
                             kb1.PointwiseMultiply(Yc_iMinus1) +
                             kb2.PointwiseMultiply(Yc_iPlus1);
- 
+
 
                 Vector<double> F_prestress_x = F_N_prestress.PointwiseMultiply(tf_angle.PointwiseSin()) +
                                                F_B_prestress.PointwiseMultiply(tf_angle.PointwiseCos());
@@ -651,25 +708,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                   p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(p.ds.ro).PointwiseMultiply((state.Theta - phi).PointwiseCos());
                 var term1 = (p.ds.M_L + p.ds.Mf).PointwiseMultiply(p.ds.ro).PointwiseMultiply(r_dot).PointwiseMultiply(phi_dot);
                 var term2 = p.ds.ro.PointwiseMultiply((Fk_x + F_prestress_x + Ff_x)).PointwiseMultiply(phi.PointwiseSin());
-                var term3 = - p.ds.ro.PointwiseMultiply((Fk_y + F_prestress_y + Ff_y)).PointwiseMultiply(phi.PointwiseCos());
+                var term3 = -p.ds.ro.PointwiseMultiply((Fk_y + F_prestress_y + Ff_y)).PointwiseMultiply(phi.PointwiseCos());
                 var term4 = tau_m - tau_p - p.ds.kt * state.OL;
-                var term5 = - p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(p.ds.ro).PointwiseMultiply(Square(state.OL)).PointwiseMultiply((state.Theta - phi).PointwiseSin());
+                var term5 = -p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(p.ds.ro).PointwiseMultiply(Square(state.OL)).PointwiseMultiply((state.Theta - phi).PointwiseSin());
                 var numerator = term1 + term2 + term3 + term4 + term5;
                 theta_ddot_noslip = numerator.PointwiseDivide(denominator);
 
                 for (int i = 0; i < p.ds.iS.Count; i++)
                 {
                     int index = (int)p.ds.iS[i];
-              
-                    double denominator__ = p.ds.I_S + (p.ds.M_L[index] + p.ds.Mf[index])* p.ds.r_So * p.ds.r_So
+
+                    double denominator__ = p.ds.I_S + (p.ds.M_L[index] + p.ds.Mf[index]) * p.ds.r_So * p.ds.r_So
                      - p.ds.M_e[index] * p.ds.e[index] * p.ds.r_So * Math.Cos(state.Theta_S[i] - phi[index]);
                     double term1__ = (p.ds.M_L[index] + p.ds.Mf[index]) * p.ds.r_So * r_dot[index] * phi_dot[index];
                     double term2__ = p.ds.r_So * (Fk_x[index] + F_prestress_x[index] + Ff_x[index]) * Math.Sin(phi[index]);
-                    double term3__ = - p.ds.r_So * (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]);
+                    double term3__ = -p.ds.r_So * (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]);
                     double term5__ = p.ds.r_Si * F_S[i] - p.ds.M_e[index] * p.ds.e[index] * p.ds.r_So * state.OS[i] * state.OS[i] * Math.Sin(state.Theta_S[i] - phi[index]);
-              
-                    var numerator__ = term1__ + term2__ + term3__ +  term5__;
-                     theta_ddot_noslip[index] = numerator__/denominator__;
+
+                    var numerator__ = term1__ + term2__ + term3__ + term5__;
+                    theta_ddot_noslip[index] = numerator__ / denominator__;
                 }
                 phi_ddot_noslip = Vector<double>.Build.Dense(p.ds.I_L.Count());
 
@@ -687,7 +744,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     phi_ddot_noslip[index] = 1.0 / (p.ds.M_L[index] + p.ds.Mf[index] + p.ds.I_S / Math.Pow(p.ds.r_So, 2) - p.ds.M_e[index] * p.ds.e[index] / p.ds.r_So * Math.Cos(state.Theta_S[i] - phi[index]))
                                      * ((-2 * (p.ds.M_L[index] + p.ds.Mf[index]) - p.ds.I_S / Math.Pow(p.ds.r_So, 2) +
                                      p.ds.M_e[index] * p.ds.e[index] / p.ds.r_So * Math.Cos(state.Theta_S[i] - phi[index])) * r_dot[index] * phi_dot[index] -
-                                     (Fk_x[index] + F_prestress_x[index] + Ff_x[index]) * Math.Sin(phi[index]) + (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]) - 
+                                     (Fk_x[index] + F_prestress_x[index] + Ff_x[index]) * Math.Sin(phi[index]) + (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]) -
                                      p.ds.r_Si / p.ds.r_So * F_S[i] + p.ds.M_e[index] * p.ds.e[index] * state.OS[i] * state.OS[i] * Math.Sin(state.Theta_S[i] - phi[index]));
                 }
 
@@ -706,10 +763,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
                 for (int j = 0; j < p.lc.NL; j++)
                 {
-                    if (state.slip_condition[j] == 0) 
+                    if (state.slip_condition[j] == 0)
                     {
                         if (FResBar[j] > FcTh[j])
-                            state.slip_condition[j] = 1;  
+                            state.slip_condition[j] = 1;
                         else
                             state.slip_condition[j] = 0;
                     }
@@ -717,7 +774,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     {
                         if (VBar[j] < p.f.v_c)
                         {
-                            state.slip_condition[j] = 0; 
+                            state.slip_condition[j] = 0;
                         }
                     }
                 }
@@ -732,7 +789,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
                 // Fc_a and Fc_t are axial and tangential components of the coloumb friction force between the borehole and the 
                 // lumped element 
-                Vector<double> Fc = inverted_slip_condition.PointwiseMultiply((FResBar.PointwiseMinimum(FcTh)).PointwiseMaximum(-1.0 * FcTh)) + 
+                Vector<double> Fc = inverted_slip_condition.PointwiseMultiply((FResBar.PointwiseMinimum(FcTh)).PointwiseMaximum(-1.0 * FcTh)) +
                     state.slip_condition.PointwiseMultiply(F_N).PointwiseMultiply(p.f.mu_k + (p.f.mu_s - p.f.mu_k).PointwiseMultiply((-p.f.stribeck * VBar).PointwiseExp()));
                 Fc_a = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(Fstatic_a.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_a).PointwiseDivide(VBar);
                 Fc_t = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(Fstatic_t.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_t).PointwiseDivide(VBar);
@@ -748,7 +805,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Solve Lumped ODEs -check for numerical instability (fix by decreasing dt, increasing I_L, M_L, or increasing p.ds.kt, p.ka, p.kl)
                 state.Otd = state.Otd + 1.0 / p.w.I_TD * dt * (u.tau_Motor - tauTD);
 
-                OL_dot =(tau_m - tau_p - p.ds.kt * state.OL - Fc_t.PointwiseMultiply(p.ds.ro)).PointwiseDivide(p.ds.I_L);
+                OL_dot = (tau_m - tau_p - p.ds.kt * state.OL - Fc_t.PointwiseMultiply(p.ds.ro)).PointwiseDivide(p.ds.I_L);
                 for (int i = 0; i < p.ds.iS.Count; i++)
                 {
                     int index = (int)p.ds.iS[i];
@@ -794,13 +851,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 state.Xc_dot = state.Xc_dot + Xc_ddot * dt;
                 state.Yc = state.Yc + state.Yc_dot * dt;
                 state.Yc_dot = state.Yc_dot + Yc_ddot * dt;
-                
+
                 // Mud motor
                 if (c.UseMudMotor)
                 {
                     state.Ostator = state.OL[state.OL.Count - 1];
-                    state.Orotor = state.Orotor + dt / (p.mm.I_rotor + p.mm.M_rotor * Math.Pow(p.mm.delta_rotor,2) *  Math.Pow(p.mm.N_rotor,2)) * 
-                        (OL_dot[state.OL.Count - 1] * p.mm.M_rotor * Math.Pow(p.mm.delta_rotor,2) * p.mm.N_stator * p.mm.N_rotor + tm - tb);
+                    state.Orotor = state.Orotor + dt / (p.mm.I_rotor + p.mm.M_rotor * Math.Pow(p.mm.delta_rotor, 2) * Math.Pow(p.mm.N_rotor, 2)) *
+                        (OL_dot[state.OL.Count - 1] * p.mm.M_rotor * Math.Pow(p.mm.delta_rotor, 2) * p.mm.N_stator * p.mm.N_rotor + tm - tb);
                 }
             }
 
@@ -809,7 +866,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             state.f = 1.0 / (2.0 * p.ds.c_t) * (aa - bb);
 
             state.v = 1.0 / 2.0 * (uu + vv);
-            state.e = 1.0 / (2.0 * p.ds.c_a) * (uu - vv);       
+            state.e = 1.0 / (2.0 * p.ds.c_a) * (uu - vv);
 
             // Bending moments
             Mb_x = p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(Xc_iPlus1 - 2 * state.Xc + Xc_iMinus1) / (p.lc.dxL * p.lc.dxL); // Bending moment x-component
@@ -850,7 +907,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     theta_ddot = state.slip_condition[p.ds.idx_sensor] * OL_dot[p.ds.idx_sensor] + inverted_slip_condition[p.ds.idx_sensor] * theta_ddot_noslip[p.ds.idx_sensor];
                     u_x = state.Xc[p.ds.idx_sensor] + r0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor]) - phi0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor]);
                     u_y = state.Yc[p.ds.idx_sensor] + phi0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor]) + r0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor]);
-                    u_x_ddot = Xc_ddot[p.ds.idx_sensor] + r0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Cos(state.Theta[p.ds.idx_sensor]) - OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor])) + 
+                    u_x_ddot = Xc_ddot[p.ds.idx_sensor] + r0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Cos(state.Theta[p.ds.idx_sensor]) - OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor])) +
                         phi0_sensor * (Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Sin(state.Theta[p.ds.idx_sensor]) -
                         OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor]));
                     u_y_ddot = Yc_ddot[p.ds.idx_sensor] + phi0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Cos(state.Theta[p.ds.idx_sensor]) - OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor])) -
@@ -872,7 +929,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
                 if (!p.ds.iS.Contains(p.ds.idx_sensor - 1))
                 {
-                    r0_sensor = 0.5 * (p.ds.ri[p.ds.idx_sensor -1 ] + p.ds.ro[p.ds.idx_sensor - 1]);
+                    r0_sensor = 0.5 * (p.ds.ri[p.ds.idx_sensor - 1] + p.ds.ro[p.ds.idx_sensor - 1]);
                     u_x_iMinus1 = state.Xc[p.ds.idx_sensor - 1] + r0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) - phi0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor - 1]);
                     u_y_iMinus1 = state.Yc[p.ds.idx_sensor - 1] + phi0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) + r0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor - 1]);
                     u_x_ddot_iMinus1 = Xc_ddot[p.ds.idx_sensor - 1] + r0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor - 1], 2) * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) -
@@ -903,9 +960,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.vb = state.v[state.v.RowCount - 1, state.v.ColumnCount - 1]; // Bit velocity
 
             // Parse outputs
-            output.F_N =  F_N; // Pipe shear strain 
-            output.F_N_softstring = F_N_softstring; 
-            output.tension =  tension; // Tension profile
+            output.F_N = F_N; // Pipe shear strain 
+            output.F_N_softstring = F_N_softstring;
+            output.tension = tension; // Tension profile
 
             var tempMatrix = state.f.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
             output.torque = ToVector(tempMatrix.ToColumnMajorArray()); // Torque profile vs. depth
@@ -920,7 +977,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.rc = rc;
             output.phi = phi;
             output.phi_dot = phi_dot;
-            output.Mb = (Square(Mb_x) + Square(Mb_y)).PointwiseSqrt() + p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(p.t.curvature);
+            output.Mb = (Square(Mb_x) + Square(Mb_y)).PointwiseSqrt(); // the bending due to curvature is already included in the bending moment components + p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(p.t.curvature);
 
             if (c.UsePipeMovementReconstruction)
             {
@@ -960,7 +1017,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         {
             p.AddNewLumpedElement();
 
-            state.AddNewLumpedElement(); 
-        }       
+            state.AddNewLumpedElement();
+        }
     }
 }

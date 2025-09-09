@@ -67,7 +67,7 @@
         </MudPaper>
     }
 
-   
+
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndex="@activeTab" ActivePanelIndexChanged="OnTabChanged">
 
         <MudTabPanel Text="Time graphs">
@@ -94,30 +94,30 @@
             </MudGrid>
         </MudTabPanel>
         <MudTabPanel Text="Depth graphs ">
-            <MudGrid Class="pa-0 ma-0" Style="flex-wrap: nowrap; overflow-x: auto;"  Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+            <MudGrid Class="pa-0 ma-0" Style="flex-wrap: nowrap; overflow-x: auto;" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
                 </MudItem>
                 <MudItem Style="flex: 0 0 12%;">
-                    <PlotlyChart style="height: 80vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
+                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
                 </MudItem>
             </MudGrid>
         </MudTabPanel>
@@ -159,6 +159,7 @@
             {
                 startIndex = 0;
                 endIndex = _results.Scalars.Time.Count - 1;
+                CalculateMinMax();
             }
         }
     }
@@ -318,27 +319,35 @@
     // Depth-based charts
     private PlotlyChart _sideForceChart;
     private Layout _sideForceLayout = new Layout();
+    private List<object> _sideForceMinMax = new List<object>() { null, null };
 
     private PlotlyChart _angularVelocityChart;
     private Layout _angularVelocityLayout = new Layout();
+    private List<object> _angularVelocityMinMax = new List<object>() { null, null };
 
     private PlotlyChart _axialVelocityChart;
     private Layout _axialVelocityLayout = new Layout();
+    private List<object> _axialVelocityMinMax = new List<object>() { null, null };
 
     private PlotlyChart _lateralDispChart;
     private Layout _lateralDispLayout = new Layout();
+    private List<object> _lateralDispMinMax = new List<object>() { null, null };
 
     private PlotlyChart _lateralDispAChart;
     private Layout _lateralDispALayout = new Layout();
+    private List<object> _lateralDispAMinMax = new List<object>() { null, null };
 
     private PlotlyChart _bendingMomentChart;
     private Layout _bendingMomentLayout = new Layout();
+    private List<object> _bendingMomentMinMax = new List<object>() { null, null };
 
     private PlotlyChart _tensionChart;
     private Layout _tensionLayout = new Layout();
+    private List<object> _tensionMinMax = new List<object>() { null, null };
 
     private PlotlyChart _torqueDChart;
     private Layout _torqueDLayout = new Layout();
+    private List<object> _torqueDMinMax = new List<object>() { null, null };
 
     // Sensor charts
     private PlotlyChart _sensorVelocityAChart;
@@ -383,7 +392,7 @@
     }
 
 
-    private Layout CreateLayout(string xTitle, string yTitle, bool reversedYAxis = true, double? minAllowed = null, IList<object> range = null, Plotly.Blazor.LayoutLib.Margin margin = null) =>
+    private Layout CreateLayoutTimeBased(string xTitle, string yTitle, bool reversedYAxis = true, double? minAllowed = null, IList<object>? range = null, Plotly.Blazor.LayoutLib.Margin? margin = null) =>
     new Layout
     {
         Margin = margin ?? this.margin, // Allows different margin settings
@@ -393,6 +402,22 @@
                                     AutoRange = reversedYAxis ? Plotly.Blazor.LayoutLib.YAxisLib.AutoRangeEnum.Reversed : null,
                                     MinAllowed = minAllowed,
                                     Range = range } },
+        Annotations = new List<Annotation>(),
+        Colorway = new List<object> { "#b7127c", "#07b2b2", "#0073ac", "#f88707" }
+    };
+
+    private Layout CreateLayoutDepthBased(string xTitle, string yTitle, double? minAllowedX = null, double? minAllowedY = null, IList<object>? range = null, Plotly.Blazor.LayoutLib.Margin? margin = null) =>
+    new Layout
+    {
+        Margin = margin ?? this.margin, // Allows different margin settings
+        XAxis = new[] { new XAxis { Side = Plotly.Blazor.LayoutLib.XAxisLib.SideEnum.Bottom,
+                                   Title = new Plotly.Blazor.LayoutLib.XAxisLib.Title { Text = xTitle },
+                                   MinAllowed = minAllowedX,
+                                   Range = range} },
+        YAxis = new[] { new YAxis { Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = yTitle },
+                                   AutoRange = Plotly.Blazor.LayoutLib.YAxisLib.AutoRangeEnum.Reversed,
+                                   MinAllowed = minAllowedY,
+                                   Range = range} },
         Annotations = new List<Annotation>(),
         Colorway = new List<object> { "#b7127c", "#07b2b2", "#0073ac", "#f88707" }
     };
@@ -413,10 +438,10 @@
         _depthTraces.Add(_holeDepthTrace);
         _wobTraces.Add(_wobTrace);
         _ssiTraces.Add(_ssiTrace);
-        _torqueTraces.Add(_surfaceTorqueTrace);
         _torqueTraces.Add(_bitTorqueTrace);
-        _velocityTraces.Add(_surfaceAxialVelocityTrace);
+        _torqueTraces.Add(_surfaceTorqueTrace);
         _velocityTraces.Add(_bitAxialVelocityTrace);
+        _velocityTraces.Add(_surfaceAxialVelocityTrace);
         _sideForceTraces.Add(_sideForceTrace);
         _sideForceTraces.Add(_sideForceTraceSoftstring);
         _angularVelocityTraces.Add(_pipeAngularVelocityTrace);
@@ -450,33 +475,316 @@
         base.OnInitialized();
     }
 
+    private void CalculateMinMax()
+    {
+        if (Parent != null && Results != null && Results.Profiles != null && Results.Profiles.Count > 0)
+        {
+            _angularVelocityMinMax[0] = double.MaxValue;
+            _angularVelocityMinMax[1] = double.MinValue;
+            _bendingMomentMinMax[0] = double.MaxValue;
+            _bendingMomentMinMax[1] = double.MinValue;
+            _axialVelocityMinMax[0] = double.MaxValue;
+            _axialVelocityMinMax[1] = double.MinValue;
+            _lateralDispAMinMax[0] = double.MaxValue;
+            _lateralDispAMinMax[1] = double.MinValue;
+            _lateralDispMinMax[0] = double.MaxValue;
+            _lateralDispMinMax[1] = double.MinValue;
+            _sideForceMinMax[0] = double.MaxValue;
+            _sideForceMinMax[1] = double.MinValue;
+            _tensionMinMax[0] = double.MaxValue;
+            _tensionMinMax[1] = double.MinValue;
+            _torqueDMinMax[0] = double.MaxValue;
+            _torqueDMinMax[1] = double.MinValue;
+            foreach (var prof in Results.Profiles)
+            {
+                if (prof != null)
+                {
+                    if (prof.PipeAngularVelocity != null)
+                    {
+                        foreach (var x in prof.PipeAngularVelocity)
+                        {
+                            if (x < (double)_angularVelocityMinMax[0])
+                            {
+                                _angularVelocityMinMax[0] = x;
+                            }
+                            if (x > (double)_angularVelocityMinMax[1])
+                            {
+                                _angularVelocityMinMax[1] = x;
+                            }
+                        }
+                    }
+                    if (prof.BendingMoment != null)
+                    {
+                        foreach (var x in prof.BendingMoment)
+                        {
+                            if (x < (double)_bendingMomentMinMax[0])
+                            {
+                                _bendingMomentMinMax[0] = x;
+                            }
+                            if (x > (double)_bendingMomentMinMax[1])
+                            {
+                                _bendingMomentMinMax[1] = x;
+                            }
+                        }
+                    }
+                    if (prof.AxialVelocityD != null)
+                    {
+                        foreach (var x in prof.AxialVelocityD)
+                        {
+                            if (x < (double)_axialVelocityMinMax[0])
+                            {
+                                _axialVelocityMinMax[0] = x;
+                            }
+                            if (x > (double)_axialVelocityMinMax[1])
+                            {
+                                _axialVelocityMinMax[1] = x;
+                            }
+                        }
+                    }
+                    if (prof.LateralDisplacementAngle != null)
+                    {
+                        foreach (var x in prof.LateralDisplacementAngle)
+                        {
+                            if (x < (double)_lateralDispAMinMax[0])
+                            {
+                                _lateralDispAMinMax[0] = x;
+                            }
+                            if (x > (double)_lateralDispAMinMax[1])
+                            {
+                                _lateralDispAMinMax[1] = x;
+                            }
+                        }
+                    }
+                    if (prof.LateralDisplacement != null)
+                    {
+                        foreach (var x in prof.LateralDisplacement)
+                        {
+                            if (x < (double)_lateralDispMinMax[0])
+                            {
+                                _lateralDispMinMax[0] = x;
+                            }
+                            if (x > (double)_lateralDispMinMax[1])
+                            {
+                                _lateralDispMinMax[1] = x;
+                            }
+                        }
+                    }
+                    if (prof.SideForce != null || prof.SideForceSoftString != null)
+                    {
+                        if (prof.SideForce != null)
+                        {
+                            foreach (var x in prof.SideForce)
+                            {
+                                if (x < (double)_sideForceMinMax[0])
+                                {
+                                    _sideForceMinMax[0] = x;
+                                }
+                                if (x > (double)_sideForceMinMax[1])
+                                {
+                                    _sideForceMinMax[1] = x;
+                                }
+                            }
+                        }
+
+                        if (prof.SideForceSoftString != null)
+                        {
+                            foreach (var x in prof.SideForceSoftString)
+                            {
+                                if (x < (double)_sideForceMinMax[0])
+                                {
+                                    _sideForceMinMax[0] = x;
+                                }
+                                if (x > (double)_sideForceMinMax[1])
+                                {
+                                    _sideForceMinMax[1] = x;
+                                }
+                            }
+                        }
+                    }
+                    if (prof.Tension != null)
+                    {
+                        foreach (var x in prof.Tension)
+                        {
+                            if (x < (double)_tensionMinMax[0])
+                            {
+                                _tensionMinMax[0] = x;
+                            }
+                            if (x > (double)_tensionMinMax[1])
+                            {
+                                _tensionMinMax[1] = x;
+                            }
+                        }
+                    }
+                    if (prof.Torque != null)
+                    {
+                        foreach (var x in prof.Torque)
+                        {
+                            if (x < (double)_torqueDMinMax[0])
+                            {
+                                _torqueDMinMax[0] = x;
+                            }
+                            if (x > (double)_torqueDMinMax[1])
+                            {
+                                _torqueDMinMax[1] = x;
+                            }
+                        }
+                    }
+                }
+            }
+            if ((double)_angularVelocityMinMax[0] == double.MaxValue)
+            {
+                _angularVelocityMinMax[0] = null;
+            }
+            else
+            {
+                _angularVelocityMinMax[0] = Parent.FromSI((double)_angularVelocityMinMax[0], DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
+            }
+            if ((double)_angularVelocityMinMax[1] == double.MinValue)
+            {
+                _angularVelocityMinMax[1] = null;
+            }
+            else
+            {
+                _angularVelocityMinMax[1] = Parent.FromSI((double)_angularVelocityMinMax[1], DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling);
+            }
+            if ((double)_bendingMomentMinMax[0] == double.MaxValue)
+            {
+                _bendingMomentMinMax[0] = null;
+            }
+            else
+            {
+                _bendingMomentMinMax[0] = Parent.FromSI((double)_bendingMomentMinMax[0], DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
+            }
+            if ((double)_bendingMomentMinMax[1] == double.MinValue)
+            {
+                _bendingMomentMinMax[1] = null;
+            }
+            else
+            {
+                _bendingMomentMinMax[1] = Parent.FromSI((double)_bendingMomentMinMax[1], DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
+            }
+            if ((double)_axialVelocityMinMax[0] == double.MaxValue)
+            {
+                _axialVelocityMinMax[0] = null;
+            }
+            else
+            {
+                _axialVelocityMinMax[0] = Parent.FromSI((double)_axialVelocityMinMax[0], DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling);
+            }
+            if ((double)_axialVelocityMinMax[1] == double.MinValue)
+            {
+                _axialVelocityMinMax[1] = null;
+            }
+            else
+            {
+                _axialVelocityMinMax[1] = Parent.FromSI((double)_axialVelocityMinMax[1], DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling);
+            }
+            if ((double)_lateralDispMinMax[1] == double.MinValue)
+            {
+                _lateralDispMinMax[0] = null;
+                _lateralDispMinMax[1] = null;
+            }
+            else
+            {
+                _lateralDispMinMax[0] = -Parent.FromSI((double)_lateralDispMinMax[1], BasePhysicalQuantity.QuantityEnum.LengthSmall);
+                _lateralDispMinMax[1] = Parent.FromSI((double)_lateralDispMinMax[1], BasePhysicalQuantity.QuantityEnum.LengthSmall);
+            }
+
+            if ((double)_lateralDispAMinMax[0] == double.MaxValue)
+            {
+                _lateralDispAMinMax[0] = null;
+            }
+            else
+            {
+                _lateralDispAMinMax[0] = Parent.FromSI((double)_lateralDispAMinMax[0], DrillingPhysicalQuantity.QuantityEnum.PlaneAngleDrilling);
+            }
+            if ((double)_lateralDispAMinMax[1] == double.MinValue)
+            {
+                _lateralDispAMinMax[1] = null;
+            }
+            else
+            {
+                _lateralDispAMinMax[1] = Parent.FromSI((double)_lateralDispAMinMax[1], DrillingPhysicalQuantity.QuantityEnum.PlaneAngleDrilling);
+            }
+            if ((double)_sideForceMinMax[0] == double.MaxValue)
+            {
+                _sideForceMinMax[0] = null;
+            }
+            else
+            {
+                _sideForceMinMax[0] = Parent.FromSI((double)_sideForceMinMax[0], DrillingPhysicalQuantity.QuantityEnum.ForceDrilling);
+            }
+            if ((double)_sideForceMinMax[1] == double.MinValue)
+            {
+                _sideForceMinMax[1] = null;
+            }
+            else
+            {
+                _sideForceMinMax[1] = Parent.FromSI((double)_sideForceMinMax[1], DrillingPhysicalQuantity.QuantityEnum.ForceDrilling);
+            }
+            if ((double)_tensionMinMax[0] == double.MaxValue)
+            {
+                _tensionMinMax[0] = null;
+            }
+            else
+            {
+                _tensionMinMax[0] = Parent.FromSI((double)_tensionMinMax[0], DrillingPhysicalQuantity.QuantityEnum.ForceDrilling);
+            }
+            if ((double)_tensionMinMax[1] == double.MinValue)
+            {
+                _tensionMinMax[1] = null;
+            }
+            else
+            {
+                _tensionMinMax[1] = Parent.FromSI((double)_tensionMinMax[1], DrillingPhysicalQuantity.QuantityEnum.ForceDrilling);
+            }
+
+            if ((double)_torqueDMinMax[0] == double.MaxValue)
+            {
+                _torqueDMinMax[0] = null;
+            }
+            else
+            {
+                _torqueDMinMax[0] = Parent.FromSI((double)_torqueDMinMax[0], DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
+            }
+            if ((double)_torqueDMinMax[1] == double.MinValue)
+            {
+                _torqueDMinMax[1] = null;
+            }
+            else
+            {
+                _torqueDMinMax[1] = Parent.FromSI((double)_torqueDMinMax[1], DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling);
+            }
+        }
+    }
     private void CreateLayouts()
     {
         // Depth-based layouts
-        _sideForceLayout = CreateLayout("Side Force [" + Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.Force) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _angularVelocityLayout = CreateLayout("Angular velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _axialVelocityLayout = CreateLayout("Axial velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _lateralDispLayout = CreateLayout("Lateral displ. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _lateralDispALayout = CreateLayout("Lateral displ. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _bendingMomentLayout = CreateLayout("Bending moment [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _tensionLayout = CreateLayout("Tension [" + Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.Force) + "]", "Depth[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
-        _torqueDLayout = CreateLayout("Torque [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true, 0.0001, null, marginDepth);
+        _sideForceLayout = CreateLayoutDepthBased("Side Force [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.ForceDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _sideForceMinMax, marginDepth);
+        _angularVelocityLayout = CreateLayoutDepthBased("Angular velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _angularVelocityMinMax, marginDepth);
+        _axialVelocityLayout = CreateLayoutDepthBased("Axial velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _axialVelocityMinMax, marginDepth);
+        _lateralDispLayout = CreateLayoutDepthBased("Lateral displ. [" + Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.LengthSmall) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _lateralDispMinMax, marginDepth);
+        _lateralDispALayout = CreateLayoutDepthBased("Lateral displ. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.PlaneAngleDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _lateralDispAMinMax, marginDepth);
+        _bendingMomentLayout = CreateLayoutDepthBased("Bending moment [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _bendingMomentMinMax, marginDepth);
+        _tensionLayout = CreateLayoutDepthBased("Tension [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.ForceDrilling) + "]", "Depth[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _tensionMinMax, marginDepth);
+        _torqueDLayout = CreateLayoutDepthBased("Torque [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", "Depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", null, 0.0001, _torqueDMinMax, marginDepth);
 
-        // Time-based layouts 
-        _rpmLayout = CreateLayout("Time", "RPM [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
-        _depthLayout = CreateLayout("Time", "Measured depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", false);
-        _wobLayout = CreateLayout("Time", "WOB [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.WeightOnBitDrilling) + "]", false);
-        _ssiLayout = CreateLayout("Time", "SSI [-]", false);
-        _velocityLayout = CreateLayout("Time", "Axial velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]", false);
-        _torqueLayout = CreateLayout("Time", "Torque [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", false);
+        // Time-based layouts
+        _rpmLayout = CreateLayoutTimeBased("Time", "RPM [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
+        _depthLayout = CreateLayoutTimeBased("Time", "Measured depth [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.DepthDrilling) + "]", true);
+        _wobLayout = CreateLayoutTimeBased("Time", "WOB [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.WeightOnBitDrilling) + "]", false);
+        _ssiLayout = CreateLayoutTimeBased("Time", "SSI [-]", false);
+        _velocityLayout = CreateLayoutTimeBased("Time", "Axial velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]", false);
+        _torqueLayout = CreateLayoutTimeBased("Time", "Torque [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", false);
 
         // Sensor-based layouts
-        _sensorVelocityALayout = CreateLayout("Time", "Angular Velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
-        _sensorVelocityLayout = CreateLayout("Time", "Axial Velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]", false);
-        _sensorRadialAccLayout = CreateLayout("Time", "Radial acc. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling) + "]", false);
-        _sensorTangentialAccLayout = CreateLayout("Time", "Tangential acc. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling) + "]", false);
-        _sensorAxialAccLayout = CreateLayout("Time", "Axial acc. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling) + "]", false);
-        _sensorBendingMomentLayout = CreateLayout("Time", "Bending moment [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", false);
+        _sensorVelocityALayout = CreateLayoutTimeBased("Time", "Angular Velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]", false);
+        _sensorVelocityLayout = CreateLayoutTimeBased("Time", "Axial Velocity [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]", false);
+        _sensorRadialAccLayout = CreateLayoutTimeBased("Time", "Radial acc. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling) + "]", false);
+        _sensorTangentialAccLayout = CreateLayoutTimeBased("Time", "Tangential acc. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling) + "]", false);
+        _sensorAxialAccLayout = CreateLayoutTimeBased("Time", "Axial acc. [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling) + "]", false);
+        _sensorBendingMomentLayout = CreateLayoutTimeBased("Time", "Bending moment [" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling) + "]", false);
+
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -641,12 +949,18 @@
                                 -40, -30)
                         };
 
-                        await InvokeAsync(async () => await _rpmChart.React());
-                        await InvokeAsync(async () => await _depthChart.React());
-                        await InvokeAsync(async () => await _torqueChart.React());
-                        await InvokeAsync(async () => await _velocityChart.React());
-                        await InvokeAsync(async () => await _wobChart.React());
-                        await InvokeAsync(async () => await _ssiChart.React());
+                        if (_rpmChart != null)
+                            await InvokeAsync(async () => await _rpmChart.React());
+                        if (_depthChart != null)
+                            await InvokeAsync(async () => await _depthChart.React());
+                        if (_torqueChart != null)
+                            await InvokeAsync(async () => await _torqueChart.React());
+                        if (_velocityChart != null)
+                            await InvokeAsync(async () => await _velocityChart.React());
+                        if (_wobChart != null)
+                            await InvokeAsync(async () => await _wobChart.React());
+                        if (_ssiChart != null)
+                            await InvokeAsync(async () => await _ssiChart.React());
                     }
                     else if (activeTab == 1)
                     {
@@ -659,8 +973,8 @@
                         for (int i = 0; i < profile.Depth.Count; i++)
                         {
                             depths.Add(Parent.FromSI(profile.Depth.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
-                            SideForce.Add(Parent.FromSI(profile.SideForce.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
-                            SideForceSoftString.Add(Parent.FromSI(profile.SideForceSoftString.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
+                            SideForce.Add(Parent.FromSI(profile.SideForce.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.ForceDrilling));
+                            SideForceSoftString.Add(Parent.FromSI(profile.SideForceSoftString.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.ForceDrilling));
                         }
 
                         ((Plotly.Blazor.Traces.Scatter)_sideForceTrace).X = SideForce;
@@ -695,10 +1009,10 @@
 
                         for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            var clearance = Parent.FromSI(profile.RadialClearance.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling);
+                            var clearance = Parent.FromSI(profile.RadialClearance.ElementAt(i), BasePhysicalQuantity.QuantityEnum.LengthSmall);
                             RadialClearanceL.Add(-1 * clearance);
                             RadialClearanceR.Add(clearance);
-                            LateralDisplacement.Add(Parent.FromSI(profile.LateralDisplacement.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
+                            LateralDisplacement.Add(Parent.FromSI(profile.LateralDisplacement.ElementAt(i), BasePhysicalQuantity.QuantityEnum.LengthSmall));
                         }
 
 
@@ -717,20 +1031,20 @@
                         ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).X = BendingMoment;
                         ((Plotly.Blazor.Traces.Scatter)_bendingMomentTrace).Y = depths;
 
-                        BendingMoment = new List<object>();
+                        var Torques = new List<object>();
                         var depthAll = new List<object>();
                         for (int i = 0; i < profile.DepthAll.Count; i++)
                         {
-                            BendingMoment.Add(Parent.FromSI(profile.Torque.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling));
+                            Torques.Add(Parent.FromSI(profile.Torque.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.TorqueDrilling));
                             depthAll.Add(Parent.FromSI(profile.DepthAll.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
                         }
-                        ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).X = BendingMoment;
+                        ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).X = Torques;
                         ((Plotly.Blazor.Traces.Scatter)_torqueDTrace).Y = depthAll;
 
                         var Tension = new List<object>();
                         for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            Tension.Add(Parent.FromSI(profile.Tension.ElementAt(i), BasePhysicalQuantity.QuantityEnum.Force));
+                            Tension.Add(Parent.FromSI(profile.Tension.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.ForceDrilling));
                         }
                         ((Plotly.Blazor.Traces.Scatter)_tensionTrace).X = Tension;
                         ((Plotly.Blazor.Traces.Scatter)_tensionTrace).Y = depths;
@@ -738,7 +1052,7 @@
                         var AxialVelocityD = new List<object>();
                         for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            AxialVelocityD.Add(profile.AxialVelocityD.ElementAt(i) * 3600);
+                            AxialVelocityD.Add(Parent.FromSI(profile.AxialVelocityD.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling));
                         }
                         ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).X = AxialVelocityD;
                         ((Plotly.Blazor.Traces.Scatter)_axialVelocityTrace).Y = depths;
@@ -751,14 +1065,22 @@
                         ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).X = LateralDisplacementAngle;
                         ((Plotly.Blazor.Traces.Scatter)_lateralDispATrace).Y = depths;
 
-                        await InvokeAsync(async () => await _sideForceChart.React());
-                        await InvokeAsync(async () => await _angularVelocityChart.React());
-                        await InvokeAsync(async () => await _axialVelocityChart.React());
-                        await InvokeAsync(async () => await _lateralDispChart.React());
-                        await InvokeAsync(async () => await _lateralDispAChart.React());
-                        await InvokeAsync(async () => await _bendingMomentChart.React());
-                        await InvokeAsync(async () => await _torqueDChart.React());
-                        await InvokeAsync(async () => await _tensionChart.React());
+                        if (_sideForceChart != null)
+                            await InvokeAsync(async () => await _sideForceChart.React());
+                        if (_angularVelocityChart != null)
+                            await InvokeAsync(async () => await _angularVelocityChart.React());
+                        if (_axialVelocityChart != null)
+                            await InvokeAsync(async () => await _axialVelocityChart.React());
+                        if (_lateralDispChart != null)
+                            await InvokeAsync(async () => await _lateralDispChart.React());
+                        if (_lateralDispAChart != null)
+                            await InvokeAsync(async () => await _lateralDispAChart.React());
+                        if (_bendingMomentChart != null)
+                            await InvokeAsync(async () => await _bendingMomentChart.React());
+                        if (_torqueDChart != null)
+                            await InvokeAsync(async () => await _torqueDChart.React());
+                        if (_tensionChart != null)
+                            await InvokeAsync(async () => await _tensionChart.React());
                     }
 
                     else if (activeTab == 2)
@@ -864,7 +1186,7 @@
                         };
 
                         var latestSensorAxialAcc = Parent.FromSI(Results.Scalars.SensorAxialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling);
-                        var latestSensorAxialAccString = Parent.FromSI(Results.Scalars.SensorAxialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling,false);
+                        var latestSensorAxialAccString = Parent.FromSI(Results.Scalars.SensorAxialAcc.ElementAt(endIndex), DrillingPhysicalQuantity.QuantityEnum.AccelerationDrilling, false);
                         _sensorAxialAccLayout.Annotations = new List<Annotation>
                         {
                             CreateAnnotation(latestSensorAxialAcc, time, latestSensorAxialAccString, -40, 20)
@@ -882,12 +1204,18 @@
                             CreateAnnotation(latestBendingMomentY, time, "My: " + latestBendingMomentYString, -40, 20)
                         };
 
-                        await InvokeAsync(async () => await _sensorVelocityAChart.React());
-                        await InvokeAsync(async () => await _sensorAxialAccChart.React());
-                        await InvokeAsync(async () => await _sensorBendingMomentChart.React());
-                        await InvokeAsync(async () => await _sensorRadialAccChart.React());
-                        await InvokeAsync(async () => await _sensorTangentialAccChart.React());
-                        await InvokeAsync(async () => await _sensorVelocityChart.React());
+                        if (_sensorVelocityAChart != null)
+                            await InvokeAsync(async () => await _sensorVelocityAChart.React());
+                        if (_sensorAxialAccChart != null)
+                            await InvokeAsync(async () => await _sensorAxialAccChart.React());
+                        if (_sensorBendingMomentChart != null)
+                            await InvokeAsync(async () => await _sensorBendingMomentChart.React());
+                        if (_sensorRadialAccChart != null)
+                            await InvokeAsync(async () => await _sensorRadialAccChart.React());
+                        if (_sensorTangentialAccChart != null)
+                            await InvokeAsync(async () => await _sensorTangentialAccChart.React());
+                        if (_sensorVelocityChart != null)
+                            await InvokeAsync(async () => await _sensorVelocityChart.React());
                     }
 
                 }

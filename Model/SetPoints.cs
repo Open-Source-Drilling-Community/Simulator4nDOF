@@ -10,5 +10,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double SurfaceRPM { get; set; } = 0;                // [rad/s]
         public double TopOfStringVelocity { get; set; } = 0;       // [m/s] 
 
+        public double BottomExtraSideForce { get; set; } = 0; // N
+        public double StribeckCriticalVelocity { get; set; } = 0.05; // [m/s]
+        public double DifferenceStaticKineticFriction { get; set; } = 0;
+        public bool Sticking { get; set; } = false;
     }
 }
