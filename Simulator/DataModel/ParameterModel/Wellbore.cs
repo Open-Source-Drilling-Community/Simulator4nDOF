@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.Simulator;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
@@ -11,36 +12,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public readonly double kw = 5.0e7;                      // [N.s/m] coefficient of damping at wellbore wall
         public readonly double dw = 5.0e4;                      // percent of mass imbalance compared to total mass
 
-        // Geomertry to be configured
-        private double casingShoeDepth = 2181;                   // [m] Casing shoe depth
-        private double linerShoeDepth = 0;                       // [m] Liner shoe depth, set to 0 if there is no liner
-        private double casingID = 9.0 * Constants.in2m;          // [m] Casing inner diameter
-        private double linerID = 0 * Constants.in2m;             // [m] Casing outer diameter
-        private double wellheadDepth = 120;                      // [m] Well head depth
-        private double riserID = 21 * Constants.in2m;            // [m] Riser inner diameter
-
+        // Geometry to be configured
+        private List<BoreHoleSize> boreHoleSizes =
+            new List<BoreHoleSize>() {
+                new BoreHoleSize(){Depth = 120, ID = 21 * Constants.in2m },
+                new BoreHoleSize(){Depth = 2181, ID = 9.0*Constants.in2m } 
+            };
         public Vector<double> rHole;                             // [m] Wellbore radius calculation
         public Vector<double> rc;                                // [m] drillstring radial clearance to the borehole wall
 
         public Wellbore(in Drillstring d,
                         in LumpedCells l,
-                        double casingShoeDepth,
-                        double linerShoeDepth,
-                        double casingID,
-                        double linerID,
-                        double wellheadDepth,
-                        double riserID,
+                        List<BoreHoleSize> boreHoleSizes,
                         double topDriveMomentOfInertia,
                         double fluidDamping)
         {
-            I_TD = topDriveMomentOfInertia; 
+            I_TD = topDriveMomentOfInertia;
             Df = fluidDamping;
-            this.casingShoeDepth = casingShoeDepth;
-            this.linerShoeDepth = linerShoeDepth;
-            this.linerID = linerID;
-            this.wellheadDepth = wellheadDepth;
-            this.riserID = riserID;
-            this.casingID = casingID;
+
+            this.boreHoleSizes = boreHoleSizes; 
             rHole = Vector<double>.Build.Dense(d.ro.Count);
             rc = Vector<double>.Build.Dense(d.ro.Count);
 
@@ -51,19 +41,31 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         {
             // Wellbore radius calculation
             rHole = Vector<double>.Build.Dense(d.ro.Count);
+            int idx = 0;
             for (int i = 1; i < l.xL.Count(); i++)
             {
-                if (wellheadDepth == 0)
+                if (idx < boreHoleSizes.Count)
                 {
-                    rHole[i - 1] = l.xL[i] <= casingShoeDepth ? casingID / 2 : d.Rb;
-                    if (linerShoeDepth != 0 && l.xL[i] > casingShoeDepth && l.xL[i] <= linerShoeDepth)
-                        rHole[i - 1] = linerID / 2;
+                    if (l.xL[i] <= boreHoleSizes[idx].Depth)
+                    {
+                        rHole[i - 1] = boreHoleSizes[idx].ID / 2;
+                    }
+                    else
+                    {
+                        while (idx < boreHoleSizes.Count)
+                        {
+                            idx++;
+                            if (idx < boreHoleSizes.Count && l.xL[i] <= boreHoleSizes[idx].Depth)
+                            {
+                                rHole[i - 1] = boreHoleSizes[idx].ID / 2;
+                                break;
+                            }
+                        }
+                    }
                 }
-                else
+                if (idx >= boreHoleSizes.Count)
                 {
-                    rHole[i - 1] = l.xL[i] <= wellheadDepth ? riserID / 2 : l.xL[i] <= casingShoeDepth ? casingID / 2 : d.Rb;
-                    if (linerShoeDepth != 0 && l.xL[i] > casingShoeDepth && l.xL[i] <= linerShoeDepth)
-                        rHole[i - 1] = linerID / 2;
+                    rHole[i - 1] = d.Rb;
                 }
             }
 

@@ -39,12 +39,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                  c.LateralDamping);
             w = new Wellbore(ds,
                              lc,
-                             c.CasingShoeDepth,
-                             c.LinerShoeDepth,
-                             c.CasingID,
-                             c.LinerID,
-                             c.WellheadDepth,
-                             c.RiserID,
+                             c.BoreHoleSizes,
                              c.TopDriveMomentOfInertia,
                              c.FluidDamping);
             t = new Trajectory(lc, c.TrajectoryFile);

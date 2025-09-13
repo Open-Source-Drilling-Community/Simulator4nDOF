@@ -1,0 +1,191 @@
+﻿@if (Simulation != null && Simulation.Config != null)
+{
+    <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Virtual sensor position from bit"
+                              QuantityName="DepthDrilling"
+                              SIValue="Simulation.Config.VirtualSensorPositionFromBit"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.VirtualSensorPositionFromBit = (double)val; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Logging interval scalar values"
+                              QuantityName="Time"
+                              SIValue="Simulation.Config.LoggingIntervalScalarValues"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.LoggingIntervalScalarValues = (double)val; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Logging interval profiles"
+                              QuantityName="Time"
+                              SIValue="Simulation.Config.LoggingIntervalProfiles"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.LoggingIntervalProfiles = (double)val; }" />
+        </MudItem>
+    </MudGrid>
+    <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Heave amplitude"
+                              QuantityName="Time"
+                              SIValue="Simulation.Config.HeaveAmplitude"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.HeaveAmplitude = (double)val; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Heave period"
+                              QuantityName="Time"
+                              SIValue="Simulation.Config.HeavePeriod"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.HeavePeriod = (double)val; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Coulomb static friction"
+                              QuantityName="Dimensionless"
+                              SIValue="Simulation.Config.CoulombKineticFriction"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.CoulombKineticFriction = (double)val; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Coulomb kinetic friction"
+                              QuantityName="Dimensionless"
+                              SIValue="Simulation.Config.CoulombStaticFriction"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.CoulombStaticFriction = (double)val; }" />
+        </MudItem>
+    </MudGrid>
+    <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+        <MudItem Style="width:250px;">
+            <MudSelect @bind-Value="Simulation.Config.TopDriveController"
+                       Label="Top drive controller"
+                       Variant="Variant.Text"
+                       T="int">
+                <MudSelectItem Value="1">Stiff PI Controller</MudSelectItem>
+                <MudSelectItem Value="2">Tuned PI Controller (SoftTorque/SoftSpeed)</MudSelectItem>
+                <MudSelectItem Value="3">ZTorque</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+
+        @if (Simulation.Config != null && Simulation.Config.TopDriveController == 1)
+        {
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Kp"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.KpStiffAndZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.KpStiffAndZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Ki"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.KiStiffAndZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.KiStiffAndZTorque = (double)val; }" />
+            </MudItem>
+        }
+        @if (Simulation.Config != null && Simulation.Config.TopDriveController == 2)
+        {
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Kp"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.KpSoftTorqueSpeed"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.KpSoftTorqueSpeed = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Ki"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.KiSoftTorqueSpeed"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.KiSoftTorqueSpeed = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Tuning frequency"
+                                  QuantityName="Frequency"
+                                  SIValue="Simulation.Config.TuningFrequenceySoftTorqueSpeed"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.TuningFrequenceySoftTorqueSpeed = (double)val; }" />
+            </MudItem>
+        }
+        @if (Simulation.Config != null && Simulation.Config.TopDriveController == 3)
+        {
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Kp"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.KpStiffAndZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.KpStiffAndZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Ki"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.KiStiffAndZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.KiStiffAndZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="VFD filter time constant"
+                                  QuantityName="Time"
+                                  SIValue="Simulation.Config.VFDFilterTimeconstantZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.VFDFilterTimeconstantZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="Encoder time constant"
+                                  QuantityName="Time"
+                                  SIValue="Simulation.Config.EncoderTimeConstantZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.EncoderTimeConstantZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="Acceleration filter time constant"
+                                  QuantityName="Time"
+                                  SIValue="Simulation.Config.AccelerationFilterTimeConstantZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.AccelerationFilterTimeConstantZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="Torque high-pass filter time constant"
+                                  QuantityName="Time"
+                                  SIValue="Simulation.Config.TorqueHighPassFilterTimeConstantZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.TorqueHighPassFilterTimeConstantZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="Torque low-pass filter time constant"
+                                  QuantityName="Time"
+                                  SIValue="Simulation.Config.TorqueLowPassFilterTimeConstantZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.TorqueLowPassFilterTimeConstantZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="Additional tuning factor"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.AdditionalTuningFactorZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.AdditionalTuningFactorZTorque = (double)val; }" />
+            </MudItem>
+
+            <MudItem Style="width:250px;">
+                <MudInputWithUnit QuantityLabel="Inertia correction factor"
+                                  QuantityName="Dimensionless"
+                                  SIValue="Simulation.Config.InertiaCorrectionFactorZTorque"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.Config.InertiaCorrectionFactorZTorque = (double)val; }" />
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public Simulation? Simulation { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+
+}

@@ -192,6 +192,47 @@
       }
     },
     "/Simulation/{id}": {
+      "put": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "PutSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "Simulation"
@@ -226,6 +267,19 @@
         ],
         "type": "string"
       },
+      "BoreHoleSize": {
+        "type": "object",
+        "properties": {
+          "Depth": {
+            "type": "number",
+            "format": "double"
+          },
+          "ID": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "Config": {
         "type": "object",
         "properties": {
@@ -249,6 +303,9 @@
             "type": "number",
             "format": "double"
           },
+          "UseHeave": {
+            "type": "boolean"
+          },
           "HeaveAmplitude": {
             "type": "number",
             "format": "double"
@@ -260,6 +317,10 @@
           "TopDriveController": {
             "type": "integer",
             "format": "int32"
+          },
+          "TopDriveStartupTime": {
+            "type": "number",
+            "format": "double"
           },
           "VFDFilterTimeconstantZTorque": {
             "type": "number",
@@ -334,29 +395,12 @@
             "type": "number",
             "format": "double"
           },
-          "CasingShoeDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "LinerShoeDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "CasingID": {
-            "type": "number",
-            "format": "double"
-          },
-          "LinerID": {
-            "type": "number",
-            "format": "double"
-          },
-          "WellheadDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "RiserID": {
-            "type": "number",
-            "format": "double"
+          "BoreHoleSizeList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoreHoleSize"
+            },
+            "nullable": true
           },
           "BitRadius": {
             "type": "number",
@@ -508,6 +552,38 @@
             "nullable": true
           },
           "AxialVelocityD": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BuildUpRate": {
             "type": "array",
             "items": {
               "type": "number",
@@ -680,6 +756,22 @@
             "nullable": true
           },
           "SensorBendingMomentY": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTension": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTorque": {
             "type": "array",
             "items": {
               "type": "number",

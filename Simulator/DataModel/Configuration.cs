@@ -1,5 +1,6 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
 using Model;
+using NORCE.Drilling.Simulator4nDOF.Model;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 {
@@ -72,13 +73,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required DrillStringSourceType DrillStringSourceType;
         public required string StringPressureFile;
         public required string AnnulusPressureFile;
-        public required double CasingShoeDepth;
-        public required double LinerShoeDepth;
-        public required double CasingID;
-        public required double LinerID;
-        public required double WellheadDepth;
-        public required double RiserID;
+        public List<BoreHoleSize> BoreHoleSizes = new List<BoreHoleSize>();
         public required double BitRadius;
 
     }
+
 }

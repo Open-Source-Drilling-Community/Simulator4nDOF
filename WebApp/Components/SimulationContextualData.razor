@@ -1,0 +1,79 @@
+﻿@if (Simulation != null && Simulation.ContextualData != null)
+{
+    <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+        <MudItem Style="width:250px;">
+            <MudSelect Style="width:250px;"
+                       Label="DrillString Source"
+                       @bind-Value="Simulation.ContextualData.DrillStringSource"
+                       Variant="Variant.Text">
+                <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabFile">DrillString OpenLab file</MudSelectItem>
+                <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabMS">DrillString OpenLab micro service</MudSelectItem>
+                <MudSelectItem Value="@DrillStringSourceType.DrillStringMS">DrillString micro service</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        @if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringOpenLabFile)
+        {
+            <MudItem Style="width:500px;">
+                <MudTextField @bind-Value="Simulation.ContextualData.DrillstringFile"
+                              Label="Drillstring file name"
+                              Variant="Variant.Text" />
+            </MudItem>
+        }
+        else if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS)
+        {
+            <MudItem Style="width:500px;">
+                <MudTextField @bind-Value="Simulation.ContextualData.DrillStringOpenLabID"
+                              Label="Drillstring OpenLab id"
+                              Variant="Variant.Text" />
+            </MudItem>
+        }
+        else if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringMS)
+        {
+            <MudItem Style="width:500px;">
+                <MudTextField @bind-Value="Simulation.ContextualData.DrillStringID"
+                              Label="Drillstring id"
+                              Variant="Variant.Text" />
+            </MudItem>
+        }
+
+        <MudItem xs="12">
+            <MudTextField @bind-Value="Simulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="Simulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="Simulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
+        </MudItem>
+    </MudGrid>
+    <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Drilling Fluid Density"
+                              QuantityName="MassDensityDrilling"
+                              MinValue=1
+                              MaxValue=2500
+                              SIValue="Simulation.ContextualData.FluidDensity"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.FluidDensity = val.Value; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Bit Diameter"
+                              QuantityName="DiameterPipeDrilling"
+                              MinValue=0
+                              MaxValue=0.508
+                              SIValue="@(2.0*Simulation.ContextualData.BitRadius)"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.BitRadius = val.Value/2.0; }" />
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public Simulation? Simulation { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+}

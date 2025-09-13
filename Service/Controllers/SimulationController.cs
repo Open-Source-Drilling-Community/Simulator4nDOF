@@ -191,36 +191,44 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// </summary>
         /// <param name="simulation"></param>
         /// <returns>true if the given Simulation has been updated successfully to the microservice database, at the endpoint Simulator4nDOF/api/Simulation/id</returns>
-       // [HttpPut("{id}", Name = "PutSimulationById")]
-       // public ActionResult PutSimulationById(Guid id, [FromBody] Model.Simulation? data)
-       // {
-       //     // Check if Simulation is in the data base
-       //     if (data != null && data.MetaInfo != null && data.MetaInfo.ID.Equals(id))
-       //     {
-       //         var existingData = _simulationManager.GetSimulationById(id);
-       //         if (existingData != null)
-       //         {
-       //             if (_simulationManager.UpdateSimulationById(id, data))
-       //             {
-       //                 return Ok();
-       //             }
-       //             else
-       //             {
-       //                 return StatusCode(StatusCodes.Status500InternalServerError);
-       //             }
-       //         }
-       //         else
-       //         {
-       //             _logger.LogWarning("The given Simulation has not been found in the database");
-       //             return NotFound();
-       //         }
-       //     }
-       //     else
-       //     {
-       //         _logger.LogWarning("The given Simulation is null, badly formed, or its does not match the ID to update");
-       //         return BadRequest();
-       //     }
-       // }
+        [HttpPut("{id}", Name = "PutSimulationById")]
+        public async Task<ActionResult> PutSimulationById(Guid id, [FromBody] Model.Simulation? data)
+        {
+            // Check if Simulation is in the data base
+            if (data != null && data.MetaInfo != null && data.MetaInfo.ID.Equals(id))
+            {
+                var existingData = _simulationManager.GetSimulationById(id);
+
+                if (existingData != null)
+                {
+                    if (_simulationManager.DeleteSimulationById(id))
+                    {
+                        if (await _simulationManager.AddSimulation(data))
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            return StatusCode(StatusCodes.Status500InternalServerError);
+                        }
+                    } else
+                    {
+                        _logger.LogWarning("The simulation could not be deleted from the database before posting it again");
+                        return StatusCode(StatusCodes.Status500InternalServerError);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("The given Simulation has not been found in the database");
+                    return NotFound();
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The given Simulation is null, badly formed, or its does not match the ID to update");
+                return BadRequest();
+            }
+        }
 
         /// <summary>
         /// Deletes the Simulation of given ID from the microservice database, at the endpoint Simulator4nDOF/api/Simulation/id
@@ -236,6 +244,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
             }
             else
             {
+                _logger.LogWarning("The simulation could not be deleted from the database");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

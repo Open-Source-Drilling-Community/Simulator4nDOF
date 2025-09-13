@@ -42,6 +42,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double sensorMb_y;
         public double sensorBendingMomentX;
         public double sensorBendingMomentY;
+        public double sensorTension;
+        public double sensorTorque;
 
         public double sensorRadialAccelerationLocalFrame;
         public double sensorTangentialAccelerationLocalFrame;

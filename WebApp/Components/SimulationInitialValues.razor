@@ -1,0 +1,37 @@
+﻿@if (Simulation != null && Simulation.InitialValues != null)
+{
+    <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+            QuantityLabel="Bit depth"
+            QuantityName="DepthDrilling"
+            SIValue="Simulation.InitialValues.BitDepth"
+            SIValueNullableChanged="val => { if (val != null) Simulation.InitialValues.BitDepth = (double)val; }" />
+        </MudItem>
+
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+            QuantityLabel="Hole depth"
+                              QuantityName="DepthDrilling"
+            SIValue="Simulation.InitialValues.HoleDepth"
+            SIValueNullableChanged="val => { if (val != null) Simulation.InitialValues.HoleDepth = (double)val; }" />
+        </MudItem>
+        <MudItem Style="width:250px;">
+            <MudInputWithUnit VariantType="Variant.Text"
+            QuantityLabel="Top of string position"
+            QuantityName="LengthStandard"
+            SIValue="Simulation.InitialValues.TopOfStringPosition"
+            SIValueNullableChanged="val => { if (val != null) Simulation.InitialValues.TopOfStringPosition = (double)val; }" />
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public Simulation? Simulation { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+}

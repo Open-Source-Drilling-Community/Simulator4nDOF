@@ -29,6 +29,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public List<double> SensorAxialAcc { get; set; } = new List<double>();
         public List<double> SensorBendingMomentX { get; set; } = new List<double>();
         public List<double> SensorBendingMomentY { get; set; } = new List<double>();
+
+        public List<double> SensorTension { get; set; } = new List<double>();
+        public List<double> SensorTorque { get; set; } = new List<double>();
+
         public List<double> Time { get; set; } = new List<double>();
         public List<double> SSI { get; set; } = new List<double>();
     }

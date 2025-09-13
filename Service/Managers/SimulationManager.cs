@@ -258,6 +258,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         SensorAxialAcc = original.Results.Scalars.SensorAxialAcc.ToList(),
                         SensorBendingMomentX = original.Results.Scalars.SensorBendingMomentX.ToList(),
                         SensorBendingMomentY = original.Results.Scalars.SensorBendingMomentY.ToList(),
+                        SensorTension = original.Results.Scalars.SensorTension.ToList(),
+                        SensorTorque = original.Results.Scalars.SensorTorque.ToList()
                     },
 
                     Profiles = original.Results.Profiles
@@ -277,7 +279,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             BendingMoment = p.BendingMoment.ToList(),
                             Torque = p.Torque.ToList(),
                             Tension = p.Tension.ToList(),
-                            AxialVelocityD = p.AxialVelocityD.ToList()
+                            AxialVelocityD = p.AxialVelocityD.ToList(),
+                            Inclination = p.Inclination.ToList(),
+                            Azimuth = p.Azimuth.ToList(),
+                            Curvature = p.Curvature.ToList(),
+                            BuildUpRate = p.BuildUpRate.ToList()
                         })
                         .ToList()
                 }
@@ -915,12 +921,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 TopOfStringPosition = simulation.InitialValues.TopOfStringPosition,                   // [m]
                 SurfaceRPM = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].SurfaceRPM : 0,            // [rad/s]
                 TopOfStringVelocity = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].TopOfStringVelocity : 0,         // [m/s] 
-                CasingShoeDepth = simulation.ContextualData.CasingShoeDepth,                     // [m] Casing shoe depth
-                LinerShoeDepth = simulation.ContextualData.LinerShoeDepth,                         // [m] Liner shoe depth, set to 0 if there is no liner
-                CasingID = simulation.ContextualData.CasingID,                        // [m] Casing inner diameter
-                LinerID = simulation.ContextualData.LinerID,                         // [m] Casing outer diameter
-                WellheadDepth = simulation.ContextualData.WellheadDepth,                        // [m] Well head depth
-                RiserID = simulation.ContextualData.RiserID,                        // [m]
+                BoreHoleSizes = simulation.ContextualData.BoreHoleSizeList,
                 BitRadius = simulation.ContextualData.BitRadius,                     // [m]
                 //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
@@ -929,8 +930,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 LengthBetweenLumpedElements = simulation.Config.LengthBetweenLumpedElements,
                 CoulombKineticFriction = simulation.Config.CoulombKineticFriction,
                 CoulombStaticFriction = simulation.Config.CoulombStaticFriction,
+                UseHeave = simulation.Config.UseHeave,
                 HeaveAmplitude = simulation.Config.HeaveAmplitude,
                 HeavePeriod = simulation.Config.HeavePeriod,
+                TopdriveStartupTime = simulation.Config.TopDriveStartupTime,
                 TopDriveController = simulation.Config.TopDriveController,
                 VFDFilterTimeconstantZTorque = simulation.Config.VFDFilterTimeconstantZTorque,
                 EncoderTimeConstantZTorque = simulation.Config.EncoderTimeConstantZTorque,
@@ -971,7 +974,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 Torque = output.torque.ToList(),
                 Tension = output.tension.ToList(),
                 AxialVelocityD = Utilities.ExtendVectorStart(u.v0, state.VL).ToList(),
-                LateralDisplacementAngle = output.phi.Append(0).ToList()
+                LateralDisplacementAngle = output.phi.Append(0).ToList(),
+                Inclination = parameters.t.thetaVec.Append(parameters.t.thetaVec.LastOrDefault<double>()).ToList(),
+                Azimuth = parameters.t.phiVec.Append(parameters.t.phiVec.LastOrDefault<double>()).ToList(),
+                Curvature = parameters.t.curvature.Append(parameters.t.curvature.LastOrDefault<double>()).ToList(),
+                BuildUpRate = parameters.t.thetaVec_dot.Append(parameters.t.thetaVec_dot.LastOrDefault<double>()).ToList()
             };
         }
 
@@ -1001,6 +1008,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             scalars.SensorAxialAcc.Add(output.sensorAxialAccelerationLocalFrame);
             scalars.SensorBendingMomentX.Add(output.sensorBendingMomentX);
             scalars.SensorBendingMomentY.Add(output.sensorBendingMomentY);
+            scalars.SensorTension.Add(output.sensorTension);
+            scalars.SensorTorque.Add(output.sensorTorque);
         }
 
 

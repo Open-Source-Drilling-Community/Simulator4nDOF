@@ -13,6 +13,6 @@
         public double BottomExtraNormalForce = 0.0;       // [N] add an extra vertical force (weight) at the bit to simulate hole collapse
         public double differenceStaticKineticFriction = 0.0;
         public double stribeckCriticalVelocity = 0.05; // [m/s]
-        public bool sticking = false;
+        public bool sticking = false; // request to stick the bit
     }
 }

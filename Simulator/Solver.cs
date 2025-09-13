@@ -39,7 +39,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public (State, Output, Input) OuterStep(double SurfaceRPM, double TopOfStringVelocity, double bottomExtraVerticalForce, double differenceStaticKineticFriction, double stribeckCriticalVelocity, bool sticking)
         {
             u.omega_surf = SurfaceRPM;
-            u.v0 = TopOfStringVelocity;
+            u.V0 = TopOfStringVelocity;
             u.BottomExtraNormalForce = bottomExtraVerticalForce;
             u.differenceStaticKineticFriction = differenceStaticKineticFriction;
             u.sticking = sticking;
@@ -198,7 +198,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             output.sensorBendingMomentX = Math.Sqrt(Math.Pow(output.sensorMb_x, 2) + Math.Pow(output.sensorMb_y, 2)) * Math.Sin((output.sensorAngularVelocity - output.sensorWhirlSpeed) * state.step * c.TimeStep);
             output.sensorBendingMomentY = Math.Sqrt(Math.Pow(output.sensorMb_x, 2) + Math.Pow(output.sensorMb_y, 2)) * Math.Cos((output.sensorAngularVelocity - output.sensorWhirlSpeed) * state.step * c.TimeStep);
-
         }
 
         // Suggestion for performance improvements after using the diagnostic tool in VS
@@ -453,7 +452,47 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         wb = 0;
                     }
                 }
-                
+                // manage the bit sticking off bottom condition
+                if (!state.onBottom)
+                {
+                    double omega_ = state.OL[state.OL.Count - 1];
+                    if (u.sticking)
+                    {
+                        int lastIndex = p.ds.G.Count - 1;
+                        Vector<double> a_t = bb.Row(p.lc.PL - 1);
+                        Vector<double> a_a = vv.Row(p.lc.PL - 1);
+                        tb = p.ds.J[lastIndex] * p.ds.G[lastIndex] / p.ds.c_t * a_t[a_t.Count - 1];
+                        wb = p.ds.A[lastIndex] * p.ds.E[lastIndex] / p.ds.c_a * a_a[a_t.Count - 1];
+                    }
+                    else
+                    {
+                        double normalForce_ = u.BottomExtraNormalForce;
+                        if (normalForce_ > 0)
+                        {
+                            double ro_ = p.ds.ro[p.ds.ro.Count - 1];
+                            double Fs_ = normalForce_ * 1.0;
+                            double Fc_ = normalForce_ * 0.5;
+                            double va_ = state.VL[state.VL.Count - 1];
+                            double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_);
+                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / p.f.v_c)) * v_ / Math.Sqrt(v_ * v_ + 0.001 * 0.001);
+                            if (Math.Abs(v_) < 1e-6)
+                            {
+                                tb = 0;
+                                wb = 0;
+                            }
+                            else
+                            {
+                                tb = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
+                                wb = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
+                            }
+                        }
+                        else
+                        {
+                            tb = 0;
+                            wb = 0;
+                        }
+                    }
+                }
                 // Augment Riemann invariants with interface values
                 var a_pad = aa_left.ToRowMatrix().Stack(aa);
 
@@ -502,7 +541,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 //     v_pad.SetRow(i + 1, vv.Row(i));
                 // }
 
-
                 // Update states using Upwind scheme
                 aa = aa - (dt / p.dc.dxM) * p.ds.c_t * DiffRows(a_pad);
                 bb = bb + (dt / p.dc.dxM) * p.ds.c_t * DiffRows(b_pad);
@@ -538,46 +576,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 double tm;
                 // Create a new vector tau_p with a length equal to the sum of the lengths of temp and tb
                 Vector<double> tau_p;
-
-                if (!state.onBottom)
-                {
-                    if (u.sticking)
-                    {
-                        wb = 0;
-                        int lastIndex = p.ds.G.Count - 1;
-                        Vector<double> a = aa.Row(p.lc.PL - 1);
-                        tb = p.ds.J[lastIndex] * p.ds.G[lastIndex] / p.ds.c_t * a[a.Count-1];
-                    }
-                    else
-                    {
-                        double normalForce_ = u.BottomExtraNormalForce;
-                        if (normalForce_ > 0)
-                        {
-                            double ro_ = p.ds.ro[p.ds.ro.Count - 1];
-                            double Fs_ = normalForce_ * 1.0;
-                            double Fc_ = normalForce_ * 0.5;
-                            double va_ = state.VL[state.VL.Count - 1];
-                            double omega_ = state.OL[state.OL.Count - 1];
-                            double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_);
-                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / p.f.v_c)) * v_ / Math.Sqrt(v_ * v_ + 0.001 * 0.001);
-                            if (Math.Abs(v_) < 1e-6)
-                            {
-                                tb = 0;
-                                wb = 0;
-                            }
-                            else
-                            {
-                                tb = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                                wb = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                            }
-                        }
-                        else
-                        {
-                            tb = 0;
-                            wb = 0;
-                        }
-                    }
-                }
                 if (!c.UseMudMotor)
                 {
                     tm = 0;
@@ -594,6 +592,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
                     tau_p = Vector<double>.Build.DenseOfArray(temp.Append(tm).ToArray());
                 }
+
 
                 Vector<double> factor2 = p.ds.A.PointwiseMultiply(p.ds.E) / (2.0 * p.ds.c_a);
                 Vector<double> rowDiff2 = uu.Row(p.lc.PL - 1) - vv.Row(p.lc.PL - 1);
@@ -1008,6 +1007,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.sensorBendingAngleY_SecondDerivative = Theta_y_ddot; // bending angle second derivative y-component
                 output.sensorPipeInclination = p.t.thetaVec[p.ds.idx_sensor];
                 output.sensorPipeAzimuthAt = p.t.phiVec[p.ds.idx_sensor];
+                output.sensorTension = tension[p.ds.idx_sensor];
+                output.sensorTorque = output.torque[p.ds.idx_sensor];
 
                 CalculateInLocalFrame();
             }

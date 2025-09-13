@@ -580,6 +580,79 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task PutSimulationByIdAsync(System.Guid id, Simulation body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Simulation/{id}"
+                    urlBuilder_.Append("Simulation/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteSimulationByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
@@ -771,6 +844,27 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BoreHoleSize
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
+        public double Depth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ID")]
+        public double ID { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Config
     {
 
@@ -789,6 +883,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("CoulombKineticFriction")]
         public double CoulombKineticFriction { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("UseHeave")]
+        public bool UseHeave { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("HeaveAmplitude")]
         public double HeaveAmplitude { get; set; }
 
@@ -797,6 +894,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("TopDriveController")]
         public int TopDriveController { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopDriveStartupTime")]
+        public double TopDriveStartupTime { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("VFDFilterTimeconstantZTorque")]
         public double VFDFilterTimeconstantZTorque { get; set; }
@@ -864,23 +964,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("FluidDensity")]
         public double FluidDensity { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("CasingShoeDepth")]
-        public double CasingShoeDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LinerShoeDepth")]
-        public double LinerShoeDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CasingID")]
-        public double CasingID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LinerID")]
-        public double LinerID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellheadDepth")]
-        public double WellheadDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RiserID")]
-        public double RiserID { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("BoreHoleSizeList")]
+        public System.Collections.Generic.ICollection<BoreHoleSize> BoreHoleSizeList { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("BitRadius")]
         public double BitRadius { get; set; }
@@ -982,6 +1067,18 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("AxialVelocityD")]
         public System.Collections.Generic.ICollection<double> AxialVelocityD { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
+        public System.Collections.Generic.ICollection<double> Inclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
+        public System.Collections.Generic.ICollection<double> Azimuth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
+        public System.Collections.Generic.ICollection<double> Curvature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BuildUpRate")]
+        public System.Collections.Generic.ICollection<double> BuildUpRate { get; set; }
+
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
@@ -1077,6 +1174,12 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentY")]
         public System.Collections.Generic.ICollection<double> SensorBendingMomentY { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTension")]
+        public System.Collections.Generic.ICollection<double> SensorTension { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTorque")]
+        public System.Collections.Generic.ICollection<double> SensorTorque { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("Time")]
         public System.Collections.Generic.ICollection<double> Time { get; set; }

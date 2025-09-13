@@ -25,5 +25,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public List<double> Torque { get; set; } = new List<double>() { };
         public List<double> Tension { get; set; } = new List<double>() { };
         public List<double> AxialVelocityD { get; set; } = new List<double>() { };
+        public List<double> Inclination { get; set; } = new List<double>() { };
+        public List<double> Azimuth { get; set; } = new List<double>() { };
+        public List<double> Curvature { get; set; } = new List<double>() { };
+        public List<double> BuildUpRate { get; set; } = new List<double>() { };
     }
 }

@@ -14,12 +14,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public string DrillstringFile { get; set; }
         public string DrillstringPressureFile { get; set; }
         public double FluidDensity { get; set; }
-        public double CasingShoeDepth { get; set; }
-        public double LinerShoeDepth { get; set; }
-        public double CasingID { get; set; }
-        public double LinerID { get; set; }
-        public double WellheadDepth { get; set; }
-        public double RiserID { get; set; }
+        public List<BoreHoleSize> BoreHoleSizeList { get; set; } = new List<BoreHoleSize>();
         public double BitRadius { get; set; }
 
         public Guid DrillStringID { get; set; }
@@ -35,5 +30,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         //HttpEndPoint DrillString/
     }
 
-    
+    public class BoreHoleSize()
+    {
+        public double Depth { get; set; }
+        public double ID { get; set; }
+    }
 }
