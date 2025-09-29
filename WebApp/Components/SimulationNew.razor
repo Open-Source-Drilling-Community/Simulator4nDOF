@@ -1,0 +1,135 @@
+﻿@using NORCE.Drilling.Simulator4nDOF.WebApp
+@inject ILogger<SimulationNew> logger
+@inject ISnackbar Snackbar
+
+@if (Simulation != null)
+{
+    <MudPaper Class="pa-4">
+        <MudCollapse Expanded=true>
+            <MudText Typo="Typo.h5">Edit new simulation </MudText>
+            <MudToolBar>
+                <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
+                <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.ArrowBackIosNew">Back</MudButton>
+            </MudToolBar>
+            <MudPaper Class="pa-4">
+
+                <MudGrid RowSpacing="0" Style="margin-top:-0px;">
+                    <MudItem xs="2">
+                        <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Text"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="2">
+                        <MudTextField @bind-Value=Simulation.Description Label="Description" Variant="Variant.Text"></MudTextField>
+                    </MudItem>
+                </MudGrid>
+                @if (Simulation?.ContextualData != null)
+                {
+                    <br>
+                    <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Contextual data </MudText>
+                    <SimulationContextualData Simulation="@Simulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" />
+                }
+                @if (Simulation?.Config != null)
+                {
+                    <br>
+                    <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Configuration </MudText>
+                    <SimulationConfiguration Simulation="@Simulation" />
+                }
+                @if (Simulation?.InitialValues != null)
+                {
+                    <br>
+                    <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;" MudText>Initial values </MudText>
+                    <SimulationInitialValues Simulation="@Simulation" />
+                }
+                @if (Simulation?.SetPointsList != null)
+                {
+                    <br>
+                    <MudText Typo="Typo.h6">Set points</MudText>
+
+                    <SetPointsEditor Simulation="@Simulation" />
+
+                    <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
+                }
+            </MudPaper>
+        </MudCollapse>
+    </MudPaper>
+
+}
+
+@code {
+    [Parameter]
+    public Simulation? Simulation { get; set; } = null;
+
+    [Parameter]
+    public List<Field>? Fields { get; set; } = null;
+
+    [Parameter]
+    public List<Cluster>? Clusters { get; set; } = null;
+
+    [Parameter]
+    public List<Well>? Wells { get; set; } = null;
+
+    [Parameter]
+    public List<WellBore>? WellBores { get; set; } = null;
+
+    [Parameter]
+    public MainPanelLogic? MainPanelLogic { get; set; } = null;
+
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    private void UpdateUnitSystemName(string val)
+    {
+        DataUtils.UnitAndReferenceParameters.UnitSystemName = (string)val;
+    }
+
+    private async Task AddSimulation()
+    {
+        if (Simulation != null)
+        {
+            try
+            {
+                MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
+                DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+                Simulation.MetaInfo = metaInfo;
+                Simulation.CreationDate = creationDate;
+                Simulation.LastModificationDate = creationDate;
+                await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.Simulation);
+                logger.LogInformation("Simulation posted successfully");
+                Snackbar.Add("Simulation posted successfully", Severity.Success);
+                await OnInitializedAsync();
+                if (MainPanelLogic != null)
+                {
+                    MainPanelLogic.AutoUpdate = true;
+                    await OnRefresh.InvokeAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Impossible to add a new Simulation");
+                Snackbar.Add("Impossible to add a new Simulation", Severity.Warning);
+            }
+        }
+    }
+
+    private async Task CloseViewSimulationPanelOnClick()
+    {
+        if (MainPanelLogic != null)
+        {
+            Simulation = null;
+            MainPanelLogic.PanelState = PanelState.MainVisible;
+            MainPanelLogic.AutoUpdate = true;
+            await OnRefresh.InvokeAsync(null);
+        }
+    }
+
+    private void AddSetPoint()
+    {
+        if (Simulation != null && Simulation.SetPointsList != null)
+        {
+            Simulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
+        }
+    }
+
+}

@@ -1,0 +1,437 @@
+﻿@using NORCE.Drilling.Simulator4nDOF.WebApp
+@inject ILogger<SimulationEdit> logger
+@inject ISnackbar Snackbar
+
+<!-- Full-width container for simulation content -->
+@if (SimulationList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (currentLightSimulation != null)
+{
+    <MudPaper Class="pa-4">
+        <MudGrid AlignItems="Center" GutterSize="16px">
+            <!-- Buttons Row -->
+            <MudItem xs="12">
+                <div style="display: flex; gap: 12px;">
+                    <MudButton OnClick="@GetCurrentSimulationHeavy"
+                               IconColor="Color.Primary"
+                               Size="Size.Medium"
+                               Style="border-radius: 8px;"
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Refresh">
+                        Get simulation results
+                    </MudButton>
+                    @if (currentSimulation != null && _sequenceNumber >= 0)
+                    {
+                        <MudTooltip Text="Sequence number of the last fetched results">
+                            <MudChip T="int" Color="Color.Info">@_sequenceNumber</MudChip>
+                        </MudTooltip>
+                    }
+                    @if (currentSimulation != null && _sequenceNumber < 0)
+                    {
+                        <MudButton OnClick="@ReRunSimulations"
+                                   IconColor="Color.Secondary"
+                                   Size="Size.Medium"
+                                   Style="border-radius: 8px;"
+                                   Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.RunCircle">
+                            Re-run simulations
+                        </MudButton>
+                    }
+                    <MudButton OnClick="@CloseViewSimulationPanelOnClick"
+                               Color="Color.Error"
+                               Class="add-item-btn"
+                               StartIcon="@Icons.Material.Filled.ArrowBackIosNew">
+                        Back
+                    </MudButton>
+                </div>
+            </MudItem>
+
+            <!-- Simulation Details -->
+            <MudItem xs="4" sm="4" lg="2" xl="2">
+                <MudTextField @bind-Value=currentLightSimulation.Name ReadOnly="@(currentSimulation == null)" Label="Name" Variant="Variant.Text"></MudTextField>
+            </MudItem>
+
+            <MudItem xs="8" sm="8" lg="4" xl="4">
+                <MudTextField @bind-Value=currentLightSimulation.Description ReadOnly="@(currentSimulation == null)" Label="Description" Variant="Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="8" sm="4" lg="2" xl="2">
+                <MudTextField @bind-Value=currentLightSimulation.CreationDate ReadOnly="true" Label="Creation Date" Variant="Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="8" sm="4" lg="2" xl="2">
+                <MudTextField @bind-Value=currentLightSimulation.LastModificationDate ReadOnly="true" Label="Modification Date" Variant="Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="8" sm="2" lg="1" xl="1">
+                <MudText Typo="Typo.body1"><b>Progress:</b></MudText>
+                <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)" Class="ml-0">
+                    @($"{currentLightSimulation.Progress:P2}")
+                </MudChip>
+            </MudItem>
+            <MudItem xs="8" sm="2" lg="1" xl="1">
+                <MudText Typo="Typo.body1"><b>Status:</b></MudText>
+                <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)" Class="ml-0">
+                    @GetTerminationStateLabel(currentLightSimulation.TerminationState)
+                </MudChip>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    @if (currentSimulation != null)
+    {
+        <MudExpansionPanels Class="mt-4 mb-4">
+            @if (currentSimulation.ContextualData != null)
+            {
+                <MudExpansionPanel Text="Contextual Data">
+                    <SimulationContextualData Simulation="@currentSimulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" />
+                </MudExpansionPanel>
+            }
+            @if (currentSimulation.Config != null)
+            {
+                <MudExpansionPanel Text="Configuration">
+                    <SimulationConfiguration Simulation="@currentSimulation" />
+                </MudExpansionPanel>
+            }
+            @if (currentSimulation.InitialValues != null)
+            {
+                <MudExpansionPanel Text="Initial values">
+                    <SimulationInitialValues Simulation="@currentSimulation" />
+                </MudExpansionPanel>
+            }
+            @if (currentSimulation.SetPointsList != null)
+            {
+                <MudExpansionPanel Text="Set Points">
+                    <SetPointsEditor Simulation="@currentSimulation" />
+
+                    <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
+                </MudExpansionPanel>
+            }
+            @if (results != null)
+            {
+                <MudExpansionPanel Text="Results" Expanded="true">
+                    <SimulationResultsPanel @ref="resultsPanelRef" Results="@results" Simulation="@currentSimulation" />
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    }
+}
+
+@code {
+    [Parameter]
+    public List<Field>? Fields { get; set; } = null;
+
+    [Parameter]
+    public List<Cluster>? Clusters { get; set; } = null;
+
+    [Parameter]
+    public List<Well>? Wells { get; set; } = null;
+
+    [Parameter]
+    public List<WellBore>? WellBores { get; set; } = null;
+
+    [Parameter]
+    public MainPanelLogic? MainPanelLogic { get; set; } = null;
+
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    private SimulationResultsPanel? resultsPanelRef;
+
+    // Simulation related variables
+    private List<SimulationLight> SimulationList = new();
+    private List<SimulationLight> selectedSimulationList = new();
+    private SimulationLight? currentLightSimulation;
+    private Simulation? currentSimulation;
+    private Results? results;
+
+    private int _sequenceNumber = -1;
+
+    // private List<ToBeRemoved>? toBeRemovedList;
+    // UI related variables
+    public bool isHiddenMainPanel;
+    public bool autoUpdate;
+    private string? _searchString;
+
+
+    bool updateResultGraphs = false;
+
+    public void UpdateUnitSystemName(string val)
+    {
+        DataUtils.UnitAndReferenceParameters.UnitSystemName = (string)val;
+
+        if (results != null && resultsPanelRef != null)
+        {
+            resultsPanelRef.Refresh();
+        }
+    }
+
+    private Color GetProgressColor(double? progress)
+    {
+        if (progress == null) return Color.Default;
+
+        return progress switch
+        {
+            <= 0.25 => Color.Error,
+            <= 0.75 => Color.Warning,
+            < 1.0 => Color.Info,
+            _ => Color.Success
+        };
+    }
+
+    private string GetTerminationStateLabel(int state)
+    {
+        return state switch
+        {
+            0 => "Running",
+            1 => "Completed",
+            2 => "Failed",
+            3 => "Cancelled",
+            _ => "Unknown"
+        };
+    }
+    private Color GetTerminationColor(int state)
+    {
+        return state switch
+        {
+            0 => Color.Info,
+            1 => Color.Success,
+            2 => Color.Error,
+            3 => Color.Warning,
+            _ => Color.Default
+        };
+    }
+
+    private void UploadFile(InputFileChangeEventArgs e, Action<string> setFileName)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            setFileName(file.Name);
+        }
+    }
+
+
+    private async Task CloseViewSimulationPanelOnClick()
+    {
+        autoUpdate = false;
+        if (MainPanelLogic != null)
+        {
+            MainPanelLogic.PanelState = PanelState.MainVisible;
+            await OnRefresh.InvokeAsync(null);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (MainPanelLogic != null && MainPanelLogic.SimulationID != Guid.Empty)
+            {
+                try
+                {
+                    currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(MainPanelLogic.SimulationID);
+                }
+                catch (Exception ex)
+                {
+                    currentLightSimulation = null;
+                    logger.LogWarning("Impossible to load Simulation");
+                    Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+                }
+            }
+            while (currentLightSimulation != null && currentLightSimulation.TerminationState < 1)
+            {
+                currentLightSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulatioLightByIdAsync(currentLightSimulation.MetaInfo.ID);
+                if (currentLightSimulation != null)
+                {
+                    autoUpdate = true;
+                    await InvokeAsync(() => { StateHasChanged(); });
+                }
+                else
+                {
+                    logger.LogWarning("Impossible to load Simulation");
+                    Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+                }
+                await Task.Delay(1000);
+                if (!autoUpdate)
+                {
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem Simulation initialization");
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task ReRunSimulations()
+    {
+        if (currentLightSimulation != null && currentLightSimulation.MetaInfo != null && currentLightSimulation.MetaInfo.ID != Guid.Empty &&
+            currentSimulation != null && currentSimulation.MetaInfo != null && currentSimulation.MetaInfo.ID == currentLightSimulation.MetaInfo.ID)
+        {
+            try
+            {
+                currentSimulation.Name = currentLightSimulation.Name;
+                currentSimulation.Description = currentLightSimulation.Description;
+                currentSimulation.LastModificationDate = DateTimeOffset.UtcNow;
+                currentSimulation.Results = null;
+                currentSimulation.Progress = 0;
+                await APIUtils.ClientSimulator4nDOF.PutSimulationByIdAsync(currentSimulation.MetaInfo.ID, currentSimulation);
+                logger.LogInformation("Simulation started successfully");
+                Snackbar.Add("Simulation started successfully", Severity.Success);
+                await OnInitializedAsync();
+                autoUpdate = true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Impossible to rerun the Simulation");
+                Snackbar.Add("Impossible to rerun the Simulation", Severity.Warning);
+            }
+        }
+    }
+
+    private async Task GetCurrentSimulationHeavy()
+    {
+        if (currentLightSimulation != null)
+        {
+            try
+            {
+                currentSimulation = await APIUtils.ClientSimulator4nDOF.GetSimulationByIdAsync(currentLightSimulation.MetaInfo.ID);
+                if (currentSimulation != null)
+                {
+                    // upload the results if they were not there
+                    if (currentSimulation.Results == null)
+                    {
+                        _sequenceNumber = 0;
+                        Results? resultsFromServer = null;
+                        try
+                        {
+                            resultsFromServer = await APIUtils.ClientSimulator4nDOF.GetSimulationResultByIdAsync(currentLightSimulation.MetaInfo.ID, _sequenceNumber++);
+                        }
+                        catch (Exception e)
+                        {
+                            resultsFromServer = null;
+                        }
+                        while (resultsFromServer != null)
+                        {
+                            await InvokeAsync(() => { StateHasChanged(); });
+                            if (currentSimulation.Results == null)
+                            {
+                                currentSimulation.Results = new Results();
+                            }
+                            if (resultsFromServer.Scalars != null)
+                            {
+                                if (currentSimulation.Results.Scalars == null)
+                                {
+                                    currentSimulation.Results.Scalars = new Scalars();
+                                }
+                                var srcScalars = resultsFromServer.Scalars;
+                                var dstScalars = currentSimulation.Results.Scalars;
+                                foreach (var prop in typeof(Scalars).GetProperties().Where(p => p.PropertyType == typeof(ICollection<double>)))
+                                {
+                                    var src = (ICollection<double>?)prop.GetValue(srcScalars);
+                                    if (src is null || src.Count == 0) continue;
+
+                                    var dst = (ICollection<double>?)prop.GetValue(dstScalars);
+                                    if (dst is null)
+                                    {
+                                        dst = new List<double>();
+                                        prop.SetValue(dstScalars, dst);
+                                    }
+                                    foreach (var val in src)
+                                    {
+                                        dst.Add(val);
+                                    }
+                                }
+                            }
+                            if (resultsFromServer.Profiles != null)
+                            {
+                                if (currentSimulation.Results.Profiles == null)
+                                {
+                                    currentSimulation.Results.Profiles = new List<Profiles>();
+                                }
+                                foreach (var profile in resultsFromServer.Profiles)
+                                {
+                                    currentSimulation.Results.Profiles.Add(profile);
+                                }
+                            }
+                            if (currentSimulation.Results.Scalars == null)
+                            {
+                                currentSimulation.Results.Scalars = new Scalars();
+                            }
+                            try
+                            {
+                                resultsFromServer = await APIUtils.ClientSimulator4nDOF.GetSimulationResultByIdAsync(currentLightSimulation.MetaInfo.ID, _sequenceNumber++);
+                            }
+                            catch (Exception e)
+                            {
+                                resultsFromServer = null;
+                            }
+                        }
+                        _sequenceNumber = -1;
+                    }
+                    results = currentSimulation.Results;
+                    /*
+                    if (results != null && results.Scalars != null)
+                    {
+                        using (StreamWriter writer = new StreamWriter("C:\\Users\\erca\\NORCE\\P102854_SFI DigiWells - Epic Automated Well Engineering External - Epic Automated Well Engineering External\\Studies\\HarbourEnergy\\JarFailure\\results.txt"))
+                        {
+                            var scalars = results.Scalars;
+                            int count = scalars.Time.Count;
+                            for (int i = 0; i < count; i++)
+                            {
+                                writer.WriteLine(scalars.Time.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.BitRPM.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SensorAngularVelocity.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SensorBendingMomentX.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SensorBendingMomentY.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SensorWhirlVelocity.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SurfaceRPM.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SurfaceTorque.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SensorTension.ElementAt<double>
+                                (i) + "\t" +
+                                scalars.SensorTorque.ElementAt<double>
+                                (i) + "\t" +
+                                Math.Sqrt(scalars.SensorBendingMomentX.ElementAt<double>
+                                (i) * scalars.SensorBendingMomentX.ElementAt<double>
+                                (i) + scalars.SensorBendingMomentY.ElementAt<double>
+                                (i) * scalars.SensorBendingMomentY.ElementAt<double>
+                                (i)));
+                                }
+                            }
+                        }
+                    */
+                    resultsPanelRef?.Refresh();
+                    await InvokeAsync(() => { StateHasChanged(); });
+                }
+                else
+                {
+                    logger.LogWarning("Impossible to load Simulation");
+                    Snackbar.Add("Impossible to load Simulation", Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Impossible to load Simulation to be edited");
+            }
+        }
+    }
+    private void AddSetPoint()
+    {
+        if (currentSimulation != null)
+        {
+            currentSimulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
+        }
+    }
+}

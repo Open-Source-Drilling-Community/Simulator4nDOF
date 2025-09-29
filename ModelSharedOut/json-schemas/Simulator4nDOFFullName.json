@@ -144,6 +144,46 @@
         }
       }
     },
+    "/Simulation/Results/{id}/page/{sequenceNumber}\"": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetSimulationResultById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sequenceNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Results"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Simulation/LightData": {
       "get": {
         "tags": [
@@ -850,9 +890,6 @@
             "type": "string",
             "nullable": true
           },
-          "Config": {
-            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Config"
-          },
           "CreationDate": {
             "type": "string",
             "format": "date-time",
@@ -866,12 +903,27 @@
           "ContextualData": {
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.ContextualData"
           },
-          "CurrentTime": {
-            "type": "number",
-            "format": "double"
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Config": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Config"
           },
           "InitialValues": {
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.InitialValues"
+          },
+          "SetPointsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.SetPoints"
+            },
+            "nullable": true
+          },
+          "CurrentTime": {
+            "type": "number",
+            "format": "double"
           },
           "Progress": {
             "type": "number",
@@ -881,13 +933,6 @@
           "TerminationState": {
             "type": "integer",
             "format": "int32",
-            "nullable": true
-          },
-          "SetPointsList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.SetPoints"
-            },
             "nullable": true
           },
           "Results": {
@@ -918,6 +963,11 @@
           "LastModificationDate": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
             "nullable": true
           },
           "Progress": {

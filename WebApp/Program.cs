@@ -26,6 +26,14 @@ app.UsePathBase("/Simulator4nDOF/webapp");
 
 if (!String.IsNullOrEmpty(builder.Configuration["Simulator4nDOFHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.Simulator4nDOFHostURL = builder.Configuration["Simulator4nDOFHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["WellBoreHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellBoreHostURL = builder.Configuration["WellBoreHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["FieldHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.FieldHostURL = builder.Configuration["FieldHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["ClusterHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.ClusterHostURL = builder.Configuration["ClusterHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["WellHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellHostURL = builder.Configuration["WellHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["UnitConversionHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.UnitConversionHostURL = builder.Configuration["UnitConversionHostURL"];
 

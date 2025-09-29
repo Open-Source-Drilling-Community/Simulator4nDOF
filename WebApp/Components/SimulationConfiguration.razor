@@ -1,26 +1,33 @@
 ﻿@if (Simulation != null && Simulation.Config != null)
 {
     <MudGrid RowSpacing="0" Style="margin-top:-0px;">
-        <MudItem Style="width:250px;">
+        <MudItem xs="3">
             <MudInputWithUnit VariantType="Variant.Text"
                               QuantityLabel="Virtual sensor position from bit"
                               QuantityName="DepthDrilling"
                               SIValue="Simulation.Config.VirtualSensorPositionFromBit"
                               SIValueNullableChanged="val => { if (val != null) Simulation.Config.VirtualSensorPositionFromBit = (double)val; }" />
         </MudItem>
-        <MudItem Style="width:250px;">
+        <MudItem xs="3">
             <MudInputWithUnit VariantType="Variant.Text"
                               QuantityLabel="Logging interval scalar values"
                               QuantityName="Time"
                               SIValue="Simulation.Config.LoggingIntervalScalarValues"
                               SIValueNullableChanged="val => { if (val != null) Simulation.Config.LoggingIntervalScalarValues = (double)val; }" />
         </MudItem>
-        <MudItem Style="width:250px;">
+        <MudItem xs="3">
             <MudInputWithUnit VariantType="Variant.Text"
                               QuantityLabel="Logging interval profiles"
                               QuantityName="Time"
                               SIValue="Simulation.Config.LoggingIntervalProfiles"
                               SIValueNullableChanged="val => { if (val != null) Simulation.Config.LoggingIntervalProfiles = (double)val; }" />
+        </MudItem>
+        <MudItem xs="3">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Discretization Length"
+                              QuantityName="LengthStandard"
+                              SIValue="Simulation.Config.LengthBetweenLumpedElements"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.LengthBetweenLumpedElements = (double)val; }" />
         </MudItem>
     </MudGrid>
     <MudGrid RowSpacing="0" Style="margin-top:-0px;">

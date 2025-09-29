@@ -1,10 +1,32 @@
-﻿public static class APIUtils
+﻿using OSDC.UnitConversion.DrillingRazorMudComponents;
+
+public static class APIUtils
 {
     // API parameters
     public static readonly string HostNameSimulator4nDOF = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.Simulator4nDOFHostURL!;
     public static readonly string HostBasePathSimulator4nDOF = "Simulator4nDOF/api/";
     public static readonly HttpClient HttpClientSimulator4nDOF = APIUtils.SetHttpClient(HostNameSimulator4nDOF, HostBasePathSimulator4nDOF);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientSimulator4nDOF = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientSimulator4nDOF.BaseAddress!.ToString(), APIUtils.HttpClientSimulator4nDOF);
+
+    public static readonly string HostNameWellBore = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellBoreHostURL!;
+    public static readonly string HostBasePathWellBore = "WellBore/api/";
+    public static readonly HttpClient HttpClientWellBore = APIUtils.SetHttpClient(HostNameWellBore, HostBasePathWellBore);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientWellBore = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientWellBore.BaseAddress!.ToString(), APIUtils.HttpClientWellBore);
+
+    public static readonly string HostNameWell = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellHostURL!;
+    public static readonly string HostBasePathWell = "Well/api/";
+    public static readonly HttpClient HttpClientWell = APIUtils.SetHttpClient(HostNameWell, HostBasePathWell);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientWell = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientWell.BaseAddress!.ToString(), APIUtils.HttpClientWell);
+
+    public static readonly string HostNameCluster = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.ClusterHostURL!;
+    public static readonly string HostBasePathCluster = "Cluster/api/";
+    public static readonly HttpClient HttpClientCluster = APIUtils.SetHttpClient(HostNameCluster, HostBasePathCluster);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientCluster = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientCluster.BaseAddress!.ToString(), APIUtils.HttpClientCluster);
+
+    public static readonly string HostNameField = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.FieldHostURL!;
+    public static readonly string HostBasePathField = "Field/api/";
+    public static readonly HttpClient HttpClientField = APIUtils.SetHttpClient(HostNameField, HostBasePathField);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientField = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientField.BaseAddress!.ToString(), APIUtils.HttpClientField);
 
     public static readonly string HostNameUnitConversion = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.UnitConversionHostURL!;
     public static readonly string HostBasePathUnitConversion = "UnitConversion/api/";
@@ -22,4 +44,24 @@
         httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         return httpClient;
     }
+}
+
+public class GroundMudLineDepthReferenceSource : IGroundMudLineDepthReferenceSource
+{
+    public double? GroundMudLineDepthReference { get; set; }
+}
+
+public class RotaryTableDepthReferenceSource : IRotaryTableDepthReferenceSource
+{
+    public double? RotaryTableDepthReference { get; set; }
+}
+
+public class SeaWaterLevelDepthReferenceSource : ISeaWaterLevelDepthReferenceSource
+{
+    public double? SeaWaterLevelDepthReference { get; set; }
+}
+
+public class WellHeadDepthReferenceSource : IWellHeadDepthReferenceSource
+{
+    public double? WellHeadDepthReference { get; set; }
 }

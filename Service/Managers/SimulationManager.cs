@@ -32,6 +32,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
     /// </summary>
     public class SimulationManager
     {
+        private static int _maxCount = 250;
         private static SimulationManager? _instance = null;
         private readonly ILogger<SimulationManager> _logger;
         private readonly SqlConnectionManager _connectionManager;
@@ -228,6 +229,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 ContextualData = original.ContextualData, // Consider deep copy if needed
                 InitialValues = original.InitialValues,   // Consider deep copy if mutable
                 LastModificationDate = original.LastModificationDate,
+                WellBoreID = original.WellBoreID,
                 Name = original.Name,
                 Description = original.Description,
                 MetaInfo = original.MetaInfo,             // Consider deep copy if needed
@@ -292,7 +294,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
 
         /// <summary>
-        /// Returns the Simulation identified by its Guid from the microservice database 
+        /// Returns the Simulation identified by its Guid from the microservice database without the results
         /// </summary>
         /// <param name="guid"></param>
         /// <returns>the Simulation identified by its Guid from the microservice database</returns>
@@ -356,6 +358,49 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return null;
         }
 
+        public Model.Results? GetSimulationResultById(Guid guid, uint sequenceNumber)
+        {
+            if (guid != Guid.Empty)
+            {
+                var connection = _connectionManager.GetConnection();
+                if (connection != null)
+                {
+                    Model.Results? results = null;
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"SELECT Result FROM SimulationResultsTable WHERE SimulationID = '{guid}' AND SequenceNumber = '{sequenceNumber}'";
+                    try
+                    {
+                        using var reader = command.ExecuteReader();
+                        if (reader.Read() && !reader.IsDBNull(0))
+                        {
+
+                            string data = reader.GetString(0);
+                            if (!string.IsNullOrEmpty(data))
+                            {
+                                results = JsonSerializer.Deserialize<Results>(data, JsonSettings.Options);
+                            }
+                        }
+                    }
+                    catch (SqliteException ex)
+                    {
+                        _logger.LogError(ex, "Impossible to get the Simulation Results with the given SimulationID from SimulationResultsTable");
+                        return null;
+                    }
+                    _logger.LogInformation("Returning the Simulation of given ID from SimulationTable");
+                    return results;
+                }
+                else
+                {
+                    _logger.LogWarning("Impossible to access the SQLite database");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("The given Simulation ID is null or empty");
+            }
+            return null;
+        }
+
         /// <summary>
         /// Returns the Simulation identified by its Guid from the microservice database 
         /// </summary>
@@ -371,7 +416,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     Model.SimulationLight? simulation;
                     var command = connection.CreateCommand();
                     //command.CommandText = $"SELECT Simulation FROM SimulationTable WHERE ID = '{guid}'";
-                    command.CommandText = $"SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate, Progress, TerminationState FROM SimulationTable WHERE ID = '{guid}'";
+                    command.CommandText = $"SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate, WellBoreID, Progress, TerminationState FROM SimulationTable WHERE ID = '{guid}'";
 
                     try
                     {
@@ -382,15 +427,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             var metaInfo = string.IsNullOrEmpty(metaInfoJson) ? null : JsonSerializer.Deserialize<MetaInfo>(metaInfoJson);
 
                             var name = reader["Name"]?.ToString();
+
                             var description = reader["Description"]?.ToString();
 
                             var creationDate = DateTimeOffset.TryParse(reader["CreationDate"]?.ToString(), out var cdt) ? cdt : (DateTimeOffset?)null;
+
                             var lastModificationDate = DateTimeOffset.TryParse(reader["LastModificationDate"]?.ToString(), out var ldt) ? ldt : (DateTimeOffset?)null;
 
+                            Guid wellBoreID = Guid.Empty;
+                            if (Guid.TryParse(reader.GetString(5), out Guid lwellBoreID))
+                            {
+                                wellBoreID = lwellBoreID;
+                            }
+
                             var progress = reader["Progress"] is double d ? d : Convert.ToDouble(reader["Progress"]);
+
                             var terminationState = Convert.ToInt32(reader["TerminationState"]);
 
-                            simulation = new Model.SimulationLight(metaInfo, name, description, creationDate, lastModificationDate, progress, terminationState);
+                            simulation = new Model.SimulationLight(metaInfo, name, description, creationDate, lastModificationDate, wellBoreID, progress, terminationState);
                             //string data = reader.GetString(0);
                             //simulation = JsonSerializer.Deserialize<Model.SimulationLight>(data, JsonSettings.Options);
                             if (simulation != null && simulation.MetaInfo != null && !simulation.MetaInfo.ID.Equals(guid))
@@ -429,33 +483,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         public List<Model.Simulation?>? GetAllSimulation()
         {
             List<Model.Simulation?> vals = [];
-            var connection = _connectionManager.GetConnection();
-            if (connection != null)
+            List<MetaInfo?>? IDs = GetAllSimulationMetaInfo();
+            if (IDs != null)
             {
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT Simulation FROM SimulationTable";
-                try
+                foreach (var id in IDs)
                 {
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read() && !reader.IsDBNull(0))
+                    if (id != null && id.ID != Guid.Empty)
                     {
-                        string data = reader.GetString(0);
-                        Model.Simulation? simulation = JsonSerializer.Deserialize<Model.Simulation>(data, JsonSettings.Options);
-                        vals.Add(simulation);
+                        Simulation? simulation = GetSimulationById(id.ID);
+                        if (simulation != null)
+                        {
+                            vals.Add(simulation);
+                        }
                     }
-                    _logger.LogInformation("Returning the list of existing Simulation from SimulationTable");
-                    return vals;
-                }
-                catch (SqliteException ex)
-                {
-                    _logger.LogError(ex, "Impossible to get Simulation from SimulationTable");
                 }
             }
-            else
-            {
-                _logger.LogWarning("Impossible to access the SQLite database");
-            }
-            return null;
+            return vals;
         }
 
         /// <summary>
@@ -470,7 +513,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             if (connection != null)
             {
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate, Progress, TerminationState FROM SimulationTable";
+                command.CommandText = "SELECT MetaInfo, Name, Description, CreationDate, LastModificationDate, WellBoreID, Progress, TerminationState FROM SimulationTable";
                 try
                 {
                     using var reader = command.ExecuteReader();
@@ -487,11 +530,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         DateTimeOffset? lastModificationDate = null;
                         if (DateTimeOffset.TryParse(reader.GetString(4), out DateTimeOffset lDate))
                             lastModificationDate = lDate;
-
-                        double progress = reader.GetDouble(5);
+                        Guid wellBoreID = Guid.Empty;
+                        if (Guid.TryParse(reader.GetString(5), out Guid lwellBoreID))
+                        {
+                            wellBoreID = lwellBoreID;
+                        }
+                        double progress = reader.GetDouble(6);
 
                         int terminationState = 0;
-                        if (Int32.TryParse(reader.GetString(6), out int lterminationState))
+                        if (Int32.TryParse(reader.GetString(7), out int lterminationState))
                             terminationState = lterminationState;
 
                         simulationLightList.Add(new Model.SimulationLight(
@@ -500,6 +547,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                                 string.IsNullOrEmpty(descr) ? null : descr,
                                 creationDate,
                                 lastModificationDate,
+                                wellBoreID,
                                 progress,
                                 terminationState));
                     }
@@ -608,6 +656,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                                 "Description, " +
                                 "CreationDate, " +
                                 "LastModificationDate, " +
+                                "WellBoreID, " +
                                 "Progress, " +
                                 "TerminationState, " +
                                 "Simulation" +
@@ -618,6 +667,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                                 $"'{simulation.Description}', " +
                                 $"'{cDate}', " +
                                 $"'{lDate}', " +
+                                $"'{simulation.WellBoreID}', " +
                                 $"'{progress}', " +
                                 $"'{terminationState}', " +
                                 $"'{data}'" +
@@ -732,6 +782,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"Description = '{simulation.Description}', " +
                             $"CreationDate = '{cDate}', " +
                             $"LastModificationDate = '{lDate}', " +
+                            $"WellBoreID = '{simulation.WellBoreID}', " +
                             $"Progress = {progress.ToString(CultureInfo.InvariantCulture)}, " +
                             $"TerminationState= '{terminationState}' " +
                             $"WHERE ID = '{guid}'";
@@ -798,6 +849,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         string? lDate = null;
                         if (simulation.LastModificationDate != null)
                             lDate = ((DateTimeOffset)simulation.LastModificationDate).ToString(SqlConnectionManager.DATE_TIME_FORMAT);
+                        var results = simulation.Results;
+                        simulation.Results = null;
                         string data = JsonSerializer.Serialize(simulation, JsonSettings.Options);
                         var command = connection.CreateCommand();
                         double progress = simulation.Progress ?? 0.0;
@@ -808,6 +861,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             $"Description = '{simulation.Description}', " +
                             $"CreationDate = '{cDate}', " +
                             $"LastModificationDate = '{lDate}', " +
+                            $"WellBoreID = '{simulation.WellBoreID}', " +
                             $"Progress = {progress.ToString(CultureInfo.InvariantCulture)}, " +
                             $"TerminationState= '{terminationState}', " +
                             $"Simulation = '{data}' " +
@@ -817,6 +871,42 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         {
                             _logger.LogWarning("Impossible to update the Simulation");
                             success = false;
+                        }
+                        if (success)
+                        {
+                            command.CommandText = $"DELETE FROM SimulationResultsTable WHERE SimulationID = '{guid}'";
+                            count = command.ExecuteNonQuery();
+                            if (count < 0)
+                            {
+                                _logger.LogWarning("Impossible to delete the Simulation Results of given ID from the SimulationResultsTable");
+                                success = false;
+                            }
+                            if (success && results != null)
+                            {
+
+                                List<Results> resultsList = SplitResults(results, _maxCount);
+                                uint sequenceNumber = 0;
+                                foreach (Results r in resultsList)
+                                {
+                                    command.CommandText = "INSERT INTO SimulationResultsTable (" +
+                                        "SimulationID, " +
+                                        "SequenceNumber, " +
+                                        "Result" +
+                                        ") VALUES (" +
+                                        $"'{guid}', " +
+                                        $"'{sequenceNumber}', " +
+                                        $"'{JsonSerializer.Serialize(r, JsonSettings.Options)}'" +
+                                        ")";
+                                    count = command.ExecuteNonQuery();
+                                    if (count != 1)
+                                    {
+                                        _logger.LogWarning("Impossible to insert the given Simulation Result into the SimulationResultsTable");
+                                        success = false;
+                                        break;
+                                    }
+                                    sequenceNumber++;
+                                }
+                            }
                         }
                     }
                     catch (SqliteException ex)
@@ -867,8 +957,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     try
                     {
                         var command = connection.CreateCommand();
-                        command.CommandText = $"DELETE FROM SimulationTable WHERE ID = '{guid}'";
+                        command.CommandText = $"DELETE FROM SimulationResultsTable WHERE SimulationID = '{guid}'";
                         int count = command.ExecuteNonQuery();
+                        if (count < 0)
+                        {
+                            _logger.LogWarning("Impossible to delete the Simulation of given ID from the SimulationResultsTable");
+                            success = false;
+                        }
+                        command.CommandText = $"DELETE FROM SimulationTable WHERE ID = '{guid}'";
+                        count = command.ExecuteNonQuery();
                         if (count < 0)
                         {
                             _logger.LogWarning("Impossible to delete the Simulation of given ID from the SimulationTable");
@@ -903,7 +1000,98 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return false;
         }
 
+        private List<Results> SplitResults(Results? results, int maxCount)
+        {
+            List<Results> output = new List<Results>();
+            if (results != null)
+            {
+                int countScalars = 0;
+                if (results.Scalars != null && results.Scalars.Time != null)
+                {
+                    countScalars = results.Scalars.Time.Count;
+                }
+                int countProfiles = 0;
+                if (results.Profiles != null)
+                {
+                    countProfiles = results.Profiles.Count;
+                }
+                int numberChunkScalars = countScalars / maxCount;
+                if (countScalars % maxCount > 0)
+                {
+                    numberChunkScalars++;
+                }
+                int numberChunkProfiles = countProfiles / maxCount;
+                if (countProfiles % maxCount > 0)
+                {
+                    numberChunkProfiles++;
+                }
+                int countScalarSamples = 0;
+                int countProfilesSamples = 0;
+                if (numberChunkProfiles > numberChunkScalars)
+                {
+                    countProfilesSamples = maxCount;
+                    if (numberChunkProfiles > 0)
+                    {
+                        countScalarSamples = countScalars / numberChunkProfiles;
+                    }
+                }
+                else
+                {
+                    countScalarSamples = maxCount;
+                    if (numberChunkScalars > 0)
+                    {
+                        countProfilesSamples = countProfiles / numberChunkScalars;
+                    }
+                }
+                int idxScalars = 0;
+                int idxProfiles = 0;
+                var srcScalars = results.Scalars;
+                while (idxScalars < countScalars || idxProfiles < countProfiles)
+                {
+                    Results res = new Results();
+                    res.Scalars = new Scalars();
+                    res.Profiles = new List<Profiles>();
+                    res.AvgCumulativeSSI = results.AvgCumulativeSSI;
 
+                    var dstScalars = res.Scalars;
+                    int c = 0;
+                    for (int i = idxScalars; i < Math.Min(idxScalars + countScalarSamples, countScalars); i++)
+                    {
+                        foreach (var prop in typeof(Scalars).GetProperties()
+                                                         .Where(p => p.PropertyType == typeof(List<double>)))
+                        {
+                            var src = (List<double>?)prop.GetValue(srcScalars);
+                            if (src is null || src.Count == 0) continue;
+
+                            var dst = (List<double>?)prop.GetValue(dstScalars);
+                            if (dst is null)
+                            {
+                                dst = new List<double>();
+                                prop.SetValue(dstScalars, dst);
+                            }
+                            if (i < src.Count)
+                            {
+                                dst.Add(src[i]);
+                            }
+                        }
+                        c++;
+                    }
+                    idxScalars += c;
+                    c = 0;
+                    for (int i = idxProfiles; i < Math.Min(idxProfiles+countProfilesSamples, countProfiles); i++)
+                    {
+                        if (results.Profiles != null && i < results.Profiles.Count)
+                        {
+                            res.Profiles.Add(results.Profiles[i]);
+                        }
+                        c++;
+                    }
+                    idxProfiles += c;
+                    output.Add(res);
+                }
+            }
+            return output;
+        }
         public Simulator.DataModel.Configuration Initialize(Simulation simulation, DrillString drillString, DrillStringOpenLab drillStringOpenLab, DrillStringSourceType DrillStringSource)
         {
 

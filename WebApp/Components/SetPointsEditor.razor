@@ -2,7 +2,7 @@
 <div style="width: 1000px;">
     <MudDataGrid T="SetPoints"
                  MultiSelection="false"
-                 Items="NewSimulation.SetPointsList"
+                 Items="Simulation.SetPointsList"
                  EditMode="DataGridEditMode.Cell"
                  ReadOnly="false"
                  ColumnResizeMode="ResizeMode.Column"
@@ -80,7 +80,7 @@
 @code {
 
     [Parameter]
-    public Simulation NewSimulation { get; set; }
+    public Simulation Simulation { get; set; }
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
@@ -104,7 +104,7 @@
     {
         if (item != null)
         {
-            NewSimulation.SetPointsList.Remove(item);
+            Simulation.SetPointsList.Remove(item);
         }
 
         // Optional UI refresh

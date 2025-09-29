@@ -34,6 +34,130 @@
     <script src="_content/Plotly.Blazor/plotly-latest.min.js" type="text/javascript"></script>
     <script src="_content/Plotly.Blazor/plotly-interop.js" type="text/javascript"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js?v=8.5.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        // Minimal capture (html2canvas avoids the Google Fonts cssRules issue)
+        async function snapElToDataUrl(id, opts) {
+          const el = document.getElementById(id);
+          if (!el) throw new Error(`Element '${id}' not found`);
+          const r = el.getBoundingClientRect();
+          if (r.width < 1 || r.height < 1) throw new Error(`'${id}' has zero size (hidden?)`);
 
+          const o = Object.assign({ backgroundColor:'#fff', useCORS:true, scale:1 }, opts || {});
+          const canvas = await html2canvas(el, o);
+          return canvas.toDataURL('image/png');
+        }
+
+        // Capture and push the frame directly into your videoSnap buffer
+        window.captureAndAddFrame = async (elementId, options) => {
+          const dataUrl = await snapElToDataUrl(elementId, options);
+          await window.videoSnap.addFrame(dataUrl); // stays entirely in JS
+        };
+    </script>
+    <script>
+        // Minimal in-browser video builder for still frames
+        window.videoSnap = {
+          _frames: [],
+          _fps: 30,
+          _canvas: null,
+          _ctx: null,
+          _recorder: null,
+          _chunks: [],
+          _stream: null,
+          _blobUrl: null,
+
+          start: (width, height, fps) => {
+            const c = document.createElement('canvas');
+            c.width = width; c.height = height;
+            const ctx = c.getContext('2d');
+
+            const stream = c.captureStream(fps || 30);
+            const prefer = [
+              'video/webm;codecs=vp9',
+              'video/webm;codecs=vp8',
+              'video/webm'
+            ];
+            const mime = prefer.find(t => MediaRecorder.isTypeSupported?.(t)) || undefined;
+            const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : {});
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+
+            window.videoSnap._frames = [];
+            window.videoSnap._fps = fps || 30;
+            window.videoSnap._canvas = c;
+            window.videoSnap._ctx = ctx;
+            window.videoSnap._recorder = recorder;
+            window.videoSnap._chunks = chunks;
+            window.videoSnap._stream = stream;
+            return true;
+          },
+
+          addFrame: async (dataUrl) => {
+            // Just stash; we’ll replay precisely during finish()
+            window.videoSnap._frames.push(dataUrl);
+          },
+
+          finish: async () => {
+            const { _canvas:c, _ctx:ctx, _recorder:rec, _chunks:chunks, _frames:frames, _fps:fps } = window.videoSnap;
+            if (!c || !rec) throw new Error('videoSnap.start() was not called');
+
+            const frameDurationMs = 1000 / (fps || 30);
+            rec.start();
+
+            for (const url of frames) {
+              await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                  ctx.clearRect(0, 0, c.width, c.height);
+                  ctx.drawImage(img, 0, 0, c.width, c.height);
+                  setTimeout(resolve, frameDurationMs);
+                };
+                img.onerror = reject;
+                img.src = url;
+              });
+            }
+
+            rec.stop();
+            await new Promise(r => rec.onstop = r);
+            const blob = new Blob(chunks, { type: rec.mimeType || 'video/webm' });
+            const url = URL.createObjectURL(blob);
+
+            // light cleanup; caller can URL.revokeObjectURL(url) when done
+            try { window.videoSnap._stream?.getTracks().forEach(t => t.stop()); } catch {}
+            window.videoSnap._recorder = null;
+
+            window.videoSnap._blobUrl = { url, mimeType: blob.type, size: blob.size };
+            return true;
+          },
+
+          download: async (filename) => {
+              const a = document.createElement('a');
+              try {
+                a.href = window.videoSnap._blobUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+              } catch {}
+              a.remove();
+          },
+
+          revoke: () => { try { URL.revokeObjectURL(window.videoSnap._blobUrl); } catch {} }
+        };
+    </script>
+    <script>
+        window.sizeUtil = {
+          getSizeById: (id) => {
+            const el = document.getElementById(id);
+            if (!el) throw new Error(`Element '${id}' not found`);
+            const r = el.getBoundingClientRect(); // CSS pixels
+            return { width: r.width, height: r.height };
+          },
+          getSizeByRef: (el) => {
+            if (!el) throw new Error('Element ref was null');
+            const r = el.getBoundingClientRect();
+            return { width: r.width, height: r.height };
+          }
+        };
+    </script>
 </body>
 </html>

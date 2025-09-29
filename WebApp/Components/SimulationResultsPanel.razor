@@ -3,6 +3,7 @@
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.Traces.ScatterLib
 @using MudBlazor
+@inject IJSRuntime JS
 @inherits LayoutComponentBase
 
 @*<MudText Class="mt-4 mb-4" Typo="Typo.h6">Simulation results</MudText>*@
@@ -46,7 +47,7 @@
     {
         <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
             <MudGrid Class="pa-0 ma-0" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                <MudItem xs="8" sm="2" md="2" lg="2" xl="3">
+                <MudItem xs="8" sm="2" md="2" lg="2" xl="2">
                     <MudSlider T="double"
                                Value="@selectedProfileIndex"
                                ValueChanged="OnProfileIndexChanged"
@@ -57,12 +58,12 @@
                                Color="Color.Primary" />
                 </MudItem>
 
-                <MudItem xs="4" sm="2" md="2" lg="2" xl="1">
+                <MudItem xs="4" sm="2" md="2" lg="1" xl="1">
                     <MudText Typo="Typo.subtitle2" Class="ml-2">
                         Time (s): @selectedProfileTime.ToString("F2")
                     </MudText>
                 </MudItem>
-                <MudItem xs="8" sm="2" md="2" lg="2" xl="3">
+                <MudItem xs="8" sm="2" md="2" lg="2" xl="2">
                     <MudSlider T="double"
                                Value="@selectedStartDepthInUserUnit"
                                ValueChanged="OnProfileStartDepthChanged"
@@ -72,12 +73,12 @@
                                Immediate="true"
                                Color="Color.Primary" />
                 </MudItem>
-                <MudItem xs="4" sm="2" md="2" lg="2" xl="1">
+                <MudItem xs="4" sm="2" md="2" lg="1" xl="1">
                     <MudText Typo="Typo.subtitle2" Class="ml-2">
                         Start Depth ( @depthUnit ): @selectedStartDepthString
                     </MudText>
                 </MudItem>
-                <MudItem xs="8" sm="2" md="2" lg="2" xl="3">
+                <MudItem xs="8" sm="2" md="2" lg="2" xl="2">
                     <MudSlider T="double"
                                Value="@selectedEndDepthInUserUnit"
                                ValueChanged="OnProfileEndDepthChanged"
@@ -87,12 +88,49 @@
                                Immediate="true"
                                Color="Color.Primary" />
                 </MudItem>
-                <MudItem xs="4" sm="2" md="2" lg="2" xl="1">
+                <MudItem xs="4" sm="2" md="2" lg="1" xl="1">
                     <MudText Typo="Typo.subtitle2" Class="ml-2">
                         End Depth ( @depthUnit ): @selectedEndDepthString
                     </MudText>
                 </MudItem>
+                <MudItem xs="12" sm="12" md="12" lg="3" xl="3">
+                    <MudStack Row AlignItems="_align" Spacing="1">
+                        <MudTooltip Text="Start">
+                            <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
+                                           Color="Color.Success"
+                                           Disabled="@(IsRunning && !IsPaused)"
+                                           OnClick="Start" />
+                        </MudTooltip>
 
+                        <MudTooltip Text="Pause">
+                            <MudIconButton Icon="@Icons.Material.Filled.Pause"
+                                           Color="Color.Warning"
+                                           Disabled="@( !IsRunning || IsPaused )"
+                                           OnClick="Pause" />
+                        </MudTooltip>
+
+                        <MudTooltip Text="Stop">
+                            <MudIconButton Icon="@Icons.Material.Filled.Stop"
+                                           Color="Color.Error"
+                                           Disabled="@( !IsRunning )"
+                                           OnClick="Stop" />
+                        </MudTooltip>
+                        <MudTooltip Text="Record (only active when play is running)">
+                            <MudIconButton Icon="@Icons.Material.Filled.FiberManualRecord"
+                                           Color="@_recordButtonColor"
+                                           OnClick="Record" />
+                        </MudTooltip>
+                        <MudTooltip Text="Save recorded video to file">
+                            <MudIconButton Icon="@Icons.Material.Filled.SaveAs"
+                                           Color="Color.Primary"
+                                           Disabled="@( !_videoAvailable )"
+                                           OnClick="SaveVideo" />
+                        </MudTooltip>
+                        <MudText Class="ms-3" Typo="Typo.caption">
+                            State: @(IsRunning ? (IsPaused ? "Paused" : "Running") : "Stopped")
+                        </MudText>
+                    </MudStack>
+                </MudItem>
             </MudGrid>
         </MudPaper>
     }
@@ -123,40 +161,42 @@
 
             </MudGrid>
         </MudTabPanel>
-        <MudTabPanel Text="Along String Depth graphs ">
-            <MudGrid Class="pa-0 ma-0" Style="flex-wrap: nowrap; overflow-x: auto;" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreAnglesLayout" @bind-Data="_wellBoreAnglesTraces" @ref="_wellBoreAnglesChart" />
-                </MudItem>
-                <MudItem Style="flex: 0 0 10%;">
-                    <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreCurvaturesLayout" @bind-Data="_wellBoreCurvaturesTraces" @ref="_wellBoreCurvaturesChart" />
-                </MudItem>
-            </MudGrid>
-        </MudTabPanel>
+        <div id="gridToSnap">
+            <MudTabPanel Text="Along String Depth graphs ">
+                <MudGrid Class="pa-0 ma-0" Style="flex-wrap: nowrap; overflow-x: auto;" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreAnglesLayout" @bind-Data="_wellBoreAnglesTraces" @ref="_wellBoreAnglesChart" />
+                    </MudItem>
+                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreCurvaturesLayout" @bind-Data="_wellBoreCurvaturesTraces" @ref="_wellBoreCurvaturesChart" />
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+        </div>
         <MudTabPanel Text="Sensor measurements">
             <MudGrid>
                 <MudItem xs="6">
@@ -226,6 +266,21 @@
         },
     };
 
+    private object _lock = new object();
+    private AlignItems _align = AlignItems.Center;
+    private bool IsRunning { get; set; }
+    private bool IsPaused { get; set; }
+    private RepeatingWorker? _worker;
+    private int _ticks;
+    private bool _recording;
+    private Color _recordButtonColor = Color.Info;
+    private string _videoMime = "video/webm";
+    private int _fps = 12;
+    private int _width = 1024;
+    private int _height = 576;
+    private bool _videoAvailable = false;
+    private record ComponentSize(double width, double height);
+
     private double selectedStartDepthInUserUnit = 0;
     private double selectedEndDepthInUserUnit = 0;
     private double minimumDepth = 0;
@@ -255,6 +310,170 @@
 
     private int maxIndex => (Results?.Scalars?.Time?.Count ?? 1) - 1;
 
+    private async Task StartVideo()
+    {
+        // Ensure grid has a stable layout at the size you want to export
+        // If your grid is responsive, you can read its size from JS instead.
+        _videoAvailable = false;
+        var s = await JS.InvokeAsync<ComponentSize>("sizeUtil.getSizeById", "gridToSnap");
+        if (s != null)
+        {
+            _width = (int)s.width;
+            _height = (int)s.height;
+        }
+
+        await JS.InvokeAsync<bool>("videoSnap.start", _width, _height, _fps);
+        lock (_lock)
+        {
+            _recording = true;
+        }
+    }
+
+    private async Task FinishVideo()
+    {
+        bool recording = false;
+        lock (_lock)
+        {
+            recording = _recording;
+        }
+        if (!recording) return;
+        _videoAvailable = await JS.InvokeAsync<bool>("videoSnap.finish");
+        lock (_lock)
+        {
+            _recording = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task SaveVideo()
+    {
+        if (_videoAvailable)
+        {
+            var name = $"Simulator4nDOF-{DateTime.Now:yyyyMMdd-HHmmss}.webm";
+            await JS.InvokeVoidAsync("videoSnap.download", name);
+            await JS.InvokeVoidAsync("videoSnap.revoke");
+            _videoAvailable = false;
+        }
+    }
+
+    private async Task Record()
+    {
+
+        _recording = !_recording;
+        bool recording = false;
+        lock (_lock)
+        {
+            recording = _recording;
+        }
+        if (recording)
+        {
+            _recordButtonColor = Color.Error;
+        }
+        else
+        {
+            _recordButtonColor = Color.Info;
+        }
+        await Task.Yield();
+    }
+
+    private async Task Start()
+    {
+        // If coming from Stopped, ensure we’re at t=0
+        if (!IsRunning)
+        {
+            _ticks = 0;
+            bool recording = false;
+            lock (_lock)
+            {
+                recording = _recording;
+            }
+            if (recording)
+            {
+                // Start video recording
+                await StartVideo();
+            }
+        }
+        if (IsPaused)
+        {
+            // Resume from Paused
+            IsPaused = false;
+            _worker?.Resume();
+            return;
+        }
+        IsRunning = true;
+        IsPaused = false;
+        _worker?.Start();
+    }
+
+    private void Pause()
+    {
+        if (!IsRunning) return;
+        IsPaused = true;
+        _worker?.Pause();
+    }
+
+    private async Task Stop()
+    {
+        _worker?.Stop();
+        bool recording = false;
+        lock (_lock)
+        {
+            recording = _recording;
+        }
+        if (recording)
+        {
+            await FinishVideo();
+        }
+        if (!IsRunning) return;
+        IsRunning = false;
+        IsPaused = false;
+        _ticks = 0;
+    }
+
+    public void Dispose()
+    {
+        _worker?.Dispose();
+    }
+    private async Task TakeSnapShot(CancellationToken ct)
+    {
+        // increment once and capture the value
+        var tick = Interlocked.Increment(ref _ticks);
+
+        // Hop to the Blazor renderer thread for all UI+JS work
+        await InvokeAsync(async () =>
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return;
+            }
+
+            // if this mutates UI state, keep it on the UI thread
+            await OnProfileIndexChanged(tick);
+
+            // give the browser a tick if the layout just changed
+            await Task.Yield();
+            bool recording = false;
+            lock (_lock)
+            {
+                recording = _recording;
+            }
+            if (recording)
+            {
+                // capture + addFrame — both must be on the UI thread
+                await JS.InvokeVoidAsync(
+                  "captureAndAddFrame",
+                  "gridToSnap",
+                  new { width = _width, height = _height, scale = 1, backgroundColor = "#ffffff" }
+                );
+            }
+
+            if (tick >= (Results?.Profiles?.Count ?? 1) - 1)
+            {
+                // Stop likely calls JS too—keep it on UI thread
+                await Stop();
+            }
+        });
+    }
 
     private async Task OnStartIndexChanged(double value)
     {
@@ -566,6 +785,7 @@
     /// <inheritdoc />
     protected override void OnInitialized()
     {
+        _worker = new RepeatingWorker(async ct => { await TakeSnapShot(ct); }, TimeSpan.FromMilliseconds(100));
         _config = new Plotly.Blazor.Config
         {
             ShowLink = false,
@@ -2078,5 +2298,6 @@
             }
         });
     }
+
 }
 

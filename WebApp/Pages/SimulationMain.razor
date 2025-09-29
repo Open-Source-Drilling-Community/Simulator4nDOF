@@ -1,7 +1,6 @@
 ﻿@page "/Simulation"
 @using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationMain> logger
-@inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
 <MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
@@ -15,17 +14,17 @@
     }
     else
     {
-        <div hidden="@isHiddenMainPanel">
-
+        @if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.MainVisible)
+        {
             <MudPaper Class="pa-4">
-                <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
+                <MudButton OnClick="@AddSimulation" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add simulation </MudButton>
                 <br>
                 <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true" ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked">
                     <Columns>
-                        <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 10%;" Sortable="true" Editable="false" />
-                        <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 20%;" Sortable="true" Editable="false" />
-                        <PropertyColumn Property="x => x.MetaInfo.ID.ToString()" Title="Id" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 20%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 35%;" Sortable="true" Editable="false" />
                         <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
+                        <PropertyColumn Property="x => x.LastModificationDate.ToString()" Title="Last modification date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
 
                         <TemplateColumn Title="Progress" CellStyle="width: 10%;">
                             <CellTemplate Context="context">
@@ -59,63 +58,18 @@
                     </PagerContent>
                 </MudDataGrid>
 
-                <MudButton OnClick="@OnExpandCollapseClickAddPanel" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">New simulation </MudButton>
+                <MudButton OnClick="@AddSimulation" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add simulation </MudButton>
                 <br>
             </MudPaper>
-        </div>
-        <div hidden="@isHiddenEditSimulationPanel">
-            <MudPaper Class="pa-4">
-                <MudCollapse Expanded=true>
-                    <MudText Typo="Typo.h5">Edit new simulation </MudText>
-                    <MudToolBar>
-                        <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
-                        <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.ArrowBackIosNew">Back</MudButton>
-                    </MudToolBar>
-                    <MudPaper Class="pa-4">
-
-                        <MudGrid RowSpacing="0" Style="margin-top:-0px;">
-                            <MudItem xs="2">
-                                <MudTextField @bind-Value=newSimulation.Name Label="Name" Variant="Variant.Text"></MudTextField>
-                            </MudItem>
-                            <MudItem xs="2">
-                                <MudTextField @bind-Value=newSimulation.Description Label="Description" Variant="Variant.Text"></MudTextField>
-                            </MudItem>
-                        </MudGrid>
-
-                        @if (newSimulation?.InitialValues != null)
-                        {
-                            <br>
-                            <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;" MudText>Initial values </MudText>
-                            <SimulationInitialValues Simulation="@newSimulation" />
-                        }
-                        @if (newSimulation?.Config != null)
-                        {
-                            <br>
-                            <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Configuration </MudText>
-                            <SimulationConfiguration Simulation="@newSimulation" />
-                        }
-
-                        @if (newSimulation?.ContextualData != null)
-                        {
-                            <br>
-                            <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Contextual data </MudText>
-                            <SimulationContextualData Simulation="@newSimulation" />
-
-                        }
-                        @if (newSimulation?.SetPointsList != null)
-                        {
-                            <br>
-                            <MudText Typo="Typo.h6">Set points</MudText>
-
-                            <SetPointsEditor NewSimulation="@newSimulation" />
-
-                            <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
-                        }
-
-                    </MudPaper>
-                </MudCollapse>
-            </MudPaper>
-        </div>
+        }
+        else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.NewSimulationVisible)
+        {
+            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Simulation="@newSimulation" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" />
+        }
+        else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.EditSimulationVisible)
+        {
+            <SimulationEdit MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" />
+        }
     }
 </MudUnitAndReferenceChoiceTag>
 @code {
@@ -126,10 +80,18 @@
     private SimulationLight? currentLightSimulation;
     private Simulation? currentSimulation;
     private List<object?>? inputDataList = new(); // container used to pass input data to the SimulationEdit razor component without specifying content types (required by µservice Template)
-    private Simulation newSimulation = new();
-    public bool isHiddenMainPanel;
-    public bool isHiddenEditSimulationPanel;
-    public bool autoUpdate;
+    private Simulation Simulation = new();
+    private MainPanelLogic _mainPanelLogic = new();
+
+    private Simulation? newSimulation = null;
+
+    private List<Field>? fieldList { get; set; } = null;
+
+    private List<Cluster>? clusterList { get; set; } = null;
+
+    private List<Well>? wellList { get; set; } = null;
+
+    private List<WellBore>? wellBoreList { get; set; } = null;
 
     private Color GetProgressColor(double? progress)
     {
@@ -171,7 +133,7 @@
     {
         if (item != null)
         {
-            newSimulation.SetPointsList.Remove(item);
+            Simulation.SetPointsList.Remove(item);
         }
 
         // Optional UI refresh
@@ -187,35 +149,44 @@
         }
     }
 
-    private void CloseViewSimulationPanelOnClick()
+    private void AddSimulation()
     {
-        isHiddenEditSimulationPanel = true;
-        isHiddenMainPanel = false;
-        autoUpdate = true;
+        newSimulation = NewDefaultSimulation();
+        if (_mainPanelLogic != null)
+        {
+            _mainPanelLogic.PanelState = PanelState.NewSimulationVisible;
+            _mainPanelLogic.AutoUpdate = false;
+        }
     }
-
-    private void OnExpandCollapseClickAddPanel()
+    private async Task ReloadAsync()
     {
-        NewDefaultSimulation();
-        isHiddenEditSimulationPanel = false;
-        isHiddenMainPanel = true;
-        autoUpdate = false;
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            isHiddenMainPanel = false;
-            isHiddenEditSimulationPanel = true;
+            if (_mainPanelLogic != null)
+            {
+                _mainPanelLogic.PanelState = PanelState.MainVisible;
+                _mainPanelLogic.AutoUpdate = false;
+            }
             currentLightSimulation = null;
 
             // Starting all loading tasks asynchronously
-            logger.LogInformation("Trying to load list of ToBeRemoved from client: " + APIUtils.HostNameSimulator4nDOF);
             logger.LogInformation("Trying to load list of Simulation from client: " + APIUtils.HostNameSimulator4nDOF);
             var SimulationTask = APIUtils.ClientSimulator4nDOF.GetAllSimulationLightAsync();
+            logger.LogInformation("Trying to load list of WellBore from client: " + APIUtils.HostNameWellBore);
+            var wellBoreTask = APIUtils.ClientWellBore.GetAllWellBoreAsync();
+            logger.LogInformation("Trying to load list of Well from client: " + APIUtils.HostNameWell);
+            var wellTask = APIUtils.ClientWell.GetAllWellAsync();
+            logger.LogInformation("Trying to load list of Cluster from client: " + APIUtils.HostNameCluster);
+            var clusterTask = APIUtils.ClientCluster.GetAllClusterAsync();
+            logger.LogInformation("Trying to load list of Field from client: " + APIUtils.HostNameField);
+            var fieldTask = APIUtils.ClientField.GetAllFieldAsync();
 
-            List<Task> loadingTaskList = new List<Task> { SimulationTask };
+            List<Task> loadingTaskList = new List<Task> { SimulationTask, wellBoreTask, wellTask, clusterTask, fieldTask };
 
             // Awaiting tasks and retrieve results as they become available
             while (loadingTaskList.Count > 0)
@@ -244,7 +215,10 @@
 
                             if (SimulationList != null)
                             {
-                                autoUpdate = true;
+                                if (_mainPanelLogic != null)
+                                {
+                                    _mainPanelLogic.AutoUpdate = true;
+                                }
                                 await InvokeAsync(() => { StateHasChanged(); });
                             }
                             else
@@ -253,7 +227,7 @@
                                 Snackbar.Add("Impossible to load Simulations", Severity.Warning);
                             }
                             await Task.Delay(1000);
-                            if (!autoUpdate)
+                            if (_mainPanelLogic != null && !_mainPanelLogic.AutoUpdate)
                             {
                                 break;
                             }
@@ -262,6 +236,86 @@
                     catch (ApiException ex)
                     {
                         logger.LogError(ex, "Impossible to load Simulation from client");
+                    }
+                }
+                else if (finishedTask == wellBoreTask)
+                {
+                    try
+                    {
+                        wellBoreList = (List<WellBore>)await wellBoreTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (wellBoreList != null)
+                        {
+                            wellBoreList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of WellBores was null on initialization");
+                            Snackbar.Add("Returned list of WellBores was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load WellBore from client");
+                    }
+                }
+                else if (finishedTask == wellTask)
+                {
+                    try
+                    {
+                        wellList = (List<Well>)await wellTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (wellList != null)
+                        {
+                            wellList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Wells was null on initialization");
+                            Snackbar.Add("Returned list of Wells was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Wells from client");
+                    }
+                }
+                else if (finishedTask == clusterTask)
+                {
+                    try
+                    {
+                        clusterList = (List<Cluster>)await clusterTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (clusterList != null)
+                        {
+                            clusterList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Clusters was null on initialization");
+                            Snackbar.Add("Returned list of Clusters was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Clusters from client");
+                    }
+                }
+                else if (finishedTask == fieldTask)
+                {
+                    try
+                    {
+                        fieldList = (List<Field>)await fieldTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (fieldList != null)
+                        {
+                            fieldList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Fields was null on initialization");
+                            Snackbar.Add("Returned list of Fields was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Fields from client");
                     }
                 }
 
@@ -275,12 +329,7 @@
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
-    private void AddSetPoint()
-    {
-        newSimulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
-    }
-
-    private void NewDefaultSimulation()
+    private Simulation NewDefaultSimulation()
     {
         MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
         DateTimeOffset creationDate = DateTimeOffset.UtcNow;
@@ -290,7 +339,7 @@
         double stribeckCriticalVelocityAbnormal = 0.40; // yes 0.40 // no 0.45 // no 0.43 // no 0.42 // no 0.41
         double differenceStaticKineticFrictionNormal = 0.1; // 0.1
         double differenceStaticKineticFrictionAbnormal = 0.13;
-        newSimulation = new()
+        return new()
         {
             MetaInfo = metaInfo,
             Name = DataUtils.DEFAULT_NAME_Simulation,
@@ -356,55 +405,21 @@
         };
     }
 
-    private async Task AddSimulation()
-    {
-        try
-        {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
-            DateTimeOffset creationDate = DateTimeOffset.UtcNow;
-            newSimulation.MetaInfo = metaInfo;
-            newSimulation.CreationDate = creationDate;
-            newSimulation.LastModificationDate = creationDate;
-            await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.newSimulation);
-            logger.LogInformation("Simulation posted successfully");
-            Snackbar.Add("Simulation posted successfully", Severity.Success);
-            await OnInitializedAsync();
-            autoUpdate = true;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Impossible to add a new Simulation");
-            Snackbar.Add("Impossible to add a new Simulation", Severity.Warning);
-        }
-    }
-
     private async Task ViewSimulation(Guid id)
     {
-        autoUpdate = false;
-
-        try
+        if (_mainPanelLogic != null)
         {
-            Navigation.NavigateTo($"/Simulator4nDOF/webapp/Simulation/{id}");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Impossible to load Simulation to be edited");
+            _mainPanelLogic.AutoUpdate = false;
+            _mainPanelLogic.PanelState = PanelState.EditSimulationVisible;
+            _mainPanelLogic.SimulationID = id;
+            await InvokeAsync(() => { StateHasChanged(); });
         }
     }
 
     private async Task RowClicked(DataGridRowClickEventArgs<SimulationLight> args)
     {
         var id = args.Item.MetaInfo.ID;
-        autoUpdate = false;
-
-        try
-        {
-            Navigation.NavigateTo($"/Simulator4nDOF/webapp/Simulation/{id}");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Impossible to load Simulation to be edited");
-        }
+        await ViewSimulation(id);
     }
 
     private async Task DeleteSimulation(Guid id)

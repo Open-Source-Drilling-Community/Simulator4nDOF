@@ -61,10 +61,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
 
 
         /// <summary>
-        /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id
+        /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Light/id
         /// </summary>
         /// <param name="guid"></param>
-        /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id</returns>
+        /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Light/id</returns>
         [HttpGet("Light/{id}\"", Name = "GetSimulatioLightById")]
         public ActionResult<Model.SimulationLight?> GetSimulatioLightById(Guid id)
         {
@@ -87,10 +87,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         }
 
         /// <summary>
-        /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id
+        /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Heavy/id
         /// </summary>
         /// <param name="guid"></param>
-        /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo/id</returns>
+        /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Heavy/id</returns>
         [HttpGet("Heavy/{id}\"", Name = "GetSimulationById")]
         public ActionResult<Model.Simulation?> GetSimulationById(Guid id)
         {
@@ -111,6 +111,33 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// Returns the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Results/id/page/sequenceNumber
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Results/id/page/sequenceNumber</returns>
+        [HttpGet("Results/{id}/page/{sequenceNumber}\"", Name = "GetSimulationResultById")]
+        public ActionResult<Model.Results?> GetSimulationResultById(Guid id, uint sequenceNumber)
+        {
+            if (!id.Equals(Guid.Empty))
+            {
+                var val = _simulationManager.GetSimulationResultById(id, sequenceNumber);
+                if (val != null)
+                {
+                    return Ok(val);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
 
         /// <summary>
         /// Returns the list of all SimulationLight present in the microservice database, at endpoint Simulator4nDOF/api/Simulation/LightData

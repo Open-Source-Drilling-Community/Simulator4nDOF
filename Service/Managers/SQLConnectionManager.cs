@@ -43,21 +43,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         // If the light weight data concept is not implemented, the same contextual info can be retrieved directly from the Simulation
         private readonly static Dictionary<string, string[]> _tableStructureDict = new Dictionary<string, string[]>()
             {
-                { 
+                {
                     "SimulationTable", new string[] {
                     "ID TEXT primary key",
                     "MetaInfo TEXT",
-                    // beginning of list of fields used only when light weight concept is implemented
                     "Name TEXT",
                     "Description TEXT",
-                    "CurrentTime DOUBLE",
-                    // end of list of fields used only when light weight concept is implemented
                     "CreationDate TEXT",
                     "LastModificationDate TEXT",
+                    "WellBoreID TEXT",
+                    "CurrentTime DOUBLE",
                     "Progress DOUBLE",
                     "TerminationState INTEGER",
                     "Simulation TEXT" }
-                }
+                },
+                {
+                    "SimulationResultsTable", new string[]
+                    {
+                    "ID TEXT primary key", // the unique ID of the result entry
+                    "SimulationID TEXT", // the ID of the simulation this result belongs to
+                    "SequenceNumber INTEGER", // the sequence number of the result entry within the simulation
+                    "Result TEXT" // the actual result data, serialized as a JSON string
+                    }
+                },
             };
 
         public SqlConnectionManager(string connectionString, ILogger<SqlConnectionManager> logger)
@@ -308,7 +316,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 foreach (string col in tabStruct.Value)
                 {
                     sb.Insert(sb.Length - 1, col + ",");
-                };
+                }
+                ;
                 sb.Remove(sb.Length - 2, 1);
                 command.CommandText = sb.ToString();
 
