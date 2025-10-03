@@ -20,7 +20,8 @@
 # Mono auto generated files
 mono_crash.*
 
-home/*.db
+#home
+[Hh]ome/*.db
 
 # Build results
 [Dd]ebug/
