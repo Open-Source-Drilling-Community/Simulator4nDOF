@@ -220,51 +220,42 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
         private Model.Simulation DeepCopySimulation(Model.Simulation original)
         {
-            return new Model.Simulation
+            Scalars scalars = new Model.Scalars();
+            if (original?.Results?.Scalars != null)
             {
-                CreationDate = original.CreationDate,
-                TerminationState = original.TerminationState,
-                CurrentTime = original.CurrentTime,
-                Progress = original.Progress,
-                ContextualData = original.ContextualData, // Consider deep copy if needed
-                InitialValues = original.InitialValues,   // Consider deep copy if mutable
-                LastModificationDate = original.LastModificationDate,
-                WellBoreID = original.WellBoreID,
-                Name = original.Name,
-                Description = original.Description,
-                MetaInfo = original.MetaInfo,             // Consider deep copy if needed
-
-                Results = new Model.Results
+                scalars = new Model.Scalars
                 {
-                    Scalars = new Model.Scalars
-                    {
-                        AvgCumulativeSSI = original.Results.Scalars.AvgCumulativeSSI,
+                    AvgCumulativeSSI = original.Results.Scalars.AvgCumulativeSSI,
 
-                        Time = original.Results.Scalars.Time.ToList(),
-                        SurfaceRPM = original.Results.Scalars.SurfaceRPM.ToList(),
-                        BitRPM = original.Results.Scalars.BitRPM.ToList(),
-                        BitDepth = original.Results.Scalars.BitDepth.ToList(),
-                        HoleDepth = original.Results.Scalars.HoleDepth.ToList(),
-                        SurfaceTorque = original.Results.Scalars.SurfaceTorque.ToList(),
-                        BitTorque = original.Results.Scalars.BitTorque.ToList(),
-                        TopOfStringAxialVelocity = original.Results.Scalars.TopOfStringAxialVelocity.ToList(),
-                        BitAxialVelocity = original.Results.Scalars.BitAxialVelocity.ToList(),
-                        WOB = original.Results.Scalars.WOB.ToList(),
-                        SSI = original.Results.Scalars.SSI.ToList(),
-                        SensorAngularVelocity = original.Results.Scalars.SensorAngularVelocity.ToList(),
-                        SensorWhirlVelocity = original.Results.Scalars.SensorWhirlVelocity.ToList(),
-                        SensorAxialVelocity = original.Results.Scalars.SensorAxialVelocity.ToList(),
-                        SensorRadialVelocity = original.Results.Scalars.SensorRadialVelocity.ToList(),
-                        SensorRadialAcc = original.Results.Scalars.SensorRadialAcc.ToList(),
-                        SensorTangentialAcc = original.Results.Scalars.SensorTangentialAcc.ToList(),
-                        SensorAxialAcc = original.Results.Scalars.SensorAxialAcc.ToList(),
-                        SensorBendingMomentX = original.Results.Scalars.SensorBendingMomentX.ToList(),
-                        SensorBendingMomentY = original.Results.Scalars.SensorBendingMomentY.ToList(),
-                        SensorTension = original.Results.Scalars.SensorTension.ToList(),
-                        SensorTorque = original.Results.Scalars.SensorTorque.ToList()
-                    },
+                    Time = original.Results.Scalars.Time.ToList(),
+                    SurfaceRPM = original.Results.Scalars.SurfaceRPM.ToList(),
+                    BitRPM = original.Results.Scalars.BitRPM.ToList(),
+                    BitDepth = original.Results.Scalars.BitDepth.ToList(),
+                    HoleDepth = original.Results.Scalars.HoleDepth.ToList(),
+                    SurfaceTorque = original.Results.Scalars.SurfaceTorque.ToList(),
+                    BitTorque = original.Results.Scalars.BitTorque.ToList(),
+                    TopOfStringAxialVelocity = original.Results.Scalars.TopOfStringAxialVelocity.ToList(),
+                    BitAxialVelocity = original.Results.Scalars.BitAxialVelocity.ToList(),
+                    WOB = original.Results.Scalars.WOB.ToList(),
+                    SSI = original.Results.Scalars.SSI.ToList(),
+                    SensorAngularVelocity = original.Results.Scalars.SensorAngularVelocity.ToList(),
+                    SensorWhirlVelocity = original.Results.Scalars.SensorWhirlVelocity.ToList(),
+                    SensorAxialVelocity = original.Results.Scalars.SensorAxialVelocity.ToList(),
+                    SensorRadialVelocity = original.Results.Scalars.SensorRadialVelocity.ToList(),
+                    SensorRadialAcc = original.Results.Scalars.SensorRadialAcc.ToList(),
+                    SensorTangentialAcc = original.Results.Scalars.SensorTangentialAcc.ToList(),
+                    SensorAxialAcc = original.Results.Scalars.SensorAxialAcc.ToList(),
+                    SensorBendingMomentX = original.Results.Scalars.SensorBendingMomentX.ToList(),
+                    SensorBendingMomentY = original.Results.Scalars.SensorBendingMomentY.ToList(),
+                    SensorTension = original.Results.Scalars.SensorTension.ToList(),
+                    SensorTorque = original.Results.Scalars.SensorTorque.ToList()
 
-                    Profiles = original.Results.Profiles
+                };
+            }
+            List<Profiles> profiles = new List<Profiles>();
+            if (original?.Results?.Profiles != null)
+            {
+                profiles = original.Results.Profiles
                         .Select(p => new Model.Profiles
                         {
                             Time = p.Time,
@@ -287,7 +278,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             Curvature = p.Curvature.ToList(),
                             BuildUpRate = p.BuildUpRate.ToList()
                         })
-                        .ToList()
+                        .ToList();
+            }
+            return new Model.Simulation
+            {
+                CreationDate = original.CreationDate,
+                TerminationState = original.TerminationState,
+                CurrentTime = original.CurrentTime,
+                Progress = original.Progress,
+                ContextualData = original.ContextualData, // Consider deep copy if needed
+                InitialValues = original.InitialValues,   // Consider deep copy if mutable
+                LastModificationDate = original.LastModificationDate,
+                WellBoreID = original.WellBoreID,
+                Name = original.Name,
+                Description = original.Description,
+                MetaInfo = original.MetaInfo,             // Consider deep copy if needed
+
+                Results = new Model.Results
+                {
+                    Scalars = scalars,
+                    Profiles = profiles
                 }
             };
         }
@@ -1078,7 +1088,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     }
                     idxScalars += c;
                     c = 0;
-                    for (int i = idxProfiles; i < Math.Min(idxProfiles+countProfilesSamples, countProfiles); i++)
+                    for (int i = idxProfiles; i < Math.Min(idxProfiles + countProfilesSamples, countProfiles); i++)
                     {
                         if (results.Profiles != null && i < results.Profiles.Count)
                         {

@@ -165,34 +165,34 @@
             <MudTabPanel Text="Along String Depth graphs ">
                 <MudGrid Class="pa-0 ma-0" Style="flex-wrap: nowrap; overflow-x: auto;" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
+                    </MudItem>
+@*                     <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
+                    </MudItem>
+ *@                    <MudItem Style="flex: 0 0 10%;">
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreAnglesLayout" @bind-Data="_wellBoreAnglesTraces" @ref="_wellBoreAnglesChart" />
                     </MudItem>
                     <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
-                    </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreAnglesLayout" @bind-Data="_wellBoreAnglesTraces" @ref="_wellBoreAnglesChart" />
-                    </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
-                        <PlotlyChart style="height: 60vh; min-height: 350px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreCurvaturesLayout" @bind-Data="_wellBoreCurvaturesTraces" @ref="_wellBoreCurvaturesChart" />
+                        <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreCurvaturesLayout" @bind-Data="_wellBoreCurvaturesTraces" @ref="_wellBoreCurvaturesChart" />
                     </MudItem>
                 </MudGrid>
             </MudTabPanel>
@@ -200,28 +200,28 @@
         <MudTabPanel Text="Sensor measurements">
             <MudGrid>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityALayout" @bind-Data="_sensorVelocityATraces" @ref="_sensorVelocityAChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityALayout" @bind-Data="_sensorVelocityATraces" @ref="_sensorVelocityAChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityLayout" @bind-Data="_sensorVelocityTraces" @ref="_sensorVelocityChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityLayout" @bind-Data="_sensorVelocityTraces" @ref="_sensorVelocityChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorRadialAccLayout" @bind-Data="_sensorRadialAccTraces" @ref="_sensorRadialAccChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorRadialAccLayout" @bind-Data="_sensorRadialAccTraces" @ref="_sensorRadialAccChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTangentialAccLayout" @bind-Data="_sensorTangentialAccTraces" @ref="_sensorTangentialAccChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorTangentialAccLayout" @bind-Data="_sensorTangentialAccTraces" @ref="_sensorTangentialAccChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorAxialAccLayout" @bind-Data="_sensorAxialAccTraces" @ref="_sensorAxialAccChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorAxialAccLayout" @bind-Data="_sensorAxialAccTraces" @ref="_sensorAxialAccChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorBendingMomentLayout" @bind-Data="_sensorBendingMomentTraces" @ref="_sensorBendingMomentChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorBendingMomentLayout" @bind-Data="_sensorBendingMomentTraces" @ref="_sensorBendingMomentChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTensionLayout" @bind-Data="_sensorTensionTraces" @ref="_sensorTensionChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorTensionLayout" @bind-Data="_sensorTensionTraces" @ref="_sensorTensionChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTorqueLayout" @bind-Data="_sensorTorqueTraces" @ref="_sensorTorqueChart" />
+                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorTorqueLayout" @bind-Data="_sensorTorqueTraces" @ref="_sensorTorqueChart" />
                 </MudItem>
             </MudGrid>
         </MudTabPanel>
