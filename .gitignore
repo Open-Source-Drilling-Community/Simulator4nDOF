@@ -7,6 +7,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Examples not to be uploaded
+AnnulusHydraulicProfiles.txt
+DrillstringHydraulicProfiles.txt
+Trajectory.txt
+
 # User-specific files
 *.rsuser
 *.suo

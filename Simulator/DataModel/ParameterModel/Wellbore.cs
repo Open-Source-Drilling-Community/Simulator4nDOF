@@ -31,8 +31,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Df = fluidDamping;
 
             this.boreHoleSizes = boreHoleSizes; 
-            rHole = Vector<double>.Build.Dense(d.ro.Count);
-            rc = Vector<double>.Build.Dense(d.ro.Count);
+            rHole = Vector<double>.Build.Dense(d.OuterRadius.Count);
+            rc = Vector<double>.Build.Dense(d.OuterRadius.Count);
 
             UpdateWellbore(d, l);
         }
@@ -40,7 +40,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public void UpdateWellbore(in Drillstring d, in LumpedCells l)
         {
             // Wellbore radius calculation
-            rHole = Vector<double>.Build.Dense(d.ro.Count);
+            rHole = Vector<double>.Build.Dense(d.OuterRadius.Count);
             int idx = 0;
             for (int i = 1; i < l.xL.Count(); i++)
             {
@@ -69,9 +69,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
             }
 
-            rc = rHole - d.ro;
-            foreach (int i in d.iS)
-                rc[i] = rHole[i] - d.r_So;
+            rc = rHole - d.OuterRadius;
+            foreach (int i in d.SleeveIndexPosition)
+                rc[i] = rHole[i] - d.SleeveOuterRadius;
         }
     }
 }

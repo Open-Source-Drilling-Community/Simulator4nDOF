@@ -15,97 +15,97 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
     {
         private State state;
         private Output output;
-        private Parameters p;
-        private readonly Configuration c;
-        private Input u;
+        private SimulationParameters simulationParameters;
+        private readonly Configuration configuration;
+        private Input simulationInput;
         private TopdriveController topdriveController;
         private DrawworksAndTopdrive drawworksAndTopdrive;
 
-        public Solver(Parameters p, in DataModel.Configuration c)
+        public Solver(SimulationParameters simulationParameters, in DataModel.Configuration configuration)
         {
-            this.p = p;
-            this.c = c;
+            this.simulationParameters = simulationParameters;
+            this.configuration = configuration;
 
-            u = new Input();
-            u.omega_surf = c.SurfaceRPM;
-            u.V0 = c.TopOfStringVelocity;
+            simulationInput = new Input();
+            simulationInput.SurfaceRotation = configuration.SurfaceRPM;
+            simulationInput.SurfaceAxialVelocity = configuration.TopOfStringVelocity;
 
-            state = new State(in p, c.BitDepth, c.HoleDepth, c.TopOfStringPosition);
-            output = new Output(in p, in c);
-            topdriveController = new TopdriveController(in c, in p);
+            state = new State(in simulationParameters, configuration.BitDepth, configuration.HoleDepth, configuration.TopOfStringPosition);
+            output = new Output(in simulationParameters, in configuration);
+            topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdrive();
         }
 
         public (State, Output, Input) OuterStep(double SurfaceRPM, double TopOfStringVelocity, double bottomExtraVerticalForce, double differenceStaticKineticFriction, double stribeckCriticalVelocity, bool sticking)
         {
-            u.omega_surf = SurfaceRPM;
-            u.V0 = TopOfStringVelocity;
-            u.BottomExtraNormalForce = bottomExtraVerticalForce;
-            u.differenceStaticKineticFriction = differenceStaticKineticFriction;
-            u.sticking = sticking;
+            simulationInput.SurfaceRotation = SurfaceRPM;
+            simulationInput.SurfaceAxialVelocity = TopOfStringVelocity;
+            simulationInput.BottomExtraNormalForce = bottomExtraVerticalForce;
+            simulationInput.DifferenceStaticKineticFriction = differenceStaticKineticFriction;
+            simulationInput.StickingBoolean = sticking;
 
             if (stribeckCriticalVelocity > 0)
             {
-                u.stribeckCriticalVelocity = stribeckCriticalVelocity;
-                p.f.stribeck = 1.0 / u.stribeckCriticalVelocity;
+                simulationInput.StribeckCriticalVelocity = stribeckCriticalVelocity;
+                simulationParameters.Friction.stribeck = 1.0 / simulationInput.StribeckCriticalVelocity;
             }
-            if (p.f.mu_s.Count == p.f.mu_k.Count)
+            if (simulationParameters.Friction.mu_s.Count == simulationParameters.Friction.mu_k.Count)
             {
-                for (int i = 0; i < p.f.mu_s.Count; i++)
+                for (int i = 0; i < simulationParameters.Friction.mu_s.Count; i++)
                 {
-                    p.f.mu_s[i] = p.f.mu_k[i] + u.differenceStaticKineticFriction;
+                    simulationParameters.Friction.mu_s[i] = simulationParameters.Friction.mu_k[i] + simulationInput.DifferenceStaticKineticFriction;
                 }
             }
 
             // Calculate u.v0 and u.omega_sp 
-            drawworksAndTopdrive.Step(in c, state, u);
+            drawworksAndTopdrive.Step(in configuration, state, simulationInput);
 
             // Controller for top drive - calculate u.tau_Motor
-            topdriveController.Step(in c, in state, in p, ref u);
+            topdriveController.Step(in configuration, in state, in simulationParameters, ref simulationInput);
 
             UpdateDepths(); // BitDepth, HoleDepth, TopOfStringPosition, OnBottom
 
-            if (c.MovingDrillstring)
+            if (configuration.MovingDrillstring)
             {
                 // update axial position of distributed and lumped elements to simulate moving drillstring
-                p.dc.x = p.dc.x + ToVector(state.v.ToColumnMajorArray()) * c.TimeStep;
-                p.lc.xL[0] = p.lc.xL[0] + u.v0 * c.TimeStep;
-                p.lc.xL.SetSubVector(1, p.lc.xL.Count() - 1, p.lc.xL.SubVector(1, p.lc.xL.Count - 1) + state.VL * c.TimeStep);
+                simulationParameters.DistributedCells.x = simulationParameters.DistributedCells.x + ToVector(state.PipeAxialVelocity.ToColumnMajorArray()) * configuration.TimeStep;
+                simulationParameters.LumpedCells.xL[0] = simulationParameters.LumpedCells.xL[0] + simulationInput.CalculateSurfaceAxialVelocity * configuration.TimeStep;
+                simulationParameters.LumpedCells.xL.SetSubVector(1, simulationParameters.LumpedCells.xL.Count() - 1, simulationParameters.LumpedCells.xL.SubVector(1, simulationParameters.LumpedCells.xL.Count - 1) + state.LumpedElementAxialVelocity * configuration.TimeStep);
 
                 // update trajectory parameters and buoyancy force calculations
                 if (Math.Abs(state.BitDepth - state.previousCalculatedBitDepth) > 1.0)
                 {
-                    p.t.UpdateTrajectory(p.lc);
-                    p.b.UpdateBuoyancy(p.lc, p.t, p.ds, c.UseBuoyancyFactor);
-                    p.w.UpdateWellbore(p.ds, p.lc);
+                    simulationParameters.Trajectory.UpdateTrajectory(simulationParameters.LumpedCells);
+                    simulationParameters.Buoyancy.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, configuration.UseBuoyancyFactor);
+                    simulationParameters.Wellbore.UpdateWellbore(simulationParameters.Drillstring, simulationParameters.LumpedCells);
                     state.previousCalculatedBitDepth = state.BitDepth;
                 }
 
                 // if the top most element has traveled more than the distance between
                 // elements, we create a new lumped element and corresponding distributed section;
                 // we also need to reconstruct the parameter and state vectors to include the new elements
-                if (p.lc.xL[0] > p.lc.dxL)
+                if (simulationParameters.LumpedCells.xL[0] > simulationParameters.LumpedCells.dxL)
                 {
                     AddNewLumpedElement();
-                    p.t.UpdateTrajectory(p.lc);
-                    p.b.UpdateBuoyancy(p.lc, p.t, p.ds, c.UseBuoyancyFactor);
-                    p.w.UpdateWellbore(p.ds, p.lc);
-                    p.ds.idx_sensor = p.ds.idx_sensor + 1;
+                    simulationParameters.Trajectory.UpdateTrajectory(simulationParameters.LumpedCells);
+                    simulationParameters.Buoyancy.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, configuration.UseBuoyancyFactor);
+                    simulationParameters.Wellbore.UpdateWellbore(simulationParameters.Drillstring, simulationParameters.LumpedCells);
+                    simulationParameters.Drillstring.IndexSensor = simulationParameters.Drillstring.IndexSensor + 1;
                 }
             }
             InnerStep();
 
-            output.UpdateSSI(state.step * c.TimeStep);
+            output.UpdateSSI(state.step * configuration.TimeStep);
 
             state.step = state.step + 1;
 
-            return (state, output, u);
+            return (state, output, simulationInput);
         }
 
         public void UpdateDepths()
         {
-            state.BitDepth = state.BitDepth + (output.vb * c.TimeStep);
-            state.TopOfStringPosition = state.TopOfStringPosition - u.v0 * c.TimeStep;
+            state.BitDepth = state.BitDepth + (output.BitVelocity * configuration.TimeStep);
+            state.TopOfStringPosition = state.TopOfStringPosition - simulationInput.CalculateSurfaceAxialVelocity * configuration.TimeStep;
 
             if (state.HoleDepth - state.BitDepth < 0.1 && !state.onBottom)
                 state.onBottom_startIdx = state.step;
@@ -118,48 +118,48 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         {
             Matrix<double> SensorToPipeLocal = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { Math.Cos(p.ds.sensorMisalignmentPolarAngle) * Math.Cos(p.ds.sensorMisalignmentAzimuthAngle), -Math.Sin(p.ds.sensorMisalignmentAzimuthAngle), Math.Sin(p.ds.sensorMisalignmentPolarAngle) * Math.Cos(p.ds.sensorMisalignmentAzimuthAngle), p.ds.sensorRadialDistance },
-                        { Math.Cos(p.ds.sensorMisalignmentPolarAngle) * Math.Sin(p.ds.sensorMisalignmentAzimuthAngle), Math.Cos(p.ds.sensorMisalignmentAzimuthAngle), Math.Sin(p.ds.sensorMisalignmentPolarAngle) * Math.Sin(p.ds.sensorMisalignmentAzimuthAngle), 0 },
-                        { -Math.Sin(p.ds.sensorMisalignmentPolarAngle), 0, Math.Cos(p.ds.sensorMisalignmentPolarAngle), 0 },
+                        { Math.Cos(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Cos(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), -Math.Sin(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Sin(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Cos(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), simulationParameters.Drillstring.SensorRadialDistance },
+                        { Math.Cos(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Sin(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Cos(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Sin(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Sin(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), 0 },
+                        { -Math.Sin(simulationParameters.Drillstring.SensorMisalignmentPolarAngle), 0, Math.Cos(simulationParameters.Drillstring.SensorMisalignmentPolarAngle), 0 },
                         { 0, 0, 0, 1 }
             });
 
             Matrix<double> PipeLocalToPipeNonRotating = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { Math.Cos(output.sensorAngularPosition), -Math.Sin(output.sensorAngularPosition), output.sensorBendingAngleY * Math.Cos(output.sensorAngularPosition) + output.sensorBendingAngleX * Math.Sin(output.sensorAngularPosition), 0 },
-                        { Math.Sin(output.sensorAngularPosition), Math.Cos(output.sensorAngularPosition), output.sensorBendingAngleY * Math.Sin(output.sensorAngularPosition) - output.sensorBendingAngleX * Math.Cos(output.sensorAngularPosition), 0 },
-                        { -output.sensorBendingAngleY, output.sensorBendingAngleX, 1, 0 },
+                        { Math.Cos(output.SensorAngularPosition), -Math.Sin(output.SensorAngularPosition), output.SensorBendingAngleY * Math.Cos(output.SensorAngularPosition) + output.SensorBendingAngleX * Math.Sin(output.SensorAngularPosition), 0 },
+                        { Math.Sin(output.SensorAngularPosition), Math.Cos(output.SensorAngularPosition), output.SensorBendingAngleY * Math.Sin(output.SensorAngularPosition) - output.SensorBendingAngleX * Math.Cos(output.SensorAngularPosition), 0 },
+                        { -output.SensorBendingAngleY, output.SensorBendingAngleX, 1, 0 },
                         { 0, 0, 0, 1 }
             });
 
             Matrix<double> PipeNonRotatingToLateralRotationCenter = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { 1, 0, 0, output.sensorRadialPosition * Math.Cos(output.sensorWhirlAngle) },
-                        { 0, 1, 0, output.sensorRadialPosition * Math.Sin(output.sensorWhirlAngle) },
-                        { 0, 0, 1, output.sensorAxialDisplacement },
+                        { 1, 0, 0, output.SensorRadialPosition * Math.Cos(output.SensorWhirlAngle) },
+                        { 0, 1, 0, output.SensorRadialPosition * Math.Sin(output.SensorWhirlAngle) },
+                        { 0, 0, 1, output.SensorAxialDisplacement },
                         { 0, 0, 0, 1 }
             });
 
             Matrix<double> LateralRotationCenterToGlobal = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { Math.Cos(output.sensorPipeAzimuthAt), Math.Cos(output.sensorPipeInclination) * Math.Sin(output.sensorPipeAzimuthAt), -Math.Sin(output.sensorPipeInclination) * Math.Sin(output.sensorPipeAzimuthAt), 0 },
-                        { -Math.Sin(output.sensorPipeAzimuthAt), Math.Cos(output.sensorPipeInclination) * Math.Cos(output.sensorPipeAzimuthAt), -Math.Sin(output.sensorPipeInclination) * Math.Cos(output.sensorPipeAzimuthAt), 0 },
-                        { 0, Math.Sin(output.sensorPipeInclination), Math.Cos(output.sensorPipeInclination), 0 },
+                        { Math.Cos(output.SensorPipeAzimuthAt), Math.Cos(output.SensorPipeInclination) * Math.Sin(output.SensorPipeAzimuthAt), -Math.Sin(output.SensorPipeInclination) * Math.Sin(output.SensorPipeAzimuthAt), 0 },
+                        { -Math.Sin(output.SensorPipeAzimuthAt), Math.Cos(output.SensorPipeInclination) * Math.Cos(output.SensorPipeAzimuthAt), -Math.Sin(output.SensorPipeInclination) * Math.Cos(output.SensorPipeAzimuthAt), 0 },
+                        { 0, Math.Sin(output.SensorPipeInclination), Math.Cos(output.SensorPipeInclination), 0 },
                         { 0, 0, 0, 1 }
             });
 
             Matrix<double> PipeLocalToSensor = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { Math.Cos(p.ds.sensorMisalignmentPolarAngle) * Math.Cos(p.ds.sensorMisalignmentAzimuthAngle), Math.Cos(p.ds.sensorMisalignmentPolarAngle) * Math.Sin(p.ds.sensorMisalignmentAzimuthAngle), -Math.Sin(p.ds.sensorMisalignmentPolarAngle) },
-                        { -Math.Sin(p.ds.sensorMisalignmentAzimuthAngle), Math.Cos(p.ds.sensorMisalignmentAzimuthAngle), 0 },
-                        { Math.Sin(p.ds.sensorMisalignmentPolarAngle) * Math.Cos(p.ds.sensorMisalignmentAzimuthAngle), Math.Sin(p.ds.sensorMisalignmentPolarAngle) * Math.Sin(p.ds.sensorMisalignmentAzimuthAngle), Math.Cos(p.ds.sensorMisalignmentPolarAngle) }
+                        { Math.Cos(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Cos(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Cos(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Sin(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), -Math.Sin(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) },
+                        { -Math.Sin(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Cos(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), 0 },
+                        { Math.Sin(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Cos(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Sin(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) * Math.Sin(simulationParameters.Drillstring.SensorMisalignmentAzimuthAngle), Math.Cos(simulationParameters.Drillstring.SensorMisalignmentPolarAngle) }
             });
 
             Matrix<double> PipeNonRotatingToPipeLocal = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { Math.Cos(output.sensorAngularPosition), Math.Sin(output.sensorAngularPosition), -output.sensorBendingAngleY },
-                        { -Math.Sin(output.sensorAngularPosition), Math.Cos(output.sensorAngularPosition), output.sensorBendingAngleX },
-                        { output.sensorBendingAngleY * Math.Cos(output.sensorAngularPosition) + output.sensorBendingAngleX * Math.Sin(output.sensorAngularPosition), output.sensorBendingAngleY * Math.Sin(output.sensorAngularPosition) - output.sensorBendingAngleX * Math.Cos(output.sensorAngularPosition), 1 }
+                        { Math.Cos(output.SensorAngularPosition), Math.Sin(output.SensorAngularPosition), -output.SensorBendingAngleY },
+                        { -Math.Sin(output.SensorAngularPosition), Math.Cos(output.SensorAngularPosition), output.SensorBendingAngleX },
+                        { output.SensorBendingAngleY * Math.Cos(output.SensorAngularPosition) + output.SensorBendingAngleX * Math.Sin(output.SensorAngularPosition), output.SensorBendingAngleY * Math.Sin(output.SensorAngularPosition) - output.SensorBendingAngleX * Math.Cos(output.SensorAngularPosition), 1 }
             });
 
             Matrix<double> LateralRotationCenterToPipeNonRotating = Matrix<double>.Build.DenseOfArray(new double[,]
@@ -171,33 +171,33 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             Matrix<double> GlobalToLateralRotationCenter = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { Math.Cos(output.sensorPipeAzimuthAt), -Math.Sin(output.sensorPipeAzimuthAt), 0 },
-                        { Math.Cos(output.sensorPipeInclination) * Math.Sin(output.sensorPipeAzimuthAt), Math.Cos(output.sensorPipeInclination) * Math.Cos(output.sensorPipeAzimuthAt), Math.Sin(output.sensorPipeInclination) },
-                        { -Math.Sin(output.sensorPipeInclination) * Math.Sin(output.sensorPipeAzimuthAt), -Math.Sin(output.sensorPipeInclination) * Math.Cos(output.sensorPipeAzimuthAt), Math.Cos(output.sensorPipeInclination) }
+                        { Math.Cos(output.SensorPipeAzimuthAt), -Math.Sin(output.SensorPipeAzimuthAt), 0 },
+                        { Math.Cos(output.SensorPipeInclination) * Math.Sin(output.SensorPipeAzimuthAt), Math.Cos(output.SensorPipeInclination) * Math.Cos(output.SensorPipeAzimuthAt), Math.Sin(output.SensorPipeInclination) },
+                        { -Math.Sin(output.SensorPipeInclination) * Math.Sin(output.SensorPipeAzimuthAt), -Math.Sin(output.SensorPipeInclination) * Math.Cos(output.SensorPipeAzimuthAt), Math.Cos(output.SensorPipeInclination) }
             });
 
             Matrix<double> PipeLocalToLateralRotationCenterSecondDerivative = Matrix<double>.Build.DenseOfArray(new double[,]
             {
-                        { -Math.Pow(output.sensorAngularVelocity, 2) * Math.Cos(output.sensorAngularPosition) - output.sensorAngularAcceleration * Math.Sin(output.sensorAngularPosition), Math.Pow(output.sensorAngularVelocity, 2) * Math.Sin(output.sensorAngularPosition) - output.sensorAngularAcceleration * Math.Cos(output.sensorAngularPosition), 0, (output.sensorRadialAcceleration - output.sensorRadialPosition * Math.Pow(output.sensorWhirlSpeed, 2)) * Math.Cos(output.sensorWhirlAngle) -
-                        (2 * output.sensorRadialSpeed * output.sensorWhirlSpeed + output.sensorRadialPosition * output.sensorWhirlAcceleration) * Math.Sin(output.sensorWhirlAngle) },
-                        { -Math.Pow(output.sensorAngularVelocity, 2) * Math.Sin(output.sensorAngularPosition) + output.sensorAngularAcceleration * Math.Cos(output.sensorAngularPosition), -Math.Pow(output.sensorAngularVelocity, 2) * Math.Cos(output.sensorAngularPosition) - output.sensorAngularAcceleration * Math.Sin(output.sensorAngularPosition), 0, (output.sensorRadialAcceleration - output.sensorRadialPosition * Math.Pow(output.sensorWhirlSpeed, 2)) * Math.Sin(output.sensorWhirlAngle) +
-                        (2 * output.sensorRadialSpeed * output.sensorWhirlSpeed + output.sensorRadialPosition * output.sensorWhirlAcceleration) * Math.Cos(output.sensorWhirlAngle) },
-                        { -output.sensorBendingAngleY_SecondDerivative, output.sensorBendingAngleX_SecondDerivative, 0, output.sensorAxialAcceleration },
+                        { -Math.Pow(output.SensorAngularVelocity, 2) * Math.Cos(output.SensorAngularPosition) - output.SensorAngularAcceleration * Math.Sin(output.SensorAngularPosition), Math.Pow(output.SensorAngularVelocity, 2) * Math.Sin(output.SensorAngularPosition) - output.SensorAngularAcceleration * Math.Cos(output.SensorAngularPosition), 0, (output.SensorRadialAcceleration - output.SensorRadialPosition * Math.Pow(output.SensorWhirlSpeed, 2)) * Math.Cos(output.SensorWhirlAngle) -
+                        (2 * output.SensorRadialSpeed * output.SensorWhirlSpeed + output.SensorRadialPosition * output.SensorWhirlAcceleration) * Math.Sin(output.SensorWhirlAngle) },
+                        { -Math.Pow(output.SensorAngularVelocity, 2) * Math.Sin(output.SensorAngularPosition) + output.SensorAngularAcceleration * Math.Cos(output.SensorAngularPosition), -Math.Pow(output.SensorAngularVelocity, 2) * Math.Cos(output.SensorAngularPosition) - output.SensorAngularAcceleration * Math.Sin(output.SensorAngularPosition), 0, (output.SensorRadialAcceleration - output.SensorRadialPosition * Math.Pow(output.SensorWhirlSpeed, 2)) * Math.Sin(output.SensorWhirlAngle) +
+                        (2 * output.SensorRadialSpeed * output.SensorWhirlSpeed + output.SensorRadialPosition * output.SensorWhirlAcceleration) * Math.Cos(output.SensorWhirlAngle) },
+                        { -output.SecondDerivativeSensorBendingAngleY, output.SecondDerivativeSensorBendingAngleX, 0, output.SensorAxialAcceleration },
                         { 0, 0, 0, 0 }
             });
 
             // Calculate acceleration in global frame
-            var accelerationInGlobalFrameM = LateralRotationCenterToGlobal * PipeLocalToLateralRotationCenterSecondDerivative * SensorToPipeLocal * ToVector((p.ds.sensorDisplacementsInLocalFrame.Append(1).ToArray()));
+            var accelerationInGlobalFrameM = LateralRotationCenterToGlobal * PipeLocalToLateralRotationCenterSecondDerivative * SensorToPipeLocal * ToVector((simulationParameters.Drillstring.SensorDisplacementsInLocalFrame.Append(1).ToArray()));
             var accelerationInGlobalFrame = accelerationInGlobalFrameM.SubVector(0, 3) - Vector<double>.Build.DenseOfArray(new double[] { 0, 0, Constants.g });
 
             var accelerationInLocalFrame = PipeLocalToSensor * PipeNonRotatingToPipeLocal * LateralRotationCenterToPipeNonRotating * GlobalToLateralRotationCenter * accelerationInGlobalFrame;
 
-            output.sensorRadialAccelerationLocalFrame = -accelerationInLocalFrame[0];
-            output.sensorTangentialAccelerationLocalFrame = accelerationInLocalFrame[1];
-            output.sensorAxialAccelerationLocalFrame = accelerationInLocalFrame[2];
+            output.SensorRadialAccelerationLocalFrame = -accelerationInLocalFrame[0];
+            output.SensorTangentialAccelerationLocalFrame = accelerationInLocalFrame[1];
+            output.SensorAxialAccelerationLocalFrame = accelerationInLocalFrame[2];
 
-            output.sensorBendingMomentX = Math.Sqrt(Math.Pow(output.sensorMb_x, 2) + Math.Pow(output.sensorMb_y, 2)) * Math.Sin((output.sensorAngularVelocity - output.sensorWhirlSpeed) * state.step * c.TimeStep);
-            output.sensorBendingMomentY = Math.Sqrt(Math.Pow(output.sensorMb_x, 2) + Math.Pow(output.sensorMb_y, 2)) * Math.Cos((output.sensorAngularVelocity - output.sensorWhirlSpeed) * state.step * c.TimeStep);
+            output.SensorBendingMomentX = Math.Sqrt(Math.Pow(output.SensorMb_x, 2) + Math.Pow(output.SensorMb_y, 2)) * Math.Sin((output.SensorAngularVelocity - output.SensorWhirlSpeed) * state.step * configuration.TimeStep);
+            output.SensorBendingMomentY = Math.Sqrt(Math.Pow(output.SensorMb_x, 2) + Math.Pow(output.SensorMb_y, 2)) * Math.Cos((output.SensorAngularVelocity - output.SensorWhirlSpeed) * state.step * configuration.TimeStep);
         }
 
         // Suggestion for performance improvements after using the diagnostic tool in VS
@@ -210,100 +210,95 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public void InnerStep()
         {
             // Set these output values in the beginning to match matlab plotting
-            output.omega_td = state.Otd;
-            if (!c.UseMudMotor)
-                output.omega_b = state.o[state.o.RowCount - 1, state.o.ColumnCount - 1];
+            output.TopDriveRotationInRPM = state.TopDriveAngularVelocity;
+            if (!configuration.UseMudMotor)
+                output.BitRotationInRPM = state.PipeAngularVelocity[state.PipeAngularVelocity.RowCount - 1, state.PipeAngularVelocity.ColumnCount - 1];
             else
-                output.omega_b = state.Orotor;
+                output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
-            double dtTemp = p.dc.dxM / Math.Max(p.ds.c_t, p.ds.c_a) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
-            double dxl = 1.0 / p.dc.Pl;
-            double dtl = dxl / p.dc.omegaMAX;  // As per the CFL condition for the depth of cut PDE
-
-            int n = (int)Math.Max(Math.Ceiling(c.TimeStep / dtTemp), Math.Ceiling(c.TimeStep / dtl)); // number of iterations in the inner loop
-            double dt = c.TimeStep / n; // time step of inner loop
-
+            double dtTemp = simulationParameters.DistributedCells.dxM / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
+            
             // Wave equations are transformed into their Riemann invariants
-            Matrix<double> aa = state.o + p.ds.c_t * state.f; // Downward traveling wave, torsional
-            Matrix<double> bb = state.o - p.ds.c_t * state.f; // Upward traveling wave, torsional
-            Matrix<double> uu = state.v + p.ds.c_a * state.e; // Downward traveling wave, axial
-            Matrix<double> vv = state.v - p.ds.c_a * state.e; // Upward traveling wave, axial
+            Matrix<double> downwardTorsionalWave = state.PipeAngularVelocity + simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Downward traveling wave, torsional
+            Matrix<double> upwardTorsionalWave = state.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
+            Matrix<double> downwardAxialWave = state.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
+            Matrix<double> upwardAxialWave = state.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
 
-            Vector<double> elementWiseProduct = p.ds.E.PointwiseMultiply(p.ds.A);
-            Matrix<double> scalingMatrix = Vector<double>.Build.Dense(p.lc.PL, 1).ToColumnMatrix();
+            Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
+            Matrix<double> scalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
             Matrix<double> dragMatrix = scalingMatrix * elementWiseProduct.ToRowMatrix();
-            dragMatrix = state.e.PointwiseMultiply(dragMatrix);
+            dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
             Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
-            Vector<double> drag = LinearInterpolate(p.dc.x, drag_flattened, p.lc.xL);
+            Vector<double> drag = LinearInterpolate(simulationParameters.DistributedCells.x, drag_flattened, simulationParameters.LumpedCells.xL);
 
-            Vector<double> phiVec_dote = ExtendVectorStart(0, p.t.phiVec_dot);
-            Vector<double> thetaVec_dote = ExtendVectorStart(0, p.t.thetaVec_dot);
-            Vector<double> thetaVece = ExtendVectorStart(0, p.t.thetaVec);
-            var cumTrapz = CumTrapz(p.lc.xL, Reverse(p.b.dsigma_dx));
-            var tension = Reverse(cumTrapz) + p.b.axialBuoyancyForceChangeOfDiameters - drag;
+            Vector<double> phiVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.phiVec_dot);
+            Vector<double> thetaVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec_dot);
+            Vector<double> thetaVece = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec);
+            var cumTrapz = CumTrapz(simulationParameters.LumpedCells.xL, Reverse(simulationParameters.Buoyancy.dsigma_dx));
+            var tension = Reverse(cumTrapz) + simulationParameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
 
-            Vector<double> fN_softstring = (Square((tension + p.b.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - p.b.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
-                                            Square((tension + p.b.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
+            Vector<double> fN_softstring = (Square((tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - simulationParameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
+                                            Square((tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
 
-            Vector<double> I_fN_softstring = Utilities.CumTrapz(p.lc.xL, fN_softstring);
+            Vector<double> I_fN_softstring = Utilities.CumTrapz(simulationParameters.LumpedCells.xL, fN_softstring);
             Vector<double> F_N_softstring = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
 
-            Vector<double> AiExtended = ExtendVectorStart(p.ds.Ai[0], p.ds.Ai);
-            Vector<double> AoExtended = ExtendVectorStart(p.ds.Ao[0], p.ds.Ao);
-            Vector<double> F_comp = AiExtended.PointwiseMultiply(p.b.stringPressure - p.b.hydrostaticStringPressure) * (1 - 2 * p.ds.nu)
-                                  - AoExtended.PointwiseMultiply(p.b.annularPressure - p.b.hydrostaticAnnularPressure) * (1 - 2 * p.ds.nu)
+            Vector<double> AiExtended = ExtendVectorStart(simulationParameters.Drillstring.InnerArea[0], simulationParameters.Drillstring.InnerArea);
+            Vector<double> AoExtended = ExtendVectorStart(simulationParameters.Drillstring.OuterArea[0], simulationParameters.Drillstring.OuterArea);
+            Vector<double> F_comp = AiExtended.PointwiseMultiply(simulationParameters.Buoyancy.stringPressure - simulationParameters.Buoyancy.hydrostaticStringPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
+                                  - AoExtended.PointwiseMultiply(simulationParameters.Buoyancy.annularPressure - simulationParameters.Buoyancy.hydrostaticAnnularPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
                                   - tension;
             tension = -F_comp;
 
             // Update bending stiffness
-            Vector<double> kbExtended = ExtendVectorStart(p.ds.kb[0], p.ds.kb); ;// Vector<double>.Build.DenseOfArray(new double[] { p.kb[0] }.Concat(p.kb).ToArray());
-            Vector<double> kb = Vector<double>.Build.Dense(p.ds.kb.Count + 1);
+            Vector<double> kbExtended = ExtendVectorStart(simulationParameters.Drillstring.BendingStiffness[0], simulationParameters.Drillstring.BendingStiffness); ;// Vector<double>.Build.DenseOfArray(new double[] { simulationParameters.kb[0] }.Concat(simulationParameters.kb).ToArray());
+            Vector<double> kb = Vector<double>.Build.Dense(simulationParameters.Drillstring.BendingStiffness.Count + 1);
 
-            kb = (kbExtended - Math.Pow(Math.PI, 2) * F_comp / (2 * p.ds.Lb)).PointwiseMaximum(0.0);
+            kb = (kbExtended - Math.Pow(Math.PI, 2) * F_comp / (2 * simulationParameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);
 
-            Vector<double> elementWiseProductJG = p.ds.J.PointwiseMultiply(p.ds.G); // Element-wise multiplication
-            Matrix<double> TorqueMatrix = state.f.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
+            Vector<double> elementWiseProductJG = simulationParameters.Drillstring.PipePolarMoment.PointwiseMultiply(simulationParameters.Drillstring.ShearModuli); // Element-wise multiplication
+            Matrix<double> TorqueMatrix = state.PipeShearStrain.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
             Vector<double> torqueFlattened = ToVector(TorqueMatrix.ToColumnMajorArray());
-            Vector<double> torque = LinearInterpolate(p.dc.x, torqueFlattened, p.lc.xL);
+            Vector<double> torque = LinearInterpolate(simulationParameters.DistributedCells.x, torqueFlattened, simulationParameters.LumpedCells.xL);
 
             // Normal force components in Frenet-Serret coordinate system
-            Vector<double> bzExtended = ExtendVectorStart(p.t.bz[0], p.t.bz);
-            Vector<double> nzExtended = ExtendVectorStart(p.t.nz[0], p.t.nz);
-            Vector<double> curvatureExtended = ExtendVectorStart(p.t.curvature[0], p.t.curvature);
-            Vector<double> curvature_dotExtended = ExtendVectorStart(p.t.curvature_dot[0], p.t.curvature_dot);
-            Vector<double> curvature_ddotExtended = ExtendVectorStart(p.t.curvature_ddot[0], p.t.curvature_ddot);
-            Vector<double> EExtended = ExtendVectorStart(p.ds.E[0], p.ds.E);
-            Vector<double> IExtended = ExtendVectorStart(p.ds.I[0], p.ds.I);
-            Vector<double> torsionExtended = ExtendVectorStart(p.t.torsion[0], p.t.torsion);
-            Vector<double> torsion_dotExtended = ExtendVectorStart(p.t.torsion_dot[0], p.t.torsion_dot);
+            Vector<double> bzExtended = ExtendVectorStart(simulationParameters.Trajectory.bz[0], simulationParameters.Trajectory.bz);
+            Vector<double> nzExtended = ExtendVectorStart(simulationParameters.Trajectory.nz[0], simulationParameters.Trajectory.nz);
+            Vector<double> curvatureExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature[0], simulationParameters.Trajectory.curvature);
+            Vector<double> curvature_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature_dot[0], simulationParameters.Trajectory.curvature_dot);
+            Vector<double> curvature_ddotExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature_ddot[0], simulationParameters.Trajectory.curvature_ddot);
+            Vector<double> EExtended = ExtendVectorStart(simulationParameters.Drillstring.YoungModuli[0], simulationParameters.Drillstring.YoungModuli);
+            Vector<double> IExtended = ExtendVectorStart(simulationParameters.Drillstring.PipeInertia[0], simulationParameters.Drillstring.PipeInertia);
+            Vector<double> torsionExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion[0], simulationParameters.Trajectory.torsion);
+            Vector<double> torsion_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion_dot[0], simulationParameters.Trajectory.torsion_dot);
 
-            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / p.lc.dxL);
+            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / simulationParameters.LumpedCells.dxL);
 
             Vector<double> fB =
-                p.b.Wb.PointwiseMultiply(bzExtended) +
+                simulationParameters.Buoyancy.Wb.PointwiseMultiply(bzExtended) +
                 curvatureExtended.PointwiseMultiply(diffTorqueExtended) +
                 curvature_dotExtended.PointwiseMultiply(torque) -
                 2 * EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvature_dotExtended).PointwiseMultiply(torsionExtended) -
                 EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvatureExtended).PointwiseMultiply(torsion_dotExtended);
 
             // Compute pre-stressed forces
-            Vector<double> I_fB = CumTrapz(p.lc.xL, fB);
+            Vector<double> I_fB = CumTrapz(simulationParameters.LumpedCells.xL, fB);
 
             Vector<double> fN =
-                curvatureExtended.PointwiseMultiply(tension + p.b.normalBuoyancyForceChangeOfDiameters) +
-                p.b.Wb.PointwiseMultiply(nzExtended) -
+                curvatureExtended.PointwiseMultiply(tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters) +
+                simulationParameters.Buoyancy.Wb.PointwiseMultiply(nzExtended) -
                 EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvature_ddotExtended) +
                 EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvatureExtended).PointwiseMultiply(Square(torsionExtended)) -
                 curvatureExtended.PointwiseMultiply(torsionExtended).PointwiseMultiply(torque);
 
-            Vector<double> I_fN = CumTrapz(p.lc.xL, fN);
+            Vector<double> I_fN = CumTrapz(simulationParameters.LumpedCells.xL, fN);
             Vector<double> F_B_prestress = Diff(I_fB);
             Vector<double> F_N_prestress = Diff(I_fN);
 
             Vector<double> expression =
-                (p.t.hy.PointwiseMultiply(p.t.nz) - (p.t.hz.PointwiseMultiply(p.t.ny))).PointwiseMultiply(p.t.tx) +
-                (p.t.hz.PointwiseMultiply(p.t.nx) - (p.t.hx.PointwiseMultiply(p.t.nz))).PointwiseMultiply(p.t.ty) +
-                (p.t.hx.PointwiseMultiply(p.t.ny) - (p.t.hy.PointwiseMultiply(p.t.nx))).PointwiseMultiply(p.t.tz);
+                (simulationParameters.Trajectory.hy.PointwiseMultiply(simulationParameters.Trajectory.nz) - (simulationParameters.Trajectory.hz.PointwiseMultiply(simulationParameters.Trajectory.ny))).PointwiseMultiply(simulationParameters.Trajectory.tx) +
+                (simulationParameters.Trajectory.hz.PointwiseMultiply(simulationParameters.Trajectory.nx) - (simulationParameters.Trajectory.hx.PointwiseMultiply(simulationParameters.Trajectory.nz))).PointwiseMultiply(simulationParameters.Trajectory.ty) +
+                (simulationParameters.Trajectory.hx.PointwiseMultiply(simulationParameters.Trajectory.ny) - (simulationParameters.Trajectory.hy.PointwiseMultiply(simulationParameters.Trajectory.nx))).PointwiseMultiply(simulationParameters.Trajectory.tz);
 
             //Vector<double> sign_tf = expression.Map(x => (double)Math.Sign(x));
 
@@ -312,9 +307,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             for (int i = 0; i < expression.Count; i++)
             {
                 sign_tf[i] = Math.Sign(expression[i]);
-                dotProduct[i] = p.t.hx[i] * p.t.nx[i] +
-                                p.t.hy[i] * p.t.ny[i] +
-                                p.t.hz[i] * p.t.nz[i];
+                dotProduct[i] = simulationParameters.Trajectory.hx[i] * simulationParameters.Trajectory.nx[i] +
+                                simulationParameters.Trajectory.hy[i] * simulationParameters.Trajectory.ny[i] +
+                                simulationParameters.Trajectory.hz[i] * simulationParameters.Trajectory.nz[i];
                 dotProduct[i] = Math.Max(-1, dotProduct[i]);
                 dotProduct[i] = Math.Min(1, dotProduct[i]);
             }
@@ -322,159 +317,94 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Compute the toolface angle
             Vector<double> tf_angle = dotProduct.PointwiseAcos().PointwiseMultiply(sign_tf);
 
-            Vector<double> Xc_iMinus1 = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Xc_iPlus1 = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Yc_iMinus1 = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Yc_iPlus1 = Vector<double>.Build.Dense(p.lc.NL);
+            Vector<double> Xc_iMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> Xc_iPlus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> Yc_iMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> Yc_iPlus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
-            Vector<double> Xc_ddot = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Yc_ddot = Vector<double>.Build.Dense(p.lc.NL);
+            Vector<double> Xc_ddot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> Yc_ddot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
-            Vector<double> phi = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> phi_dot = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> rc = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> r_dot = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> phi_ddot_noslip = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> theta_ddot_noslip = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> OL_dot = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> OS_dot = Vector<double>.Build.Dense(p.lc.NL);
+            Vector<double> phi = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> phi_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> rc = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> r_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> phi_ddot_noslip = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> theta_ddot_noslip = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> OL_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> OS_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            // Force vectors
+            Vector<double> Fc_t = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Tangential coulomb force
+            Vector<double> Fc_a = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Axial coulomb force
+            Vector<double> F_N = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Normal lateral collision force
+            Vector<double> VL_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Lumped element axial acceleration
+            Vector<double> inverted_slip_condition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
-            Vector<double> Fc_t = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Fc_a = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> F_N = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> VL_dot = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> inverted_slip_condition = Vector<double>.Build.Dense(p.lc.NL);
-
-            Vector<double> Fstatic_t = Vector<double>.Build.Dense(p.lc.NL);
-            Vector<double> Fstatic_a = Vector<double>.Build.Dense(p.lc.NL);
+            Vector<double> Fstatic_t = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> Fstatic_a = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
             double wb = 0.0;
             double tb = 0.0;
 
-            Vector<double> Mb_x;
-            Vector<double> Mb_y;
+            Vector<double> Mb_x;//Bending Moments
+            Vector<double> Mb_y;//Bending Moments
 
             // Solve lumped and distributed equations
 
-            for (int innerIterationNo = 0; innerIterationNo < n; innerIterationNo++)
+            for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
-                double Vtd = u.v0; // Top drive axial velocity
+                double Vtd = simulationInput.CalculateSurfaceAxialVelocity; // Top drive axial velocity
 
                 // Add the scalar to the front of the vector
-                Vector<double> OL_vec = ExtendVectorStart(state.Otd, state.OL);
-                Vector<double> VL_vec = ExtendVectorStart(Vtd, state.VL);
+                Vector<double> OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.LumpedElementAngularVelocity);
+                Vector<double> VL_vec = ExtendVectorStart(Vtd, state.LumpedElementAxialVelocity);
 
                 // Left boundaries
-                Vector<double> aa_left = -bb.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
-                Vector<double> uu_left = -vv.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
+                Vector<double> downwardTorsionalWabeLeftBoundary = -upwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
+                Vector<double> upwardTorsionalWabeLeftBoundary = -upwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
 
                 // Right boundaries
-                Vector<double> bb_right = -aa.Row(p.lc.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-                Vector<double> vv_right = -uu.Row(p.lc.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+                Vector<double> downwardAxialWabeRightBoundary = -downwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
+                Vector<double> upwardAxialWabeRightBoundary = -downwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
 
                 // Bit rock interaction
                 // Bit velocity
-                double vb = 0.5 * (uu[p.lc.PL - 1, uu.ColumnCount - 1] + vv[p.lc.PL - 1, vv.ColumnCount - 1]);
+                state.BitVelocity = 0.5 * (downwardAxialWave[simulationParameters.LumpedCells.PL - 1, downwardAxialWave.ColumnCount - 1] + upwardAxialWave[simulationParameters.LumpedCells.PL - 1, upwardAxialWave.ColumnCount - 1]);
 
-                double ob;
-                if (!c.UseMudMotor)
-                    ob = 0.5 * (aa[p.lc.PL - 1, aa.ColumnCount - 1] + bb[p.lc.PL - 1, bb.ColumnCount - 1]);
+                double angularVelocityBottom;
+                if (!configuration.UseMudMotor)
+                    angularVelocityBottom = 0.5 * (downwardTorsionalWave[simulationParameters.LumpedCells.PL - 1, downwardTorsionalWave.ColumnCount - 1] + upwardTorsionalWave[simulationParameters.LumpedCells.PL - 1, upwardTorsionalWave.ColumnCount - 1]);
                 else
-                    ob = state.Orotor;
+                    angularVelocityBottom = state.MudRotorAngularVelocity;
 
-                if (p.br.BRIModel == 1) // Detournay model
-                {
-                    // Calculate d
-                    double lastElement = state.l[state.l.Count - 1]; // Get the last element of l
-                    double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
-                    double d = p.br.N * maxValue; // Compute d
 
-                    double epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
-                    double reg = ob / Math.Sqrt(Math.Pow(ob, 2) + Math.Pow(epsilon, 2));
-
-                    double wc = d * p.ds.Rb * p.br.zeta * p.br.epsilon;   // Cutting component of weight on bit
-                    double tc = d * Math.Pow(p.ds.Rb, 2) * p.br.epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
-
-                    double ga = 1.0;
-                    double wf = p.br.Wf * ga;
-                    double tf = 0.5 * (1 + Math.Exp(-p.br.bitRockFrictionExponent * ob / (2.0 * Math.PI))) * p.br.Tf * ga;
-                    double g_tt = aa[(int)p.lc.PL - 1, aa.ColumnCount - 1] * p.ds.J.Last() * p.ds.G.Last() / p.ds.c_t - tc - tf;
-                    g_tt = (ob < 0.1) ? Math.Min(g_tt, 0) : 0;
-                    double g_wt = uu[(int)p.lc.PL - 1, uu.ColumnCount - 1] * p.ds.A.Last() * p.ds.E.Last() / p.ds.c_a - wc - wf;
-                    g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
-
-                    if (state.onBottom)
-                    {
-                        // Calculate torque on bit and weight on bit
-                        tb = tc + tf + g_tt;
-                        wb = wc + wf + g_wt;
-
-                        Vector<double> l_pad = Vector<double>.Build.Dense(state.l.Count + 1);
-                        l_pad[0] = 0; // Left padding
-                        state.l.CopySubVectorTo(l_pad, 0, 1, state.l.Count);
-
-                        Vector<double> diff_l_pad = Vector<double>.Build.Dense(l_pad.Count - 1);
-                        for (int i = 0; i < diff_l_pad.Count; i++)
-                        {
-                            diff_l_pad[i] = l_pad[i + 1] - l_pad[i];
-                        }
-
-                        state.l = state.l - (dt / dxl) * Math.Max(ob, 0) * p.br.N / (2 * Math.PI) * diff_l_pad + dt * vb;
-                    }
-                    else
-                    {
-                        tb = 0;
-                        wb = 0;
-                    }
-                }
-                else // MSE model
-                {
-                    if (state.onBottom)
-                    {
-                        // Update the last element of l
-                        int lastIndex = state.l.Count - 1;
-                        state.l[lastIndex] = (1 - p.br.alpha_ROP) * state.l[lastIndex] + p.br.alpha_ROP * 2 * Math.PI * vb / ob * (ob > 0.5 ? 1 : 0);
-                        state.l[lastIndex] = Math.Max(state.l[lastIndex], 0);
-
-                        // Calculate mu_b
-                        double mu_b = p.br.mu * 0.5 * (1 + Math.Exp(-p.br.bitRockFrictionExponent * ob / (2.0 * Math.PI)));
-
-                        // Calculate wb
-                        wb = Math.PI * Math.Pow(p.ds.Rb, 2) * p.br.CCS / p.br.bitEfficiencyFactor / (1 + 2 * mu_b * p.ds.Rb / (3 * state.l[lastIndex]));
-                        wb = Math.Max(wb, 0);
-
-                        // Calculate tb
-                        tb = 2.0 / 3.0 * mu_b * p.ds.Rb * wb;
-                    }
-                    else
-                    {
-                        tb = 0;
-                        wb = 0;
-                    }
-                }
+                double[] bitForces = simulationParameters.BitRock.CalculateInteractionForce(state, angularVelocityBottom, downwardTorsionalWave, simulationParameters);
+                tb = bitForces[0];
+                wb = bitForces[1];
+              
                 // manage the bit sticking off bottom condition
                 if (!state.onBottom)
                 {
-                    double omega_ = state.OL[state.OL.Count - 1];
-                    if (u.sticking)
+                    double omega_ = state.LumpedElementAngularVelocity[state.LumpedElementAngularVelocity.Count - 1];
+                    if (simulationInput.StickingBoolean)
                     {
-                        int lastIndex = p.ds.G.Count - 1;
-                        Vector<double> a_t = bb.Row(p.lc.PL - 1);
-                        Vector<double> a_a = vv.Row(p.lc.PL - 1);
-                        tb = p.ds.J[lastIndex] * p.ds.G[lastIndex] / p.ds.c_t * a_t[a_t.Count - 1];
-                        wb = p.ds.A[lastIndex] * p.ds.E[lastIndex] / p.ds.c_a * a_a[a_t.Count - 1];
+                        int lastIndex = simulationParameters.Drillstring.ShearModuli.Count - 1;
+                        Vector<double> a_t = upwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1);
+                        Vector<double> a_a = upwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1);
+                        tb = simulationParameters.Drillstring.PipePolarMoment[lastIndex] * simulationParameters.Drillstring.ShearModuli[lastIndex] / simulationParameters.Drillstring.TorsionalWaveSpeed * a_t[a_t.Count - 1];
+                        wb = simulationParameters.Drillstring.PipeArea[lastIndex] * simulationParameters.Drillstring.YoungModuli[lastIndex] / simulationParameters.Drillstring.AxialWaveSpeed * a_a[a_t.Count - 1];
                     }
                     else
                     {
-                        double normalForce_ = u.BottomExtraNormalForce;
+                        double normalForce_ = simulationInput.BottomExtraNormalForce;
                         if (normalForce_ > 0)
                         {
-                            double ro_ = p.ds.ro[p.ds.ro.Count - 1];
+                            double ro_ = simulationParameters.Drillstring.OuterRadius[simulationParameters.Drillstring.OuterRadius.Count - 1];
                             double Fs_ = normalForce_ * 1.0;
                             double Fc_ = normalForce_ * 0.5;
-                            double va_ = state.VL[state.VL.Count - 1];
+                            double va_ = state.LumpedElementAxialVelocity[state.LumpedElementAxialVelocity.Count - 1];
                             double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_);
-                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / p.f.v_c)) * v_ / Math.Sqrt(v_ * v_ + 0.001 * 0.001);
+                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / simulationParameters.Friction.v_c)) * v_ / Math.Sqrt(v_ * v_ + 0.001 * 0.001);
                             if (Math.Abs(v_) < 1e-6)
                             {
                                 tb = 0;
@@ -494,7 +424,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                 }
                 // Augment Riemann invariants with interface values
-                var a_pad = aa_left.ToRowMatrix().Stack(aa);
+                var a_pad = downwardTorsionalWabeLeftBoundary.ToRowMatrix().Stack(downwardTorsionalWave);
 
                 //  var rows = aa.RowCount + 1; // Extra row for aa_left
                 //  var cols = aa.ColumnCount;
@@ -523,9 +453,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 //      u_pad.SetRow(i + 1, uu.Row(i));
                 //  }
 
-                var b_pad = bb.Stack(bb_right.ToRowMatrix());
-                var u_pad = uu_left.ToRowMatrix().Stack(uu);
-                var v_pad = vv.Stack(vv_right.ToRowMatrix());
+                var b_pad = upwardTorsionalWave.Stack(downwardAxialWabeRightBoundary.ToRowMatrix());
+                var u_pad = upwardTorsionalWabeLeftBoundary.ToRowMatrix().Stack(downwardAxialWave);
+                var v_pad = upwardAxialWave.Stack(upwardAxialWabeRightBoundary.ToRowMatrix());
                 // Stack a row vector bb_right on top of matrix bb
                 // var b_pad = Matrix<double>.Build.Dense(rows, cols);
                 // b_pad.SetRow(0, bb_right.ToArray());  // Set the first row from bb_right
@@ -542,67 +472,67 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // }
 
                 // Update states using Upwind scheme
-                aa = aa - (dt / p.dc.dxM) * p.ds.c_t * DiffRows(a_pad);
-                bb = bb + (dt / p.dc.dxM) * p.ds.c_t * DiffRows(b_pad);
-                uu = uu - (dt / p.dc.dxM) * p.ds.c_a * DiffRows(u_pad);
-                vv = vv + (dt / p.dc.dxM) * p.ds.c_a * DiffRows(v_pad);
+                downwardTorsionalWave = downwardTorsionalWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(a_pad);
+                upwardTorsionalWave = upwardTorsionalWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(b_pad);
+                downwardAxialWave = downwardAxialWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(u_pad);
+                upwardAxialWave = upwardAxialWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(v_pad);
 
                 // Compute torque from the top drive on the first distributed element
-                double tauTD = (p.ds.J[0] * p.ds.G[0]) / (2 * p.ds.c_t) * (aa[0, 0] - bb[0, 0]);
+                double tauTD = (simulationParameters.Drillstring.PipePolarMoment[0] * simulationParameters.Drillstring.ShearModuli[0]) / (2 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (downwardTorsionalWave[0, 0] - upwardTorsionalWave[0, 0]);
 
                 // Compute torque for every other lumped element apart from top drive
-                Vector<double> factor = p.ds.J.PointwiseMultiply(p.ds.G) / (2.0 * p.ds.c_t);
+                Vector<double> factor = simulationParameters.Drillstring.PipePolarMoment.PointwiseMultiply(simulationParameters.Drillstring.ShearModuli) / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed);
 
                 // Extract row pPL from aa and bb, then subtract
-                Vector<double> rowDiff = aa.Row(p.lc.PL - 1) - bb.Row(p.lc.PL - 1);
+                Vector<double> rowDiff = downwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1) - upwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1);
 
                 // Element-wise multiplication of factor with row difference
                 Vector<double> tau_m = factor.PointwiseMultiply(rowDiff);
 
                 // Compute temp array
                 // Extract elements from index 1 to end (equivalent to MATLAB's 2:end)
-                Vector<double> J_sub = p.ds.J.SubVector(1, p.ds.J.Count - 1);
-                Vector<double> G_sub = p.ds.G.SubVector(1, p.ds.G.Count - 1);
+                Vector<double> J_sub = simulationParameters.Drillstring.PipePolarMoment.SubVector(1, simulationParameters.Drillstring.PipePolarMoment.Count - 1);
+                Vector<double> G_sub = simulationParameters.Drillstring.ShearModuli.SubVector(1, simulationParameters.Drillstring.ShearModuli.Count - 1);
 
                 // Extract row 0 (first row) from columns 1 to end
-                Vector<double> aa_sub = aa.Row(0).SubVector(1, aa.ColumnCount - 1);
-                Vector<double> bb_sub = bb.Row(0).SubVector(1, bb.ColumnCount - 1);
+                Vector<double> aa_sub = downwardTorsionalWave.Row(0).SubVector(1, downwardTorsionalWave.ColumnCount - 1);
+                Vector<double> bb_sub = upwardTorsionalWave.Row(0).SubVector(1, upwardTorsionalWave.ColumnCount - 1);
 
                 // Compute temp
                 Vector<double> temp = J_sub.PointwiseMultiply(G_sub)
                                       .PointwiseMultiply(aa_sub - bb_sub)
-                                      / (2 * p.ds.c_t);
+                                      / (2 * simulationParameters.Drillstring.TorsionalWaveSpeed);
 
                 double tm;
                 // Create a new vector tau_p with a length equal to the sum of the lengths of temp and tb
                 Vector<double> tau_p;
-                if (!c.UseMudMotor)
+                if (!configuration.UseMudMotor)
                 {
                     tm = 0;
                     tau_p = Vector<double>.Build.DenseOfArray(temp.Append(tb).ToArray());
                 }
                 else
                 {
-                    double speedRatio = (state.Orotor - state.Ostator) / p.mm.omega0_motor;
+                    double speedRatio = (state.MudRotorAngularVelocity - state.MudStatorAngularVelocity) / simulationParameters.MudMotor.omega0_motor;
 
                     if (speedRatio <= 1)
-                        tm = p.mm.T_max_motor * Math.Pow(1 - speedRatio, 1.0 / p.mm.alpha_motor);
+                        tm = simulationParameters.MudMotor.T_max_motor * Math.Pow(1 - speedRatio, 1.0 / simulationParameters.MudMotor.alpha_motor);
                     else
-                        tm = -p.mm.P0_motor * p.mm.V_motor * (speedRatio - 1);
+                        tm = -simulationParameters.MudMotor.P0_motor * simulationParameters.MudMotor.V_motor * (speedRatio - 1);
 
                     tau_p = Vector<double>.Build.DenseOfArray(temp.Append(tm).ToArray());
                 }
 
 
-                Vector<double> factor2 = p.ds.A.PointwiseMultiply(p.ds.E) / (2.0 * p.ds.c_a);
-                Vector<double> rowDiff2 = uu.Row(p.lc.PL - 1) - vv.Row(p.lc.PL - 1);
+                Vector<double> factor2 = simulationParameters.Drillstring.PipeArea.PointwiseMultiply(simulationParameters.Drillstring.YoungModuli) / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed);
+                Vector<double> rowDiff2 = downwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1) - upwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1);
                 Vector<double> for_m = factor2.PointwiseMultiply(rowDiff2);
 
-                Vector<double> A_sub = p.ds.A.SubVector(1, p.ds.A.Count - 1);
-                Vector<double> E_sub = p.ds.E.SubVector(1, p.ds.E.Count - 1);
-                Vector<double> uu_sub = uu.Row(0).SubVector(1, uu.ColumnCount - 1);
-                Vector<double> vv_sub = vv.Row(0).SubVector(1, vv.ColumnCount - 1);
-                Vector<double> tempVector = 1.0 / (2.0 * p.ds.c_a) * A_sub.PointwiseMultiply(E_sub).PointwiseMultiply(uu_sub - vv_sub);
+                Vector<double> A_sub = simulationParameters.Drillstring.PipeArea.SubVector(1, simulationParameters.Drillstring.PipeArea.Count - 1);
+                Vector<double> E_sub = simulationParameters.Drillstring.YoungModuli.SubVector(1, simulationParameters.Drillstring.YoungModuli.Count - 1);
+                Vector<double> uu_sub = downwardAxialWave.Row(0).SubVector(1, downwardAxialWave.ColumnCount - 1);
+                Vector<double> vv_sub = upwardAxialWave.Row(0).SubVector(1, upwardAxialWave.ColumnCount - 1);
+                Vector<double> tempVector = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * A_sub.PointwiseMultiply(E_sub).PointwiseMultiply(uu_sub - vv_sub);
                 Vector<double> for_p = Vector<double>.Build.DenseOfArray(tempVector.Append(wb).ToArray());
 
                 rc = (Square(state.Xc) + Square(state.Yc)).PointwiseSqrt();
@@ -620,19 +550,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 r_dot = state.Xc_dot.PointwiseMultiply(phi.PointwiseCos()) + state.Yc_dot.PointwiseMultiply(phi.PointwiseSin());
 
 
-                // Compute iC = (rc >= p.rc) (element-wise condition)
-                Vector<double> iC = Vector<double>.Build.Dense(p.w.rc.Count);
+                // Compute iC = (rc >= simulationParameters.rc) (element-wise condition)
+                Vector<double> iC = Vector<double>.Build.Dense(simulationParameters.Wellbore.rc.Count);
                 for (int i = 0; i < rc.Count; i++)
                 {
-                    iC[i] = rc[i] >= p.w.rc[i] ? 1.0 : 0.0;
+                    iC[i] = rc[i] >= simulationParameters.Wellbore.rc[i] ? 1.0 : 0.0;
                 }
 
-                // The wall is modeled as a spring-dashpot system with a spring constant p.w.kw and a linear damping coefficient
-                // p.w.dw. The magnitude of the normal force then depends on the lateral displacement
+                // The wall is modeled as a spring-dashpot system with a spring constant simulationParameters.Wellbore.kw and a linear damping coefficient
+                // simulationParameters.Wellbore.dw. The magnitude of the normal force then depends on the lateral displacement
                 // of the drill string inside the borehole wall, which undergoes elastic deformation.
-                F_N = p.w.kw * (rc - p.w.rc).PointwiseMultiply(iC) + p.w.dw * r_dot.PointwiseMultiply(iC);
+                F_N = simulationParameters.Wellbore.kw * (rc - simulationParameters.Wellbore.rc).PointwiseMultiply(iC) + simulationParameters.Wellbore.dw * r_dot.PointwiseMultiply(iC);
                 if (F_N.Count > 1)
-                    F_N[F_N.Count - 2] += u.Fshock;
+                    F_N[F_N.Count - 2] += simulationInput.ForceToInduceBitWhirl;
 
 
                 phi_dot = (state.Yc_dot.PointwiseMultiply(state.Xc) - state.Xc_dot.PointwiseMultiply(state.Yc)).PointwiseDivide(Square(rc) + Constants.eps);
@@ -661,106 +591,106 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
 
                 // lateral forces due to fluid-structure interaction
-                Vector<double> Ff_x = -p.w.Df * state.Xc_dot - p.ds.Mf.PointwiseMultiply(state.OL).PointwiseMultiply(state.Yc_dot) -
-                                      p.w.Df * state.OL.PointwiseMultiply(0.5 * state.Yc) +
-                                      p.ds.Mf.PointwiseMultiply(Square(state.OL)).PointwiseMultiply(1.0 / 4.0 * state.Xc);
-                Vector<double> Ff_y = -p.w.Df * state.Yc_dot + p.ds.Mf.PointwiseMultiply(state.OL).PointwiseMultiply(state.Xc_dot) +
-                                      p.w.Df * state.OL.PointwiseMultiply(0.5 * state.Xc) +
-                                      p.ds.Mf.PointwiseMultiply(Square(state.OL)).PointwiseMultiply(1.0 / 4.0 * state.Yc);
+                Vector<double> Ff_x = -simulationParameters.Wellbore.Df * state.Xc_dot - simulationParameters.Drillstring.FluidAddedMass.PointwiseMultiply(state.LumpedElementAngularVelocity).PointwiseMultiply(state.Yc_dot) -
+                                      simulationParameters.Wellbore.Df * state.LumpedElementAngularVelocity.PointwiseMultiply(0.5 * state.Yc) +
+                                      simulationParameters.Drillstring.FluidAddedMass.PointwiseMultiply(Square(state.LumpedElementAngularVelocity)).PointwiseMultiply(1.0 / 4.0 * state.Xc);
+                Vector<double> Ff_y = -simulationParameters.Wellbore.Df * state.Yc_dot + simulationParameters.Drillstring.FluidAddedMass.PointwiseMultiply(state.LumpedElementAngularVelocity).PointwiseMultiply(state.Xc_dot) +
+                                      simulationParameters.Wellbore.Df * state.LumpedElementAngularVelocity.PointwiseMultiply(0.5 * state.Xc) +
+                                      simulationParameters.Drillstring.FluidAddedMass.PointwiseMultiply(Square(state.LumpedElementAngularVelocity)).PointwiseMultiply(1.0 / 4.0 * state.Yc);
 
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    Ff_x[index] = -p.w.Df * state.Xc_dot[index] - p.ds.Mf[index] * state.OS[i] * state.Yc_dot[index]
-                                  - p.w.Df * state.OS[i] * state.Yc[index] / 2.0 + p.ds.Mf[index] * state.OS[i] * state.OS[i] * state.Xc[index] / 4.0;
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    Ff_x[index] = -simulationParameters.Wellbore.Df * state.Xc_dot[index] - simulationParameters.Drillstring.FluidAddedMass[index] * state.SleeveAngularVelocity[i] * state.Yc_dot[index]
+                                  - simulationParameters.Wellbore.Df * state.SleeveAngularVelocity[i] * state.Yc[index] / 2.0 + simulationParameters.Drillstring.FluidAddedMass[index] * state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * state.Xc[index] / 4.0;
 
-                    Ff_y[index] = -p.w.Df * state.Yc_dot[index] + p.ds.Mf[index] * state.OS[i] * state.Xc_dot[index]
-                                  + p.w.Df * state.OS[i] * state.Xc[index] / 2.0 + p.ds.Mf[index] * state.OS[i] * state.OS[i] * state.Yc[index] / 4.0;
+                    Ff_y[index] = -simulationParameters.Wellbore.Df * state.Yc_dot[index] + simulationParameters.Drillstring.FluidAddedMass[index] * state.SleeveAngularVelocity[i] * state.Xc_dot[index]
+                                  + simulationParameters.Wellbore.Df * state.SleeveAngularVelocity[i] * state.Xc[index] / 2.0 + simulationParameters.Drillstring.FluidAddedMass[index] * state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * state.Yc[index] / 4.0;
                 }
 
                 // sleeve braking force
-                Vector<double> F_S = Vector<double>.Build.Dense(p.ds.iS.Count());
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                Vector<double> F_S = Vector<double>.Build.Dense(simulationParameters.Drillstring.SleeveIndexPosition.Count());
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    F_S[i] = p.ds.k_ec[i] * (state.OL[index] - state.OS[i]); // torsional damping
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    F_S[i] = simulationParameters.Drillstring.SleeveTorsionalDamping[i] * (state.LumpedElementAngularVelocity[index] - state.SleeveAngularVelocity[i]); // torsional damping
                 }
 
                 // Coulomb friction
                 // V_t is the tangential slip velocity/ 
-                Vector<double> V_a = Vector<double>.Build.Dense(state.VL.Count());
-                state.VL.CopyTo(V_a);
-                Vector<double> V_t = Vector<double>.Build.Dense(state.VL.Count());
-                V_t = phi_dot.PointwiseMultiply(rc) + state.OL.PointwiseMultiply(p.ds.ro);
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                Vector<double> V_a = Vector<double>.Build.Dense(state.LumpedElementAxialVelocity.Count());
+                state.LumpedElementAxialVelocity.CopyTo(V_a);
+                Vector<double> V_t = Vector<double>.Build.Dense(state.LumpedElementAxialVelocity.Count());
+                V_t = phi_dot.PointwiseMultiply(rc) + state.LumpedElementAngularVelocity.PointwiseMultiply(simulationParameters.Drillstring.OuterRadius);
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    V_t[index] = phi_dot[index] * rc[index] + state.OS[i] * p.ds.r_So; // replace with the sleeve angular velocity if there is a sleeve
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    V_t[index] = phi_dot[index] * rc[index] + state.SleeveAngularVelocity[i] * simulationParameters.Drillstring.SleeveOuterRadius; // replace with the sleeve angular velocity if there is a sleeve
                 }
 
                 // Compute forces required to enter static friction condition(i.e., no axial movement and rolling without slip)
 
-                Fstatic_a = 1.0 / dt * state.VL.PointwiseMultiply(p.ds.M_L) + for_m - for_p - p.ds.ka * state.VL;
+                Fstatic_a = 1.0 / simulationParameters.InnerLoopTimeStep * state.LumpedElementAxialVelocity.PointwiseMultiply(simulationParameters.Drillstring.LumpedElementMass) + for_m - for_p - simulationParameters.Drillstring.CalculatedAxialDamping * state.LumpedElementAxialVelocity;
 
-                theta_ddot_noslip = Vector<double>.Build.Dense(p.ds.I_L.Count());
-                var denominator = p.ds.I_L + (p.ds.M_L + p.ds.Mf).PointwiseMultiply(Square(p.ds.ro)) -
-                                  p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(p.ds.ro).PointwiseMultiply((state.Theta - phi).PointwiseCos());
-                var term1 = (p.ds.M_L + p.ds.Mf).PointwiseMultiply(p.ds.ro).PointwiseMultiply(r_dot).PointwiseMultiply(phi_dot);
-                var term2 = p.ds.ro.PointwiseMultiply((Fk_x + F_prestress_x + Ff_x)).PointwiseMultiply(phi.PointwiseSin());
-                var term3 = -p.ds.ro.PointwiseMultiply((Fk_y + F_prestress_y + Ff_y)).PointwiseMultiply(phi.PointwiseCos());
-                var term4 = tau_m - tau_p - p.ds.kt * state.OL;
-                var term5 = -p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(p.ds.ro).PointwiseMultiply(Square(state.OL)).PointwiseMultiply((state.Theta - phi).PointwiseSin());
+                theta_ddot_noslip = Vector<double>.Build.Dense(simulationParameters.Drillstring.LumpedElementMomentOfInertia.Count());
+                var denominator = simulationParameters.Drillstring.LumpedElementMomentOfInertia + (simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass).PointwiseMultiply(Square(simulationParameters.Drillstring.OuterRadius)) -
+                                  simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseMultiply(simulationParameters.Drillstring.OuterRadius).PointwiseMultiply((state.Theta - phi).PointwiseCos());
+                var term1 = (simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass).PointwiseMultiply(simulationParameters.Drillstring.OuterRadius).PointwiseMultiply(r_dot).PointwiseMultiply(phi_dot);
+                var term2 = simulationParameters.Drillstring.OuterRadius.PointwiseMultiply((Fk_x + F_prestress_x + Ff_x)).PointwiseMultiply(phi.PointwiseSin());
+                var term3 = -simulationParameters.Drillstring.OuterRadius.PointwiseMultiply((Fk_y + F_prestress_y + Ff_y)).PointwiseMultiply(phi.PointwiseCos());
+                var term4 = tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity;
+                var term5 = -simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseMultiply(simulationParameters.Drillstring.OuterRadius).PointwiseMultiply(Square(state.LumpedElementAngularVelocity)).PointwiseMultiply((state.Theta - phi).PointwiseSin());
                 var numerator = term1 + term2 + term3 + term4 + term5;
                 theta_ddot_noslip = numerator.PointwiseDivide(denominator);
 
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
 
-                    double denominator__ = p.ds.I_S + (p.ds.M_L[index] + p.ds.Mf[index]) * p.ds.r_So * p.ds.r_So
-                     - p.ds.M_e[index] * p.ds.e[index] * p.ds.r_So * Math.Cos(state.Theta_S[i] - phi[index]);
-                    double term1__ = (p.ds.M_L[index] + p.ds.Mf[index]) * p.ds.r_So * r_dot[index] * phi_dot[index];
-                    double term2__ = p.ds.r_So * (Fk_x[index] + F_prestress_x[index] + Ff_x[index]) * Math.Sin(phi[index]);
-                    double term3__ = -p.ds.r_So * (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]);
-                    double term5__ = p.ds.r_Si * F_S[i] - p.ds.M_e[index] * p.ds.e[index] * p.ds.r_So * state.OS[i] * state.OS[i] * Math.Sin(state.Theta_S[i] - phi[index]);
+                    double denominator__ = simulationParameters.Drillstring.SleeveMassMomentOfInertia + (simulationParameters.Drillstring.LumpedElementMass[index] + simulationParameters.Drillstring.FluidAddedMass[index]) * simulationParameters.Drillstring.SleeveOuterRadius * simulationParameters.Drillstring.SleeveOuterRadius
+                     - simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] * simulationParameters.Drillstring.SleeveOuterRadius * Math.Cos(state.Theta_S[i] - phi[index]);
+                    double term1__ = (simulationParameters.Drillstring.LumpedElementMass[index] + simulationParameters.Drillstring.FluidAddedMass[index]) * simulationParameters.Drillstring.SleeveOuterRadius * r_dot[index] * phi_dot[index];
+                    double term2__ = simulationParameters.Drillstring.SleeveOuterRadius * (Fk_x[index] + F_prestress_x[index] + Ff_x[index]) * Math.Sin(phi[index]);
+                    double term3__ = -simulationParameters.Drillstring.SleeveOuterRadius * (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]);
+                    double term5__ = simulationParameters.Drillstring.SleeveInnerRadius * F_S[i] - simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] * simulationParameters.Drillstring.SleeveOuterRadius * state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * Math.Sin(state.Theta_S[i] - phi[index]);
 
                     var numerator__ = term1__ + term2__ + term3__ + term5__;
                     theta_ddot_noslip[index] = numerator__ / denominator__;
                 }
-                phi_ddot_noslip = Vector<double>.Build.Dense(p.ds.I_L.Count());
+                phi_ddot_noslip = Vector<double>.Build.Dense(simulationParameters.Drillstring.LumpedElementMomentOfInertia.Count());
 
-                var denominator_ = p.ds.M_L + p.ds.Mf + p.ds.I_L.PointwiseDivide(Square(p.ds.ro)) - (p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseDivide(p.ds.ro).PointwiseMultiply((state.Theta - phi).PointwiseCos()));
-                var term1_ = (-2 * (p.ds.M_L + p.ds.Mf) - p.ds.I_L.PointwiseDivide(Square(p.ds.ro)) + (p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseDivide(p.ds.ro).PointwiseMultiply((state.Theta - phi).PointwiseCos()))).PointwiseMultiply(r_dot).PointwiseMultiply(phi_dot);
+                var denominator_ = simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass + simulationParameters.Drillstring.LumpedElementMomentOfInertia.PointwiseDivide(Square(simulationParameters.Drillstring.OuterRadius)) - (simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseDivide(simulationParameters.Drillstring.OuterRadius).PointwiseMultiply((state.Theta - phi).PointwiseCos()));
+                var term1_ = (-2 * (simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass) - simulationParameters.Drillstring.LumpedElementMomentOfInertia.PointwiseDivide(Square(simulationParameters.Drillstring.OuterRadius)) + (simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseDivide(simulationParameters.Drillstring.OuterRadius).PointwiseMultiply((state.Theta - phi).PointwiseCos()))).PointwiseMultiply(r_dot).PointwiseMultiply(phi_dot);
                 var term2_ = -(Fk_x + F_prestress_x + Ff_x).PointwiseMultiply(phi.PointwiseSin());
                 var term3_ = (Fk_y + F_prestress_y + Ff_y).PointwiseMultiply(phi.PointwiseCos());
-                var term4_ = -(tau_m - tau_p - p.ds.kt * state.OL).PointwiseDivide(p.ds.ro);
-                var term5_ = p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(Square(state.OL)).PointwiseMultiply((state.Theta - phi).PointwiseSin());
+                var term4_ = -(tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity).PointwiseDivide(simulationParameters.Drillstring.OuterRadius);
+                var term5_ = simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseMultiply(Square(state.LumpedElementAngularVelocity)).PointwiseMultiply((state.Theta - phi).PointwiseSin());
                 phi_ddot_noslip = (term1_ + term2_ + term3_ + term4_ + term5_).PointwiseDivide(denominator_);
 
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    phi_ddot_noslip[index] = 1.0 / (p.ds.M_L[index] + p.ds.Mf[index] + p.ds.I_S / Math.Pow(p.ds.r_So, 2) - p.ds.M_e[index] * p.ds.e[index] / p.ds.r_So * Math.Cos(state.Theta_S[i] - phi[index]))
-                                     * ((-2 * (p.ds.M_L[index] + p.ds.Mf[index]) - p.ds.I_S / Math.Pow(p.ds.r_So, 2) +
-                                     p.ds.M_e[index] * p.ds.e[index] / p.ds.r_So * Math.Cos(state.Theta_S[i] - phi[index])) * r_dot[index] * phi_dot[index] -
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    phi_ddot_noslip[index] = 1.0 / (simulationParameters.Drillstring.LumpedElementMass[index] + simulationParameters.Drillstring.FluidAddedMass[index] + simulationParameters.Drillstring.SleeveMassMomentOfInertia / Math.Pow(simulationParameters.Drillstring.SleeveOuterRadius, 2) - simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] / simulationParameters.Drillstring.SleeveOuterRadius * Math.Cos(state.Theta_S[i] - phi[index]))
+                                     * ((-2 * (simulationParameters.Drillstring.LumpedElementMass[index] + simulationParameters.Drillstring.FluidAddedMass[index]) - simulationParameters.Drillstring.SleeveMassMomentOfInertia / Math.Pow(simulationParameters.Drillstring.SleeveOuterRadius, 2) +
+                                     simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] / simulationParameters.Drillstring.SleeveOuterRadius * Math.Cos(state.Theta_S[i] - phi[index])) * r_dot[index] * phi_dot[index] -
                                      (Fk_x[index] + F_prestress_x[index] + Ff_x[index]) * Math.Sin(phi[index]) + (Fk_y[index] + F_prestress_y[index] + Ff_y[index]) * Math.Cos(phi[index]) -
-                                     p.ds.r_Si / p.ds.r_So * F_S[i] + p.ds.M_e[index] * p.ds.e[index] * state.OS[i] * state.OS[i] * Math.Sin(state.Theta_S[i] - phi[index]));
+                                     simulationParameters.Drillstring.SleeveInnerRadius / simulationParameters.Drillstring.SleeveOuterRadius * F_S[i] + simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] * state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * Math.Sin(state.Theta_S[i] - phi[index]));
                 }
 
-                Fstatic_t = Vector<double>.Build.Dense(p.ds.I_L.Count());
-                Fstatic_t = p.ds.I_L.PointwiseDivide(Square(p.ds.ro)).PointwiseMultiply(r_dot.PointwiseMultiply(phi_dot) + rc.PointwiseMultiply(phi_ddot_noslip)) + (tau_m - tau_p - p.ds.kt * state.OL).PointwiseDivide(p.ds.ro);
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                Fstatic_t = Vector<double>.Build.Dense(simulationParameters.Drillstring.LumpedElementMomentOfInertia.Count());
+                Fstatic_t = simulationParameters.Drillstring.LumpedElementMomentOfInertia.PointwiseDivide(Square(simulationParameters.Drillstring.OuterRadius)).PointwiseMultiply(r_dot.PointwiseMultiply(phi_dot) + rc.PointwiseMultiply(phi_ddot_noslip)) + (tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity).PointwiseDivide(simulationParameters.Drillstring.OuterRadius);
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    Fstatic_t[index] = (p.ds.I_S / (p.ds.r_So * p.ds.r_So)) * (r_dot[index] * phi_dot[index] + rc[index] * phi_ddot_noslip[index]) + p.ds.r_Si / p.ds.r_So * F_S[i];
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    Fstatic_t[index] = (simulationParameters.Drillstring.SleeveMassMomentOfInertia / (simulationParameters.Drillstring.SleeveOuterRadius * simulationParameters.Drillstring.SleeveOuterRadius)) * (r_dot[index] * phi_dot[index] + rc[index] * phi_ddot_noslip[index]) + simulationParameters.Drillstring.SleeveInnerRadius / simulationParameters.Drillstring.SleeveOuterRadius * F_S[i];
                 }
 
                 Vector<double> VBar = (Square(V_a) + Square(V_t)).PointwiseSqrt() + Constants.eps;
                 Vector<double> FResBar = (Square(Fstatic_a) + Square(Fstatic_t)).PointwiseSqrt() + Constants.eps;
 
-                Vector<double> FcTh = F_N.PointwiseMultiply(p.f.mu_s); // static force
+                Vector<double> FcTh = F_N.PointwiseMultiply(simulationParameters.Friction.mu_s); // static force
 
-                for (int j = 0; j < p.lc.NL; j++)
+                for (int j = 0; j < simulationParameters.LumpedCells.NL; j++)
                 {
                     if (state.slip_condition[j] == 0)
                     {
@@ -771,7 +701,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                     else
                     {
-                        if (VBar[j] < p.f.v_c)
+                        if (VBar[j] < simulationParameters.Friction.v_c)
                         {
                             state.slip_condition[j] = 0;
                         }
@@ -789,87 +719,87 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Fc_a and Fc_t are axial and tangential components of the coloumb friction force between the borehole and the 
                 // lumped element 
                 Vector<double> Fc = inverted_slip_condition.PointwiseMultiply((FResBar.PointwiseMinimum(FcTh)).PointwiseMaximum(-1.0 * FcTh)) +
-                    state.slip_condition.PointwiseMultiply(F_N).PointwiseMultiply(p.f.mu_k + (p.f.mu_s - p.f.mu_k).PointwiseMultiply((-p.f.stribeck * VBar).PointwiseExp()));
+                    state.slip_condition.PointwiseMultiply(F_N).PointwiseMultiply(simulationParameters.Friction.mu_k + (simulationParameters.Friction.mu_s - simulationParameters.Friction.mu_k).PointwiseMultiply((-simulationParameters.Friction.stribeck * VBar).PointwiseExp()));
                 Fc_a = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(Fstatic_a.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_a).PointwiseDivide(VBar);
                 Fc_t = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(Fstatic_t.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_t).PointwiseDivide(VBar);
 
                 //for the elements with sleeves, account for reduction in axial friction due to the spur wheels
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    Fc_a[index] = Fc_a[index] * (1 - p.ds.axialFrictionReduction);
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    Fc_a[index] = Fc_a[index] * (1 - simulationParameters.Drillstring.AxialFrictionReduction);
                     Fc_t[index] = Math.Sqrt(Fc[index] * Fc[index] - Fc_a[index] * Fc_a[index]) * Math.Sign(Fc_t[index]);
                 }
 
-                // Solve Lumped ODEs -check for numerical instability (fix by decreasing dt, increasing I_L, M_L, or increasing p.ds.kt, p.ka, p.kl)
-                state.Otd = state.Otd + 1.0 / p.w.I_TD * dt * (u.tau_Motor - tauTD);
+                // Solve Lumped ODEs -check for numerical instability (fix by decreasing simulationParameters.InnerLoopTimeStep, increasing I_L, M_L, or increasing simulationParameters.Drillstring.kt, simulationParameters.ka, simulationParameters.kl)
+                state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / simulationParameters.Wellbore.I_TD * simulationParameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - tauTD);
 
-                OL_dot = (tau_m - tau_p - p.ds.kt * state.OL - Fc_t.PointwiseMultiply(p.ds.ro)).PointwiseDivide(p.ds.I_L);
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                OL_dot = (tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity - Fc_t.PointwiseMultiply(simulationParameters.Drillstring.OuterRadius)).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMomentOfInertia);
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    OL_dot[index] = 1.0 / p.ds.I_L[index] * (tau_m[index] - tau_p[index] - p.ds.kt * state.OL[index] - F_S[i] * p.ds.ro[index]);
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    OL_dot[index] = 1.0 / simulationParameters.Drillstring.LumpedElementMomentOfInertia[index] * (tau_m[index] - tau_p[index] - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity[index] - F_S[i] * simulationParameters.Drillstring.OuterRadius[index]);
                 }
 
-                // Extract specific elements: Fc_t(p.ds.iS)
-                var result = Vector<double>.Build.Dense(p.ds.iS.Select(index => Fc_t[(int)index]).ToArray());
+                // Extract specific elements: Fc_t(simulationParameters.Drillstring.iS)
+                var result = Vector<double>.Build.Dense(simulationParameters.Drillstring.SleeveIndexPosition.Select(index => Fc_t[(int)index]).ToArray());
 
-                OS_dot = 1.0 / p.ds.I_S * dt * (F_S * p.ds.r_Si - p.ds.r_So * result);
-                VL_dot = (for_m - for_p - p.ds.ka * state.VL - Fc_a).PointwiseDivide(p.ds.M_L);
+                OS_dot = 1.0 / simulationParameters.Drillstring.SleeveMassMomentOfInertia * simulationParameters.InnerLoopTimeStep * (F_S * simulationParameters.Drillstring.SleeveInnerRadius - simulationParameters.Drillstring.SleeveOuterRadius * result);
+                VL_dot = (for_m - for_p - simulationParameters.Drillstring.CalculatedAxialDamping * state.LumpedElementAxialVelocity - Fc_a).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass);
 
-                state.Theta = state.Theta + state.OL * dt;
-                state.Theta_S = state.Theta_S + state.OS * dt;
-                state.OL = state.OL + OL_dot * dt;
-                state.OS = state.OS + OS_dot * dt;
-                state.VL = state.VL + VL_dot * dt;
+                state.Theta = state.Theta + state.LumpedElementAngularVelocity * simulationParameters.InnerLoopTimeStep;
+                state.Theta_S = state.Theta_S + state.SleeveAngularVelocity * simulationParameters.InnerLoopTimeStep;
+                state.LumpedElementAngularVelocity = state.LumpedElementAngularVelocity + OL_dot * simulationParameters.InnerLoopTimeStep;
+                state.SleeveAngularVelocity = state.SleeveAngularVelocity + OS_dot * simulationParameters.InnerLoopTimeStep;
+                state.LumpedElementAxialVelocity = state.LumpedElementAxialVelocity + VL_dot * simulationParameters.InnerLoopTimeStep;
 
                 // lateral forces due to mass imbalance
                 // The imbalance force comes from the assumption that the pipe element center of mass i slocated at a distance from its geometric center, 
                 // which causes a lateral force and a torque as the pipe is displaced
-                Vector<double> Fe_x = p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(Square(state.OL).PointwiseMultiply(state.Theta.PointwiseCos()) + OL_dot.PointwiseMultiply(state.Theta.PointwiseSin()));
-                Vector<double> Fe_y = p.ds.M_e.PointwiseMultiply(p.ds.e).PointwiseMultiply(Square(state.OL).PointwiseMultiply(state.Theta.PointwiseSin()) - OL_dot.PointwiseMultiply(state.Theta.PointwiseCos()));
+                Vector<double> Fe_x = simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseMultiply(Square(state.LumpedElementAngularVelocity).PointwiseMultiply(state.Theta.PointwiseCos()) + OL_dot.PointwiseMultiply(state.Theta.PointwiseSin()));
+                Vector<double> Fe_y = simulationParameters.Drillstring.EccentricMass.PointwiseMultiply(simulationParameters.Drillstring.Eccentricity).PointwiseMultiply(Square(state.LumpedElementAngularVelocity).PointwiseMultiply(state.Theta.PointwiseSin()) - OL_dot.PointwiseMultiply(state.Theta.PointwiseCos()));
 
-                for (int i = 0; i < p.ds.iS.Count; i++)
+                for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
-                    int index = (int)p.ds.iS[i];
-                    Fe_x[index] = p.ds.M_e[index] * p.ds.e[index] * (state.OS[i] * state.OS[i] * Math.Cos(state.Theta_S[i]) + OS_dot[i] * Math.Cos(state.Theta_S[i]));
-                    Fe_y[index] = p.ds.M_e[index] * p.ds.e[index] * (state.OS[i] * state.OS[i] * Math.Sin(state.Theta_S[i]) - OS_dot[i] * Math.Sin(state.Theta_S[i]));
+                    int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
+                    Fe_x[index] = simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] * (state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * Math.Cos(state.Theta_S[i]) + OS_dot[i] * Math.Cos(state.Theta_S[i]));
+                    Fe_y[index] = simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] * (state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * Math.Sin(state.Theta_S[i]) - OS_dot[i] * Math.Sin(state.Theta_S[i]));
                 }
 
                 // lateral accelerations in cartesian coordinates
-                // p.ds.kl is a viscous structural damping coeficcient for
+                // simulationParameters.Drillstring.kl is a viscous structural damping coeficcient for
                 // F_N is the normal force
                 // Fc_t is the tangential friction force
                 // Ff_x and Ff_y are forces caused by the fluid-structure interaction
                 // Fk_x and Fk_y are lateral forces due to bending
                 // Fe_x and Fe_y are lateral forces due to mass imbalance
-                Xc_ddot = (Fk_x + F_prestress_x + Ff_x + Fe_x - p.ds.kl * state.Xc_dot - F_N.PointwiseMultiply(phi.PointwiseCos()) + Fc_t.PointwiseMultiply(phi.PointwiseSin())).PointwiseDivide(p.ds.M_L + p.ds.Mf);
-                Yc_ddot = (Fk_y + F_prestress_y + Ff_y + Fe_y - p.ds.kl * state.Yc_dot - F_N.PointwiseMultiply(phi.PointwiseSin()) - Fc_t.PointwiseMultiply(phi.PointwiseCos())).PointwiseDivide(p.ds.M_L + p.ds.Mf);
+                Xc_ddot = (Fk_x + F_prestress_x + Ff_x + Fe_x - simulationParameters.Drillstring.CalculateLateralDamping * state.Xc_dot - F_N.PointwiseMultiply(phi.PointwiseCos()) + Fc_t.PointwiseMultiply(phi.PointwiseSin())).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass);
+                Yc_ddot = (Fk_y + F_prestress_y + Ff_y + Fe_y - simulationParameters.Drillstring.CalculateLateralDamping * state.Yc_dot - F_N.PointwiseMultiply(phi.PointwiseSin()) - Fc_t.PointwiseMultiply(phi.PointwiseCos())).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass);
 
-                state.Xc = state.Xc + state.Xc_dot * dt;
-                state.Xc_dot = state.Xc_dot + Xc_ddot * dt;
-                state.Yc = state.Yc + state.Yc_dot * dt;
-                state.Yc_dot = state.Yc_dot + Yc_ddot * dt;
+                state.Xc = state.Xc + state.Xc_dot * simulationParameters.InnerLoopTimeStep;
+                state.Xc_dot = state.Xc_dot + Xc_ddot * simulationParameters.InnerLoopTimeStep;
+                state.Yc = state.Yc + state.Yc_dot * simulationParameters.InnerLoopTimeStep;
+                state.Yc_dot = state.Yc_dot + Yc_ddot * simulationParameters.InnerLoopTimeStep;
 
                 // Mud motor
-                if (c.UseMudMotor)
+                if (configuration.UseMudMotor)
                 {
-                    state.Ostator = state.OL[state.OL.Count - 1];
-                    state.Orotor = state.Orotor + dt / (p.mm.I_rotor + p.mm.M_rotor * Math.Pow(p.mm.delta_rotor, 2) * Math.Pow(p.mm.N_rotor, 2)) *
-                        (OL_dot[state.OL.Count - 1] * p.mm.M_rotor * Math.Pow(p.mm.delta_rotor, 2) * p.mm.N_stator * p.mm.N_rotor + tm - tb);
+                    state.MudStatorAngularVelocity = state.LumpedElementAngularVelocity[state.LumpedElementAngularVelocity.Count - 1];
+                    state.MudRotorAngularVelocity = state.MudRotorAngularVelocity + simulationParameters.InnerLoopTimeStep / (simulationParameters.MudMotor.I_rotor + simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * Math.Pow(simulationParameters.MudMotor.N_rotor, 2)) *
+                        (OL_dot[state.LumpedElementAngularVelocity.Count - 1] * simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * simulationParameters.MudMotor.N_stator * simulationParameters.MudMotor.N_rotor + tm - tb);
                 }
             }
 
             // Compute states from Riemann invariants
-            state.o = 1.0 / 2.0 * (aa + bb);
-            state.f = 1.0 / (2.0 * p.ds.c_t) * (aa - bb);
+            state.PipeAngularVelocity = 1.0 / 2.0 * (downwardTorsionalWave + upwardTorsionalWave);
+            state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (downwardTorsionalWave - upwardTorsionalWave);
 
-            state.v = 1.0 / 2.0 * (uu + vv);
-            state.e = 1.0 / (2.0 * p.ds.c_a) * (uu - vv);
+            state.PipeAxialVelocity = 1.0 / 2.0 * (downwardAxialWave + upwardAxialWave);
+            state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (downwardAxialWave - upwardAxialWave);
 
             // Bending moments
-            Mb_x = p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(Xc_iPlus1 - 2 * state.Xc + Xc_iMinus1) / (p.lc.dxL * p.lc.dxL); // Bending moment x-component
-            Mb_y = p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(Yc_iPlus1 - 2 * state.Yc + Yc_iMinus1) / (p.lc.dxL * p.lc.dxL); // Bending moment y-component
+            Mb_x = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeInertia).PointwiseMultiply(Xc_iPlus1 - 2 * state.Xc + Xc_iMinus1) / (simulationParameters.LumpedCells.dxL * simulationParameters.LumpedCells.dxL); // Bending moment x-component
+            Mb_y = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeInertia).PointwiseMultiply(Yc_iPlus1 - 2 * state.Yc + Yc_iMinus1) / (simulationParameters.LumpedCells.dxL * simulationParameters.LumpedCells.dxL); // Bending moment y-component
 
             double Theta_x = 0.0;
             double Theta_y = 0.0;
@@ -888,127 +818,127 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double r_ddot = 0.0;
             double phi_ddot = 0.0;
 
-            if (c.UsePipeMovementReconstruction) // % compute additional variables used for pipe movement reconstruction
+            if (configuration.UsePipeMovementReconstruction) // % compute additional variables used for pipe movement reconstruction
             {
-                r_ddot = Xc_ddot[p.ds.idx_sensor] * Math.Cos(phi[p.ds.idx_sensor]) + Yc_ddot[p.ds.idx_sensor] * Math.Sin(phi[p.ds.idx_sensor]) -
-                                state.Xc_dot[p.ds.idx_sensor] * phi_dot[p.ds.idx_sensor] * Math.Sin(phi[p.ds.idx_sensor]) +
-                                state.Yc_dot[p.ds.idx_sensor] * phi_dot[p.ds.idx_sensor] * Math.Cos(phi[p.ds.idx_sensor]);
+                r_ddot = Xc_ddot[simulationParameters.Drillstring.IndexSensor] * Math.Cos(phi[simulationParameters.Drillstring.IndexSensor]) + Yc_ddot[simulationParameters.Drillstring.IndexSensor] * Math.Sin(phi[simulationParameters.Drillstring.IndexSensor]) -
+                                state.Xc_dot[simulationParameters.Drillstring.IndexSensor] * phi_dot[simulationParameters.Drillstring.IndexSensor] * Math.Sin(phi[simulationParameters.Drillstring.IndexSensor]) +
+                                state.Yc_dot[simulationParameters.Drillstring.IndexSensor] * phi_dot[simulationParameters.Drillstring.IndexSensor] * Math.Cos(phi[simulationParameters.Drillstring.IndexSensor]);
 
-                phi_ddot = state.slip_condition[p.ds.idx_sensor] * (1.0 / (Math.Pow(rc[p.ds.idx_sensor], 2) + Constants.eps) * (Yc_ddot[p.ds.idx_sensor] * state.Xc[p.ds.idx_sensor] -
-                    Xc_ddot[p.ds.idx_sensor] * state.Yc[p.ds.idx_sensor]) - 2.0 * r_dot[p.ds.idx_sensor] * phi_dot[p.ds.idx_sensor] / (rc[p.ds.idx_sensor] + Constants.eps)) +
-                    inverted_slip_condition[p.ds.idx_sensor] * phi_ddot_noslip[p.ds.idx_sensor];
+                phi_ddot = state.slip_condition[simulationParameters.Drillstring.IndexSensor] * (1.0 / (Math.Pow(rc[simulationParameters.Drillstring.IndexSensor], 2) + Constants.eps) * (Yc_ddot[simulationParameters.Drillstring.IndexSensor] * state.Xc[simulationParameters.Drillstring.IndexSensor] -
+                    Xc_ddot[simulationParameters.Drillstring.IndexSensor] * state.Yc[simulationParameters.Drillstring.IndexSensor]) - 2.0 * r_dot[simulationParameters.Drillstring.IndexSensor] * phi_dot[simulationParameters.Drillstring.IndexSensor] / (rc[simulationParameters.Drillstring.IndexSensor] + Constants.eps)) +
+                    inverted_slip_condition[simulationParameters.Drillstring.IndexSensor] * phi_ddot_noslip[simulationParameters.Drillstring.IndexSensor];
                 double phi0_sensor = 0;
                 phi_ddot = 0.0;
 
-                if (!p.ds.iS.Contains(p.ds.idx_sensor))
+                if (!simulationParameters.Drillstring.SleeveIndexPosition.Contains(simulationParameters.Drillstring.IndexSensor))
                 {
-                    r0_sensor = 0.5 * (p.ds.ri[p.ds.idx_sensor] + p.ds.ro[p.ds.idx_sensor]); // radial position of accelerometer relative to pipe centerline
-                    theta_ddot = state.slip_condition[p.ds.idx_sensor] * OL_dot[p.ds.idx_sensor] + inverted_slip_condition[p.ds.idx_sensor] * theta_ddot_noslip[p.ds.idx_sensor];
-                    u_x = state.Xc[p.ds.idx_sensor] + r0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor]) - phi0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor]);
-                    u_y = state.Yc[p.ds.idx_sensor] + phi0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor]) + r0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor]);
-                    u_x_ddot = Xc_ddot[p.ds.idx_sensor] + r0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Cos(state.Theta[p.ds.idx_sensor]) - OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor])) +
-                        phi0_sensor * (Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Sin(state.Theta[p.ds.idx_sensor]) -
-                        OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor]));
-                    u_y_ddot = Yc_ddot[p.ds.idx_sensor] + phi0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Cos(state.Theta[p.ds.idx_sensor]) - OL_dot[p.ds.idx_sensor] * Math.Sin(state.Theta[p.ds.idx_sensor])) -
-                        r0_sensor * (Math.Pow(state.OL[p.ds.idx_sensor], 2) * Math.Sin(state.Theta[p.ds.idx_sensor]) - OL_dot[p.ds.idx_sensor] * Math.Cos(state.Theta[p.ds.idx_sensor]));
+                    r0_sensor = 0.5 * (simulationParameters.Drillstring.InnerRadius[simulationParameters.Drillstring.IndexSensor] + simulationParameters.Drillstring.OuterRadius[simulationParameters.Drillstring.IndexSensor]); // radial position of accelerometer relative to pipe centerline
+                    theta_ddot = state.slip_condition[simulationParameters.Drillstring.IndexSensor] * OL_dot[simulationParameters.Drillstring.IndexSensor] + inverted_slip_condition[simulationParameters.Drillstring.IndexSensor] * theta_ddot_noslip[simulationParameters.Drillstring.IndexSensor];
+                    u_x = state.Xc[simulationParameters.Drillstring.IndexSensor] + r0_sensor * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor]) - phi0_sensor * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor]);
+                    u_y = state.Yc[simulationParameters.Drillstring.IndexSensor] + phi0_sensor * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor]) + r0_sensor * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor]);
+                    u_x_ddot = Xc_ddot[simulationParameters.Drillstring.IndexSensor] + r0_sensor * (-Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor], 2) * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor]) - OL_dot[simulationParameters.Drillstring.IndexSensor] * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor])) +
+                        phi0_sensor * (Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor], 2) * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor]) -
+                        OL_dot[simulationParameters.Drillstring.IndexSensor] * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor]));
+                    u_y_ddot = Yc_ddot[simulationParameters.Drillstring.IndexSensor] + phi0_sensor * (-Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor], 2) * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor]) - OL_dot[simulationParameters.Drillstring.IndexSensor] * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor])) -
+                        r0_sensor * (Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor], 2) * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor]) - OL_dot[simulationParameters.Drillstring.IndexSensor] * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor]));
                 }
                 else
                 {
-                    int idx_sleeve_sensor = p.ds.iS.ToList().FindIndex(x => x == p.ds.idx_sensor);
-                    r0_sensor = 0.5 * (p.ds.r_Si + p.ds.r_So);
+                    int idx_sleeve_sensor = simulationParameters.Drillstring.SleeveIndexPosition.ToList().FindIndex(x => x == simulationParameters.Drillstring.IndexSensor);
+                    r0_sensor = 0.5 * (simulationParameters.Drillstring.SleeveInnerRadius + simulationParameters.Drillstring.SleeveOuterRadius);
 
-                    theta_ddot = state.slip_condition[p.ds.idx_sensor] * OS_dot[idx_sleeve_sensor] + inverted_slip_condition[p.ds.idx_sensor] * theta_ddot_noslip[p.ds.idx_sensor];
-                    u_x = state.Xc[p.ds.idx_sensor] + r0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - phi0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
-                    u_y = state.Yc[p.ds.idx_sensor] + phi0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) + r0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
-                    u_x_ddot = Xc_ddot[p.ds.idx_sensor] + r0_sensor * (-Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) -
-                        OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) + phi0_sensor * (Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) -
+                    theta_ddot = state.slip_condition[simulationParameters.Drillstring.IndexSensor] * OS_dot[idx_sleeve_sensor] + inverted_slip_condition[simulationParameters.Drillstring.IndexSensor] * theta_ddot_noslip[simulationParameters.Drillstring.IndexSensor];
+                    u_x = state.Xc[simulationParameters.Drillstring.IndexSensor] + r0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - phi0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
+                    u_y = state.Yc[simulationParameters.Drillstring.IndexSensor] + phi0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) + r0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
+                    u_x_ddot = Xc_ddot[simulationParameters.Drillstring.IndexSensor] + r0_sensor * (-Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) -
+                        OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) + phi0_sensor * (Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) -
                         OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor]));
-                    u_y_ddot = Yc_ddot[p.ds.idx_sensor] + phi0_sensor * (-Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) -
-                        r0_sensor * (Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Cos(state.Theta_S[idx_sleeve_sensor]));
+                    u_y_ddot = Yc_ddot[simulationParameters.Drillstring.IndexSensor] + phi0_sensor * (-Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) -
+                        r0_sensor * (Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Cos(state.Theta_S[idx_sleeve_sensor]));
                 }
-                if (!p.ds.iS.Contains(p.ds.idx_sensor - 1))
+                if (!simulationParameters.Drillstring.SleeveIndexPosition.Contains(simulationParameters.Drillstring.IndexSensor - 1))
                 {
-                    r0_sensor = 0.5 * (p.ds.ri[p.ds.idx_sensor - 1] + p.ds.ro[p.ds.idx_sensor - 1]);
-                    u_x_iMinus1 = state.Xc[p.ds.idx_sensor - 1] + r0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) - phi0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor - 1]);
-                    u_y_iMinus1 = state.Yc[p.ds.idx_sensor - 1] + phi0_sensor * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) + r0_sensor * Math.Sin(state.Theta[p.ds.idx_sensor - 1]);
-                    u_x_ddot_iMinus1 = Xc_ddot[p.ds.idx_sensor - 1] + r0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor - 1], 2) * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) -
-                        OL_dot[p.ds.idx_sensor - 1] * Math.Sin(state.Theta[p.ds.idx_sensor - 1])) + phi0_sensor * (Math.Pow(state.OL[p.ds.idx_sensor - 1], 2) * Math.Sin(state.Theta[p.ds.idx_sensor - 1]) -
-                        OL_dot[p.ds.idx_sensor - 1] * Math.Sin(state.Theta[p.ds.idx_sensor - 1]));
-                    u_y_ddot_iMinus1 = Yc_ddot[p.ds.idx_sensor - 1] + phi0_sensor * (-Math.Pow(state.OL[p.ds.idx_sensor - 1], 2) * Math.Cos(state.Theta[p.ds.idx_sensor - 1]) - OL_dot[p.ds.idx_sensor - 1] * Math.Sin(state.Theta[p.ds.idx_sensor - 1])) -
-                       r0_sensor * (Math.Pow(state.OL[p.ds.idx_sensor - 1], 2) * Math.Sin(state.Theta[p.ds.idx_sensor - 1]) - OL_dot[p.ds.idx_sensor - 1] * Math.Cos(state.Theta[p.ds.idx_sensor - 1]));
+                    r0_sensor = 0.5 * (simulationParameters.Drillstring.InnerRadius[simulationParameters.Drillstring.IndexSensor - 1] + simulationParameters.Drillstring.OuterRadius[simulationParameters.Drillstring.IndexSensor - 1]);
+                    u_x_iMinus1 = state.Xc[simulationParameters.Drillstring.IndexSensor - 1] + r0_sensor * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]) - phi0_sensor * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]);
+                    u_y_iMinus1 = state.Yc[simulationParameters.Drillstring.IndexSensor - 1] + phi0_sensor * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]) + r0_sensor * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]);
+                    u_x_ddot_iMinus1 = Xc_ddot[simulationParameters.Drillstring.IndexSensor - 1] + r0_sensor * (-Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor - 1], 2) * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]) -
+                        OL_dot[simulationParameters.Drillstring.IndexSensor - 1] * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1])) + phi0_sensor * (Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor - 1], 2) * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]) -
+                        OL_dot[simulationParameters.Drillstring.IndexSensor - 1] * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]));
+                    u_y_ddot_iMinus1 = Yc_ddot[simulationParameters.Drillstring.IndexSensor - 1] + phi0_sensor * (-Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor - 1], 2) * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]) - OL_dot[simulationParameters.Drillstring.IndexSensor - 1] * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1])) -
+                       r0_sensor * (Math.Pow(state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor - 1], 2) * Math.Sin(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]) - OL_dot[simulationParameters.Drillstring.IndexSensor - 1] * Math.Cos(state.Theta[simulationParameters.Drillstring.IndexSensor - 1]));
                 }
                 else
                 {
-                    int idx_sleeve_sensor = p.ds.iS.ToList().FindIndex(x => x == p.ds.idx_sensor - 1);
-                    u_x_iMinus1 = state.Xc[p.ds.idx_sensor - 1] + r0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - phi0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
-                    u_y_iMinus1 = state.Yc[p.ds.idx_sensor - 1] + phi0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) + r0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
-                    u_x_ddot_iMinus1 = Xc_ddot[p.ds.idx_sensor - 1] + r0_sensor * (-Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) -
-                        OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) + phi0_sensor * (Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) -
+                    int idx_sleeve_sensor = simulationParameters.Drillstring.SleeveIndexPosition.ToList().FindIndex(x => x == simulationParameters.Drillstring.IndexSensor - 1);
+                    u_x_iMinus1 = state.Xc[simulationParameters.Drillstring.IndexSensor - 1] + r0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - phi0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
+                    u_y_iMinus1 = state.Yc[simulationParameters.Drillstring.IndexSensor - 1] + phi0_sensor * Math.Cos(state.Theta_S[idx_sleeve_sensor]) + r0_sensor * Math.Sin(state.Theta_S[idx_sleeve_sensor]);
+                    u_x_ddot_iMinus1 = Xc_ddot[simulationParameters.Drillstring.IndexSensor - 1] + r0_sensor * (-Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) -
+                        OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) + phi0_sensor * (Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) -
                         OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor]));
-                    u_y_ddot_iMinus1 = Yc_ddot[p.ds.idx_sensor - 1] + phi0_sensor * (-Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) -
-                        r0_sensor * (Math.Pow(state.OS[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Cos(state.Theta_S[idx_sleeve_sensor]));
+                    u_y_ddot_iMinus1 = Yc_ddot[simulationParameters.Drillstring.IndexSensor - 1] + phi0_sensor * (-Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Cos(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Sin(state.Theta_S[idx_sleeve_sensor])) -
+                        r0_sensor * (Math.Pow(state.SleeveAngularVelocity[idx_sleeve_sensor], 2) * Math.Sin(state.Theta_S[idx_sleeve_sensor]) - OS_dot[idx_sleeve_sensor] * Math.Cos(state.Theta_S[idx_sleeve_sensor]));
                 }
 
                 // Bending angles
-                Theta_x = -(u_y - u_y_iMinus1) / p.lc.dxL; // Bending angle x-component
-                Theta_y = (u_x - u_x_iMinus1) / p.lc.dxL;// Bending angle y-component
-                Theta_x_ddot = -(u_y_ddot - u_y_ddot_iMinus1) / p.lc.dxL; // Bending angle second derivative x-component
-                Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / p.lc.dxL; // Bending angle second derivative y-component
+                Theta_x = -(u_y - u_y_iMinus1) / simulationParameters.LumpedCells.dxL; // Bending angle x-component
+                Theta_y = (u_x - u_x_iMinus1) / simulationParameters.LumpedCells.dxL;// Bending angle y-component
+                Theta_x_ddot = -(u_y_ddot - u_y_ddot_iMinus1) / simulationParameters.LumpedCells.dxL; // Bending angle second derivative x-component
+                Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / simulationParameters.LumpedCells.dxL; // Bending angle second derivative y-component
             }
 
-            output.vb = state.v[state.v.RowCount - 1, state.v.ColumnCount - 1]; // Bit velocity
+            output.BitVelocity = state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
 
             // Parse outputs
-            output.F_N = F_N; // Pipe shear strain 
-            output.F_N_softstring = F_N_softstring;
-            output.tension = tension; // Tension profile
+            output.NormalForceProfileStiffString = F_N; // Pipe shear strain 
+            output.NormalForceProfileSoftString = F_N_softstring;
+            output.TensionProfile = tension; // Tension profile
 
-            var tempMatrix = state.f.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
-            output.torque = ToVector(tempMatrix.ToColumnMajorArray()); // Torque profile vs. depth
-            output.Mb_x = Mb_x;// Bending moment x-component profile
-            output.Mb_y = Mb_y;// Bending moment y-component profile
-            output.Fc_t = Fc_t;// Bending moment y-component profile Tangential force profile
-            output.wob = wb;  // Weight on bit
-            output.tob = tb;  // Torque on bit
-            output.depths = p.lc.xL;
-            output.sensorMb_x = Mb_x[p.ds.idx_sensor];
-            output.sensorMb_y = Mb_y[p.ds.idx_sensor];
-            output.rc = rc;
-            output.phi = phi;
-            output.phi_dot = phi_dot;
-            output.Mb = (Square(Mb_x) + Square(Mb_y)).PointwiseSqrt(); // the bending due to curvature is already included in the bending moment components + p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(p.t.curvature);
+            var tempMatrix = state.PipeShearStrain.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
+            output.Torque = ToVector(tempMatrix.ToColumnMajorArray()); // Torque profile vs. depth
+            output.BendingMomentX = Mb_x;// Bending moment x-component profile
+            output.BendingMomentY = Mb_y;// Bending moment y-component profile
+            output.TangentialForceProfile = Fc_t;// Bending moment y-component profile Tangential force profile
+            output.WeightOnBit = wb;  // Weight on bit
+            output.TorqueOnBit = tb;  // Torque on bit
+            output.Depth = simulationParameters.LumpedCells.xL;
+            output.SensorMb_x = Mb_x[simulationParameters.Drillstring.IndexSensor];
+            output.SensorMb_y = Mb_y[simulationParameters.Drillstring.IndexSensor];
+            output.RadialDisplacement = rc;
+            output.WhirlAngle = phi;
+            output.WhirlSpeed = phi_dot;
+            output.BendingMoment = (Square(Mb_x) + Square(Mb_y)).PointwiseSqrt(); // the bending due to curvature is already included in the bending moment components + simulationParameters.Drillstring.E.PointwiseMultiply(simulationParameters.Drillstring.I).PointwiseMultiply(simulationParameters.Trajectory.curvature);
 
-            if (c.UsePipeMovementReconstruction)
+            if (configuration.UsePipeMovementReconstruction)
             {
-                output.sensorAxialVelocity = state.VL[p.ds.idx_sensor]; // sleeve angular displacement;
-                output.sensorAxialDisplacement = output.sensorAxialDisplacement + output.sensorAxialVelocity * c.TimeStep;
-                if (!p.ds.iS.Contains(p.ds.idx_sensor)) //sleeve angular velocity
+                output.SensorAxialVelocity = state.LumpedElementAxialVelocity[simulationParameters.Drillstring.IndexSensor]; // sleeve angular displacement;
+                output.SensorAxialDisplacement = output.SensorAxialDisplacement + output.SensorAxialVelocity * configuration.TimeStep;
+                if (!simulationParameters.Drillstring.SleeveIndexPosition.Contains(simulationParameters.Drillstring.IndexSensor)) //sleeve angular velocity
                 {
-                    output.sensorAngularPosition = state.Theta[p.ds.idx_sensor]; //pipe angular displacement
-                    output.sensorAngularVelocity = state.OL[p.ds.idx_sensor]; //pipe angular velocity
+                    output.SensorAngularPosition = state.Theta[simulationParameters.Drillstring.IndexSensor]; //pipe angular displacement
+                    output.SensorAngularVelocity = state.LumpedElementAngularVelocity[simulationParameters.Drillstring.IndexSensor]; //pipe angular velocity
                 }
                 else
                 {
-                    int idx_sleeve_sensor = p.ds.iS.ToList().FindIndex(x => x == p.ds.idx_sensor - 1);
-                    output.sensorAngularPosition = state.Theta_S[idx_sleeve_sensor];
-                    output.sensorAngularVelocity = state.OS[idx_sleeve_sensor];
+                    int idx_sleeve_sensor = simulationParameters.Drillstring.SleeveIndexPosition.ToList().FindIndex(x => x == simulationParameters.Drillstring.IndexSensor - 1);
+                    output.SensorAngularPosition = state.Theta_S[idx_sleeve_sensor];
+                    output.SensorAngularVelocity = state.SleeveAngularVelocity[idx_sleeve_sensor];
                 }
-                output.sensorRadialPosition = rc[p.ds.idx_sensor]; //radial position
-                output.sensorWhirlAngle = phi[p.ds.idx_sensor]; //whirl angle
-                output.sensorRadialSpeed = r_dot[p.ds.idx_sensor]; //radial velocity
-                output.sensorWhirlSpeed = phi_dot[p.ds.idx_sensor]; //whirl velocity
-                output.sensorAxialAcceleration = VL_dot[p.ds.idx_sensor]; //axial acceleration
-                output.sensorAngularAcceleration = theta_ddot; // angular acceleration
-                output.sensorRadialAcceleration = r_ddot; // radial acceleration
-                output.sensorWhirlAcceleration = phi_ddot; // whirl acceleration
-                output.sensorBendingAngleX = Theta_x; // bending angle x-component
-                output.sensorBendingAngleY = Theta_y; // bending angle y-component
-                output.sensorBendingAngleX_SecondDerivative = Theta_x_ddot; // bending angle second derivative x-component
-                output.sensorBendingAngleY_SecondDerivative = Theta_y_ddot; // bending angle second derivative y-component
-                output.sensorPipeInclination = p.t.thetaVec[p.ds.idx_sensor];
-                output.sensorPipeAzimuthAt = p.t.phiVec[p.ds.idx_sensor];
-                output.sensorTension = tension[p.ds.idx_sensor];
-                output.sensorTorque = output.torque[p.ds.idx_sensor];
+                output.SensorRadialPosition = rc[simulationParameters.Drillstring.IndexSensor]; //radial position
+                output.SensorWhirlAngle = phi[simulationParameters.Drillstring.IndexSensor]; //whirl angle
+                output.SensorRadialSpeed = r_dot[simulationParameters.Drillstring.IndexSensor]; //radial velocity
+                output.SensorWhirlSpeed = phi_dot[simulationParameters.Drillstring.IndexSensor]; //whirl velocity
+                output.SensorAxialAcceleration = VL_dot[simulationParameters.Drillstring.IndexSensor]; //axial acceleration
+                output.SensorAngularAcceleration = theta_ddot; // angular acceleration
+                output.SensorRadialAcceleration = r_ddot; // radial acceleration
+                output.SensorWhirlAcceleration = phi_ddot; // whirl acceleration
+                output.SensorBendingAngleX = Theta_x; // bending angle x-component
+                output.SensorBendingAngleY = Theta_y; // bending angle y-component
+                output.SecondDerivativeSensorBendingAngleX = Theta_x_ddot; // bending angle second derivative x-component
+                output.SecondDerivativeSensorBendingAngleY = Theta_y_ddot; // bending angle second derivative y-component
+                output.SensorPipeInclination = simulationParameters.Trajectory.thetaVec[simulationParameters.Drillstring.IndexSensor];
+                output.SensorPipeAzimuthAt = simulationParameters.Trajectory.phiVec[simulationParameters.Drillstring.IndexSensor];
+                output.SensorTension = tension[simulationParameters.Drillstring.IndexSensor];
+                output.SensorTorque = output.Torque[simulationParameters.Drillstring.IndexSensor];
 
                 CalculateInLocalFrame();
             }
@@ -1016,7 +946,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
         public void AddNewLumpedElement() // TODO sjekk
         {
-            p.AddNewLumpedElement();
+            simulationParameters.AddNewLumpedElement();
 
             state.AddNewLumpedElement();
         }

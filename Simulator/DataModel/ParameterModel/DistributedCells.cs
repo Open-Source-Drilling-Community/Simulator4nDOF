@@ -10,7 +10,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double dxM;                      // [m] Length of only distributed section; all distributed sections should be same length
         public readonly double dt_BRI = .002;   // [s] Time step for depth of cut PDE
         public double omegaMAX;                 // [rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
-        public int Pl;                          // Number of cells in depth of cut PDE
+        public int CellsInDepthOfCut;                          // Number of cells in depth of cut PDE
 
         public DistributedCells(LumpedCells lc, Drillstring ds, double omega0)
         {
@@ -22,7 +22,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
 
             // l_L is lumped drill pipe length
-            double mean_l_L = ds.l_L.Average();
+            double mean_l_L = ds.LumpedElementMassMomentOfInertia.Average();
 
             double start = 0;
             double end = lc.L - mean_l_L * lc.NL;
@@ -31,10 +31,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             dxM = diffArray.Average();                              //[m] Length of only distributed section; all distributed sections should be same length
             //dxM = Math.Min(1.0, dxM);
 
-            double dtTemp = dxM / Math.Max(ds.c_t, ds.c_a) * 0.80;  //As per the CFL condition for the axial / torsional wave equations
+            double dtTemp = dxM / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80;  //As per the CFL condition for the axial / torsional wave equations
             omegaMAX = Math.Max(omega0 * 5, 2 * Math.PI);           //[rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
             double dxl = dt_BRI * omegaMAX;                         //[m] length of cell in depth of cut PDE
-            Pl = (int)Math.Floor(1 / dxl);                          // Number of cells in depth of cut PDE
+            CellsInDepthOfCut = (int)Math.Floor(1 / dxl);                          // Number of cells in depth of cut PDE
         }
 
 

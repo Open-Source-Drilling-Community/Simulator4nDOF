@@ -20,14 +20,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Vdf = 0;
 
             if (state.step * c.TimeStep - t_topdrive_startup > c.TopdriveStartupTime && !make_connection && !pooh_before_connection)
-                u.v0 = u.V0;
+                u.CalculateSurfaceAxialVelocity = u.SurfaceAxialVelocity;
             else if (pooh_before_connection)
-                u.v0 = u.V0_pooh;
+                u.CalculateSurfaceAxialVelocity = u.PullingOutOfHoleTopVelocity;
             else
-                u.v0 = 0.0;
+                u.CalculateSurfaceAxialVelocity = 0.0;
 
             // add drilfloor velocity to top of string velocity setpoint
-            u.v0 = u.v0 + Vdf;
+            u.CalculateSurfaceAxialVelocity = u.CalculateSurfaceAxialVelocity + Vdf;
 
             if (state.TopOfStringPosition < 1 && !pooh_before_connection)
             {
@@ -50,9 +50,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
 
             if (make_connection)
-                u.omega_sp = u.omega_sp + (0 - u.omega_sp) / (0.5 / c.TimeStep);
+                u.TopDriveRPMSetPoint = u.TopDriveRPMSetPoint + (0 - u.TopDriveRPMSetPoint) / (0.5 / c.TimeStep);
             else
-                u.omega_sp = u.omega_sp + (u.omega_surf - u.omega_sp) / (0.5 / c.TimeStep);
+                u.TopDriveRPMSetPoint = u.TopDriveRPMSetPoint + (u.SurfaceRotation - u.TopDriveRPMSetPoint) / (0.5 / c.TimeStep);
         }
     }
 }

@@ -15,87 +15,87 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double Rb = .2159 / 2;                   // [m] Bit radius(used in both Detournay and MSE model)
 
         // Material Properties 
-        private readonly double Ep = 200e9;             // [Pa] Pipe Young's modulus
-        private readonly double Ec = 200e9;             // [Pa] Collar Young's modulus
-        private readonly double Gp = 79e9;              // [Pa] Pipe shear modulus
-        private readonly double Gc = 79e9;              // [Pa] Collar shear modulus
-        public readonly double rho = 7850;              // [kg / m3] Density of steel
-        public readonly double nu = 0.28;               // Poisson ratio of steel
+        private readonly double PipeYoungModulus = 200e9;             // [Pa] Pipe Young's modulus
+        private readonly double CollarYoungModulus = 200e9;             // [Pa] Collar Young's modulus
+        private readonly double PipeShearModulus = 79e9;              // [Pa] Pipe shear modulus
+        private readonly double CollarShearModulus = 79e9;              // [Pa] Collar shear modulus
+        public readonly double SteelDensity = 7850;              // [kg / m3] Density of steel
+        public readonly double PoissonRatio = 0.28;               // Poisson ratio of steel
 
-        public readonly double l_dp = 1.3;             // [m] Drill pipe lumped element length 
-        private readonly double l_BHA = 1.5;            // [m] BHA Lumped element length
-        public double l_tj = 0.5;                       // [m] Default tool joint length
+        public readonly double DrillPipeLumpedElementLength = 1.3;             // [m] Drill pipe lumped element length 
+        private readonly double BHALumpedElementLength = 1.5;            // [m] BHA Lumped element length
+        public double ToolJointLength = 0.5;                       // [m] Default tool joint length
 
-        public Vector<double> ro;                       // [m] Outer radius vector
-        public Vector<double> ri;                       // [m] Inner radius vector
-        public Vector<double> e;                        // [m] Eccentricity vector
-        public Vector<double> Ao;                       // [m^2] Drillpipe outer area vector
-        public Vector<double> Ai;                       // [m^2] Drillpipe inner area vector
-        public Vector<double> Atjo;                     // [m^2] Tool joint outer area vector
-        public Vector<double> Atji;                     // [m^2] Tool joint inner area vector
+        public Vector<double> OuterRadius;                       // [m] Outer radius vector
+        public Vector<double> InnerRadius;                       // [m] Inner radius vector
+        public Vector<double> Eccentricity;                        // [m] Eccentricity vector
+        public Vector<double> OuterArea;                       // [m^2] Drillpipe outer area vector
+        public Vector<double> InnerArea;                       // [m^2] Drillpipe inner area vector
+        public Vector<double> ToolJointOuterArea;                     // [m^2] Tool joint outer area vector
+        public Vector<double> ToolJointInnerArea;                     // [m^2] Tool joint inner area vector
 
         // Inertial peroperties                         
-        public Vector<double> J;                        // [m^4] Drillpipe polar moment of inertia vector
-        public Vector<double> A;                        // [m^2] Drillpipe cross sectional area vector
-        public Vector<double> I;                        // [m^4] Drillpipe moment of inertia vector
+        public Vector<double> PipePolarMoment;                        // [m^4] Drillpipe polar moment of inertia vector
+        public Vector<double> PipeArea;                        // [m^2] Drillpipe cross sectional area vector
+        public Vector<double> PipeInertia;                        // [m^4] Drillpipe moment of inertia vector
 
-        public Vector<double> weightCorr;               // [-] Linear weight correction factor vector
-        public Vector<double> E;                        // [Pa] Young's modulus vector
-        public Vector<double> G;                        // [Pa] Shear modulus vector
+        public Vector<double> WeightCorrectionFactor;               // [-] Linear weight correction factor vector
+        public Vector<double> YoungModuli;                        // [Pa] Young's modulus vector
+        public Vector<double> ShearModuli;                        // [Pa] Shear modulus vector
 
-        public Vector<double> I_L;                      // [kg.m^2] Lumped element mass moment of inertia
-        public Vector<double> M_L;                      // [kg] Lumped element mass
-        public Vector<double> l_L;                      // [kg.m^2] Lumped element mass moment of inertia
+        public Vector<double> LumpedElementMomentOfInertia;                      // [kg.m^2] Lumped element mass moment of inertia
+        public Vector<double> LumpedElementMass;                      // [kg] Lumped element mass
+        public Vector<double> LumpedElementMassMomentOfInertia;                      // [kg.m^2] Lumped element mass moment of inertia
                                                         
-        public readonly double C_am = 1.7;              // Added fluid mass coefficient
-        public readonly double mass_imbalance_percent = .05; //percent (fraction?) of mass imbalance compared to total mass -  todo rename?
+        public readonly double AddedFluidMassCoefficient = 1.7;              // Added fluid mass coefficient
+        public readonly double MassImbalancePercentage = .05; //percent (fraction?) of mass imbalance compared to total mass -  todo rename?
 
         // Sleeves - to be configured
-        public Vector<double> sleeveDistancesFromBit;  // Example data
+        public Vector<double> SleeveDistancesFromBit;  // Example data
 
-        public double r_Si = 0.1651 / 2;                // [m] Sleeve inner radius
-        public double r_So = 0.1905 / 2 + 0.005;        // [m] Sleeve outer radius
-        public double l_S = 1.0;                        // [m] Sleeve length
-        public double k_ec_factor = 2.0e2;              // [N.s/rad] Sleeve torsional damping coefficient
-        public double axialFrictionReduction = 0.99;    // Axial friction reduction factor due to spur wheels
+        public double SleeveInnerRadius = 0.1651 / 2;                // [m] Sleeve inner radius
+        public double SleeveOuterRadius = 0.1905 / 2 + 0.005;        // [m] Sleeve outer radius
+        public double SleeveLength = 1.0;                        // [m] Sleeve length
+        public double SleeveTorsionalDampingCoefficient = 2.0e2;              // [N.s/rad] Sleeve torsional damping coefficient
+        public double AxialFrictionReduction = 0.99;    // Axial friction reduction factor due to spur wheels
 
         // Sleeves - calculated
-        public int NS;                                  // Total number of sleeves
-        public Vector<double> iS;                       // Index of sleeves in lumped nodes
-        public double I_S;                              // [kg.m^2] Sleeve mass moment of inertia
-        public Vector<double> k_ec;                     // [N.s/rad] Sleeve torsional damping coefficient
+        public int TotalSleeveNumber;                                  // Total number of sleeves
+        public Vector<double> SleeveIndexPosition;                       // Index of sleeves in lumped nodes
+        public double SleeveMassMomentOfInertia;                              // [kg.m^2] Sleeve mass moment of inertia
+        public Vector<double> SleeveTorsionalDamping;                     // [N.s/rad] Sleeve torsional damping coefficient
 
         // Calculated - todo move?
-        public double c_t;                              // [m/s] Torsional wave velocity
-        public double c_a;
+        public double TorsionalWaveSpeed;                              // [m/s] Torsional wave velocity
+        public double AxialWaveSpeed;
 
-        public double kt_factor = 1.0;                  //[N.m.s/rad] Torsional damping 
-        public double ka_factor = 1.0;                  //[N.s/m] Axial damping
-        public double kl_factor = 0.0;                  //[N.s/m] Lateral damping
+        public double TorsionalDampingFactor = 1.0;                  //[N.m.s/rad] Torsional damping 
+        public double AxialDampingFactor = 1.0;                  //[N.s/m] Axial damping
+        public double LateralDampingFactor = 0.0;                  //[N.s/m] Lateral damping
 
         // Structureal damping - calculated
-        public double kt;
-        public double ka;
-        public double kl;
+        public double CalculatedTorsionalDamping;
+        public double CalculatedAxialDamping;
+        public double CalculateLateralDamping;
 
-        public double Lb;                               // [m] Length of pipe used in bending stiffness calculation
-        public Vector<double> kb;                       // [N/m] Bending stiffness
-        public Vector<double> Mf;                       // [kg] Added fluid mass
-        public Vector<double> M_e;                      // [kg] Eccentric mass
+        public double PipeLengthForBending;                               // [m] Length of pipe used in bending stiffness calculation
+        public Vector<double> BendingStiffness;                       // [N/m] Bending stiffness
+        public Vector<double> FluidAddedMass;                       // [kg] Added fluid mass
+        public Vector<double> EccentricMass;                      // [kg] Eccentric mass
 
-        public double zeta_p;                           // Characteristic drill pipe impedance
+        public double CharacteristicDrillPipeImpedance;                           // Characteristic drill pipe impedance
 
         //IMU sensors -  configure
-        public double sensorDistanceFromBit = 63;       // [m] axial distance(relative to bit depth) of an IMU measuring downhole RPM and accelerations
-        public readonly double sensorMisalignmentPolarAngle = 0 * Math.PI / 180; // polar angle of the accelerometer misalignment[rad]
-        public readonly double sensorMisalignmentAzimuthAngle = 0 * Math.PI / 180; // azimuth angle of the accelerometer misalignment[rad]
-        public readonly Vector<double> sensorDisplacementsInLocalFrame = Vector<double>.Build.Dense(3, 0); // radial, tangential and axial displacements in the local frame of the accelerometer
+        public double SensorDistanceFromBit = 63;       // [m] axial distance(relative to bit depth) of an IMU measuring downhole RPM and accelerations
+        public readonly double SensorMisalignmentPolarAngle = 0 * Math.PI / 180; // polar angle of the accelerometer misalignment[rad]
+        public readonly double SensorMisalignmentAzimuthAngle = 0 * Math.PI / 180; // azimuth angle of the accelerometer misalignment[rad]
+        public readonly Vector<double> SensorDisplacementsInLocalFrame = Vector<double>.Build.Dense(3, 0); // radial, tangential and axial displacements in the local frame of the accelerometer
 
         //IMU sensors -  to be calculated
-        public int idx_sensor;
-        public double sensorRadialDistance; // [m] radial distance from centerline of the tool to the accelerometer
+        public int IndexSensor;
+        public double SensorRadialDistance; // [m] radial distance from centerline of the tool to the accelerometer
 
-        public Drillstring(LumpedCells lc, 
+        public Drillstring(LumpedCells lumpedCells, 
                            Fluid fluid,
                            DrillStringSourceType DrillStringSource,
                            string drillstringFile, 
@@ -105,29 +105,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                            double Rb, 
                            double sensorDistanceFromBit, 
                            Vector<double> sleeveDistancesFromBit, 
-                           double k_ec_factor, 
-                           double l_dp,
-                           double kt_factor,
-                           double ka_factor,
-                           double kl_factor)
+                           double sleepDampingFactor, 
+                           double lumpedParameterLength,
+                           double torsionalDampingFactor,
+                           double axialDampingFactor,
+                           double lateralDampingFactor)
         {
-            this.l_dp = l_dp;
-            this.sensorDistanceFromBit = sensorDistanceFromBit;
-            this.sleeveDistancesFromBit = sleeveDistancesFromBit;
-            this.k_ec_factor = k_ec_factor;
-            this.kt_factor = kt_factor;
-            this.ka_factor = ka_factor;
-            this.kl_factor = kl_factor;
+            this.DrillPipeLumpedElementLength = lumpedParameterLength;
+            this.SensorDistanceFromBit = sensorDistanceFromBit;
+            this.SleeveDistancesFromBit = sleeveDistancesFromBit;
+            this.SleeveTorsionalDampingCoefficient = sleepDampingFactor;
+            this.TorsionalDampingFactor = torsionalDampingFactor;
+            this.AxialDampingFactor = axialDampingFactor;
+            this.LateralDampingFactor = lateralDampingFactor;
             this.Rb = Rb;
 
-            List<string> component_type = new List<string>();
-            List<double> component_length = new List<double>();
-            List<double> connection_id = new List<double>();
-            List<double> connection_od = new List<double>();
-            List<double> connection_length = new List<double>();
+            List<string> componentType = new List<string>();
+            List<double> componentLength = new List<double>();
+            List<double> connectionID = new List<double>();
+            List<double> connectionOD = new List<double>();
+            List<double> connectionLength = new List<double>();
             List<double> id = new List<double>();
             List<double> od = new List<double>();
-            List<double> linear_weight = new List<double>();
+            List<double> linearWeight = new List<double>();
 
             bool readFromMS = DrillStringSource == DrillStringSourceType.DrillStringMS
                || DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS;
@@ -451,21 +451,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                             var type = comp.Type;
                             var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
                             var mass = 0.0;
-                            var connectionID = double.MaxValue;
-                            var connectionOD = double.MinValue;
-                            var connectionLength = double.MaxValue;
+                            var sectionConnectionID = double.MaxValue;
+                            var sectionConnectionOD = double.MinValue;
+                            var sectionConnectionLength = double.MaxValue;
 
                             foreach (var part in comp.PartList)
                             {
                                 mass += part.Mass;
-                                connectionID = Math.Min(connectionID, part.InnerDiameter);
-                                connectionOD = Math.Max(connectionOD, part.OuterDiameter);
-                                connectionLength = Math.Min(connectionLength, part.TotalLength);
+                                sectionConnectionID = Math.Min(sectionConnectionID, part.InnerDiameter);
+                                sectionConnectionOD = Math.Max(sectionConnectionOD, part.OuterDiameter);
+                                sectionConnectionLength = Math.Min(sectionConnectionLength, part.TotalLength);
                             }
 
                             var partList = comp.PartList.ToList();
-                            var iD = (partList.Count == 3) ? partList[1].InnerDiameter : connectionID;
-                            var oD = (partList.Count == 3) ? partList[1].OuterDiameter : connectionOD;
+                            var iD = (partList.Count == 3) ? partList[1].InnerDiameter : sectionConnectionID;
+                            var oD = (partList.Count == 3) ? partList[1].OuterDiameter : sectionConnectionOD;
 
                             var adjustedType = type switch
                             {
@@ -474,32 +474,32 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                 _ => type.ToString()
                             };
 
-                            component_type.Add(adjustedType);
-                            component_length.Add(length);
-                            connection_id.Add(connectionID);
-                            connection_od.Add(connectionOD);
-                            connection_length.Add(connectionLength);
+                            componentType.Add(adjustedType);
+                            componentLength.Add(length);
+                            connectionID.Add(sectionConnectionID);
+                            connectionOD.Add(sectionConnectionOD);
+                            connectionLength.Add(sectionConnectionLength);
                             id.Add(iD);
                             od.Add(oD);
-                            linear_weight.Add(mass / length);
+                            linearWeight.Add(mass / length);
                         }
                     }
                 }
                 bool reverse = false;
-                if (component_type.Count > 0)
+                if (componentType.Count > 0)
                 {
-                    reverse = component_type[0] == "Drillpipe" || component_type[0] == "HW drillpipe" || component_type[0] == "Jar";
+                    reverse = componentType[0] == "Drillpipe" || componentType[0] == "HW drillpipe" || componentType[0] == "Jar";
                 }
                 if (reverse)
                 {
-                    component_type.Reverse();
-                    component_length.Reverse();
-                    connection_id.Reverse();
-                    connection_od.Reverse();
-                    connection_length.Reverse();
+                    componentType.Reverse();
+                    componentLength.Reverse();
+                    connectionID.Reverse();
+                    connectionOD.Reverse();
+                    connectionLength.Reverse();
                     id.Reverse();
                     od.Reverse();
-                    linear_weight.Reverse();
+                    linearWeight.Reverse();
                 }
             }
             else if (DrillStringSource == DrillStringSourceType.DrillStringOpenLabFile)
@@ -519,43 +519,43 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
                 foreach (var row in data)
                 {
-                    component_type.Add(row[7]);
+                    componentType.Add(row[7]);
                 }
 
                 foreach (var row in data)
                 {
                     var str = row[10];
                     if (str == "N/A")
-                        component_length.Add(double.NaN);
+                        componentLength.Add(double.NaN);
                     else
-                        component_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                        componentLength.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
                 }
 
                 foreach (var row in data)
                 {
                     var str = row[0];
                     if (str == "N/A")
-                        connection_id.Add(double.NaN);
+                        connectionID.Add(double.NaN);
                     else
-                        connection_id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                        connectionID.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
                 }
 
                 foreach (var row in data)
                 {
                     var str = row[5];
                     if (str == "N/A")
-                        connection_od.Add(double.NaN);
+                        connectionOD.Add(double.NaN);
                     else
-                        connection_od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                        connectionOD.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
                 }
 
                 foreach (var row in data)
                 {
                     var str = row[4];
                     if (str == "N/A")
-                        connection_length.Add(double.NaN);
+                        connectionLength.Add(double.NaN);
                     else
-                        connection_length.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+                        connectionLength.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
                 }
 
                 foreach (var row in data)
@@ -577,7 +577,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
                 foreach (var row in data)
                 {
-                    linear_weight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
+                    linearWeight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
                 }
             }
             else if (DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS)
@@ -595,144 +595,144 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         {
                             type = "Cross-over";
                             var thisComp = comp.CrossOverOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.HWDPOpenLab != null)
                         {
                             type = "HW drillpipe";
                             var thisComp = comp.HWDPOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(thisComp.ConnectionID ?? 0);
-                            connection_od.Add(thisComp.ConnectionOD ?? 0);
-                            connection_length.Add(thisComp.ConnectionLength ?? 0);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(thisComp.ConnectionID ?? 0);
+                            connectionOD.Add(thisComp.ConnectionOD ?? 0);
+                            connectionLength.Add(thisComp.ConnectionLength ?? 0);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.DrillPipeOpenLab != null)
                         {
                             type = "Drillpipe";
                             var thisComp = comp.DrillPipeOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(thisComp.ConnectionID ?? 0);
-                            connection_od.Add(thisComp.ConnectionOD ?? 0);
-                            connection_length.Add(thisComp.ConnectionLength ?? 0);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(thisComp.ConnectionID ?? 0);
+                            connectionOD.Add(thisComp.ConnectionOD ?? 0);
+                            connectionLength.Add(thisComp.ConnectionLength ?? 0);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.StabilizerOpenLab != null)
                         {
                             type = "Stabilizer";
                             var thisComp = comp.StabilizerOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.JarOpenLab != null)
                         {
                             type = "Jar";
                             var thisComp = comp.JarOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(thisComp.ConnectionID ?? 0);
-                            connection_od.Add(thisComp.ConnectionOD ?? 0);
-                            connection_length.Add(thisComp.ConnectionLength ?? 0);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(thisComp.ConnectionID ?? 0);
+                            connectionOD.Add(thisComp.ConnectionOD ?? 0);
+                            connectionLength.Add(thisComp.ConnectionLength ?? 0);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.LWDOpenLab != null)
                         {
                             type = "LWD";
                             var thisComp = comp.LWDOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.MWDOpenLab != null)
                         {
                             type = "MWD";
                             var thisComp = comp.MWDOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.PWDOpenLab != null)
                         {
                             type = "PWD";
                             var thisComp = comp.PWDOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.StabilizerOpenLab != null)
                         {
                             type = "Stabilizer";
                             var thisComp = comp.StabilizerOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                         }
                         else if (comp.SteerableRotaryToolOpenLab != null)
                         {
                             type = "SteerableRotaryTool";
                             var thisComp = comp.SteerableRotaryToolOpenLab;
-                            component_type.Add(type);
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add(type);
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                             type = "";
                         }
                         else
                         {
                             var thisComp = comp.PWDOpenLab;
-                            component_type.Add("");
-                            component_length.Add(comp.Length ?? 0);
-                            connection_id.Add(double.NaN);
-                            connection_od.Add(double.NaN);
-                            connection_length.Add(double.NaN);
+                            componentType.Add("");
+                            componentLength.Add(comp.Length ?? 0);
+                            connectionID.Add(double.NaN);
+                            connectionOD.Add(double.NaN);
+                            connectionLength.Add(double.NaN);
                             id.Add(comp.BodyID ?? 0);
                             od.Add(comp.BodyOD ?? 0);
-                            linear_weight.Add(comp.LinearWeight ?? 0);
+                            linearWeight.Add(comp.LinearWeight ?? 0);
                             type = "";
                         }
                     }
@@ -740,7 +740,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             }
 
 
-            int n = component_type.Count();
+            int n = componentType.Count();
             List<double> LcBha = new List<double>();            // [m] BHA component length vector
             List<double> ODBha = new List<double>();            // [m] BHA component OD vector
             List<double> IDBha = new List<double>();            // [m] BHA component ID vector
@@ -757,11 +757,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             bool prevWasStab = false;
             for (int i = 0; i < n; i++)
             {
-                if (component_type[i] == "Stabilizer")
+                if (componentType[i] == "Stabilizer")
                 {
                     if (prevWasStab)
                     {
-                        component_type[i] = "Was Stabilizer";
+                        componentType[i] = "Was Stabilizer";
                     }
                     prevWasStab = true;
                 }
@@ -774,7 +774,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             int idx_bhaEnd = 0;
             for (int i = 0; i < n; i++)
             {
-                if (component_type[i] == "HW drillpipe" || component_type[i] == "Drillpipe")
+                if (componentType[i] == "HW drillpipe" || componentType[i] == "Drillpipe")
                 {
                     // Exit loop if a heavy-weight drillpipe or regular drillpipe is found
                     idx_bhaEnd = i - 1;
@@ -784,19 +784,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (idx_bhaEnd < 0)
             {
                 // there are no BHA elements in the description, we add a dummy one.
-                component_type.Insert(0, "BHA_dummy");
-                component_length.Insert(0, 1.0); // 1 m long dummy element
-                connection_id.Insert(0, double.NaN); 
-                connection_od.Insert(0, double.NaN); 
-                connection_length.Insert(0, double.NaN);
+                componentType.Insert(0, "BHA_dummy");
+                componentLength.Insert(0, 1.0); // 1 m long dummy element
+                connectionID.Insert(0, double.NaN); 
+                connectionOD.Insert(0, double.NaN); 
+                connectionLength.Insert(0, double.NaN);
                 id.Insert(0, 0.01); // 1 cm ID
                 od.Insert(0, 0.02); // 2 cm OD
-                linear_weight.Insert(0, 1); // 1 kg/m
+                linearWeight.Insert(0, 1); // 1 kg/m
             }
             // Loop through each component
             for (int i = 0; i < n; i++)
             {
-                if (component_type[i] == "HW drillpipe" || component_type[i] == "Drillpipe")
+                if (componentType[i] == "HW drillpipe" || componentType[i] == "Drillpipe")
                 {
                     // Exit loop if a heavy-weight drillpipe or regular drillpipe is found
                     idx_bhaEnd = i - 1;
@@ -804,12 +804,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
 
                 // Insert elements at the beginning to maintain order (MATLAB prepends using [newVal, array])
-                LcBha.Insert(0, component_length[i]);
+                LcBha.Insert(0, componentLength[i]);
                 ODBha.Insert(0, od[i] * scaleFactor);
                 IDBha.Insert(0, id[i] * scaleFactor);
-                LinearWeightBha.Insert(0, linear_weight[i]);
+                LinearWeightBha.Insert(0, linearWeight[i]);
 
-                if (component_type[i] == "Stabilizer")
+                if (componentType[i] == "Stabilizer")
                 {
                     isStab.Insert(0, 1);
                 }
@@ -822,15 +822,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 for (int i = idx_bhaEnd; i < n; i++) // go through the remaining components to get the heavy weight drillpipe (+jars), drillpipe and tool joint dimensions
                 {
-                    if (component_type[i] == "HW drillpipe" || component_type[i] == "Jar" || component_type[i] == "Drillpipe")
+                    if (componentType[i] == "HW drillpipe" || componentType[i] == "Jar" || componentType[i] == "Drillpipe")
                     {
-                        LDp.Insert(0, component_length[i]);
+                        LDp.Insert(0, componentLength[i]);
                         ODDp.Insert(0, od[i] * scaleFactor);
                         IDDp.Insert(0, id[i] * scaleFactor);
-                        ODDp_tj.Insert(0, connection_od[i] * scaleFactor);
-                        IDDp_tj.Insert(0, connection_id[i] * scaleFactor);
-                        LinearWeightDp.Insert(0, linear_weight[i]);
-                        l_tj = connection_length[i];
+                        ODDp_tj.Insert(0, connectionOD[i] * scaleFactor);
+                        IDDp_tj.Insert(0, connectionID[i] * scaleFactor);
+                        LinearWeightDp.Insert(0, linearWeight[i]);
+                        ToolJointLength = connectionLength[i];
                     }
                 }
             }
@@ -905,20 +905,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 Lwc.Add(Lwc_sum / Lc_sum);
             }
 
-            double Lavg = lc.L / lc.NL;
+            double Lavg = lumpedCells.L / lumpedCells.NL;
 
             List<int> Nc = Lc.Select(l => Math.Max((int)Math.Floor(l / Lavg), 1)).ToList(); // number of elements in BHA section, excluding stabilizers
             List<int> Np = LDp.Select(l => (int)Math.Round(l / Lavg, MidpointRounding.AwayFromZero)).ToList(); // number of elements in drillpipe section (including heavy weight drillpipe)
 
-            if (nStab + Nc.Sum() + Np.Sum() > lc.NL)
+            if (nStab + Nc.Sum() + Np.Sum() > lumpedCells.NL)
             {
                 if (Np.Count > 1)
                 {
                     for (int i = Np.Count - 1; i >= 0; i--)
                     {
-                        if (nStab + Nc.Sum() + Np.Skip(i).Sum() > lc.NL)
+                        if (nStab + Nc.Sum() + Np.Skip(i).Sum() > lumpedCells.NL)
                         {
-                            Np[i] = lc.NL - ((int)nStab + Nc.Sum() + Np.Skip(i + 1).Sum());
+                            Np[i] = lumpedCells.NL - ((int)nStab + Nc.Sum() + Np.Skip(i + 1).Sum());
                             for (int w = 0; w < i; w++)
                             {
                                 Np[w] = 0;
@@ -929,7 +929,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
                 else
                 {
-                    Np[0] = lc.NL - ((int)nStab + Nc.Sum());
+                    Np[0] = lumpedCells.NL - ((int)nStab + Nc.Sum());
                 }
             }
 
@@ -947,19 +947,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 .ToArray();
             sleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(filteredSleeveDistancesFromBit);//// ignore sleeves which would go below the top of the BHA
 
-            NS = sleeveDistancesFromBit.Count;  // Total number of sleeves
-            iS = Vector<double>.Build.Dense(NS);//new int[p.NS];
+            TotalSleeveNumber = sleeveDistancesFromBit.Count;  // Total number of sleeves
+            SleeveIndexPosition = Vector<double>.Build.Dense(TotalSleeveNumber);//new int[p.NS];
 
-            for (int i = 0; i < NS; i++)
+            for (int i = 0; i < TotalSleeveNumber; i++)
             {
-                iS[i] = Array.FindIndex(lc.xL.ToArray(), x => x > MD - lc.dxL - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
+                SleeveIndexPosition[i] = Array.FindIndex(lumpedCells.xL.ToArray(), x => x > MD - lumpedCells.dxL - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
             }
-            iS = Reverse(iS);
+            SleeveIndexPosition = Reverse(SleeveIndexPosition);
 
-            I_S = rho * l_S * Math.PI / 2 * (Math.Pow(r_So, 4) - Math.Pow(r_Si, 4)); //  [kg.m^2] Sleeve mass moment of inertia
+            SleeveMassMomentOfInertia = SteelDensity * SleeveLength * Math.PI / 2 * (Math.Pow(SleeveOuterRadius, 4) - Math.Pow(SleeveInnerRadius, 4)); //  [kg.m^2] Sleeve mass moment of inertia
 
-            Vector<double> vectorOfOnes = Vector<double>.Build.Dense(iS.Count(), 1.0);
-            k_ec = k_ec_factor * vectorOfOnes; // [N.s/rad] Sleeve torsional damping coefficient
+            Vector<double> vectorOfOnes = Vector<double>.Build.Dense(SleeveIndexPosition.Count(), 1.0);
+            SleeveTorsionalDamping = sleepDampingFactor * vectorOfOnes; // [N.s/rad] Sleeve torsional damping coefficient
 
             // Define nodes with tool joints; if discretization is every 10 m or more, we use tool joint diameters
             // everywhere there is a drillpipe / heavy weight drillpipe element unless there is a sleeve at that node
@@ -967,13 +967,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                                   .Where(x => x.value > 0)
                                                   .Select(x => x.index)
                                                   .ToList();
-            List<int> isToolJoint = new List<int>(new int[lc.NL]);
+            List<int> isToolJoint = new List<int>(new int[lumpedCells.NL]);
             int idx_previousToolJoint = 0; // index of previous tool joint
             isToolJoint[idx_previousToolJoint] = 1;
 
             for (int i = idx_previousToolJoint + 1; i < Np.Sum(); i++)
             {
-                if (lc.xL[i] - lc.xL[idx_previousToolJoint] >= 10 && !iS.Contains(i))
+                if (lumpedCells.xL[i] - lumpedCells.xL[idx_previousToolJoint] >= 10 && !SleeveIndexPosition.Contains(i))
                 {
                     isToolJoint[i] = 1;
                     idx_previousToolJoint = i;
@@ -1040,14 +1040,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     AtjoList.AddRange(Enumerable.Repeat(Math.PI * Math.Pow(ODDp_tj[i] / 2, 2), Np[i]));
                     AtjiList.AddRange(Enumerable.Repeat(Math.PI * Math.Pow(IDDp_tj[i] / 2, 2), Np[i]));
                     weightCorrList.AddRange(Enumerable.Repeat(LinearWeightDp[i], Np[i]));
-                    EList.AddRange(Enumerable.Repeat(Ep, Np[i]));
-                    GList.AddRange(Enumerable.Repeat(Gp, Np[i]));
+                    EList.AddRange(Enumerable.Repeat(PipeYoungModulus, Np[i]));
+                    GList.AddRange(Enumerable.Repeat(PipeShearModulus, Np[i]));
                 }
             }
-            foreach (int i in iS)
+            foreach (int i in SleeveIndexPosition)
             {
-                AtjoList[i] = Math.PI * Math.Pow(r_So, 2);
-                AtjiList[i] = Math.PI * Math.Pow(r_Si, 2);
+                AtjoList[i] = Math.PI * Math.Pow(SleeveOuterRadius, 2);
+                AtjiList[i] = Math.PI * Math.Pow(SleeveInnerRadius, 2);
             }
 
             for (int i = 0; i < nStab; i++)
@@ -1062,7 +1062,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 AiList.AddRange(Enumerable.Repeat(Math.PI * Math.Pow(Cri[i], 2), Nc[i]).Concat(new[] { Math.PI * Math.Pow(riStab[i], 2) }));
                 AtjoList.AddRange(Enumerable.Repeat(Math.PI * Math.Pow(Cro[i], 2), Nc[i]).Concat(new[] { Math.PI * Math.Pow(roStab[i], 2) }));
                 AtjiList.AddRange(Enumerable.Repeat(Math.PI * Math.Pow(Cri[i], 2), Nc[i]).Concat(new[] { Math.PI * Math.Pow(riStab[i], 2) }));
-                weightCorrList.AddRange(Enumerable.Repeat(Lwc[i], Nc[i]).Concat(new[] { AStab[i] * rho }));
+                weightCorrList.AddRange(Enumerable.Repeat(Lwc[i], Nc[i]).Concat(new[] { AStab[i] * SteelDensity }));
             }
 
             if (Nc.Count > nStab)
@@ -1080,106 +1080,106 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 weightCorrList.AddRange(Enumerable.Repeat(Lwc.Last(), Nc.Last()));
             }
 
-            EList.AddRange(Enumerable.Repeat(Ec, Nc.Sum() + (int)nStab));
-            GList.AddRange(Enumerable.Repeat(Gc, Nc.Sum() + (int)nStab));
+            EList.AddRange(Enumerable.Repeat(CollarYoungModulus, Nc.Sum() + (int)nStab));
+            GList.AddRange(Enumerable.Repeat(CollarShearModulus, Nc.Sum() + (int)nStab));
 
             List<double> Atj = AtjoList.Zip(AtjiList, (atjo, atji) => atjo - atji).ToList();
             if (weightCorrList.Count > 0 && AList.Count > 0)
             {
-                weightCorrList = weightCorrList.Prepend(weightCorrList.First()).Zip(AList.Prepend(AList.First()), (wc, a) => wc / a / rho).ToList();
+                weightCorrList = weightCorrList.Prepend(weightCorrList.First()).Zip(AList.Prepend(AList.First()), (wc, a) => wc / a / SteelDensity).ToList();
             }
             if (JList.Count > 0)
             {
-                zeta_p = JList.First() * Math.Sqrt(Gp * rho); // Characteristic drill pipe impedance
+                CharacteristicDrillPipeImpedance = JList.First() * Math.Sqrt(PipeShearModulus * SteelDensity); // Characteristic drill pipe impedance
             }
 
-            List<double> l_L_List = Enumerable.Repeat(l_dp, Np.Sum()).ToList();
+            List<double> l_L_List = Enumerable.Repeat(lumpedParameterLength, Np.Sum()).ToList();
             for (int i = 0; i < nStab; i++)
             {
 
-                l_L_List.AddRange(Enumerable.Repeat(l_BHA, Nc[i]));
+                l_L_List.AddRange(Enumerable.Repeat(BHALumpedElementLength, Nc[i]));
                 l_L_List.Add(LStab[i]);
 
             }
             if (Nc.Count > nStab)
             {
-                l_L_List.AddRange(Enumerable.Repeat(l_BHA, Nc.Last()));
+                l_L_List.AddRange(Enumerable.Repeat(BHALumpedElementLength, Nc.Last()));
             }
-            l_L = ToVector(l_L_List);
+            LumpedElementMassMomentOfInertia = ToVector(l_L_List);
 
-            I_LList = l_L_List.Zip(JList, (l, j) => rho * l * j).ToList();  // [kg.m^2] Lumped element mass moment of inertia
-            M_LList = l_L_List.Zip(AList, (l, a) => rho * l * a).ToList();  // [kg] Lumped element mass
-            Vector<double> M_tj = rho * l_tj * ToVector(Atj);               // [kg] Tool joint lumped mass
-            Vector<double> M_S = rho * l_S * ToVector(Atj);                 // [kg] Sleeve lumped mass
+            I_LList = l_L_List.Zip(JList, (l, j) => SteelDensity * l * j).ToList();  // [kg.m^2] Lumped element mass moment of inertia
+            M_LList = l_L_List.Zip(AList, (l, a) => SteelDensity * l * a).ToList();  // [kg] Lumped element mass
+            Vector<double> M_tj = SteelDensity * ToolJointLength * ToVector(Atj);               // [kg] Tool joint lumped mass
+            Vector<double> M_S = SteelDensity * SleeveLength * ToVector(Atj);                 // [kg] Sleeve lumped mass
 
-            for (int i = 0; i < lc.NL; i++)
+            for (int i = 0; i < lumpedCells.NL; i++)
             {
                 if (i < isToolJoint.Count && isToolJoint[i] == 1 && i < Atj.Count && i < AList.Count && Math.Abs(Atj[i] - AList[i]) > 1e-3)
                 {
                     M_LList[i] += M_tj[i];
                 }
-                if (iS.Contains(i))
+                if (SleeveIndexPosition.Contains(i))
                 {
                     M_LList[i] += M_S[i];
                 }
             }
 
-            ro = Vector<double>.Build.DenseOfArray(roList.ToArray());     // [m] Outer radius vector
-            ri = Vector<double>.Build.DenseOfArray(riList.ToArray());     // [m] Inner radius vector
-            e = Vector<double>.Build.DenseOfArray(eList.ToArray());       // [m] Eccentricity vector
-            Ao = Vector<double>.Build.DenseOfArray(AoList.ToArray());     // [m^2] Drillpipe outer area vector
-            Ai = Vector<double>.Build.DenseOfArray(AiList.ToArray());     // [m^2] Drillpipe inner area vector
-            Atjo = Vector<double>.Build.DenseOfArray(AtjoList.ToArray()); // [m^2] Tool joint outer area vector
-            Atji = Vector<double>.Build.DenseOfArray(AtjiList.ToArray()); // [m^2] Tool joint inner area vector
+            OuterRadius = Vector<double>.Build.DenseOfArray(roList.ToArray());     // [m] Outer radius vector
+            InnerRadius = Vector<double>.Build.DenseOfArray(riList.ToArray());     // [m] Inner radius vector
+            Eccentricity = Vector<double>.Build.DenseOfArray(eList.ToArray());       // [m] Eccentricity vector
+            OuterArea = Vector<double>.Build.DenseOfArray(AoList.ToArray());     // [m^2] Drillpipe outer area vector
+            InnerArea = Vector<double>.Build.DenseOfArray(AiList.ToArray());     // [m^2] Drillpipe inner area vector
+            ToolJointOuterArea = Vector<double>.Build.DenseOfArray(AtjoList.ToArray()); // [m^2] Tool joint outer area vector
+            ToolJointInnerArea = Vector<double>.Build.DenseOfArray(AtjiList.ToArray()); // [m^2] Tool joint inner area vector
 
-            J = Vector<double>.Build.DenseOfArray(JList.ToArray());       // [m^4] Drillpipe polar moment of inertia vector
-            A = Vector<double>.Build.DenseOfArray(AList.ToArray());       // [m^2] Drillpipe cross sectional area vector
-            I = Vector<double>.Build.DenseOfArray(IList.ToArray());       // [m^4] Drillpipe moment of inertia vector
+            PipePolarMoment = Vector<double>.Build.DenseOfArray(JList.ToArray());       // [m^4] Drillpipe polar moment of inertia vector
+            PipeArea = Vector<double>.Build.DenseOfArray(AList.ToArray());       // [m^2] Drillpipe cross sectional area vector
+            PipeInertia = Vector<double>.Build.DenseOfArray(IList.ToArray());       // [m^4] Drillpipe moment of inertia vector
 
-            weightCorr = Vector<double>.Build.DenseOfArray(weightCorrList.ToArray()); // [-] Linear weight correction factor vector
-            E = Vector<double>.Build.DenseOfArray(EList.ToArray());       // [Pa] Young's modulus vector
-            G = Vector<double>.Build.DenseOfArray(GList.ToArray());       // [Pa] Shear modulus vector
+            WeightCorrectionFactor = Vector<double>.Build.DenseOfArray(weightCorrList.ToArray()); // [-] Linear weight correction factor vector
+            YoungModuli = Vector<double>.Build.DenseOfArray(EList.ToArray());       // [Pa] Young's modulus vector
+            ShearModuli = Vector<double>.Build.DenseOfArray(GList.ToArray());       // [Pa] Shear modulus vector
 
-            I_L = Vector<double>.Build.DenseOfArray(I_LList.ToArray());   // [kg.m^2] Lumped element mass moment of inertia
-            M_L = Vector<double>.Build.DenseOfArray(M_LList.ToArray());   // [kg] Lumped element mass
+            LumpedElementMomentOfInertia = Vector<double>.Build.DenseOfArray(I_LList.ToArray());   // [kg.m^2] Lumped element mass moment of inertia
+            LumpedElementMass = Vector<double>.Build.DenseOfArray(M_LList.ToArray());   // [kg] Lumped element mass
 
 
             // Wave velocities
-            c_t = Math.Sqrt(G.Average() / rho);  //[m/s] Torsional wave velocity
-            c_a = Math.Sqrt(E.Average() / rho);  //[m/s] Axial wave velocity
+            TorsionalWaveSpeed = Math.Sqrt(ShearModuli.Average() / SteelDensity);  //[m/s] Torsional wave velocity
+            AxialWaveSpeed = Math.Sqrt(YoungModuli.Average() / SteelDensity);  //[m/s] Axial wave velocity
 
             // Structural damping coefficients
-            kt = kt_factor * I_L.Average(); //[N.m.s/rad] Torsional damping 
-            ka = ka_factor * M_L.Average(); //[N.s/m] Axial damping 
-            kl = kl_factor * M_L.Average(); //[N.s/m] Lateral damping
+            CalculatedTorsionalDamping = torsionalDampingFactor * LumpedElementMomentOfInertia.Average(); //[N.m.s/rad] Torsional damping 
+            CalculatedAxialDamping = axialDampingFactor * LumpedElementMass.Average(); //[N.s/m] Axial damping 
+            CalculateLateralDamping = lateralDampingFactor * LumpedElementMass.Average(); //[N.s/m] Lateral damping
 
-            Lb = lc.dxL; //[m] Length of pipe used in bending stiffness calculation 
-            kb = Math.Pow(Math.PI, 4) / (2 * Math.Pow(Lb, 3)) * E.PointwiseMultiply(I);// [N/m] Bending stiffness
-            Mf = 0.5 * Math.PI * fluid.rhoMud * (ri.PointwisePower(2) + C_am * ro.PointwisePower(2)).PointwiseMultiply(l_L); //[kg] Added fluid mass
+            PipeLengthForBending = lumpedCells.dxL; //[m] Length of pipe used in bending stiffness calculation 
+            BendingStiffness = Math.Pow(Math.PI, 4) / (2 * Math.Pow(PipeLengthForBending, 3)) * YoungModuli.PointwiseMultiply(PipeInertia);// [N/m] Bending stiffness
+            FluidAddedMass = 0.5 * Math.PI * fluid.rhoMud * (InnerRadius.PointwisePower(2) + AddedFluidMassCoefficient * OuterRadius.PointwisePower(2)).PointwiseMultiply(LumpedElementMassMomentOfInertia); //[kg] Added fluid mass
 
-            M_e = mass_imbalance_percent * M_L; // [kg] Eccentric mass
+            EccentricMass = MassImbalancePercentage * LumpedElementMass; // [kg] Eccentric mass
 
-            var dxL = lc.dxL;
-            idx_sensor = (int)lc.xL
+            var dxL = lumpedCells.dxL;
+            IndexSensor = (int)lumpedCells.xL
             .Select((value, index) => new { Value = value, Index = index })
             .Where(x => x.Value > MD - sensorDistanceFromBit - dxL && x.Value <= MD - sensorDistanceFromBit)
             .Select(x => (double)x.Index) // Convert index to double
             .First();
 
-            if (iS.Contains(idx_sensor))
+            if (SleeveIndexPosition.Contains(IndexSensor))
             {
-                sensorRadialDistance = 0.5 * (r_Si + r_So);
+                SensorRadialDistance = 0.5 * (SleeveInnerRadius + SleeveOuterRadius);
             }
             else
             {
-                int adjustedIndex = idx_sensor; // If idx_sensor is already zero-based, no adjustment is needed
-                if (adjustedIndex < 0 || adjustedIndex >= ri.Count || adjustedIndex >= ro.Count)
+                int adjustedIndex = IndexSensor; // If idx_sensor is already zero-based, no adjustment is needed
+                if (adjustedIndex < 0 || adjustedIndex >= InnerRadius.Count || adjustedIndex >= OuterRadius.Count)
                 {
-                    sensorRadialDistance = 0.5 * (r_Si + r_So);
+                    SensorRadialDistance = 0.5 * (SleeveInnerRadius + SleeveOuterRadius);
                 }
                 else
                 {
-                    sensorRadialDistance = 0.5 * (ri[adjustedIndex] + ro[adjustedIndex]);
+                    SensorRadialDistance = 0.5 * (InnerRadius[adjustedIndex] + OuterRadius[adjustedIndex]);
                 }
             }
 

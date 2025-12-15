@@ -6,139 +6,139 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 {
     public class Output
     {
-        public Vector<double> F_N;                  // Normal force profile stiff string
-        public Vector<double> F_N_softstring;       // Normal force profile soft string
-        public Vector<double> tension;              // tension profile
-        public Vector<double> Mb_x;                 // Bending moment y-component profile
-        public Vector<double> Mb_y;                 // Bending moment z-component profile
-        public Vector<double> Fc_t;                 // Tangential force profile
+        public Vector<double> NormalForceProfileStiffString;                  // Normal force profile stiff string
+        public Vector<double> NormalForceProfileSoftString;       // Normal force profile soft string
+        public Vector<double> TensionProfile;              // tension profile
+        public Vector<double> BendingMomentX;                 // Bending moment y-component profile
+        public Vector<double> BendingMomentY;                 // Bending moment z-component profile
+        public Vector<double> TangentialForceProfile;                 // Tangential force profile
 
-        public double wob;                          // Weight on bit
-        public double tob;                          // torque on bit
+        public double WeightOnBit;                          // Weight on bit
+        public double TorqueOnBit;                          // torque on bit
 
-        public double omega_b;                      // Bit rpm;
-        public double omega_td;                     // Top drive rpm;
-        public double vb;                           // [m/s] bit velodity
+        public double BitRotationInRPM;                      // Bit rpm;
+        public double TopDriveRotationInRPM;                     // Top drive rpm;
+        public double BitVelocity;                           // [m/s] bit velodity
 
-        public double sensorAxialVelocity;
-        public double sensorAxialDisplacement;
-        public double sensorAngularPosition;
-        public double sensorAngularVelocity;
-        public double sensorRadialPosition;
-        public double sensorWhirlAngle;
-        public double sensorRadialSpeed;
-        public double sensorWhirlSpeed;
-        public double sensorAxialAcceleration;
-        public double sensorAngularAcceleration;
-        public double sensorRadialAcceleration;
-        public double sensorWhirlAcceleration;
-        public double sensorBendingAngleX;
-        public double sensorBendingAngleY;
-        public double sensorBendingAngleX_SecondDerivative;
-        public double sensorBendingAngleY_SecondDerivative;
-        public double sensorPipeInclination;
-        public double sensorPipeAzimuthAt;
-        public double sensorMb_x;
-        public double sensorMb_y;
-        public double sensorBendingMomentX;
-        public double sensorBendingMomentY;
-        public double sensorTension;
-        public double sensorTorque;
+        public double SensorAxialVelocity;
+        public double SensorAxialDisplacement;
+        public double SensorAngularPosition;
+        public double SensorAngularVelocity;
+        public double SensorRadialPosition;
+        public double SensorWhirlAngle;
+        public double SensorRadialSpeed;
+        public double SensorWhirlSpeed;
+        public double SensorAxialAcceleration;
+        public double SensorAngularAcceleration;
+        public double SensorRadialAcceleration;
+        public double SensorWhirlAcceleration;
+        public double SensorBendingAngleX;
+        public double SensorBendingAngleY;
+        public double SecondDerivativeSensorBendingAngleX;
+        public double SecondDerivativeSensorBendingAngleY;
+        public double SensorPipeInclination;
+        public double SensorPipeAzimuthAt;
+        public double SensorMb_x;
+        public double SensorMb_y;
+        public double SensorBendingMomentX;
+        public double SensorBendingMomentY;
+        public double SensorTension;
+        public double SensorTorque;
 
-        public double sensorRadialAccelerationLocalFrame;
-        public double sensorTangentialAccelerationLocalFrame;
-        public double sensorAxialAccelerationLocalFrame;
+        public double SensorRadialAccelerationLocalFrame;
+        public double SensorTangentialAccelerationLocalFrame;
+        public double SensorAxialAccelerationLocalFrame;
 
-        public Vector<double> rc;                   // Lateral displacement
-        public Vector<double> phi;
-        public Vector<double> phi_dot;
-        public Vector<double> Mb;
-        public Vector<double> torque;               // Torque profile
-        public Vector<double> depths;
+        public Vector<double> RadialDisplacement;                   // Lateral displacement
+        public Vector<double> WhirlAngle;
+        public Vector<double> WhirlSpeed;
+        public Vector<double> BendingMoment;
+        public Vector<double> Torque;               // Torque profile
+        public Vector<double> Depth;
 
-        public double ssi { get; private set; }
-        public double cumulative_ssi { get; private set; }         // cumulative stick slip severity for the entire run
-        public double average_cumulative_ssi { get; private set; } // cumulative stick slip severity for the entire run
-        public Queue<double> bitRPMQueue { get; private set; }
-        public Queue<double> surfaceRPMQueue { get; private set; }
+        public double StickSlipIndex { get; private set; }
+        public double CummulativeStickSlipIndex { get; private set; }         // cumulative stick slip severity for the entire run
+        public double AverageStickSlipIndex { get; private set; } // cumulative stick slip severity for the entire run
+        public Queue<double> BitRPMQueue { get; private set; }
+        public Queue<double> SurfaceRPMQueue { get; private set; }
 
-        private readonly Configuration c;
+        private readonly Configuration configuration;
         private int queueSize;
 
-        public Output(in Parameters p, in Configuration c)
+        public Output(in SimulationParameters simulationParameters, in Configuration config)
         {
-            F_N = Vector<double>.Build.Dense(p.lc.NL);
-            F_N_softstring = Vector<double>.Build.Dense(p.lc.NL);
-            tension = Vector<double>.Build.Dense(p.lc.NL + 1);
-            Mb_x = Vector<double>.Build.Dense(p.lc.NL);
-            Mb_y = Vector<double>.Build.Dense(p.lc.NL);
-            Fc_t = Vector<double>.Build.Dense(p.lc.NL);
-            depths = Vector<double>.Build.Dense(p.lc.NL);
-            rc = Vector<double>.Build.Dense(p.lc.NL);
-            phi = Vector<double>.Build.Dense(p.lc.NL);
-            phi_dot = Vector<double>.Build.Dense(p.lc.NL);
-            Mb = Vector<double>.Build.Dense(p.lc.NL);
-            torque = Vector<double>.Build.Dense(p.lc.NL * p.lc.PL);
+            NormalForceProfileStiffString = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            NormalForceProfileSoftString = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            TensionProfile = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL + 1);
+            BendingMomentX = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            BendingMomentY = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            TangentialForceProfile = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Depth = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            RadialDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            WhirlSpeed = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            BendingMoment = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Torque = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL * simulationParameters.LumpedCells.PL);
 
-            queueSize = c.SSIWindowSize * (int)Math.Round(1 / c.TimeStep);
-            bitRPMQueue = new Queue<double>(queueSize);
-            surfaceRPMQueue = new Queue<double>(queueSize);
-            cumulative_ssi = 0.0;
-            average_cumulative_ssi = 0.0;
-            ssi = 0.0;
+            queueSize = config.SSIWindowSize * (int)Math.Round(1 / config.TimeStep);
+            BitRPMQueue = new Queue<double>(queueSize);
+            SurfaceRPMQueue = new Queue<double>(queueSize);
+            CummulativeStickSlipIndex = 0.0;
+            AverageStickSlipIndex = 0.0;
+            StickSlipIndex = 0.0;
 
-            this.c = c;
+            this.configuration = config;
         }
 
         private void AddSurfaceRPM(double value)
         {
-            if (surfaceRPMQueue.Count >= queueSize)
+            if (SurfaceRPMQueue.Count >= queueSize)
             {
-                surfaceRPMQueue.Dequeue(); // Remove oldest element
+                SurfaceRPMQueue.Dequeue(); // Remove oldest element
             }
-            surfaceRPMQueue.Enqueue(value);
+            SurfaceRPMQueue.Enqueue(value);
         }
 
         private void AddBitRPM(double value)
         {
-            if (bitRPMQueue.Count >= queueSize)
+            if (BitRPMQueue.Count >= queueSize)
             {
-                bitRPMQueue.Dequeue(); // Remove oldest element
+                BitRPMQueue.Dequeue(); // Remove oldest element
             }
-            bitRPMQueue.Enqueue(value);
+            BitRPMQueue.Enqueue(value);
         }
 
         private double GetOldestSurfaceRPM()
         {
-            return surfaceRPMQueue.Count > 0 ? surfaceRPMQueue.Peek() : 0.0;
+            return SurfaceRPMQueue.Count > 0 ? SurfaceRPMQueue.Peek() : 0.0;
         }
 
         private double GetAverageBitRPM()
         {
-            return bitRPMQueue.Count > 0 ? bitRPMQueue.Average() : 0.0;
+            return BitRPMQueue.Count > 0 ? BitRPMQueue.Average() : 0.0;
         }
 
         private double GetMaxBitRPM()
         {
-            return bitRPMQueue.Count > 0 ? bitRPMQueue.Max() : 0.0;
+            return BitRPMQueue.Count > 0 ? BitRPMQueue.Max() : 0.0;
         }
 
         private double GetMinBitRPM()
         {
-            return bitRPMQueue.Count > 0 ? bitRPMQueue.Min() : 0.0;
+            return BitRPMQueue.Count > 0 ? BitRPMQueue.Min() : 0.0;
         }
 
         private bool SurfaceRPMQueIsFull()
         {
-            return surfaceRPMQueue.Count >= queueSize;
+            return SurfaceRPMQueue.Count >= queueSize;
         }
 
         public void UpdateSSI(double time)
         {
-            AddSurfaceRPM(omega_td); // Add value to the queue when it's set
-            AddBitRPM(omega_b); // Add value to the queue when it's set
-            cumulative_ssi = cumulative_ssi + SSI * c.TimeStep;
-            average_cumulative_ssi = cumulative_ssi/ time;
+            AddSurfaceRPM(TopDriveRotationInRPM); // Add value to the queue when it's set
+            AddBitRPM(BitRotationInRPM); // Add value to the queue when it's set
+            CummulativeStickSlipIndex = CummulativeStickSlipIndex + SSI * configuration.TimeStep;
+            AverageStickSlipIndex = CummulativeStickSlipIndex/ time;
         }
 
         public double SSI

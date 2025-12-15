@@ -69,40 +69,40 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             hydrostaticAnnularPressure = CumTrapz(ExtendVectorStart(0, t.TVDVec), Constants.g * annularDensity);
 
             // Calculate buoyant weight using the appropriate method
-            double[] Aie = new double[ds.Ai.Count() + 1];
-            Aie[0] = ds.Ai[0];
-            Array.Copy(ds.Ai.ToArray(), 0, Aie, 1, ds.Ai.Count());
+            double[] Aie = new double[ds.InnerArea.Count() + 1];
+            Aie[0] = ds.InnerArea[0];
+            Array.Copy(ds.InnerArea.ToArray(), 0, Aie, 1, ds.InnerArea.Count());
 
-            double[] Aoe = new double[ds.Ao.Count() + 1];
-            Aoe[0] = ds.Ao[0];
-            Array.Copy(ds.Ao.ToArray(), 0, Aoe, 1, ds.Ao.Count());
+            double[] Aoe = new double[ds.OuterArea.Count() + 1];
+            Aoe[0] = ds.OuterArea[0];
+            Array.Copy(ds.OuterArea.ToArray(), 0, Aoe, 1, ds.OuterArea.Count());
 
-            double[] Atjie = new double[ds.Atji.Count() + 1];
-            Atjie[0] = ds.Atji[0];
-            Array.Copy(ds.Atji.ToArray(), 0, Atjie, 1, ds.Atji.Count());
+            double[] Atjie = new double[ds.ToolJointInnerArea.Count() + 1];
+            Atjie[0] = ds.ToolJointInnerArea[0];
+            Array.Copy(ds.ToolJointInnerArea.ToArray(), 0, Atjie, 1, ds.ToolJointInnerArea.Count());
 
-            double[] Atjoe = new double[ds.Atjo.Count() + 1];
-            Atjoe[0] = ds.Atjo[0];
-            Array.Copy(ds.Atjo.ToArray(), 0, Atjoe, 1, ds.Atjo.Count());
+            double[] Atjoe = new double[ds.ToolJointOuterArea.Count() + 1];
+            Atjoe[0] = ds.ToolJointOuterArea[0];
+            Array.Copy(ds.ToolJointOuterArea.ToArray(), 0, Atjoe, 1, ds.ToolJointOuterArea.Count());
 
-            double[] Ae = new double[ds.A.Count() + 1];
-            Ae[0] = ds.A[0];
-            Array.Copy(ds.A.ToArray(), 0, Ae, 1, ds.A.Count());
+            double[] Ae = new double[ds.PipeArea.Count() + 1];
+            Ae[0] = ds.PipeArea[0];
+            Array.Copy(ds.PipeArea.ToArray(), 0, Ae, 1, ds.PipeArea.Count());
 
             if (useBuoyancyFactor)
             {
                 double[] buoyancyFactor = new double[Aoe.Length];
                 for (int i = 0; i < Aoe.Length; i++)
                 {
-                    buoyancyFactor[i] = (Aoe[i] * (1 - annularDensity[i] / ds.rho) -
-                                         Aie[i] * (1 - stringDensity[i] / ds.rho)) /
+                    buoyancyFactor[i] = (Aoe[i] * (1 - annularDensity[i] / ds.SteelDensity) -
+                                         Aie[i] * (1 - stringDensity[i] / ds.SteelDensity)) /
                                          (Aoe[i] - Aie[i]);
                 }
 
                 Wb = Vector<double>.Build.Dense(Aie.Length);
                 for (int i = 0; i < Aie.Length; i++)
                 {
-                    Wb[i] = Constants.g * buoyancyFactor[i] * ds.rho * Ae[i] * ds.weightCorr[i];
+                    Wb[i] = Constants.g * buoyancyFactor[i] * ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
                 }
             }
             else
@@ -110,17 +110,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 double[] mass_per_length = new double[Ae.Length];
                 for (int i = 0; i < Ae.Length; i++)
                 {
-                    mass_per_length[i] = ds.rho * Ae[i] * ds.weightCorr[i];
+                    mass_per_length[i] = ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
                 }
 
                 Wb = Vector<double>.Build.Dense(mass_per_length.Length);
                 for (int i = 0; i < mass_per_length.Length; i++)
                 {
                     Wb[i] = (mass_per_length[i] +
-                             (Atjie[i] * ds.l_tj * stringDensity[i] +
-                               Aie[i] * (lc.dxL - ds.l_tj) * stringDensity[i] -
-                               Atjoe[i] * ds.l_tj * annularDensity[i] -
-                               Aoe[i] * (lc.dxL - ds.l_tj) * annularDensity[i]) /
+                             (Atjie[i] * ds.ToolJointLength * stringDensity[i] +
+                               Aie[i] * (lc.dxL - ds.ToolJointLength) * stringDensity[i] -
+                               Atjoe[i] * ds.ToolJointLength * annularDensity[i] -
+                               Aoe[i] * (lc.dxL - ds.ToolJointLength) * annularDensity[i]) /
                                lc.dxL) * Constants.g;
                 }
             }
@@ -148,13 +148,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
                 for (int i = 0; i < hydrostaticAnnularPressure.Count; i++)
                 {
-                    double AoCurrent = i == 0 ? ds.Ao[0] : ds.Ao[i - 1];
-                    double AiCurrent = i == 0 ? ds.Ai[0] : ds.Ai[i - 1];
+                    double AoCurrent = i == 0 ? ds.OuterArea[0] : ds.OuterArea[i - 1];
+                    double AiCurrent = i == 0 ? ds.InnerArea[0] : ds.InnerArea[i - 1];
                     double hydrostaticAnnularCurrent = hydrostaticAnnularPressure[i];
                     double hydrostaticStringCurrent = hydrostaticStringPressure[i];
 
-                    double AtjoPrev = i == 0 ? 0 : ds.Atjo[i - 1];
-                    double AtjiPrev = i == 0 ? 0 : ds.Atji[i - 1];
+                    double AtjoPrev = i == 0 ? 0 : ds.ToolJointOuterArea[i - 1];
+                    double AtjiPrev = i == 0 ? 0 : ds.ToolJointInnerArea[i - 1];
                     double hydrostaticAnnularPrev = i == 0 ? 0 : hydrostaticAnnularPressure[i - 1];
                     double hydrostaticStringPrev = i == 0 ? 0 : hydrostaticStringPressure[i - 1];
 

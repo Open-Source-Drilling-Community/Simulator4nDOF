@@ -34,9 +34,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         double tau_0_highpass;
         double tau_0_lowpass;
 
-        double Otd0;                                 // Previous Otd (top drive angular velocity) 
+        double Otd0;                                 // Previous TopDriveAngularVelocity (top drive angular velocity) 
 
-        public TopdriveController(in DataModel.Configuration c, in Parameters p)
+        public TopdriveController(in DataModel.Configuration c, in SimulationParameters simulationParameters)
         {
             KpSoftTorqueSpeed = c.KpSoftTorqueSpeed;
             KiSoftTorqueSpeed = c.KiSoftTorqueSpeed;
@@ -54,20 +54,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             if (c.TopDriveController == 2)
             {
                 //Tuned PI controller parameters
-                I_comp = KiSoftTorqueSpeed * p.w.I_TD; // [kg.m ^ 2] inertia compensation
-                KpFactor = KpSoftTorqueSpeed * p.ds.zeta_p; // top drive controller P gain
-                KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (p.w.I_TD - I_comp); // top drive controller I gain
+                I_comp = KiSoftTorqueSpeed * simulationParameters.Wellbore.I_TD; // [kg.m ^ 2] inertia compensation
+                KpFactor = KpSoftTorqueSpeed * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // top drive controller P gain
+                KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.Wellbore.I_TD - I_comp); // top drive controller I gain
             }
             else
             {    // Stiff PI controller parameters
-                KpFactor = KpFactor * p.ds.zeta_p;
-                KiFactor = KiFactor * p.w.I_TD;
+                KpFactor = KpFactor * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance;
+                KiFactor = KiFactor * simulationParameters.Wellbore.I_TD;
             }
 
             if (c.TopDriveController == 3)
             {
                 //TODO move
-                ZT = 1.0 / p.ds.zeta_p; // ZTorque factor
+                ZT = 1.0 / simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // ZTorque factor
             }
 
             omega_0_ZT = 0.0;
@@ -76,13 +76,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             tau_0_ZT = 0.0;
             tau_0_highpass = 0.0; 
             tau_0_lowpass = 0.0;
-            Otd0 = 0.0; // Previous Otd (top drive angular velocity)  
+            Otd0 = 0.0; // Previous TopDriveAngularVelocity (top drive angular velocity)  
         }
 
-        public void Step(in DataModel.Configuration c, in State state, in Parameters p, ref Input u)
+        public void Step(in DataModel.Configuration c, in State state, in SimulationParameters simulationParameters, ref Input u)
         {
-            double delta_Otd = state.Otd - Otd0;
-            Otd0 = state.Otd;
+            double delta_Otd = state.TopDriveAngularVelocity - Otd0;
+            Otd0 = state.TopDriveAngularVelocity;
             double e_PI;
 
             if (c.TopDriveController == 3)
@@ -90,16 +90,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (state.step > 0)
                 {
                     omega_0_ZT = omega_0_ZT * Math.Exp(-2 * Math.PI * c.TimeStep / t_en) +
-                        state.Otd * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_en));                    
+                        state.TopDriveAngularVelocity * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_en));                    
 
                     tau_vfd = tau_vfd * Math.Exp(-2 * Math.PI * c.TimeStep / t_vfd) +
-                        u.tau_Motor * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_vfd));
+                        u.TopDriveTorque * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_vfd));
 
                     td_accel = td_accel * Math.Exp(-2 * Math.PI * c.TimeStep / t_sp) +
                         delta_Otd / c.TimeStep * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_sp));
 
                     double previous_tau_0_ZT = tau_0_ZT;
-                    tau_0_ZT = tau_vfd- inertia_correction_factor * p.w.I_TD * td_accel;  // estimated pipe torque
+                    tau_0_ZT = tau_vfd- inertia_correction_factor * simulationParameters.Wellbore.I_TD * td_accel;  // estimated pipe torque
 
                     tau_0_highpass = tau_0_highpass * (t_hp / 2.0 / Math.PI / (c.TimeStep + t_hp / 2.0 / Math.PI)) + 
                         (tau_0_ZT - previous_tau_0_ZT) * (t_hp / 2.0 / Math.PI / (c.TimeStep + t_hp / 2.0 / Math.PI));
@@ -115,18 +115,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     tau_0_lowpass = 0;
                 }
 
-                e_PI = u.omega_sp - omega_0_ZT - z_factor * ZT * tau_0_lowpass;
+                e_PI = u.TopDriveRPMSetPoint - omega_0_ZT - z_factor * ZT * tau_0_lowpass;
             }
             else
-                e_PI = u.omega_sp - state.Otd;
+                e_PI = u.TopDriveRPMSetPoint - state.TopDriveAngularVelocity;
 
             if (c.TopDriveController == 2)
-                u.tau_Motor = e_PI * KpFactor + II * KiFactor + I_comp * delta_Otd / c.TimeStep;
+                u.TopDriveTorque = e_PI * KpFactor + II * KiFactor + I_comp * delta_Otd / c.TimeStep;
             else
-                u.tau_Motor = e_PI * KpFactor + II * KiFactor;
+                u.TopDriveTorque = e_PI * KpFactor + II * KiFactor;
 
-            u.tau_Motor = Math.Min(u.tau_Motor, u.tauMax);
-            u.tau_Motor = Math.Max(u.tau_Motor, 0);
+            u.TopDriveTorque = Math.Min(u.TopDriveTorque, u.MaximumTopDriveTorque);
+            u.TopDriveTorque = Math.Max(u.TopDriveTorque, 0);
 
             II = II + c.TimeStep * e_PI; // if c.dt is too large, controller may be too aggressive
         }
