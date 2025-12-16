@@ -26,8 +26,154 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Vector<double> LateralRadialDisplacement;
         public Vector<double> LateralRadialVelocity;
         
+        public Vector<double> SoftStringNormalForce;
+        public Vector<double> Tension;
+        public Vector<double> BendingStiffness;
+        public Vector<double> PolarMomentTimesShearModuli;
+        public Vector<double> PreStressNormalForce;
+        public Vector<double> PreStressBinormalForce;
+        
+        
+
         
         public Vector<double> OL_dot;//?
         public Vector<double> OS_dot;//?        
+        public Matrix<double> ScalingMatrix;
+        public Vector<double> ToolFaceAngle;
+
+        //Private variables
+        /*
+        private Vector<double> elementWiseProduct;
+        private Matrix<double> dragMatrix; 
+        private Vector<double> drag_flattened;
+        private Vector<double> drag;
+        private Vector<double> phiVec_dote;
+        private Vector<double> thetaVec_dote;
+        private Vector<double> thetaVece;
+
+        private Vector<double> fN_softstring;
+        private Vector<double> I_fN_softstring;
+        private Vector<double> F_N_softstring;
+        private Vector<double> AiExtende;
+        private Vector<double> AoExtende;
+        private Vector<double> F_comp;
+        private Vector<double> kbExtended;
+        private Vector<double> kb;
+        private Matrix<double> torqueMatrix;
+        private Vector<double> torqueFlattened;
+        private Vector<double> bzExtended;
+        private Vector<double> nzExtended;
+        private Vector<double> curvatureExtended;
+        private Vector<double> curvature_dotExtended;
+        private Vector<double> curvature_ddotExtended;
+        private Vector<double> EExtended;
+        private Vector<double> IExtended;
+        private Vector<double> torsionExtended;
+        private Vector<double> torsion_dotExtended;
+        private Vector<double> diffTorqueExtended;
+        private Vector<double> fB;
+        private Vector<double> I_fB;
+        private Vector<double> fN;
+        Vector<double> I_fN;
+        Vector<double> F_B_prestress;
+        Vector<double> F_N_prestress;
+        Vector<double> expression;
+        Vector<double> signToolFace;
+        Vector<double> dotProduct;
+        */
+        public LateralModel(SimulationParameters simulationParameters, State state)
+        {
+            Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
+            ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
+            Matrix<double> dragMatrix = ScalingMatrix * elementWiseProduct.ToRowMatrix();
+            dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
+            Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
+            Vector<double> drag = LinearInterpolate(simulationParameters.DistributedCells.x, drag_flattened, simulationParameters.LumpedCells.xL);
+            Vector<double> phiVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.phiVec_dot);
+            Vector<double> thetaVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec_dot);
+            Vector<double> thetaVece = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec);
+            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, Reverse(simulationParameters.Buoyancy.dsigma_dx));
+            Tension = Reverse(trapezoidalsIntegration) + simulationParameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
+            Vector<double> fN_softstring = (Square((Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - simulationParameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
+                                            Square((Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
+            Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fN_softstring);
+            SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
+
+            Vector<double> AiExtended = ExtendVectorStart(simulationParameters.Drillstring.InnerArea[0], simulationParameters.Drillstring.InnerArea);
+            Vector<double> AoExtended = ExtendVectorStart(simulationParameters.Drillstring.OuterArea[0], simulationParameters.Drillstring.OuterArea);
+            
+            /*Vector<double> F_comp = AiExtended.PointwiseMultiply(simulationParameters.Buoyancy.stringPressure - simulationParameters.Buoyancy.hydrostaticStringPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
+                                    - AoExtended.PointwiseMultiply(simulationParameters.Buoyancy.annularPressure - simulationParameters.Buoyancy.hydrostaticAnnularPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
+                                  - Tension;
+            Tension = -F_comp;*/
+            
+            Tension +=  (1 - 2 * simulationParameters.Drillstring.PoissonRatio) * 
+                (  
+                    AoExtended.PointwiseMultiply(simulationParameters.Buoyancy.annularPressure - simulationParameters.Buoyancy.hydrostaticAnnularPressure) 
+                    - AiExtended.PointwiseMultiply(simulationParameters.Buoyancy.stringPressure - simulationParameters.Buoyancy.hydrostaticStringPressure)
+                );   
+
+            Vector<double> kbExtended = ExtendVectorStart(simulationParameters.Drillstring.BendingStiffness[0], simulationParameters.Drillstring.BendingStiffness); 
+            BendingStiffness = - (kbExtended - Math.Pow(Math.PI, 2) * Tension / (2 * simulationParameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);                                            
+            PolarMomentTimesShearModuli = simulationParameters.Drillstring.PipePolarMoment.PointwiseMultiply(simulationParameters.Drillstring.ShearModuli); // Element-wise multiplication
+            Matrix<double> TorqueMatrix = state.PipeShearStrain.PointwiseMultiply(ScalingMatrix * PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
+            Vector<double> torqueFlattened = ToVector(TorqueMatrix.ToColumnMajorArray());
+            Vector<double> torque = LinearInterpolate(simulationParameters.DistributedCells.x, torqueFlattened, simulationParameters.LumpedCells.xL);
+            // Normal force components in Frenet-Serret coordinate system
+            Vector<double> binormal = ExtendVectorStart(simulationParameters.Trajectory.bz[0], simulationParameters.Trajectory.bz);
+            Vector<double> normal = ExtendVectorStart(simulationParameters.Trajectory.nz[0], simulationParameters.Trajectory.nz);
+            Vector<double> curvatureExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature[0], simulationParameters.Trajectory.curvature);
+            Vector<double> curvature_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature_dot[0], simulationParameters.Trajectory.curvature_dot);
+            Vector<double> curvature_ddotExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature_ddot[0], simulationParameters.Trajectory.curvature_ddot);
+            Vector<double> youngModulus = ExtendVectorStart(simulationParameters.Drillstring.YoungModuli[0], simulationParameters.Drillstring.YoungModuli);
+            Vector<double> momentOfInertia = ExtendVectorStart(simulationParameters.Drillstring.PipeInertia[0], simulationParameters.Drillstring.PipeInertia);
+            Vector<double> torsionExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion[0], simulationParameters.Trajectory.torsion);
+            Vector<double> torsion_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion_dot[0], simulationParameters.Trajectory.torsion_dot);
+            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / simulationParameters.LumpedCells.dxL);
+
+            Vector<double> fB =
+                simulationParameters.Buoyancy.Wb.PointwiseMultiply(binormal) +
+                curvatureExtended.PointwiseMultiply(diffTorqueExtended) +
+                curvature_dotExtended.PointwiseMultiply(torque) -
+                2 * youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvature_dotExtended).PointwiseMultiply(torsionExtended) -
+                youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvatureExtended).PointwiseMultiply(torsion_dotExtended);
+
+            // Compute pre-stressed forces
+            Vector<double> I_fB = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fB);
+
+            Vector<double> fN =
+                curvatureExtended.PointwiseMultiply(Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters) +
+                simulationParameters.Buoyancy.Wb.PointwiseMultiply(normal) -
+                youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvature_ddotExtended) +
+                youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvatureExtended).PointwiseMultiply(Square(torsionExtended)) -
+                curvatureExtended.PointwiseMultiply(torsionExtended).PointwiseMultiply(torque);
+
+            Vector<double> I_fN = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fN);
+            PreStressNormalForce = Diff(I_fB);
+            PreStressBinormalForce = Diff(I_fN);
+
+            Vector<double> expression =
+                (simulationParameters.Trajectory.hy.PointwiseMultiply(simulationParameters.Trajectory.nz) - (simulationParameters.Trajectory.hz.PointwiseMultiply(simulationParameters.Trajectory.ny))).PointwiseMultiply(simulationParameters.Trajectory.tx) +
+                (simulationParameters.Trajectory.hz.PointwiseMultiply(simulationParameters.Trajectory.nx) - (simulationParameters.Trajectory.hx.PointwiseMultiply(simulationParameters.Trajectory.nz))).PointwiseMultiply(simulationParameters.Trajectory.ty) +
+                (simulationParameters.Trajectory.hx.PointwiseMultiply(simulationParameters.Trajectory.ny) - (simulationParameters.Trajectory.hy.PointwiseMultiply(simulationParameters.Trajectory.nx))).PointwiseMultiply(simulationParameters.Trajectory.tz);
+
+            //Vector<double> signToolFace = expression.Map(x => (double)Math.Sign(x));
+
+            Vector<double> signToolFace = Vector<double>.Build.Dense(expression.Count);
+            Vector<double> dotProduct = Vector<double>.Build.Dense(expression.Count);
+            for (int i = 0; i < expression.Count; i++)
+            {
+                signToolFace[i] = Math.Sign(expression[i]);
+                dotProduct[i] = simulationParameters.Trajectory.hx[i] * simulationParameters.Trajectory.nx[i] +
+                                simulationParameters.Trajectory.hy[i] * simulationParameters.Trajectory.ny[i] +
+                                simulationParameters.Trajectory.hz[i] * simulationParameters.Trajectory.nz[i];
+                dotProduct[i] = Math.Max(-1, dotProduct[i]);
+                dotProduct[i] = Math.Min(1, dotProduct[i]);
+            }
+
+            // Compute the toolface angle
+            ToolFaceAngle = dotProduct.PointwiseAcos().PointwiseMultiply(signToolFace);
+
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private TopdriveController topdriveController;
         private DrawworksAndTopdrive drawworksAndTopdrive;
         private AxialTorsionalModel axialTorsionalModel;
+        private LateralModel lateralModel;
 
         public Solver(SimulationParameters simulationParameters, in DataModel.Configuration configuration)
         {
@@ -36,6 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdrive();
             axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters, simulationInput);
+            lateralModel = new LateralModel(simulationParameters, state);
         }
 
         public (State, Output, Input) OuterStep(double SurfaceRPM, double TopOfStringVelocity, double bottomExtraVerticalForce, double differenceStaticKineticFriction, double stribeckCriticalVelocity, bool sticking)
@@ -221,11 +223,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double dtTemp = simulationParameters.DistributedCells.dxM / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             
             // Wave equations are transformed into their Riemann invariants
-            AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);
-       
+            AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
+            AccelerationCalculation.PreprareLateral(lateralModel, state, simulationParameters);            
+            
+            /*
             Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
-            Matrix<double> scalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
-            Matrix<double> dragMatrix = scalingMatrix * elementWiseProduct.ToRowMatrix();
+            //Matrix<double> lateralModel.ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
+            Matrix<double> dragMatrix = lateralModel.ScalingMatrix * elementWiseProduct.ToRowMatrix();
             dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
             Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
             Vector<double> drag = LinearInterpolate(simulationParameters.DistributedCells.x, drag_flattened, simulationParameters.LumpedCells.xL);
@@ -233,30 +237,30 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> phiVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.phiVec_dot);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec_dot);
             Vector<double> thetaVece = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec);
-            var cumTrapz = CumTrapz(simulationParameters.LumpedCells.xL, Reverse(simulationParameters.Buoyancy.dsigma_dx));
-            var tension = Reverse(cumTrapz) + simulationParameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
+            var cumTrapz = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, Reverse(simulationParameters.Buoyancy.dsigma_dx));
+            //var lateralModel.Tension = Reverse(cumTrapz) + simulationParameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
 
-            Vector<double> fN_softstring = (Square((tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - simulationParameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
-                                            Square((tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
+            Vector<double> fN_softstring = (Square((lateralModel.Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - simulationParameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
+                                            Square((lateralModel.Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
 
-            Vector<double> I_fN_softstring = Utilities.CumTrapz(simulationParameters.LumpedCells.xL, fN_softstring);
-            Vector<double> F_N_softstring = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
+            Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fN_softstring);
+            //Vector<double> lateralModel.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
 
             Vector<double> AiExtended = ExtendVectorStart(simulationParameters.Drillstring.InnerArea[0], simulationParameters.Drillstring.InnerArea);
             Vector<double> AoExtended = ExtendVectorStart(simulationParameters.Drillstring.OuterArea[0], simulationParameters.Drillstring.OuterArea);
             Vector<double> F_comp = AiExtended.PointwiseMultiply(simulationParameters.Buoyancy.stringPressure - simulationParameters.Buoyancy.hydrostaticStringPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
                                   - AoExtended.PointwiseMultiply(simulationParameters.Buoyancy.annularPressure - simulationParameters.Buoyancy.hydrostaticAnnularPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
-                                  - tension;
-            tension = -F_comp;
+                                  - lateralModel.Tension;
+            lateralModel.Tension = -F_comp;
 
             // Update bending stiffness
-            Vector<double> kbExtended = ExtendVectorStart(simulationParameters.Drillstring.BendingStiffness[0], simulationParameters.Drillstring.BendingStiffness); ;// Vector<double>.Build.DenseOfArray(new double[] { simulationParameters.kb[0] }.Concat(simulationParameters.kb).ToArray());
-            Vector<double> kb = Vector<double>.Build.Dense(simulationParameters.Drillstring.BendingStiffness.Count + 1);
+            //ector<double> kbExtended = ExtendVectorStart(simulationParameters.Drillstring.lateralModel.BendingStiffness[0], simulationParameters.Drillstring.lateralModel.BendingStiffness); ;// Vector<double>.Build.DenseOfArray(new double[] { simulationParameters.kb[0] }.Concat(simulationParameters.kb).ToArray());
+            //Vector<double> lateralModel.BendingStiffness = Vector<double>.Build.Dense(simulationParameters.Drillstring.lateralModel.BendingStiffness.Count + 1);
 
-            kb = (kbExtended - Math.Pow(Math.PI, 2) * F_comp / (2 * simulationParameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);
+            //lateralModel.BendingStiffness = (kbExtended - Math.Pow(Math.PI, 2) * F_comp / (2 * simulationParameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);
 
-            Vector<double> elementWiseProductJG = simulationParameters.Drillstring.PipePolarMoment.PointwiseMultiply(simulationParameters.Drillstring.ShearModuli); // Element-wise multiplication
-            Matrix<double> TorqueMatrix = state.PipeShearStrain.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
+            //Vector<double> lateralModel.PolarMomentTimesShearModuli = simulationParameters.Drillstring.PipePolarMoment.PointwiseMultiply(simulationParameters.Drillstring.ShearModuli); // Element-wise multiplication
+            Matrix<double> TorqueMatrix = state.PipeShearStrain.PointwiseMultiply(lateralModel.ScalingMatrix * lateralModel.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
             Vector<double> torqueFlattened = ToVector(TorqueMatrix.ToColumnMajorArray());
             Vector<double> torque = LinearInterpolate(simulationParameters.DistributedCells.x, torqueFlattened, simulationParameters.LumpedCells.xL);
 
@@ -281,18 +285,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvatureExtended).PointwiseMultiply(torsion_dotExtended);
 
             // Compute pre-stressed forces
-            Vector<double> I_fB = CumTrapz(simulationParameters.LumpedCells.xL, fB);
+            Vector<double> I_fB = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fB);
 
             Vector<double> fN =
-                curvatureExtended.PointwiseMultiply(tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters) +
+                curvatureExtended.PointwiseMultiply(lateralModel.Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters) +
                 simulationParameters.Buoyancy.Wb.PointwiseMultiply(nzExtended) -
                 EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvature_ddotExtended) +
                 EExtended.PointwiseMultiply(IExtended).PointwiseMultiply(curvatureExtended).PointwiseMultiply(Square(torsionExtended)) -
                 curvatureExtended.PointwiseMultiply(torsionExtended).PointwiseMultiply(torque);
 
-            Vector<double> I_fN = CumTrapz(simulationParameters.LumpedCells.xL, fN);
-            Vector<double> F_B_prestress = Diff(I_fB);
-            Vector<double> F_N_prestress = Diff(I_fN);
+            Vector<double> I_fN = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fN);
+            //Vector<double> lateralModel.PreStressBinormalForce = Diff(I_fB);
+            //Vector<double> lateralModel.PreStressNormalForce = Diff(I_fN);
 
             Vector<double> expression =
                 (simulationParameters.Trajectory.hy.PointwiseMultiply(simulationParameters.Trajectory.nz) - (simulationParameters.Trajectory.hz.PointwiseMultiply(simulationParameters.Trajectory.ny))).PointwiseMultiply(simulationParameters.Trajectory.tx) +
@@ -312,9 +316,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 dotProduct[i] = Math.Max(-1, dotProduct[i]);
                 dotProduct[i] = Math.Min(1, dotProduct[i]);
             }
-
+                
             // Compute the toolface angle
-            Vector<double> tf_angle = dotProduct.PointwiseAcos().PointwiseMultiply(sign_tf);
+            //Vector<double> lateralModel.ToolFaceAngle = dotProduct.PointwiseAcos().PointwiseMultiply(sign_tf);
+            */
+            //ODE PROPERTIES
 
             Vector<double> Xc_iMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
             Vector<double> Xc_iPlus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
@@ -451,8 +457,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Yc_iPlus1 = Vector<double>.Build.DenseOfArray(state.Yc.SubVector(1, state.Yc.Count - 1).Append(0).ToArray());
 
                 // lateral forces due to bending            
-                var kb1 = kb.SubVector(0, kb.Count - 1);
-                var kb2 = kb.SubVector(1, kb.Count - 1);
+                var kb1 = lateralModel.BendingStiffness.SubVector(0, lateralModel.BendingStiffness.Count - 1);
+                var kb2 = lateralModel.BendingStiffness.SubVector(1, lateralModel.BendingStiffness.Count - 1);
                 var Fk_x = -(kb1 + kb2).PointwiseMultiply(state.Xc) +
                             kb1.PointwiseMultiply(Xc_iMinus1) +
                             kb2.PointwiseMultiply(Xc_iPlus1);
@@ -462,10 +468,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                             kb2.PointwiseMultiply(Yc_iPlus1);
 
 
-                Vector<double> F_prestress_x = F_N_prestress.PointwiseMultiply(tf_angle.PointwiseSin()) +
-                                               F_B_prestress.PointwiseMultiply(tf_angle.PointwiseCos());
-                Vector<double> F_prestress_y = F_N_prestress.PointwiseMultiply(tf_angle.PointwiseCos()) -
-                                               F_B_prestress.PointwiseMultiply(tf_angle.PointwiseSin());
+                Vector<double> F_prestress_x = lateralModel.PreStressNormalForce.PointwiseMultiply(lateralModel.ToolFaceAngle.PointwiseSin()) +
+                                               lateralModel.PreStressBinormalForce.PointwiseMultiply(lateralModel.ToolFaceAngle.PointwiseCos());
+                Vector<double> F_prestress_y = lateralModel.PreStressNormalForce.PointwiseMultiply(lateralModel.ToolFaceAngle.PointwiseCos()) -
+                                               lateralModel.PreStressBinormalForce.PointwiseMultiply(lateralModel.ToolFaceAngle.PointwiseSin());
 
 
                 // lateral forces due to fluid-structure interaction
@@ -768,10 +774,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             // Parse outputs
             output.NormalForceProfileStiffString = NormalCollisionForce; // Pipe shear strain 
-            output.NormalForceProfileSoftString = F_N_softstring;
-            output.TensionProfile = tension; // Tension profile
+            output.NormalForceProfileSoftString = lateralModel.SoftStringNormalForce;
+            output.TensionProfile = lateralModel.Tension; // Tension profile
 
-            var tempMatrix = state.PipeShearStrain.PointwiseMultiply(scalingMatrix * elementWiseProductJG.ToRowMatrix()); // 5x136 matrix
+            var tempMatrix = state.PipeShearStrain.PointwiseMultiply(lateralModel.ScalingMatrix * lateralModel.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
             output.Torque = ToVector(tempMatrix.ToColumnMajorArray()); // Torque profile vs. depth
             output.BendingMomentX = Mb_x;// Bending moment x-component profile
             output.BendingMomentY = Mb_y;// Bending moment y-component profile
@@ -815,7 +821,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.SecondDerivativeSensorBendingAngleY = Theta_y_ddot; // bending angle second derivative y-component
                 output.SensorPipeInclination = simulationParameters.Trajectory.thetaVec[simulationParameters.Drillstring.IndexSensor];
                 output.SensorPipeAzimuthAt = simulationParameters.Trajectory.phiVec[simulationParameters.Drillstring.IndexSensor];
-                output.SensorTension = tension[simulationParameters.Drillstring.IndexSensor];
+                output.SensorTension = lateralModel.Tension[simulationParameters.Drillstring.IndexSensor];
                 output.SensorTorque = output.Torque[simulationParameters.Drillstring.IndexSensor];
 
                 CalculateInLocalFrame();

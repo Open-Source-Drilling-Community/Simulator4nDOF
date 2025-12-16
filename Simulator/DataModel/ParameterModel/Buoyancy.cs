@@ -47,7 +47,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Vector<double> drag = Vector<double>.Build.Dense(lc.NL + 1);
             Vector<double> tension = Vector<double>.Build.Dense(lc.NL + 1);
 
-            var cumTrapz = CumTrapz(lc.xL, Reverse(dsigma_dx));
+            var cumTrapz = CummulativeTrapezoidal(lc.xL, Reverse(dsigma_dx));
 
             tension = Reverse(cumTrapz) + axialBuoyancyForceChangeOfDiameters - drag;
 
@@ -65,8 +65,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             annularDensity = LinearInterpolate(annulusMD_prof, annularDensity_prof, lc.xL);
 
             // Compute hydrostatic pressures
-            hydrostaticStringPressure = CumTrapz(ExtendVectorStart(0, t.TVDVec), Constants.g * stringDensity);
-            hydrostaticAnnularPressure = CumTrapz(ExtendVectorStart(0, t.TVDVec), Constants.g * annularDensity);
+            hydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.g * stringDensity);
+            hydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.g * annularDensity);
 
             // Calculate buoyant weight using the appropriate method
             double[] Aie = new double[ds.InnerArea.Count() + 1];

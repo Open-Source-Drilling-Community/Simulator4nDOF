@@ -242,7 +242,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             return secondDerivative;
         }
 
-        public static double[] CumTrapz(double[] x, double[] y)
+        public static double[] CummulativeTrapezoidal(double[] x, double[] y)
         {
             double[] result = new double[y.Length];
             result[0] = 0;
@@ -253,9 +253,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             return result;
         }
 
-        public static Vector<double> CumTrapz(Vector<double> x, Vector<double> y)
+        public static Vector<double> CummulativeTrapezoidal(Vector<double> x, Vector<double> y)
         {
-            return ToVector(CumTrapz( x.ToArray(), y.ToArray()));
+            return ToVector(CummulativeTrapezoidal( x.ToArray(), y.ToArray()));
         }
     }
 }
