@@ -11,7 +11,7 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
-    public class ODE
+    public class LateralModel
     {
         public Vector<double> LateralModelDisplacementX;
         public Vector<double> LateralModelDisplacementY;
@@ -28,9 +28,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         
         
         public Vector<double> OL_dot;//?
-        public Vector<double> OS_dot;//?
-        
-
-
+        public Vector<double> OS_dot;//?        
     }
 }

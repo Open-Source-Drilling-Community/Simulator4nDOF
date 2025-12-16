@@ -334,14 +334,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> OL_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
             Vector<double> OS_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
             // Force vectors
-            Vector<double> Fc_t = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Tangential coulomb force
-            Vector<double> Fc_a = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Axial coulomb force
-            Vector<double> F_N = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Normal lateral collision force
-            Vector<double> VL_dot = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Lumped element axial acceleration
+            Vector<double> TangentialCoulombFrictionForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Tangential coulomb force
+            Vector<double> AxialCoulombFrictionForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Axial coulomb force
+            Vector<double> NormalCollisionForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Normal lateral collision force
+            Vector<double> LumpedParameterAxialAccelaration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);//Lumped element axial acceleration
             Vector<double> inverted_slip_condition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
-            Vector<double> Fstatic_t = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
-            Vector<double> Fstatic_a = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> TangentialStaticForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            Vector<double> AxialStaticForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
             double wb = 0.0;
             double tb = 0.0;
@@ -360,12 +360,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Vector<double> VL_vec = ExtendVectorStart(Vtd, state.LumpedElementAxialVelocity);
 
                 // Left boundaries
-                Vector<double> downwardTorsionalWabeLeftBoundary = -upwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
-                Vector<double> upwardTorsionalWabeLeftBoundary = -upwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
+                Vector<double> downwardTorsionalWaveLeftBoundary = -upwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
+                Vector<double> upwardTorsionalWaveLeftBoundary = -upwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
 
                 // Right boundaries
-                Vector<double> downwardAxialWabeRightBoundary = -downwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-                Vector<double> upwardAxialWabeRightBoundary = -downwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+                Vector<double> downwardAxialWaveRightBoundary = -downwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
+                Vector<double> upwardAxialWaveRightBoundary = -downwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
 
                 // Bit rock interaction
                 // Bit velocity
@@ -424,7 +424,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                 }
                 // Augment Riemann invariants with interface values
-                var a_pad = downwardTorsionalWabeLeftBoundary.ToRowMatrix().Stack(downwardTorsionalWave);
+                var a_pad = downwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(downwardTorsionalWave);
 
                 //  var rows = aa.RowCount + 1; // Extra row for aa_left
                 //  var cols = aa.ColumnCount;
@@ -453,9 +453,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 //      u_pad.SetRow(i + 1, uu.Row(i));
                 //  }
 
-                var b_pad = upwardTorsionalWave.Stack(downwardAxialWabeRightBoundary.ToRowMatrix());
-                var u_pad = upwardTorsionalWabeLeftBoundary.ToRowMatrix().Stack(downwardAxialWave);
-                var v_pad = upwardAxialWave.Stack(upwardAxialWabeRightBoundary.ToRowMatrix());
+                var b_pad = upwardTorsionalWave.Stack(downwardAxialWaveRightBoundary.ToRowMatrix());
+                var u_pad = upwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(downwardAxialWave);
+                var v_pad = upwardAxialWave.Stack(upwardAxialWaveRightBoundary.ToRowMatrix());
                 // Stack a row vector bb_right on top of matrix bb
                 // var b_pad = Matrix<double>.Build.Dense(rows, cols);
                 // b_pad.SetRow(0, bb_right.ToArray());  // Set the first row from bb_right
@@ -560,9 +560,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // The wall is modeled as a spring-dashpot system with a spring constant simulationParameters.Wellbore.kw and a linear damping coefficient
                 // simulationParameters.Wellbore.dw. The magnitude of the normal force then depends on the lateral displacement
                 // of the drill string inside the borehole wall, which undergoes elastic deformation.
-                F_N = simulationParameters.Wellbore.kw * (rc - simulationParameters.Wellbore.rc).PointwiseMultiply(iC) + simulationParameters.Wellbore.dw * r_dot.PointwiseMultiply(iC);
-                if (F_N.Count > 1)
-                    F_N[F_N.Count - 2] += simulationInput.ForceToInduceBitWhirl;
+                NormalCollisionForce = simulationParameters.Wellbore.kw * (rc - simulationParameters.Wellbore.rc).PointwiseMultiply(iC) + simulationParameters.Wellbore.dw * r_dot.PointwiseMultiply(iC);
+                if (NormalCollisionForce.Count > 1)
+                    NormalCollisionForce[NormalCollisionForce.Count - 2] += simulationInput.ForceToInduceBitWhirl;
 
 
                 phi_dot = (state.Yc_dot.PointwiseMultiply(state.Xc) - state.Xc_dot.PointwiseMultiply(state.Yc)).PointwiseDivide(Square(rc) + Constants.eps);
@@ -630,7 +630,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
                 // Compute forces required to enter static friction condition(i.e., no axial movement and rolling without slip)
 
-                Fstatic_a = 1.0 / simulationParameters.InnerLoopTimeStep * state.LumpedElementAxialVelocity.PointwiseMultiply(simulationParameters.Drillstring.LumpedElementMass) + for_m - for_p - simulationParameters.Drillstring.CalculatedAxialDamping * state.LumpedElementAxialVelocity;
+                AxialStaticForce = 1.0 / simulationParameters.InnerLoopTimeStep * state.LumpedElementAxialVelocity.PointwiseMultiply(simulationParameters.Drillstring.LumpedElementMass) + for_m - for_p - simulationParameters.Drillstring.CalculatedAxialDamping * state.LumpedElementAxialVelocity;
 
                 theta_ddot_noslip = Vector<double>.Build.Dense(simulationParameters.Drillstring.LumpedElementMomentOfInertia.Count());
                 var denominator = simulationParameters.Drillstring.LumpedElementMomentOfInertia + (simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass).PointwiseMultiply(Square(simulationParameters.Drillstring.OuterRadius)) -
@@ -677,18 +677,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                      simulationParameters.Drillstring.SleeveInnerRadius / simulationParameters.Drillstring.SleeveOuterRadius * F_S[i] + simulationParameters.Drillstring.EccentricMass[index] * simulationParameters.Drillstring.Eccentricity[index] * state.SleeveAngularVelocity[i] * state.SleeveAngularVelocity[i] * Math.Sin(state.Theta_S[i] - phi[index]));
                 }
 
-                Fstatic_t = Vector<double>.Build.Dense(simulationParameters.Drillstring.LumpedElementMomentOfInertia.Count());
-                Fstatic_t = simulationParameters.Drillstring.LumpedElementMomentOfInertia.PointwiseDivide(Square(simulationParameters.Drillstring.OuterRadius)).PointwiseMultiply(r_dot.PointwiseMultiply(phi_dot) + rc.PointwiseMultiply(phi_ddot_noslip)) + (tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity).PointwiseDivide(simulationParameters.Drillstring.OuterRadius);
+                TangentialStaticForce = Vector<double>.Build.Dense(simulationParameters.Drillstring.LumpedElementMomentOfInertia.Count());
+                TangentialStaticForce = simulationParameters.Drillstring.LumpedElementMomentOfInertia.PointwiseDivide(Square(simulationParameters.Drillstring.OuterRadius)).PointwiseMultiply(r_dot.PointwiseMultiply(phi_dot) + rc.PointwiseMultiply(phi_ddot_noslip)) + (tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity).PointwiseDivide(simulationParameters.Drillstring.OuterRadius);
                 for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
                     int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
-                    Fstatic_t[index] = (simulationParameters.Drillstring.SleeveMassMomentOfInertia / (simulationParameters.Drillstring.SleeveOuterRadius * simulationParameters.Drillstring.SleeveOuterRadius)) * (r_dot[index] * phi_dot[index] + rc[index] * phi_ddot_noslip[index]) + simulationParameters.Drillstring.SleeveInnerRadius / simulationParameters.Drillstring.SleeveOuterRadius * F_S[i];
+                    TangentialStaticForce[index] = (simulationParameters.Drillstring.SleeveMassMomentOfInertia / (simulationParameters.Drillstring.SleeveOuterRadius * simulationParameters.Drillstring.SleeveOuterRadius)) * (r_dot[index] * phi_dot[index] + rc[index] * phi_ddot_noslip[index]) + simulationParameters.Drillstring.SleeveInnerRadius / simulationParameters.Drillstring.SleeveOuterRadius * F_S[i];
                 }
 
                 Vector<double> VBar = (Square(V_a) + Square(V_t)).PointwiseSqrt() + Constants.eps;
-                Vector<double> FResBar = (Square(Fstatic_a) + Square(Fstatic_t)).PointwiseSqrt() + Constants.eps;
+                Vector<double> FResBar = (Square(AxialStaticForce) + Square(TangentialStaticForce)).PointwiseSqrt() + Constants.eps;
 
-                Vector<double> FcTh = F_N.PointwiseMultiply(simulationParameters.Friction.mu_s); // static force
+                Vector<double> FcTh = NormalCollisionForce.PointwiseMultiply(simulationParameters.Friction.mu_s); // static force
 
                 for (int j = 0; j < simulationParameters.LumpedCells.NL; j++)
                 {
@@ -719,22 +719,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Fc_a and Fc_t are axial and tangential components of the coloumb friction force between the borehole and the 
                 // lumped element 
                 Vector<double> Fc = inverted_slip_condition.PointwiseMultiply((FResBar.PointwiseMinimum(FcTh)).PointwiseMaximum(-1.0 * FcTh)) +
-                    state.slip_condition.PointwiseMultiply(F_N).PointwiseMultiply(simulationParameters.Friction.mu_k + (simulationParameters.Friction.mu_s - simulationParameters.Friction.mu_k).PointwiseMultiply((-simulationParameters.Friction.stribeck * VBar).PointwiseExp()));
-                Fc_a = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(Fstatic_a.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_a).PointwiseDivide(VBar);
-                Fc_t = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(Fstatic_t.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_t).PointwiseDivide(VBar);
+                    state.slip_condition.PointwiseMultiply(NormalCollisionForce).PointwiseMultiply(simulationParameters.Friction.mu_k + (simulationParameters.Friction.mu_s - simulationParameters.Friction.mu_k).PointwiseMultiply((-simulationParameters.Friction.stribeck * VBar).PointwiseExp()));
+                AxialCoulombFrictionForce = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(AxialStaticForce.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_a).PointwiseDivide(VBar);
+                TangentialCoulombFrictionForce = inverted_slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(TangentialStaticForce.PointwiseDivide(FResBar)) + state.slip_condition.PointwiseMultiply(Fc).PointwiseMultiply(V_t).PointwiseDivide(VBar);
 
                 //for the elements with sleeves, account for reduction in axial friction due to the spur wheels
                 for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
                     int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
-                    Fc_a[index] = Fc_a[index] * (1 - simulationParameters.Drillstring.AxialFrictionReduction);
-                    Fc_t[index] = Math.Sqrt(Fc[index] * Fc[index] - Fc_a[index] * Fc_a[index]) * Math.Sign(Fc_t[index]);
+                    AxialCoulombFrictionForce[index] = AxialCoulombFrictionForce[index] * (1 - simulationParameters.Drillstring.AxialFrictionReduction);
+                    TangentialCoulombFrictionForce[index] = Math.Sqrt(Fc[index] * Fc[index] - AxialCoulombFrictionForce[index] * AxialCoulombFrictionForce[index]) * Math.Sign(TangentialCoulombFrictionForce[index]);
                 }
 
                 // Solve Lumped ODEs -check for numerical instability (fix by decreasing simulationParameters.InnerLoopTimeStep, increasing I_L, M_L, or increasing simulationParameters.Drillstring.kt, simulationParameters.ka, simulationParameters.kl)
                 state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / simulationParameters.Wellbore.I_TD * simulationParameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - tauTD);
 
-                OL_dot = (tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity - Fc_t.PointwiseMultiply(simulationParameters.Drillstring.OuterRadius)).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMomentOfInertia);
+                OL_dot = (tau_m - tau_p - simulationParameters.Drillstring.CalculatedTorsionalDamping * state.LumpedElementAngularVelocity - TangentialCoulombFrictionForce.PointwiseMultiply(simulationParameters.Drillstring.OuterRadius)).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMomentOfInertia);
                 for (int i = 0; i < simulationParameters.Drillstring.SleeveIndexPosition.Count; i++)
                 {
                     int index = (int)simulationParameters.Drillstring.SleeveIndexPosition[i];
@@ -742,16 +742,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
 
                 // Extract specific elements: Fc_t(simulationParameters.Drillstring.iS)
-                var result = Vector<double>.Build.Dense(simulationParameters.Drillstring.SleeveIndexPosition.Select(index => Fc_t[(int)index]).ToArray());
+                var result = Vector<double>.Build.Dense(simulationParameters.Drillstring.SleeveIndexPosition.Select(index => TangentialCoulombFrictionForce[(int)index]).ToArray());
 
                 OS_dot = 1.0 / simulationParameters.Drillstring.SleeveMassMomentOfInertia * simulationParameters.InnerLoopTimeStep * (F_S * simulationParameters.Drillstring.SleeveInnerRadius - simulationParameters.Drillstring.SleeveOuterRadius * result);
-                VL_dot = (for_m - for_p - simulationParameters.Drillstring.CalculatedAxialDamping * state.LumpedElementAxialVelocity - Fc_a).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass);
+                LumpedParameterAxialAccelaration = (for_m - for_p - simulationParameters.Drillstring.CalculatedAxialDamping * state.LumpedElementAxialVelocity - AxialCoulombFrictionForce).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass);
 
                 state.Theta = state.Theta + state.LumpedElementAngularVelocity * simulationParameters.InnerLoopTimeStep;
                 state.Theta_S = state.Theta_S + state.SleeveAngularVelocity * simulationParameters.InnerLoopTimeStep;
                 state.LumpedElementAngularVelocity = state.LumpedElementAngularVelocity + OL_dot * simulationParameters.InnerLoopTimeStep;
                 state.SleeveAngularVelocity = state.SleeveAngularVelocity + OS_dot * simulationParameters.InnerLoopTimeStep;
-                state.LumpedElementAxialVelocity = state.LumpedElementAxialVelocity + VL_dot * simulationParameters.InnerLoopTimeStep;
+                state.LumpedElementAxialVelocity = state.LumpedElementAxialVelocity + LumpedParameterAxialAccelaration * simulationParameters.InnerLoopTimeStep;
 
                 // lateral forces due to mass imbalance
                 // The imbalance force comes from the assumption that the pipe element center of mass i slocated at a distance from its geometric center, 
@@ -773,8 +773,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Ff_x and Ff_y are forces caused by the fluid-structure interaction
                 // Fk_x and Fk_y are lateral forces due to bending
                 // Fe_x and Fe_y are lateral forces due to mass imbalance
-                Xc_ddot = (Fk_x + F_prestress_x + Ff_x + Fe_x - simulationParameters.Drillstring.CalculateLateralDamping * state.Xc_dot - F_N.PointwiseMultiply(phi.PointwiseCos()) + Fc_t.PointwiseMultiply(phi.PointwiseSin())).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass);
-                Yc_ddot = (Fk_y + F_prestress_y + Ff_y + Fe_y - simulationParameters.Drillstring.CalculateLateralDamping * state.Yc_dot - F_N.PointwiseMultiply(phi.PointwiseSin()) - Fc_t.PointwiseMultiply(phi.PointwiseCos())).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass);
+                Xc_ddot = (Fk_x + F_prestress_x + Ff_x + Fe_x - simulationParameters.Drillstring.CalculateLateralDamping * state.Xc_dot - NormalCollisionForce.PointwiseMultiply(phi.PointwiseCos()) + TangentialCoulombFrictionForce.PointwiseMultiply(phi.PointwiseSin())).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass);
+                Yc_ddot = (Fk_y + F_prestress_y + Ff_y + Fe_y - simulationParameters.Drillstring.CalculateLateralDamping * state.Yc_dot - NormalCollisionForce.PointwiseMultiply(phi.PointwiseSin()) - TangentialCoulombFrictionForce.PointwiseMultiply(phi.PointwiseCos())).PointwiseDivide(simulationParameters.Drillstring.LumpedElementMass + simulationParameters.Drillstring.FluidAddedMass);
 
                 state.Xc = state.Xc + state.Xc_dot * simulationParameters.InnerLoopTimeStep;
                 state.Xc_dot = state.Xc_dot + Xc_ddot * simulationParameters.InnerLoopTimeStep;
@@ -889,7 +889,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.BitVelocity = state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
 
             // Parse outputs
-            output.NormalForceProfileStiffString = F_N; // Pipe shear strain 
+            output.NormalForceProfileStiffString = NormalCollisionForce; // Pipe shear strain 
             output.NormalForceProfileSoftString = F_N_softstring;
             output.TensionProfile = tension; // Tension profile
 
@@ -897,7 +897,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.Torque = ToVector(tempMatrix.ToColumnMajorArray()); // Torque profile vs. depth
             output.BendingMomentX = Mb_x;// Bending moment x-component profile
             output.BendingMomentY = Mb_y;// Bending moment y-component profile
-            output.TangentialForceProfile = Fc_t;// Bending moment y-component profile Tangential force profile
+            output.TangentialForceProfile = TangentialCoulombFrictionForce;// Bending moment y-component profile Tangential force profile
             output.WeightOnBit = wb;  // Weight on bit
             output.TorqueOnBit = tb;  // Torque on bit
             output.Depth = simulationParameters.LumpedCells.xL;
@@ -927,7 +927,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.SensorWhirlAngle = phi[simulationParameters.Drillstring.IndexSensor]; //whirl angle
                 output.SensorRadialSpeed = r_dot[simulationParameters.Drillstring.IndexSensor]; //radial velocity
                 output.SensorWhirlSpeed = phi_dot[simulationParameters.Drillstring.IndexSensor]; //whirl velocity
-                output.SensorAxialAcceleration = VL_dot[simulationParameters.Drillstring.IndexSensor]; //axial acceleration
+                output.SensorAxialAcceleration = LumpedParameterAxialAccelaration[simulationParameters.Drillstring.IndexSensor]; //axial acceleration
                 output.SensorAngularAcceleration = theta_ddot; // angular acceleration
                 output.SensorRadialAcceleration = r_ddot; // radial acceleration
                 output.SensorWhirlAcceleration = phi_ddot; // whirl acceleration
