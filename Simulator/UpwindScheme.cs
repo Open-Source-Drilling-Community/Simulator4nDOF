@@ -15,8 +15,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
     {     
         public static void IntegrationStep(AxialTorsionalModel model, SimulationParameters simulationParameters)
         {
-            double coeffTorsional = (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed;
-            double coeffAxial = (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed;         
             model.DownwardTorsionalWave = model.DownwardTorsionalWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(model.DownwardTorsionalWaveStackedWithLeftBoundary);
             model.UpwardTorsionalWave = model.UpwardTorsionalWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(model.UpwardTorsionalWaveStackedWithLeftBoundary);
             model.DownwardAxialWave = model.DownwardAxialWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(model.DownwardAxialWaveStackedWithRightBoundary);

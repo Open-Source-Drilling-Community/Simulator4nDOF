@@ -67,7 +67,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (state.onBottom)
             {
                 // Calculate torque on bit and weight on bit
-                tb = tc + tf + g_tt;
+                tc = tc + tf + g_tt;
                 wb = wc + wf + g_wt;
                 Vector<double> l_pad = Vector<double>.Build.Dense(state.DepthOfCut.Count + 1);
                 l_pad[0] = 0; // Left padding

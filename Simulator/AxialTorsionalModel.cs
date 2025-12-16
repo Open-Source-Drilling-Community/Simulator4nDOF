@@ -24,14 +24,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Matrix<double> DownwardAxialWaveStackedWithRightBoundary; // Downward traveling wave, axial
         public Matrix<double> UpwardAxialWaveStackedWithRightBoundary; // Upward traveling wave, axial
 
-
-
         public Vector<double> DownwardTorsionalWaveLeftBoundary;
         public Vector<double> UpwardTorsionalWaveLeftBoundary;
         public Vector<double> DownwardAxialWaveRightBoundary;
         public Vector<double> UpwardAxialWaveRightBoundary;
         public Vector<double> OL_vec;
         public Vector<double> VL_vec;
+
+        public double WeightOnBit;
+        public double TorqueOnBit;
+        
 
         public AxialTorsionalModel(State state, SimulationParameters simulationParameters, Input simulationInput)
         {
@@ -53,6 +55,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             UpwardTorsionalWaveStackedWithLeftBoundary = UpwardTorsionalWave.Stack(DownwardAxialWaveRightBoundary.ToRowMatrix());               
             DownwardAxialWaveStackedWithRightBoundary = UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(DownwardAxialWave);
             UpwardAxialWaveStackedWithRightBoundary = UpwardAxialWave.Stack(UpwardAxialWaveRightBoundary.ToRowMatrix());        
+            WeightOnBit = 0.0;
+            TorqueOnBit = 0.0;
         }
     }
 }

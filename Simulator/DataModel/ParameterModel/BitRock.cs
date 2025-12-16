@@ -3,6 +3,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class BitRock
     {
+        
+            
         /// <summary>
         /// [-] Bit - rock friction coefficient(used in both Detournay and MSE model)
         /// </summary>

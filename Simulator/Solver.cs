@@ -222,10 +222,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             
             // Wave equations are transformed into their Riemann invariants
             AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);
-            //axialTorsionalModel.DownwardTorsionalWave = state.PipeAngularVelocity + simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Downward traveling wave, torsional
-            //axialTorsionalModel.UpwardTorsionalWave = state.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
-            //axialTorsionalModel.DownwardAxialWave = state.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
-            //axialTorsionalModel.UpwardAxialWave = state.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
        
             Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
             Matrix<double> scalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
@@ -346,9 +342,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> TangentialStaticForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
             Vector<double> AxialStaticForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
 
-            double wb = 0.0;
-            double tb = 0.0;
-
             Vector<double> Mb_x;//Bending Moments
             Vector<double> Mb_y;//Bending Moments
             
@@ -356,101 +349,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
-                //AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);
-                 
-                
-                double Vtd = simulationInput.CalculateSurfaceAxialVelocity; // Top drive axial velocity
-
-                // Add the scalar to the front of the vector
-                Vector<double> OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.LumpedElementAngularVelocity);
-                Vector<double> VL_vec = ExtendVectorStart(Vtd, state.LumpedElementAxialVelocity);
-
-                // Left boundaries
-                Vector<double> DownwardTorsionalWaveLeftBoundary = -axialTorsionalModel.UpwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
-                Vector<double> UpwardTorsionalWaveLeftBoundary = -axialTorsionalModel.UpwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
-
-                // Right boundaries
-                Vector<double> DownwardAxialWaveRightBoundary = -axialTorsionalModel.DownwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-                Vector<double> UpwardAxialWaveRightBoundary = -axialTorsionalModel.DownwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
-
-                // Bit rock interaction
-                // Bit velocity
-                state.BitVelocity = 0.5 * (axialTorsionalModel.DownwardAxialWave[simulationParameters.LumpedCells.PL - 1, axialTorsionalModel.DownwardAxialWave.ColumnCount - 1] + axialTorsionalModel.UpwardAxialWave[simulationParameters.LumpedCells.PL - 1, axialTorsionalModel.UpwardAxialWave.ColumnCount - 1]);
-
-                double angularVelocityBottom;
-                if (!configuration.UseMudMotor)
-                    angularVelocityBottom = 0.5 * (axialTorsionalModel.DownwardTorsionalWave[simulationParameters.LumpedCells.PL - 1, axialTorsionalModel.DownwardTorsionalWave.ColumnCount - 1] + axialTorsionalModel.UpwardTorsionalWave[simulationParameters.LumpedCells.PL - 1, axialTorsionalModel.UpwardTorsionalWave.ColumnCount - 1]);
-                else
-                    angularVelocityBottom = state.MudRotorAngularVelocity;
-
-
-                double[] bitForces = simulationParameters.BitRock.CalculateInteractionForce(state, angularVelocityBottom, axialTorsionalModel.DownwardTorsionalWave, simulationParameters);
-                tb = bitForces[0];
-                wb = bitForces[1];
-              
-                // manage the bit sticking off bottom condition
-                if (!state.onBottom)
-                {
-                    double omega_ = state.LumpedElementAngularVelocity[state.LumpedElementAngularVelocity.Count - 1];
-                    if (simulationInput.StickingBoolean)
-                    {
-                        int lastIndex = simulationParameters.Drillstring.ShearModuli.Count - 1;
-                        Vector<double> a_t = axialTorsionalModel.UpwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1);
-                        Vector<double> a_a = axialTorsionalModel.UpwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1);
-                        tb = simulationParameters.Drillstring.PipePolarMoment[lastIndex] * simulationParameters.Drillstring.ShearModuli[lastIndex] / simulationParameters.Drillstring.TorsionalWaveSpeed * a_t[a_t.Count - 1];
-                        wb = simulationParameters.Drillstring.PipeArea[lastIndex] * simulationParameters.Drillstring.YoungModuli[lastIndex] / simulationParameters.Drillstring.AxialWaveSpeed * a_a[a_t.Count - 1];
-                    }
-                    else
-                    {
-                        double normalForce_ = simulationInput.BottomExtraNormalForce;
-                        if (normalForce_ > 0)
-                        {
-                            double ro_ = simulationParameters.Drillstring.OuterRadius[simulationParameters.Drillstring.OuterRadius.Count - 1];
-                            double Fs_ = normalForce_ * 1.0;
-                            double Fc_ = normalForce_ * 0.5;
-                            double va_ = state.LumpedElementAxialVelocity[state.LumpedElementAxialVelocity.Count - 1];
-                            double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_);
-                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / simulationParameters.Friction.v_c)) * v_ / Math.Sqrt(v_ * v_ + 0.001 * 0.001);
-                            if (Math.Abs(v_) < 1e-6)
-                            {
-                                tb = 0;
-                                wb = 0;
-                            }
-                            else
-                            {
-                                tb = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                                wb = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                            }
-                        }
-                        else
-                        {
-                            tb = 0;
-                            wb = 0;
-                        }
-                    }
-                }
-                      
-                // Augment Riemann invariants with interface values
-                axialTorsionalModel.DownwardTorsionalWaveStackedWithLeftBoundary = DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(axialTorsionalModel.DownwardTorsionalWave);
-                axialTorsionalModel.UpwardTorsionalWaveStackedWithLeftBoundary = axialTorsionalModel.UpwardTorsionalWave.Stack(DownwardAxialWaveRightBoundary.ToRowMatrix());               
-                axialTorsionalModel.DownwardAxialWaveStackedWithRightBoundary = UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(axialTorsionalModel.DownwardAxialWave);
-                axialTorsionalModel.UpwardAxialWaveStackedWithRightBoundary = axialTorsionalModel.UpwardAxialWave.Stack(UpwardAxialWaveRightBoundary.ToRowMatrix());
-          
-                //UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);
+                //Calculate
+                AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                 
+                // Update state using Upwind scheme            
+                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);
              
-                // Update states using Upwind scheme
-                axialTorsionalModel.DownwardTorsionalWave = axialTorsionalModel.DownwardTorsionalWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(axialTorsionalModel.DownwardTorsionalWaveStackedWithLeftBoundary);
-                axialTorsionalModel.UpwardTorsionalWave = axialTorsionalModel.UpwardTorsionalWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(axialTorsionalModel.UpwardTorsionalWaveStackedWithLeftBoundary);
-                axialTorsionalModel.DownwardAxialWave = axialTorsionalModel.DownwardAxialWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(axialTorsionalModel.DownwardAxialWaveStackedWithRightBoundary);
-                axialTorsionalModel.UpwardAxialWave = axialTorsionalModel.UpwardAxialWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(axialTorsionalModel.UpwardAxialWaveStackedWithRightBoundary);
-          
-                //double coeffTorsional = (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.TorsionalWaveSpeed;
-                //double coeffAxial = (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.dxM) * simulationParameters.Drillstring.AxialWaveSpeed;         
-                //axialTorsionalModel.DownwardTorsionalWave = axialTorsionalModel.DownwardTorsionalWave - coeffTorsional * DiffRows(DownwardTorsionalWaveStackedWithLeftBoundary);
-                //axialTorsionalModel.UpwardTorsionalWave = axialTorsionalModel.UpwardTorsionalWave + coeffTorsional * DiffRows(UpwardTorsionalWaveStackedWithLeftBoundary);
-                //axialTorsionalModel.DownwardAxialWave = axialTorsionalModel.DownwardAxialWave - coeffAxial * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(DownwardAxialWaveStackedWithRightBoundary);
-                //axialTorsionalModel.UpwardAxialWave = axialTorsionalModel.UpwardAxialWave + coeffAxial * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(UpwardAxialWaveStackedWithRightBoundary);            
-     
+            
                 // Compute torque from the top drive on the first distributed element
                 double tauTD = (simulationParameters.Drillstring.PipePolarMoment[0] * simulationParameters.Drillstring.ShearModuli[0]) / (2 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (axialTorsionalModel.DownwardTorsionalWave[0, 0] - axialTorsionalModel.UpwardTorsionalWave[0, 0]);
 
@@ -483,7 +387,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (!configuration.UseMudMotor)
                 {
                     tm = 0;
-                    tau_p = Vector<double>.Build.DenseOfArray(temp.Append(tb).ToArray());
+                    tau_p = Vector<double>.Build.DenseOfArray(temp.Append(axialTorsionalModel.TorqueOnBit).ToArray());
                 }
                 else
                 {
@@ -507,7 +411,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Vector<double> uu_sub = axialTorsionalModel.DownwardAxialWave.Row(0).SubVector(1, axialTorsionalModel.DownwardAxialWave.ColumnCount - 1);
                 Vector<double> vv_sub = axialTorsionalModel.UpwardAxialWave.Row(0).SubVector(1, axialTorsionalModel.UpwardAxialWave.ColumnCount - 1);
                 Vector<double> tempVector = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * A_sub.PointwiseMultiply(E_sub).PointwiseMultiply(uu_sub - vv_sub);
-                Vector<double> for_p = Vector<double>.Build.DenseOfArray(tempVector.Append(wb).ToArray());
+                Vector<double> for_p = Vector<double>.Build.DenseOfArray(tempVector.Append(axialTorsionalModel.WeightOnBit).ToArray());
 
                 rc = (Square(state.Xc) + Square(state.Yc)).PointwiseSqrt();
 
@@ -760,7 +664,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 {
                     state.MudStatorAngularVelocity = state.LumpedElementAngularVelocity[state.LumpedElementAngularVelocity.Count - 1];
                     state.MudRotorAngularVelocity = state.MudRotorAngularVelocity + simulationParameters.InnerLoopTimeStep / (simulationParameters.MudMotor.I_rotor + simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * Math.Pow(simulationParameters.MudMotor.N_rotor, 2)) *
-                        (OL_dot[state.LumpedElementAngularVelocity.Count - 1] * simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * simulationParameters.MudMotor.N_stator * simulationParameters.MudMotor.N_rotor + tm - tb);
+                        (OL_dot[state.LumpedElementAngularVelocity.Count - 1] * simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * simulationParameters.MudMotor.N_stator * simulationParameters.MudMotor.N_rotor + tm - axialTorsionalModel.TorqueOnBit);
                 }
             }
 
@@ -872,8 +776,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.BendingMomentX = Mb_x;// Bending moment x-component profile
             output.BendingMomentY = Mb_y;// Bending moment y-component profile
             output.TangentialForceProfile = TangentialCoulombFrictionForce;// Bending moment y-component profile Tangential force profile
-            output.WeightOnBit = wb;  // Weight on bit
-            output.TorqueOnBit = tb;  // Torque on bit
+            output.WeightOnBit = axialTorsionalModel.WeightOnBit;  // Weight on bit
+            output.TorqueOnBit = axialTorsionalModel.TorqueOnBit;  // Torque on bit
             output.Depth = simulationParameters.LumpedCells.xL;
             output.SensorMb_x = Mb_x[simulationParameters.Drillstring.IndexSensor];
             output.SensorMb_y = Mb_y[simulationParameters.Drillstring.IndexSensor];

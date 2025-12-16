@@ -46,9 +46,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             double[] bitForces = parameters.BitRock.
                 CalculateInteractionForce(state, angularVelocityBottom, model.DownwardTorsionalWave, parameters);
-            double tb = bitForces[0];
-            double wb = bitForces[1];    
-                  // manage the bit sticking off bottom condition
+            model.TorqueOnBit = bitForces[0];
+            model.WeightOnBit = bitForces[1];    
+            // manage the bit sticking off bottom condition
             if (!state.onBottom)
             {
                 double omega_ = state.LumpedElementAngularVelocity[state.LumpedElementAngularVelocity.Count - 1];
@@ -57,8 +57,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;
                     Vector<double> TorsionalAcceleration = model.UpwardTorsionalWave.Row(parameters.LumpedCells.PL - 1);
                     Vector<double> AxialAcceleration = model.UpwardAxialWave.Row(parameters.LumpedCells.PL - 1);
-                    tb = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] / parameters.Drillstring.TorsionalWaveSpeed * TorsionalAcceleration[TorsionalAcceleration.Count - 1];
-                    wb = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] / parameters.Drillstring.AxialWaveSpeed * AxialAcceleration[TorsionalAcceleration.Count - 1];
+                    model.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] / parameters.Drillstring.TorsionalWaveSpeed * TorsionalAcceleration[TorsionalAcceleration.Count - 1];
+                    model.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] / parameters.Drillstring.AxialWaveSpeed * AxialAcceleration[TorsionalAcceleration.Count - 1];
                 }
                 else
                 {
@@ -72,30 +72,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_); //Tangential velocity
                         if (Math.Abs(v_) < 1e-6)
                         {
-                            tb = 0;
-                            wb = 0;
+                            model.TorqueOnBit = 0;
+                            model.WeightOnBit = 0;
 
                         }
                         else
                         {
                             //Commented unnecessary regularization
                             double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / parameters.Friction.v_c)) * v_ / Math.Sqrt(v_ * v_);// + 0.001 * 0.001);                        
-                            tb = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                            wb = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
+                            model.TorqueOnBit = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
+                            model.WeightOnBit = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
                         }
                     }
                     else
                     {
-                        tb = 0;
-                        wb = 0;
+                        model.TorqueOnBit = 0;
+                        model.WeightOnBit = 0;
                     }
                 }
             }   
             model.DownwardTorsionalWaveStackedWithLeftBoundary = model.DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardTorsionalWave);
             model.UpwardTorsionalWaveStackedWithLeftBoundary = model.UpwardTorsionalWave.Stack(model.DownwardAxialWaveRightBoundary.ToRowMatrix());               
             model.DownwardAxialWaveStackedWithRightBoundary = model.UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardAxialWave);
-            model.UpwardAxialWaveStackedWithRightBoundary = model.UpwardAxialWave.Stack(model.UpwardAxialWaveRightBoundary.ToRowMatrix());
-          
+            model.UpwardAxialWaveStackedWithRightBoundary = model.UpwardAxialWave.Stack(model.UpwardAxialWaveRightBoundary.ToRowMatrix());          
         }        
 
     }
