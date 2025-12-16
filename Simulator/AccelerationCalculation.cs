@@ -14,16 +14,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
     public static class AccelerationCalculation
     {
-        public static void AxialTorsionalModel(AxialTorsionalModel model, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
+        public static void PrepareAxialTorsional(AxialTorsionalModel model, State state, SimulationParameters parameters)
         {
-            
-            //Update waves
+            //Update waves            
             model.DownwardAxialWave = state.PipeAngularVelocity + parameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain;
             model.UpwardTorsionalWave = state.PipeAngularVelocity - parameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
             model.DownwardAxialWave = state.PipeAxialVelocity + parameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
             model.UpwardAxialWave = state.PipeAxialVelocity - parameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
-            state.BitVelocity = 0.5 * (model.DownwardAxialWave[parameters.LumpedCells.PL - 1, model.DownwardAxialWave.ColumnCount - 1] + model.UpwardAxialWave[parameters.LumpedCells.PL - 1, model.UpwardAxialWave.ColumnCount - 1]);
+        }
+        public static void AxialTorsionalSystem(AxialTorsionalModel model, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
+        {
             
+            //Create velocity vectors            
             model.OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.LumpedElementAngularVelocity);
             model.VL_vec = ExtendVectorStart(simulationInput.CalculateSurfaceAxialVelocity, state.LumpedElementAxialVelocity);
             // Left boundaries
@@ -33,6 +35,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             model.DownwardAxialWaveRightBoundary = -model.DownwardTorsionalWave.Row(parameters.LumpedCells.PL - 1) + 2 * model.OL_vec.SubVector(1, model.OL_vec.Count - 1);
             model.UpwardAxialWaveRightBoundary = -model.DownwardAxialWave.Row(parameters.LumpedCells.PL - 1) + 2 * model.VL_vec.SubVector(1, model.VL_vec.Count - 1);
 
+            state.BitVelocity = 0.5 * (model.DownwardAxialWave[parameters.LumpedCells.PL - 1, model.DownwardAxialWave.ColumnCount - 1] + model.UpwardAxialWave[parameters.LumpedCells.PL - 1, model.UpwardAxialWave.ColumnCount - 1]);
             
             
             double angularVelocityBottom;
@@ -88,23 +91,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                 }
             }   
-            var a_pad = model.DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardTorsionalWave);
-            var b_pad = model.UpwardTorsionalWave.Stack(model.DownwardAxialWaveRightBoundary.ToRowMatrix());               
-            var u_pad = model.UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardAxialWave);
-            var v_pad = model.UpwardAxialWave.Stack(model.UpwardAxialWaveRightBoundary.ToRowMatrix());
+            model.DownwardTorsionalWaveStackedWithLeftBoundary = model.DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardTorsionalWave);
+            model.UpwardTorsionalWaveStackedWithLeftBoundary = model.UpwardTorsionalWave.Stack(model.DownwardAxialWaveRightBoundary.ToRowMatrix());               
+            model.DownwardAxialWaveStackedWithRightBoundary = model.UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardAxialWave);
+            model.UpwardAxialWaveStackedWithRightBoundary = model.UpwardAxialWave.Stack(model.UpwardAxialWaveRightBoundary.ToRowMatrix());
           
         }        
-        public static double[] NormalDirection(double[] position)
-        {
-
-            return new double[]{};
-        }
-        
-        public static double[] TangentialDirection(double[] normalDirection, double[] velocityVector)
-        {
-
-            return new double[]{};
-        }
 
     }
 }
