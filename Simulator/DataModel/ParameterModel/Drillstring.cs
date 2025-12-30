@@ -955,6 +955,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 SleeveIndexPosition[i] = Array.FindIndex(lumpedCells.xL.ToArray(), x => x > MD - lumpedCells.dxL - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
             }
             SleeveIndexPosition = Reverse(SleeveIndexPosition);
+        
 
             SleeveMassMomentOfInertia = SteelDensity * SleeveLength * Math.PI / 2 * (Math.Pow(SleeveOuterRadius, 4) - Math.Pow(SleeveInnerRadius, 4)); //  [kg.m^2] Sleeve mass moment of inertia
 

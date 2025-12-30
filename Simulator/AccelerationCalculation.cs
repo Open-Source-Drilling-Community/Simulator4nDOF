@@ -49,14 +49,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                   - Tension;
             Tension = -F_comp;*/
             
-            model.Tension +=  (1 - 2 * parameters.Drillstring.PoissonRatio) * 
+            model.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                 (  
                     AoExtended.PointwiseMultiply(parameters.Buoyancy.annularPressure - parameters.Buoyancy.hydrostaticAnnularPressure) 
                     - AiExtended.PointwiseMultiply(parameters.Buoyancy.stringPressure - parameters.Buoyancy.hydrostaticStringPressure)
                 );   
 
-            Vector<double> kbExtended = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
-            model.BendingStiffness = - (kbExtended - Math.Pow(Math.PI, 2) * model.Tension / (2 * parameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);                                            
+            Vector<double> bendingStiffness = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
+            model.BendingStiffness = - (bendingStiffness - Math.Pow(Math.PI, 2) * model.Tension / (2 * parameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);                                            
             model.PolarMomentTimesShearModuli = parameters.Drillstring.PipePolarMoment.PointwiseMultiply(parameters.Drillstring.ShearModuli); // Element-wise multiplication
             Matrix<double> TorqueMatrix = state.PipeShearStrain.PointwiseMultiply(model.ScalingMatrix * model.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
             Vector<double> torqueFlattened = ToVector(TorqueMatrix.ToColumnMajorArray());
@@ -120,11 +120,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
         }
         public static void AxialTorsionalSystem(AxialTorsionalModel model, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
-        {
-            
+        {            
             //Create velocity vectors            
-            model.OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.LumpedElementAngularVelocity);
-            model.VL_vec = ExtendVectorStart(simulationInput.CalculateSurfaceAxialVelocity, state.LumpedElementAxialVelocity);
+            model.OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity);
+            model.VL_vec = ExtendVectorStart(simulationInput.CalculateSurfaceAxialVelocity, state.AxialVelocity);
             // Left boundaries
             model.DownwardTorsionalWaveLeftBoundary = -model.UpwardTorsionalWave.Row(0) + 2 * model.OL_vec.SubVector(0, model.OL_vec.Count - 1);
             model.UpwardTorsionalWaveLeftBoundary = -model.UpwardAxialWave.Row(0) + 2 * model.VL_vec.SubVector(0, model.VL_vec.Count - 1);
@@ -148,7 +147,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // manage the bit sticking off bottom condition
             if (!state.onBottom)
             {
-                double omega_ = state.LumpedElementAngularVelocity[state.LumpedElementAngularVelocity.Count - 1];
+                double omega_ = state.AngularVelocity[state.AngularVelocity.Count - 1];
                 if (simulationInput.StickingBoolean)
                 {
                     int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;
@@ -165,7 +164,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         double ro_ = parameters.Drillstring.OuterRadius[parameters.Drillstring.OuterRadius.Count - 1];
                         double Fs_ = normalForce_ * 1.0; //Static force
                         double Fc_ = normalForce_ * 0.5; //Kinematic force
-                        double va_ = state.LumpedElementAxialVelocity[state.LumpedElementAxialVelocity.Count - 1]; //Axial velocity
+                        double va_ = state.AxialVelocity[state.AxialVelocity.Count - 1]; //Axial velocity
                         double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_); //Tangential velocity
                         if (Math.Abs(v_) < 1e-6)
                         {
@@ -193,6 +192,54 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             model.DownwardAxialWaveStackedWithRightBoundary = model.UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(model.DownwardAxialWave);
             model.UpwardAxialWaveStackedWithRightBoundary = model.UpwardAxialWave.Stack(model.UpwardAxialWaveRightBoundary.ToRowMatrix());          
         }        
-
+        
+        public static void LateralSystem(LateralModel lateralModel, AxialTorsionalModel axialTorsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
+        {
+            // Compute torque from the top drive on the first distributed element
+            lateralModel.TauTD = (parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0]) / (2 * parameters.Drillstring.TorsionalWaveSpeed) * (axialTorsionalModel.DownwardTorsionalWave[0, 0] - axialTorsionalModel.UpwardTorsionalWave[0, 0]);
+            // Compute torque for every other lumped element apart from top drive - CAN BE MOVED OUTSIDE THE TIMESTEP
+            Vector<double> factor = parameters.Drillstring.PipePolarMoment.PointwiseMultiply(parameters.Drillstring.ShearModuli) / (2.0 * parameters.Drillstring.TorsionalWaveSpeed);
+            // Extract row pPL from aa and bb, then subtract
+            Vector<double> rowDiff = axialTorsionalModel.DownwardTorsionalWave.Row(parameters.LumpedCells.PL - 1) - axialTorsionalModel.UpwardTorsionalWave.Row(parameters.LumpedCells.PL - 1);
+            // Element-wise multiplication of factor with row difference
+            lateralModel.TauM = factor.PointwiseMultiply(rowDiff);
+            
+            Vector<double> factor2 = parameters.Drillstring.PipeArea.PointwiseMultiply(parameters.Drillstring.YoungModuli) / (2.0 * parameters.Drillstring.AxialWaveSpeed);
+            Vector<double> rowDiff2 = axialTorsionalModel.DownwardAxialWave.Row(parameters.LumpedCells.PL - 1) - axialTorsionalModel.UpwardAxialWave.Row(parameters.LumpedCells.PL - 1);
+            lateralModel.ForceM = factor2.PointwiseMultiply(rowDiff2);
+        
+            for (int i = 1; i < lateralModel.TorqueDistribution.Count; i++)
+            {
+                // Populate Torque Distributions
+                lateralModel.TorqueDistribution[i - 1] = parameters.Drillstring.PipePolarMoment[i] * 
+                    parameters.Drillstring.ShearModuli[i] * 
+                    (
+                        axialTorsionalModel.DownwardTorsionalWave.Row(0)[i] -
+                        axialTorsionalModel.UpwardTorsionalWave.Row(0)[i]
+                    ) / (2 * parameters.Drillstring.TorsionalWaveSpeed);
+                lateralModel.ForceDistribution[i - 1] = parameters.Drillstring.PipeArea[i] * 
+                    parameters.Drillstring.YoungModuli[i] * 
+                    (
+                        axialTorsionalModel.DownwardAxialWave.Row(0)[i] -
+                        axialTorsionalModel.UpwardAxialWave.Row(0)[i]
+                    ) / (2 * parameters.Drillstring.AxialWaveSpeed);
+            }
+            //Populate the last element
+            lateralModel.ForceDistribution[lateralModel.ForceDistribution.Count - 1] = axialTorsionalModel.WeightOnBit;
+            if (!configuration.UseMudMotor)
+            {
+                lateralModel.MudTorque = 0;
+                lateralModel.TorqueDistribution[lateralModel.TorqueDistribution.Count - 1] = axialTorsionalModel.TorqueOnBit;               
+            }
+            else
+            {
+                double speedRatio = (state.MudRotorAngularVelocity - state.MudStatorAngularVelocity) / parameters.MudMotor.omega0_motor;              
+                if (speedRatio <= 1)
+                    lateralModel.MudTorque = parameters.MudMotor.T_max_motor * Math.Pow(1 - speedRatio, 1.0 / parameters.MudMotor.alpha_motor);
+                else
+                    lateralModel.MudTorque = -parameters.MudMotor.P0_motor * parameters.MudMotor.V_motor * (speedRatio - 1);
+                lateralModel.TorqueDistribution[lateralModel.TorqueDistribution.Count - 1] = lateralModel.MudTorque;               
+            }            
+        }
     }
 }

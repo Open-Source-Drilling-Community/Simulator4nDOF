@@ -42,8 +42,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             UpwardTorsionalWave = state.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
             DownwardAxialWave = state.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
             UpwardAxialWave = state.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
-            OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.LumpedElementAngularVelocity);
-            VL_vec = ExtendVectorStart(simulationInput.CalculateSurfaceAxialVelocity, state.LumpedElementAxialVelocity);
+            OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity);
+            VL_vec = ExtendVectorStart(simulationInput.CalculateSurfaceAxialVelocity, state.AxialVelocity);
             // Left boundaries
             DownwardTorsionalWaveLeftBoundary = -UpwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
             UpwardTorsionalWaveLeftBoundary = -UpwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);

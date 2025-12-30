@@ -40,6 +40,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             return Vector<double>.Build.DenseOfArray(new double[] { scalar }.Concat(array).ToArray());
         }
 
+
         public static Vector<double> ExtendVectorStart(double scalar, Vector<double> array)
         {
             return Vector<double>.Build.DenseOfArray(new double[] { scalar }.Concat(array).ToArray());

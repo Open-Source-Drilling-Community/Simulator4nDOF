@@ -13,76 +13,34 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
     public class LateralModel
     {
-        public Vector<double> LateralModelDisplacementX;
-        public Vector<double> LateralModelDisplacementY;
-        public Vector<double> LateralModelVelocityX;
-        public Vector<double> LateralModelVelocityY;
-        public Vector<double> LateralModelVelocityZ;        
-        public Vector<double> LateralAccelerationX;
-        public Vector<double> LateralAccelerationY;
-        
-        public Vector<double> LateralWhirlAngle;
-        public Vector<double> LateralWhirlVelocity;        
-        public Vector<double> LateralRadialDisplacement;
-        public Vector<double> LateralRadialVelocity;
-        
+       
+        public Vector<double> NormalCollisionForce;        
         public Vector<double> SoftStringNormalForce;
         public Vector<double> Tension;
         public Vector<double> BendingStiffness;
         public Vector<double> PolarMomentTimesShearModuli;
         public Vector<double> PreStressNormalForce;
         public Vector<double> PreStressBinormalForce;
-        
-        
-
-        
-        public Vector<double> OL_dot;//?
-        public Vector<double> OS_dot;//?        
+                        
         public Matrix<double> ScalingMatrix;
         public Vector<double> ToolFaceAngle;
 
-        //Private variables
-        /*
-        private Vector<double> elementWiseProduct;
-        private Matrix<double> dragMatrix; 
-        private Vector<double> drag_flattened;
-        private Vector<double> drag;
-        private Vector<double> phiVec_dote;
-        private Vector<double> thetaVec_dote;
-        private Vector<double> thetaVece;
-
-        private Vector<double> fN_softstring;
-        private Vector<double> I_fN_softstring;
-        private Vector<double> F_N_softstring;
-        private Vector<double> AiExtende;
-        private Vector<double> AoExtende;
-        private Vector<double> F_comp;
-        private Vector<double> kbExtended;
-        private Vector<double> kb;
-        private Matrix<double> torqueMatrix;
-        private Vector<double> torqueFlattened;
-        private Vector<double> bzExtended;
-        private Vector<double> nzExtended;
-        private Vector<double> curvatureExtended;
-        private Vector<double> curvature_dotExtended;
-        private Vector<double> curvature_ddotExtended;
-        private Vector<double> EExtended;
-        private Vector<double> IExtended;
-        private Vector<double> torsionExtended;
-        private Vector<double> torsion_dotExtended;
-        private Vector<double> diffTorqueExtended;
-        private Vector<double> fB;
-        private Vector<double> I_fB;
-        private Vector<double> fN;
-        Vector<double> I_fN;
-        Vector<double> F_B_prestress;
-        Vector<double> F_N_prestress;
-        Vector<double> expression;
-        Vector<double> signToolFace;
-        Vector<double> dotProduct;
-        */
+        public Vector<double> TorqueDistribution;
+        public Vector<double> ForceDistribution;
+        public double MudTorque;
+        public Vector<double> TauM;
+        public Vector<double> ForceM;        
+        public double TauTD;
+        public Vector<double> HeavesideStep;
+        
         public LateralModel(SimulationParameters simulationParameters, State state)
         {
+            //RadialDisplacement = Vector<double>.Build.Dense(state.Xc.Count);
+            //RadialVelocity = Vector<double>.Build.Dense(state.Xc.Count);             
+            //WhirlAngle = Vector<double>.Build.Dense(state.Xc.Count);
+            //WhirlVelocity = Vector<double>.Build.Dense(state.Xc.Count);             
+
+
             Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
             ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
             Matrix<double> dragMatrix = ScalingMatrix * elementWiseProduct.ToRowMatrix();
@@ -101,7 +59,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             Vector<double> AiExtended = ExtendVectorStart(simulationParameters.Drillstring.InnerArea[0], simulationParameters.Drillstring.InnerArea);
             Vector<double> AoExtended = ExtendVectorStart(simulationParameters.Drillstring.OuterArea[0], simulationParameters.Drillstring.OuterArea);
-            
+               
             /*Vector<double> F_comp = AiExtended.PointwiseMultiply(simulationParameters.Buoyancy.stringPressure - simulationParameters.Buoyancy.hydrostaticStringPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
                                     - AoExtended.PointwiseMultiply(simulationParameters.Buoyancy.annularPressure - simulationParameters.Buoyancy.hydrostaticAnnularPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
                                   - Tension;
@@ -173,7 +131,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             // Compute the toolface angle
             ToolFaceAngle = dotProduct.PointwiseAcos().PointwiseMultiply(signToolFace);
-
+            MudTorque = 0.0;
+            ForceDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipeArea.Count); 
+            TorqueDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipePolarMoment.Count);
+            TauM = Vector<double>.Build.Dense(simulationParameters.Drillstring.ShearModuli.Count);
+            ForceM = Vector<double>.Build.Dense(simulationParameters.Drillstring.YoungModuli.Count);            
+            TauTD = 0.0;
+            HeavesideStep = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
         }
     }
 }

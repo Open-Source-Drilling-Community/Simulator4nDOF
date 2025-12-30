@@ -87,7 +87,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             if (c.TopDriveController == 3)
             {
-                if (state.step > 0)
+                if (state.Step > 0)
                 {
                     omega_0_ZT = omega_0_ZT * Math.Exp(-2 * Math.PI * c.TimeStep / t_en) +
                         state.TopDriveAngularVelocity * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_en));                    

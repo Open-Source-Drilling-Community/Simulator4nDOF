@@ -1162,16 +1162,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor
-                    ? Utilities.ExtendVectorStart(state.TopDriveAngularVelocity, state.LumpedElementAngularVelocity).Append(output.BitRotationInRPM).ToList()
+                    ? Utilities.ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
                     : Utilities.ExtendVectorStart(state.TopDriveAngularVelocity,
-                        Utilities.ToVector(state.LumpedElementAngularVelocity.SubVector(1, state.LumpedElementAngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
+                        Utilities.ToVector(state.AngularVelocity.SubVector(1, state.AngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
                 SleevesAngularVelocity = state.SleeveAngularVelocity.ToList(),
                 RadialClearance = parameters.Wellbore.rc.Append(0).ToList(),
                 LateralDisplacement = output.RadialDisplacement.Append(0).ToList(),
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(u.CalculateSurfaceAxialVelocity, state.LumpedElementAxialVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(u.CalculateSurfaceAxialVelocity, state.AngularVelocity).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
                 Inclination = parameters.Trajectory.thetaVec.Append(parameters.Trajectory.thetaVec.LastOrDefault<double>()).ToList(),
                 Azimuth = parameters.Trajectory.phiVec.Append(parameters.Trajectory.phiVec.LastOrDefault<double>()).ToList(),
@@ -1275,7 +1275,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 for (int i = 0; i < steps; i++)
                 {
                     var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity, setPoints.BottomExtraSideForce, setPoints.DifferenceStaticKineticFriction, setPoints.StribeckCriticalVelocity, setPoints.Sticking);
-                    currentTime = (state.step - 1) * outerTimeStep; // start with 0 sec
+                    currentTime = (state.Step - 1) * outerTimeStep; // start with 0 sec
                     simulation.Progress = currentTime / totalDuration;
 
                     lastState = state;
