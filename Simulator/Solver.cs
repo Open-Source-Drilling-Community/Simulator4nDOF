@@ -254,9 +254,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     double radialDisplacement = Math.Sqrt(state.XDisplacement[i] * state.XDisplacement[i] + state.YDisplacement[i] * state.YDisplacement[i]);   
                     // Calculate the whirl angle 
                     double whirlAngle = Math.Atan2(state.YDisplacement[i], state.XDisplacement[i]);
+                    // Pre-calculate whirl angle sin and cos to avoid multiple calculations
+                    double cosWhirlAngle = Math.Cos(whirlAngle);
+                    double sinWhirlAngle = Math.Sin(whirlAngle);
                     // Calculate the radial velocity
-                    double radialVelocity = state.XVelocity[i] * Math.Cos(whirlAngle) 
-                        + state.YVelocity[i] * Math.Sin(whirlAngle);
+                    double radialVelocity = state.XVelocity[i] * cosWhirlAngle 
+                        + state.YVelocity[i] * sinWhirlAngle;
                     // Calculate whirl velocity
                     double whirlVelocity = (state.YVelocity[i] * state.XDisplacement[i] - state.XVelocity[i] * state.YDisplacement[i])/(radialDisplacement * radialDisplacement + Constants.eps);
                     #endregion
@@ -264,13 +267,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     // Check if there is collision or not and store the Heaveside Step Function
                     double HeavesideStep = radialDisplacement >= simulationParameters.Wellbore.rc[i] ? 1.0 : 0.0;                                    
                     // Calculate normal force
-                    lateralModel.NormalCollisionForce[i] = HeavesideStep * 
+                    double normalCollisionForce =  HeavesideStep * 
                         (
                             simulationParameters.Wellbore.kw * (radialDisplacement - simulationParameters.Wellbore.rc[i]) 
                            + simulationParameters.Wellbore.dw * radialVelocity
                         );  
-                    if (lateralModel.NormalCollisionForce.Count > 1)
-                        lateralModel.NormalCollisionForce[lateralModel.NormalCollisionForce.Count - 2] += simulationInput.ForceToInduceBitWhirl;    
+                                            
+                    if (lateralModel.NormalCollisionForce.Count > 1 && i == lateralModel.NormalCollisionForce.Count - 2)
+                        normalCollisionForce += simulationInput.ForceToInduceBitWhirl;    
                     #endregion
                     #region Elastic Force Calculation
                     // If it is the first element, get the pinned boundary condition
@@ -308,6 +312,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     #endregion
                     // Sleeve braking force
                     double sleeveBrakeForce = hasSleeve ? simulationParameters.Drillstring.SleeveTorsionalDamping[sleeveIndex] * (whirlVelocity - state.SleeveAngularVelocity[sleeveIndex]) : 0;
+                    #region Unbalance Forces
+                    // lateral forces due to mass imbalance
+                    // The imbalance force comes from the assumption that the pipe element center of mass i slocated at a distance from its geometric center, 
+                    // which causes a lateral force and a torque as the pipe is displaced                
+                    double rotationAngle = hasSleeve ? state.SleeveAngularDisplacement[sleeveIndex] : state.AngularDisplacement[i];                                        
+                    double rotationAcceleration = hasSleeve ? state.SleeveAngularAcceleration[sleeveIndex] : state.AngularAcceleration[i];                                        
+                    double unbalanceForceX = simulationParameters.Drillstring.EccentricMass[i] * simulationParameters.Drillstring.Eccentricity[i]*
+                        (
+                            rotationSpeed * rotationSpeed * Math.Cos(rotationAngle)
+                            + state.AngularAcceleration[i] * Math.Sin(rotationAngle)
+                        );
+                    double unbalanceForceY = simulationParameters.Drillstring.EccentricMass[i] * simulationParameters.Drillstring.Eccentricity[i]* 
+                        (
+                            rotationSpeed * rotationSpeed * Math.Sin(rotationAngle)
+                            - rotationAcceleration * Math.Cos(rotationAngle)
+                        );                                                            
+                    #endregion
+                    
+                    
                     #region Coulomb Friction
                     // Axial velocity
                     double axialVelocity = state.AxialVelocity[i];
@@ -315,15 +338,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     double outerRadius = hasSleeve ? simulationParameters.Drillstring.SleeveOuterRadius : simulationParameters.Drillstring.OuterRadius[i];
                     double innerRadius = hasSleeve ? simulationParameters.Drillstring.SleeveInnerRadius : simulationParameters.Drillstring.OuterRadius[i];  
                     double inertia = hasSleeve ? simulationParameters.Drillstring.SleeveMassMomentOfInertia : simulationParameters.Drillstring.LumpedElementMomentOfInertia[i];
-                    double rotationAngle = hasSleeve ? state.SleeveAngularDisplacement[sleeveIndex] : state.AngularDisplacement[i];                     
-                    // ----------------------------- Needs to be corrected! ---------------------------- 
-                    // The tangential velocity must be the difference of the total velocity from the normal velocity.
-                    // The total velocity is calculated by [dx, dy, dz] + omega x R.
-                    // The normal velocity is the projection of the total on the direction of the collision [cos(whirlAngle); sin(whirlAngle); 0]                    
                     double tangentialVelocity = whirlVelocity * radialDisplacement + rotationSpeed * outerRadius;
                     double axialStaticForce = 1.0 / simulationParameters.InnerLoopTimeStep * state.AxialVelocity[i] * simulationParameters.Drillstring.LumpedElementMass[i] 
                             + lateralModel.ForceM[i] - lateralModel.ForceDistribution[i] - simulationParameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i];                    
+                    double sumForcesX = ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX;
+                    double sumForcesY = ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY;
+
+                    double[] totalForce = new double[3] { sumForcesX, sumForcesY, axialStaticForce }; 
+                    double[] normalVector = new double[3] { cosWhirlAngle, sinWhirlAngle, 0 };
                     
+                    
+                    // ----------------------------- Needs to be corrected! ---------------------------- 
+                    // The tangential velocity must be the difference of the total velocity from the normal velocity.
+                    // The total velocity is calculated by [dx, dy, dz] + omega x R.
+                    // The normal velocity is the projection of the total on the direction of the collision [cos(whirlAngle); sin(whirlAngle); 0]                                                                                                    
                     double term1 = (
                                     -2 * (simulationParameters.Drillstring.LumpedElementMass[i] 
                                     + simulationParameters.Drillstring.FluidAddedMass[i]) 
@@ -333,8 +361,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                     / outerRadius * Math.Cos(state.AngularDisplacement[i] - whirlAngle)
                                 ) 
                                 * radialVelocity * whirlVelocity;                   
-                    double term2 = outerRadius * (ElasticForceX + PreStressForceX + fluidForceX) * Math.Sin(whirlAngle);
-                    double term3 = - outerRadius * (ElasticForceY + PreStressForceY + fluidForceY) * Math.Cos(whirlAngle);                                        
+                    double term2 = outerRadius * (ElasticForceX + PreStressForceX + fluidForceX) * sinWhirlAngle;
+                    double term3 = - outerRadius * (ElasticForceY + PreStressForceY + fluidForceY) * cosWhirlAngle;                                        
                     double term4 = - (
                                           lateralModel.TauM[i] 
                                         - lateralModel.TorqueDistribution[i]
@@ -373,8 +401,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                             * Math.Cos(rotationAngle - whirlAngle)) 
                                             * radialVelocity 
                                             * whirlVelocity;
-                        double term2_ = - (ElasticForceX + PreStressForceX + fluidForceX) * Math.Sin(whirlAngle);
-                        double term3_ =   (ElasticForceY + PreStressForceY + fluidForceY) * Math.Cos(whirlAngle);
+                        double term2_ = - (ElasticForceX + PreStressForceX + fluidForceX) * sinWhirlAngle;
+                        double term3_ =   (ElasticForceY + PreStressForceY + fluidForceY) * cosWhirlAngle;
                         double term4_ = - (
                                             lateralModel.TauM[i] 
                                             - lateralModel.TorqueDistribution[i]
@@ -402,8 +430,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                         / outerRadius * Math.Cos(rotationAngle - whirlAngle))
                                         * radialVelocity 
                                         * whirlVelocity;
-                        double term2_ = - (ElasticForceX + PreStressForceX + fluidForceX) * Math.Sin(whirlAngle);
-                        double term3_ =   (ElasticForceY + PreStressForceY + fluidForceY) * Math.Cos(whirlAngle);
+                        double term2_ = - (ElasticForceX + PreStressForceX + fluidForceX) * sinWhirlAngle;
+                        double term3_ =   (ElasticForceY + PreStressForceY + fluidForceY) * cosWhirlAngle;
                         double term4_ = - innerRadius / outerRadius * sleeveBrakeForce;
                         double term5_ = simulationParameters.Drillstring.EccentricMass[i] 
                                         * simulationParameters.Drillstring.Eccentricity[i]
@@ -420,7 +448,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                   
                     double velocityMagnitude = Math.Sqrt(axialVelocity * axialVelocity  + tangentialVelocity * tangentialVelocity) + Constants.eps;
                     double staticFrictionForceCalculated = Math.Sqrt(axialStaticForce * axialStaticForce + tangentialStaticForce * tangentialStaticForce) + Constants.eps;
-                    double staticFrictionForceCriteria = lateralModel.NormalCollisionForce[i] * simulationParameters.Friction.mu_s[i];
+                    double staticFrictionForceCriteria = normalCollisionForce * simulationParameters.Friction.mu_s[i];
                     //Check for slip
                     if (state.slip_condition[i] == 0)
                         // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
@@ -442,7 +470,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                     else
                     {
-                        coulombForce = lateralModel.NormalCollisionForce[i] * (simulationParameters.Friction.mu_k[i] + (simulationParameters.Friction.mu_s[i] - simulationParameters.Friction.mu_k[i]) * Math.Exp( - simulationParameters.Friction.stribeck *  velocityMagnitude));
+                        coulombForce = normalCollisionForce * (simulationParameters.Friction.mu_k[i] + (simulationParameters.Friction.mu_s[i] - simulationParameters.Friction.mu_k[i]) * Math.Exp( - simulationParameters.Friction.stribeck *  velocityMagnitude));
                         axialCoulombFrictionForce = coulombForce * axialVelocity / velocityMagnitude;
                         tangentialCoulombFrictionForce = coulombForce * tangentialVelocity / velocityMagnitude;                        
                     }
@@ -451,23 +479,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         axialCoulombFrictionForce = axialCoulombFrictionForce *  (1 - simulationParameters.Drillstring.AxialFrictionReduction);
                         tangentialCoulombFrictionForce = Math.Sqrt(coulombForce * coulombForce - axialCoulombFrictionForce * axialCoulombFrictionForce) * Math.Sign (tangentialCoulombFrictionForce);
                     }                    
-                    #endregion
-                    #region Unbalance Forces
-                    // lateral forces due to mass imbalance
-                    // The imbalance force comes from the assumption that the pipe element center of mass i slocated at a distance from its geometric center, 
-                    // which causes a lateral force and a torque as the pipe is displaced                
-                    double rotationAcceleration = hasSleeve ? state.SleeveAngularAcceleration[sleeveIndex] : state.AngularAcceleration[i];                                        
-                    double unbalanceForceX = simulationParameters.Drillstring.EccentricMass[i] * simulationParameters.Drillstring.Eccentricity[i]*
-                        (
-                            rotationSpeed * rotationSpeed * Math.Cos(rotationAngle)
-                            + state.AngularAcceleration[i] * Math.Sin(rotationAngle)
-                        );
-                    double unbalanceForceY = simulationParameters.Drillstring.EccentricMass[i] * simulationParameters.Drillstring.Eccentricity[i]* 
-                        (
-                            rotationSpeed * rotationSpeed * Math.Sin(rotationAngle)
-                            - rotationAcceleration * Math.Cos(rotationAngle)
-                        );                                                            
-                    #endregion
+                    #endregion                   
                     #region Accelerations
                     //If there is a sleeve, no torque is actually used
                     double frictionTorque = hasSleeve ? sleeveBrakeForce * outerRadius : tangentialCoulombFrictionForce * outerRadius;
@@ -487,16 +499,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         state.SleeveAngularAcceleration[sleeveIndex] = simulationParameters.InnerLoopTimeStep * (sleeveBrakeForce * simulationParameters.Drillstring.SleeveInnerRadius - simulationParameters.Drillstring.SleeveOuterRadius * state.SleeveForces[i]) / simulationParameters.Drillstring.SleeveMassMomentOfInertia;;
                     }
                     //Used for debugging purposes
+                    lateralModel.NormalCollisionForce[i] = normalCollisionForce;
+
                     state.RadialDisplacement[i] = radialDisplacement;
                     state.RadialVelocity[i] = radialVelocity;
                     state.WhirlAngle[i] = whirlAngle;
                     state.WhirlVelocity[i] = whirlVelocity;
                     double ZAcceleration = (lateralModel.ForceM[i] - lateralModel.ForceDistribution[i] - simulationParameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i] - axialCoulombFrictionForce)/simulationParameters.Drillstring.LumpedElementMass[i];
-                    double XAcceleration = (ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - simulationParameters.Drillstring.CalculateLateralDamping * state.XVelocity[i] - lateralModel.NormalCollisionForce[i] * Math.Cos(whirlAngle)
-                        + tangentialCoulombFrictionForce * Math.Sin(whirlAngle)) / (simulationParameters.Drillstring.LumpedElementMass[i] + simulationParameters.Drillstring.FluidAddedMass[i]);
-                    double YAcceleration= (ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - simulationParameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - lateralModel.NormalCollisionForce[i] * Math.Sin(whirlAngle)
-                        - tangentialCoulombFrictionForce * Math.Cos(whirlAngle)) / (simulationParameters.Drillstring.LumpedElementMass[i] + simulationParameters.Drillstring.FluidAddedMass[i]);
-                
+                    double XAcceleration = (ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - simulationParameters.Drillstring.CalculateLateralDamping * state.XVelocity[i] - lateralModel.NormalCollisionForce[i] * cosWhirlAngle
+                        + tangentialCoulombFrictionForce * sinWhirlAngle) / (simulationParameters.Drillstring.LumpedElementMass[i] + simulationParameters.Drillstring.FluidAddedMass[i]);
+                    double YAcceleration= (ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - simulationParameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - lateralModel.NormalCollisionForce[i] * sinWhirlAngle
+                        - tangentialCoulombFrictionForce * cosWhirlAngle) / (simulationParameters.Drillstring.LumpedElementMass[i] + simulationParameters.Drillstring.FluidAddedMass[i]);
+
                     state.AxialAcceleration[i] = ZAcceleration;
                     state.XAcceleration[i] = XAcceleration;
                     state.YAcceleration[i] = YAcceleration;

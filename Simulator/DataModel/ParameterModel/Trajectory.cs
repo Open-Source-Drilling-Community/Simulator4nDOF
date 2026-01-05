@@ -73,7 +73,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 curvature[i] = Math.Sqrt(
                     Math.Pow(thetaVec_dot[i], 2) +
                     Math.Pow(phiVec_dot[i], 2) * Math.Pow(Math.Sin(thetaVec[i]), 2)
-                );
+                );  
             }
 
             // Compute torsion using element-wise operations
