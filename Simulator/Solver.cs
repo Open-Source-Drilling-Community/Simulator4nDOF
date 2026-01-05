@@ -255,8 +255,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     // Calculate the whirl angle 
                     double whirlAngle = Math.Atan2(state.YDisplacement[i], state.XDisplacement[i]);
                     // Pre-calculate whirl angle sin and cos to avoid multiple calculations
-                    double cosWhirlAngle = Math.Cos(whirlAngle);
-                    double sinWhirlAngle = Math.Sin(whirlAngle);
+                    double cosWhirlAngle = whirlAngle == 0.0 ? 1.0 : state.XDisplacement[i]/radialDisplacement; // Math.Cos(whirlAngle);
+                    double sinWhirlAngle = whirlAngle == 0.0 ? 0.0 : state.YDisplacement[i]/radialDisplacement; // Math.Sin(whirlAngle);
                     // Calculate the radial velocity
                     double radialVelocity = state.XVelocity[i] * cosWhirlAngle 
                         + state.YVelocity[i] * sinWhirlAngle;
