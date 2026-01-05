@@ -33,15 +33,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         {
             epsilon = rockStrengthEpsilon;
             l = bitWearLength;
-            mu = bitRockFrictionCoeff;
+            Mu = bitRockFrictionCoeff;
             N = pdcBladeNo;
 
             // Bit - rock interaction parameters
             WeightOnBitFrictionComponent = ds.Rb * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
-            TorqueFrictionComponent = gamma * mu * ds.Rb / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
+            TorqueFrictionComponent = gamma * Mu * ds.Rb / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
             double dtTemp = dc.dxM / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
             double fc_ROP = 1.0;                                //[Hz] ROP filter cut-off frequency
-            alpha_ROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
+            AlphaROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
 
         } 
 
@@ -49,7 +49,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         {
             double tb = 0;
             double wb = 0;
-            int lpSize = (int)simulationParameters.LumpedCells.PL - 1;
+            int lpSize = (int)simulationParameters.LumpedCells.DistributedToLumpedRatio - 1;
             double lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
             double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
             double d = this.N * maxValue; // Compute d
@@ -59,7 +59,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double tc = d * Math.Pow(simulationParameters.Drillstring.Rb, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
             double ga = 1.0;
             double wf = WeightOnBitFrictionComponent * ga;
-            double tf = 0.5 * (1 + Math.Exp(-mu * mudoRotorAngularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
+            double tf = 0.5 * (1 + Math.Exp(-Mu * mudoRotorAngularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
             double g_tt = state.TorsionalDownwardTravelingWave[lpSize, state.TorsionalDownwardTravelingWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
             g_tt = (mudoRotorAngularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;
             double g_wt = aa[lpSize, aa.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;

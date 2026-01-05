@@ -14,8 +14,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
         public DistributedCells(LumpedCells lc, Drillstring ds, double omega0)
         {
-            x = Vector<double>.Build.Dense(Enumerable.Range(0, lc.Pt)
-                                                     .Select(i => i * lc.L / (lc.Pt - 1))
+            x = Vector<double>.Build.Dense(Enumerable.Range(0, lc.DiscretiazionCellsInDistributedSections)
+                                                     .Select(i => i * lc.Length / (lc.DiscretiazionCellsInDistributedSections - 1))
                                                      .ToArray());
 
             dx = x.Skip(1).Zip(x, (a, b) => a - b).Average();
@@ -25,8 +25,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double mean_l_L = ds.LumpedElementMassMomentOfInertia.Average();
 
             double start = 0;
-            double end = lc.L - mean_l_L * lc.NL;
-            double[] linspace = Linspace(start, end, lc.Pt);
+            double end = lc.Length - mean_l_L * lc.NumberOfLumpedElements;
+            double[] linspace = Linspace(start, end, lc.DiscretiazionCellsInDistributedSections);
             double[] diffArray = Diff(linspace);
             dxM = diffArray.Average();                              //[m] Length of only distributed section; all distributed sections should be same length
             //dxM = Math.Min(1.0, dxM);

@@ -48,8 +48,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             DownwardTorsionalWaveLeftBoundary = -UpwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
             UpwardTorsionalWaveLeftBoundary = -UpwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
             // Right boundaries
-            DownwardAxialWaveRightBoundary = -DownwardTorsionalWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-            UpwardAxialWaveRightBoundary = -DownwardAxialWave.Row(simulationParameters.LumpedCells.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+            DownwardAxialWaveRightBoundary = -DownwardTorsionalWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
+            UpwardAxialWaveRightBoundary = -DownwardAxialWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
             // Model with boundary conditions
             DownwardTorsionalWaveStackedWithLeftBoundary = DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(DownwardTorsionalWave);
             UpwardTorsionalWaveStackedWithLeftBoundary = UpwardTorsionalWave.Stack(DownwardAxialWaveRightBoundary.ToRowMatrix());               

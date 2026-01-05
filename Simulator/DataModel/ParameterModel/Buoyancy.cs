@@ -44,10 +44,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             UpdateBuoyancy(lc, t, ds, useBuoyancyFactor);
 
             // Calculate soft string normal force
-            Vector<double> drag = Vector<double>.Build.Dense(lc.NL + 1);
-            Vector<double> tension = Vector<double>.Build.Dense(lc.NL + 1);
+            Vector<double> drag = Vector<double>.Build.Dense(lc.NumberOfLumpedElements + 1);
+            Vector<double> tension = Vector<double>.Build.Dense(lc.NumberOfLumpedElements + 1);
 
-            var cumTrapz = CummulativeTrapezoidal(lc.xL, Reverse(dsigma_dx));
+            var cumTrapz = CummulativeTrapezoidal(lc.ElementLength, Reverse(dsigma_dx));
 
             tension = Reverse(cumTrapz) + axialBuoyancyForceChangeOfDiameters - drag;
 
@@ -59,10 +59,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public void UpdateBuoyancy(in LumpedCells lc, in Trajectory t, in Drillstring ds, bool useBuoyancyFactor)
         {
             // Interpolate pressures and densities at positions xL
-            stringPressure = LinearInterpolate(stringMD_prof, stringPressure_prof, lc.xL);
-            stringDensity = LinearInterpolate(stringMD_prof, stringDensity_prof, lc.xL);
-            annularPressure = LinearInterpolate(annulusMD_prof, annularPressure_prof, lc.xL);
-            annularDensity = LinearInterpolate(annulusMD_prof, annularDensity_prof, lc.xL);
+            stringPressure = LinearInterpolate(stringMD_prof, stringPressure_prof, lc.ElementLength);
+            stringDensity = LinearInterpolate(stringMD_prof, stringDensity_prof, lc.ElementLength);
+            annularPressure = LinearInterpolate(annulusMD_prof, annularPressure_prof, lc.ElementLength);
+            annularDensity = LinearInterpolate(annulusMD_prof, annularDensity_prof, lc.ElementLength);
 
             // Compute hydrostatic pressures
             hydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.g * stringDensity);
@@ -118,10 +118,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 {
                     Wb[i] = (mass_per_length[i] +
                              (Atjie[i] * ds.ToolJointLength * stringDensity[i] +
-                               Aie[i] * (lc.dxL - ds.ToolJointLength) * stringDensity[i] -
+                               Aie[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * stringDensity[i] -
                                Atjoe[i] * ds.ToolJointLength * annularDensity[i] -
-                               Aoe[i] * (lc.dxL - ds.ToolJointLength) * annularDensity[i]) /
-                               lc.dxL) * Constants.g;
+                               Aoe[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * annularDensity[i]) /
+                               lc.DistanceBetweenElements) * Constants.g;
                 }
             }
 

@@ -42,11 +42,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             // Wellbore radius calculation
             rHole = Vector<double>.Build.Dense(d.OuterRadius.Count);
             int idx = 0;
-            for (int i = 1; i < l.xL.Count(); i++)
+            for (int i = 1; i < l.ElementLength.Count(); i++)
             {
                 if (idx < boreHoleSizes.Count)
                 {
-                    if (l.xL[i] <= boreHoleSizes[idx].Depth)
+                    if (l.ElementLength[i] <= boreHoleSizes[idx].Depth)
                     {
                         rHole[i - 1] = boreHoleSizes[idx].ID / 2;
                     }
@@ -55,7 +55,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         while (idx < boreHoleSizes.Count)
                         {
                             idx++;
-                            if (idx < boreHoleSizes.Count && l.xL[i] <= boreHoleSizes[idx].Depth)
+                            if (idx < boreHoleSizes.Count && l.ElementLength[i] <= boreHoleSizes[idx].Depth)
                             {
                                 rHole[i - 1] = boreHoleSizes[idx].ID / 2;
                                 break;

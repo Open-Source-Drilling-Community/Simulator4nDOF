@@ -2,15 +2,13 @@
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class BitRock
-    {
-        
-            
+    {                    
         /// <summary>
         /// [-] Bit - rock friction coefficient(used in both Detournay and MSE model)
         /// </summary>
-        public double mu = 0.9;                        
+        public double Mu = 0.9;                        
         //todo flytte bitEfficiencyfactor til drillstring?
-        public double alpha_ROP;                                // ROP filter weight
+        public double AlphaROP;                                // ROP filter weight
         /// <summary>
         /// [N] Frictional component of weight on bit (Detournay model)
         /// </summary>

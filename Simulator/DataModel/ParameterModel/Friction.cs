@@ -20,7 +20,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             this.stribeck = stribeck;
             this.mu_s_factor = mu_s_factor;
             this.mu_k_factor = mu_k_factor;
-            Vector<double> vectorOfOnes = Vector<double>.Build.Dense(lc.NL, 1);
+            Vector<double> vectorOfOnes = Vector<double>.Build.Dense(lc.NumberOfLumpedElements, 1);
             mu_s = mu_s_factor * vectorOfOnes;
             mu_k = mu_k_factor * vectorOfOnes;
         }

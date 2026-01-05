@@ -72,46 +72,46 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             Step = 0;
 
             // Initialize pipe shear strain matrix
-            PipeShearStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.PL, simulationParameters.LumpedCells.NL);
+            PipeShearStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize pipe angular velocity matrix
-            PipeAngularVelocity = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.PL, simulationParameters.LumpedCells.NL);
+            PipeAngularVelocity = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize pipe axial strain matrix
-            PipeAxialStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.PL, simulationParameters.LumpedCells.NL);
+            PipeAxialStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize pipe axial velocity matrix
-            PipeAxialVelocity = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.PL, simulationParameters.LumpedCells.NL);
+            PipeAxialVelocity = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
 
             // Initialize lumped element whirl angle
-            WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element radial displacement
-            RadialDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            RadialDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element radial velocity
-            RadialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            RadialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element whirl velocity
-            WhirlVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            WhirlVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize top drive angular velocity
             TopDriveAngularVelocity = 0;
             // Initialize lumped element angular displacement
-            AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element angular velocity
-            AngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            AngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element angular acceleration
-            AngularAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            AngularAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element axial velocity
-            AxialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            AxialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element axial acceleration
-            AxialAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            AxialAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element lateral displacement in x-direction
-            XDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            XDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element lateral velocity in x-direction
-            XVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            XVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element lateral acceleration in x-direction
-            XAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            XAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element lateral displacement in y-direction
-            YDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            YDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element lateral velocity in y-direction
-            YVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            YVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element lateral acceleration in y-direction
-            YAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            YAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize sleeve angular displacement
             SleeveAngularDisplacement = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
             // Initialize sleeve angular velocity
@@ -121,13 +121,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize depth of cut
             DepthOfCut = Vector<double>.Build.Dense(simulationParameters.DistributedCells.CellsInDepthOfCut);
             // Initialize sleeve forces
-            SleeveForces = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            SleeveForces = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize slip condition
-            slip_condition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NL);
+            slip_condition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
 
             // Initialize sleeve to lumped index mapping
             SleeveToLumpedIndex = new List<int>();
-            for (int i = 0; i < simulationParameters.LumpedCells.NL; i++)
+            for (int i = 0; i < simulationParameters.LumpedCells.NumberOfLumpedElements; i++)
             {
                 SleeveToLumpedIndex.Add(simulationParameters.Drillstring.SleeveIndexPosition.Contains(i) ? i : -1);
             }
@@ -158,8 +158,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             TorsionalUpwardTravelingWave = this.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Upward traveling wave, torsional
             AxialDownwardTravelingWave = this.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Downward traveling wave, axial
             AxialUpwardTravelingWave = this.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Upward traveling wave, axial
-            BitVelocity = 0.5 * (AxialDownwardTravelingWave[simulationParameters.LumpedCells.PL - 1, AxialDownwardTravelingWave.ColumnCount - 1] 
-                + AxialUpwardTravelingWave[simulationParameters.LumpedCells.PL - 1, AxialUpwardTravelingWave.ColumnCount - 1]);
+            BitVelocity = 0.5 * (AxialDownwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialDownwardTravelingWave.ColumnCount - 1] 
+                + AxialUpwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialUpwardTravelingWave.ColumnCount - 1]);
         }
 
         public void AddNewLumpedElement()

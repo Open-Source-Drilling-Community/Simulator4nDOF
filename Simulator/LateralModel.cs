@@ -42,19 +42,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
 
             Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
-            ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.PL, 1).ToColumnMatrix();
+            ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
             Matrix<double> dragMatrix = ScalingMatrix * elementWiseProduct.ToRowMatrix();
             dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
             Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
-            Vector<double> drag = LinearInterpolate(simulationParameters.DistributedCells.x, drag_flattened, simulationParameters.LumpedCells.xL);
+            Vector<double> drag = LinearInterpolate(simulationParameters.DistributedCells.x, drag_flattened, simulationParameters.LumpedCells.ElementLength);
             Vector<double> phiVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.phiVec_dot);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec_dot);
             Vector<double> thetaVece = ExtendVectorStart(0, simulationParameters.Trajectory.thetaVec);
-            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, Reverse(simulationParameters.Buoyancy.dsigma_dx));
+            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(simulationParameters.LumpedCells.ElementLength, Reverse(simulationParameters.Buoyancy.dsigma_dx));
             Tension = Reverse(trapezoidalsIntegration) + simulationParameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
             Vector<double> fN_softstring = (Square((Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - simulationParameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
                                             Square((Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
-            Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fN_softstring);
+            Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(simulationParameters.LumpedCells.ElementLength, fN_softstring);
             SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
 
             Vector<double> AiExtended = ExtendVectorStart(simulationParameters.Drillstring.InnerArea[0], simulationParameters.Drillstring.InnerArea);
@@ -76,7 +76,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             PolarMomentTimesShearModuli = simulationParameters.Drillstring.PipePolarMoment.PointwiseMultiply(simulationParameters.Drillstring.ShearModuli); // Element-wise multiplication
             Matrix<double> TorqueMatrix = state.PipeShearStrain.PointwiseMultiply(ScalingMatrix * PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
             Vector<double> torqueFlattened = ToVector(TorqueMatrix.ToColumnMajorArray());
-            Vector<double> torque = LinearInterpolate(simulationParameters.DistributedCells.x, torqueFlattened, simulationParameters.LumpedCells.xL);
+            Vector<double> torque = LinearInterpolate(simulationParameters.DistributedCells.x, torqueFlattened, simulationParameters.LumpedCells.ElementLength);
             // Normal force components in Frenet-Serret coordinate system
             Vector<double> binormal = ExtendVectorStart(simulationParameters.Trajectory.bz[0], simulationParameters.Trajectory.bz);
             Vector<double> normal = ExtendVectorStart(simulationParameters.Trajectory.nz[0], simulationParameters.Trajectory.nz);
@@ -87,7 +87,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> momentOfInertia = ExtendVectorStart(simulationParameters.Drillstring.PipeInertia[0], simulationParameters.Drillstring.PipeInertia);
             Vector<double> torsionExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion[0], simulationParameters.Trajectory.torsion);
             Vector<double> torsion_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion_dot[0], simulationParameters.Trajectory.torsion_dot);
-            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / simulationParameters.LumpedCells.dxL);
+            Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / simulationParameters.LumpedCells.DistanceBetweenElements);
 
             Vector<double> fB =
                 simulationParameters.Buoyancy.Wb.PointwiseMultiply(binormal) +
@@ -97,7 +97,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvatureExtended).PointwiseMultiply(torsion_dotExtended);
 
             // Compute pre-stressed forces
-            Vector<double> I_fB = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fB);
+            Vector<double> I_fB = CummulativeTrapezoidal(simulationParameters.LumpedCells.ElementLength, fB);
 
             Vector<double> fN =
                 curvatureExtended.PointwiseMultiply(Tension + simulationParameters.Buoyancy.normalBuoyancyForceChangeOfDiameters) +
@@ -106,7 +106,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvatureExtended).PointwiseMultiply(Square(torsionExtended)) -
                 curvatureExtended.PointwiseMultiply(torsionExtended).PointwiseMultiply(torque);
 
-            Vector<double> I_fN = CummulativeTrapezoidal(simulationParameters.LumpedCells.xL, fN);
+            Vector<double> I_fN = CummulativeTrapezoidal(simulationParameters.LumpedCells.ElementLength, fN);
             PreStressNormalForce = Diff(I_fB);
             PreStressBinormalForce = Diff(I_fN);
 

@@ -30,13 +30,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
         Forces()
         {
-            this.TangentialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NL);
-            this.AxialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NL);
-            this.NormalCollisionForce = Vector<double>.Build.Dense(p.LumpedCells.NL);
-            this.StaticTangentialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NL);
-            this.StaticAxialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NL);
-            this.BendingMomentsX = Vector<double>.Build.Dense(p.LumpedCells.NL);
-            this.BendingMomentsY = Vector<double>.Build.Dense(p.LumpedCells.NL);
+            this.TangentialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
+            this.AxialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
+            this.NormalCollisionForce = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
+            this.StaticTangentialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
+            this.StaticAxialCoulombFriction = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
+            this.BendingMomentsX = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
+            this.BendingMomentsY = Vector<double>.Build.Dense(p.LumpedCells.NumberOfLumpedElements);
             this.TorqueOnBit = 0.0;
             this.WeightOnBit = 0.0;
         }

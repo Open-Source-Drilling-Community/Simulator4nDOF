@@ -36,7 +36,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> vy;
         private Vector<double> vz;
 
-        public Trajectory(LumpedCells lc, string trajectoryFilename)
+        public Trajectory(LumpedCells lumpedCells, string trajectoryFilename)
         {
             double[,] traj = ReadTextFile(trajectoryFilename);
 
@@ -51,21 +51,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             azi_prof = 180 / Math.PI * unwrapped_rad;
             TVD_prof = GetColumn(traj, 3);
 
-            UpdateTrajectory(lc);
+            UpdateTrajectory(lumpedCells);
         }
-
-        public void UpdateTrajectory(in LumpedCells l)
+        public void UpdateTrajectory(in LumpedCells lumpedCells)
         {
-            Vector<double> vectorWithoutFirstElement = l.xL.SubVector(1, l.xL.Count() - 1);
+            Vector<double> vectorWithoutFirstElement = lumpedCells.ElementLength.SubVector(1, lumpedCells.ElementLength.Count() - 1);
             TVDVec = LinearInterpolate(MD_prof, TVD_prof, vectorWithoutFirstElement);
             thetaVec = Math.PI / 180 * LinearInterpolate(MD_prof, inc_prof, vectorWithoutFirstElement);
             phiVec = Math.PI / 180 * LinearInterpolate(MD_prof, azi_prof, vectorWithoutFirstElement);
 
             int n = thetaVec.Count();
-            thetaVec_dot = ComputeDerivative(thetaVec, l.dxL);
-            phiVec_dot = ComputeDerivative(phiVec, l.dxL);
-            thetaVec_ddot = ComputeSecondDerivative(thetaVec, l.dxL);
-            phiVec_ddot = ComputeSecondDerivative(phiVec, l.dxL);
+            thetaVec_dot = ComputeDerivative(thetaVec, lumpedCells.DistanceBetweenElements);
+            phiVec_dot = ComputeDerivative(phiVec, lumpedCells.DistanceBetweenElements);
+            thetaVec_ddot = ComputeSecondDerivative(thetaVec, lumpedCells.DistanceBetweenElements);
+            phiVec_ddot = ComputeSecondDerivative(phiVec, lumpedCells.DistanceBetweenElements);
 
             curvature = Vector<double>.Build.Dense(thetaVec_dot.Count);
             for (int i = 0; i < thetaVec_dot.Count(); i++)
@@ -92,9 +91,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     torsion[i] = 0;
             }
 
-            curvature_dot = ComputeDerivative(curvature, l.dxL);
-            curvature_ddot = ComputeSecondDerivative(curvature, l.dxL);
-            torsion_dot = ComputeDerivative(torsion, l.dxL);
+            curvature_dot = ComputeDerivative(curvature, lumpedCells.DistanceBetweenElements);
+            curvature_ddot = ComputeSecondDerivative(curvature, lumpedCells.DistanceBetweenElements);
+            torsion_dot = ComputeDerivative(torsion, lumpedCells.DistanceBetweenElements);
 
             int[] idxZeroCurvature = curvature.Select((value, index) => value == 0 ? index : -1).Where(x => x != -1).ToArray();
             foreach (int index in idxZeroCurvature)

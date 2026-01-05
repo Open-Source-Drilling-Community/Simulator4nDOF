@@ -22,7 +22,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public int InnerLoopIterations;
         public double dxl;
         public double dtl;
-
+        public SolverODEEnum SolverODEEnum = SolverODEEnum.EulerMethod;
         public SimulationParameters(DataModel.Configuration configuration)
         {
             Fluid = new Fluid(configuration.FluidDensity);
@@ -123,8 +123,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Drillstring.EccentricMass = ExtendVectorStart(mass_imbalance_percent * Drillstring.LumpedElementMass[0], Drillstring.EccentricMass);
 
             // Update spatial variables
-            int Pt_old = LumpedCells.PL * LumpedCells.NL;
-            int NL_old = LumpedCells.NL;
+            int Pt_old = LumpedCells.DistributedToLumpedRatio * LumpedCells.NumberOfLumpedElements;
+            int NL_old = LumpedCells.NumberOfLumpedElements;
 
             // Generate the range from 0 to DistributedCells.x[0] with step size dx
             List<double> range = new List<double>();
@@ -133,8 +133,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 range.Add(value);
             }
             DistributedCells.x = Vector<double>.Build.Dense(range.Concat(DistributedCells.x).ToArray());
-            LumpedCells.xL = ExtendVectorStart(0, LumpedCells.xL); // lumped section
-            LumpedCells.NL = LumpedCells.NL + 1;
+            LumpedCells.ElementLength = ExtendVectorStart(0, LumpedCells.ElementLength); // lumped section
+            LumpedCells.NumberOfLumpedElements = LumpedCells.NumberOfLumpedElements + 1;
             if (Drillstring.SleeveIndexPosition.Count > 0)
             {
                 // Increment each element in Drillstring.iS by 1

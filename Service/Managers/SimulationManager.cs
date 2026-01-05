@@ -1158,7 +1158,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 Time = time,
                 Depth = output.Depth.ToList(),
                 DepthAll = parameters.DistributedCells.x.ToList(),
-                SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.LumpedCells.xL[(int)index]).ToList(),
+                SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.LumpedCells.ElementLength[(int)index]).ToList(),
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor

@@ -23,10 +23,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 // Update the last element of l
                 int lastIndex = state.DepthOfCut.Count - 1;
-                state.DepthOfCut[lastIndex] = (1 - simulationParameters.BitRock.alpha_ROP) * state.DepthOfCut[lastIndex] + simulationParameters.BitRock.alpha_ROP * 2 * Math.PI * state.BitVelocity / mudoRotorAngularVelocity * (mudoRotorAngularVelocity > 0.5 ? 1 : 0);
+                state.DepthOfCut[lastIndex] = (1 - simulationParameters.BitRock.AlphaROP) * state.DepthOfCut[lastIndex] + simulationParameters.BitRock.AlphaROP * 2 * Math.PI * state.BitVelocity / mudoRotorAngularVelocity * (mudoRotorAngularVelocity > 0.5 ? 1 : 0);
                 state.DepthOfCut[lastIndex] = Math.Max(state.DepthOfCut[lastIndex], 0);
                 // Calculate mu_b
-                double mu_b = simulationParameters.BitRock.mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * mudoRotorAngularVelocity / (2.0 * Math.PI)));
+                double mu_b = simulationParameters.BitRock.Mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * mudoRotorAngularVelocity / (2.0 * Math.PI)));
                 // Calculate wb
                 wb = Math.PI * Math.Pow(simulationParameters.Drillstring.Rb, 2) * CCS / BitEfficiencyFactor / (1 + 2 * mu_b * simulationParameters.Drillstring.Rb / (3 * state.DepthOfCut[lastIndex]));
                 wb = Math.Max(wb, 0);

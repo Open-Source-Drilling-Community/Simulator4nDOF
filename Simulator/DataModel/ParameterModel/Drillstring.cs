@@ -905,20 +905,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 Lwc.Add(Lwc_sum / Lc_sum);
             }
 
-            double Lavg = lumpedCells.L / lumpedCells.NL;
+            double Lavg = lumpedCells.Length / lumpedCells.NumberOfLumpedElements;
 
             List<int> Nc = Lc.Select(l => Math.Max((int)Math.Floor(l / Lavg), 1)).ToList(); // number of elements in BHA section, excluding stabilizers
             List<int> Np = LDp.Select(l => (int)Math.Round(l / Lavg, MidpointRounding.AwayFromZero)).ToList(); // number of elements in drillpipe section (including heavy weight drillpipe)
 
-            if (nStab + Nc.Sum() + Np.Sum() > lumpedCells.NL)
+            if (nStab + Nc.Sum() + Np.Sum() > lumpedCells.NumberOfLumpedElements)
             {
                 if (Np.Count > 1)
                 {
                     for (int i = Np.Count - 1; i >= 0; i--)
                     {
-                        if (nStab + Nc.Sum() + Np.Skip(i).Sum() > lumpedCells.NL)
+                        if (nStab + Nc.Sum() + Np.Skip(i).Sum() > lumpedCells.NumberOfLumpedElements)
                         {
-                            Np[i] = lumpedCells.NL - ((int)nStab + Nc.Sum() + Np.Skip(i + 1).Sum());
+                            Np[i] = lumpedCells.NumberOfLumpedElements - ((int)nStab + Nc.Sum() + Np.Skip(i + 1).Sum());
                             for (int w = 0; w < i; w++)
                             {
                                 Np[w] = 0;
@@ -929,7 +929,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
                 else
                 {
-                    Np[0] = lumpedCells.NL - ((int)nStab + Nc.Sum());
+                    Np[0] = lumpedCells.NumberOfLumpedElements - ((int)nStab + Nc.Sum());
                 }
             }
 
@@ -952,7 +952,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             for (int i = 0; i < TotalSleeveNumber; i++)
             {
-                SleeveIndexPosition[i] = Array.FindIndex(lumpedCells.xL.ToArray(), x => x > MD - lumpedCells.dxL - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
+                SleeveIndexPosition[i] = Array.FindIndex(lumpedCells.ElementLength.ToArray(), x => x > MD - lumpedCells.DistanceBetweenElements - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
             }
             SleeveIndexPosition = Reverse(SleeveIndexPosition);
         
@@ -968,13 +968,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                                   .Where(x => x.value > 0)
                                                   .Select(x => x.index)
                                                   .ToList();
-            List<int> isToolJoint = new List<int>(new int[lumpedCells.NL]);
+            List<int> isToolJoint = new List<int>(new int[lumpedCells.NumberOfLumpedElements]);
             int idx_previousToolJoint = 0; // index of previous tool joint
             isToolJoint[idx_previousToolJoint] = 1;
 
             for (int i = idx_previousToolJoint + 1; i < Np.Sum(); i++)
             {
-                if (lumpedCells.xL[i] - lumpedCells.xL[idx_previousToolJoint] >= 10 && !SleeveIndexPosition.Contains(i))
+                if (lumpedCells.ElementLength[i] - lumpedCells.ElementLength[idx_previousToolJoint] >= 10 && !SleeveIndexPosition.Contains(i))
                 {
                     isToolJoint[i] = 1;
                     idx_previousToolJoint = i;
@@ -1113,7 +1113,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Vector<double> M_tj = SteelDensity * ToolJointLength * ToVector(Atj);               // [kg] Tool joint lumped mass
             Vector<double> M_S = SteelDensity * SleeveLength * ToVector(Atj);                 // [kg] Sleeve lumped mass
 
-            for (int i = 0; i < lumpedCells.NL; i++)
+            for (int i = 0; i < lumpedCells.NumberOfLumpedElements; i++)
             {
                 if (i < isToolJoint.Count && isToolJoint[i] == 1 && i < Atj.Count && i < AList.Count && Math.Abs(Atj[i] - AList[i]) > 1e-3)
                 {
@@ -1154,14 +1154,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             CalculatedAxialDamping = axialDampingFactor * LumpedElementMass.Average(); //[N.s/m] Axial damping 
             CalculateLateralDamping = lateralDampingFactor * LumpedElementMass.Average(); //[N.s/m] Lateral damping
 
-            PipeLengthForBending = lumpedCells.dxL; //[m] Length of pipe used in bending stiffness calculation 
+            PipeLengthForBending = lumpedCells.DistanceBetweenElements; //[m] Length of pipe used in bending stiffness calculation 
             BendingStiffness = Math.Pow(Math.PI, 4) / (2 * Math.Pow(PipeLengthForBending, 3)) * YoungModuli.PointwiseMultiply(PipeInertia);// [N/m] Bending stiffness
             FluidAddedMass = 0.5 * Math.PI * fluid.rhoMud * (InnerRadius.PointwisePower(2) + AddedFluidMassCoefficient * OuterRadius.PointwisePower(2)).PointwiseMultiply(LumpedElementMassMomentOfInertia); //[kg] Added fluid mass
 
             EccentricMass = MassImbalancePercentage * LumpedElementMass; // [kg] Eccentric mass
 
-            var dxL = lumpedCells.dxL;
-            IndexSensor = (int)lumpedCells.xL
+            var dxL = lumpedCells.DistanceBetweenElements;
+            IndexSensor = (int)lumpedCells.ElementLength
             .Select((value, index) => new { Value = value, Index = index })
             .Where(x => x.Value > MD - sensorDistanceFromBit - dxL && x.Value <= MD - sensorDistanceFromBit)
             .Select(x => (double)x.Index) // Convert index to double
