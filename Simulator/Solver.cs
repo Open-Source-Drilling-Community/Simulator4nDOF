@@ -300,15 +300,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     int sleeveIndex = hasSleeve ?  state.SleeveToLumpedIndex[i] : -1;
                     //Select between sleeve and non-sleeve nodes
                     double rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocity[i];                            
-                    
-                    double fluidForceX = - simulationParameters.Wellbore.Df * state.XVelocity[i] * 
-                                         - simulationParameters.Drillstring.FluidAddedMass[i] * rotationSpeed * state.YVelocity[i]
-                                         - 0.5 * simulationParameters.Wellbore.Df * rotationSpeed * state.YDisplacement[i]
-                                         + 0.25 * simulationParameters.Drillstring.FluidAddedMass[i] * rotationSpeed * rotationSpeed * state.XDisplacement[i];
-                    double fluidForceY = - simulationParameters.Wellbore.Df * state.YVelocity[i] * 
-                                         + simulationParameters.Drillstring.FluidAddedMass[i] * rotationSpeed * state.XVelocity[i]
-                                         + 0.5 * simulationParameters.Wellbore.Df * rotationSpeed * state.XDisplacement[i]
-                                         + 0.25 * simulationParameters.Drillstring.FluidAddedMass[i] * rotationSpeed * rotationSpeed * state.YDisplacement[i];
+                    double rotationSpeedSquared = rotationSpeed * rotationSpeed;
+                    double fluidDampingCoefficient = simulationParameters.Wellbore.Df / simulationParameters.Drillstring.FluidAddedMass[i];
+
+                    double fluidForceX = - simulationParameters.Drillstring.FluidAddedMass[i] * 
+                                        (
+                                            fluidDampingCoefficient * state.XVelocity[i]
+                                            - 0.25 * rotationSpeedSquared * state.XDisplacement[i]
+                                            + rotationSpeed * state.YVelocity[i]
+                                            + 0.5 * fluidDampingCoefficient * rotationSpeed * state.YDisplacement[i]
+                                        );
+                    double fluidForceY = - simulationParameters.Drillstring.FluidAddedMass[i] * 
+                                        (
+                                            fluidDampingCoefficient * state.YVelocity[i]
+                                            - 0.25 * rotationSpeedSquared * state.YDisplacement[i]
+                                            - rotationSpeed * state.XVelocity[i]
+                                            - 0.5 * fluidDampingCoefficient * rotationSpeed * state.XDisplacement[i]
+                                        );
                     #endregion
                     // Sleeve braking force
                     double sleeveBrakeForce = hasSleeve ? simulationParameters.Drillstring.SleeveTorsionalDamping[sleeveIndex] * (whirlVelocity - state.SleeveAngularVelocity[sleeveIndex]) : 0;
@@ -320,12 +328,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     double rotationAcceleration = hasSleeve ? state.SleeveAngularAcceleration[sleeveIndex] : state.AngularAcceleration[i];                                        
                     double unbalanceForceX = simulationParameters.Drillstring.EccentricMass[i] * simulationParameters.Drillstring.Eccentricity[i]*
                         (
-                            rotationSpeed * rotationSpeed * Math.Cos(rotationAngle)
+                            rotationSpeedSquared * Math.Cos(rotationAngle)
                             + state.AngularAcceleration[i] * Math.Sin(rotationAngle)
                         );
                     double unbalanceForceY = simulationParameters.Drillstring.EccentricMass[i] * simulationParameters.Drillstring.Eccentricity[i]* 
                         (
-                            rotationSpeed * rotationSpeed * Math.Sin(rotationAngle)
+                            rotationSpeedSquared * Math.Sin(rotationAngle)
                             - rotationAcceleration * Math.Cos(rotationAngle)
                         );                                                            
                     #endregion
@@ -383,8 +391,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                             / simulationParameters.Drillstring.OuterRadius[i] 
                                             * Math.Cos(rotationAngle - whirlAngle)
                                         );
-                    double _numerator = term1 + term2 + term3 + term4 + term5 + term6;
-                    double thetaDotNoSlip = denominator/_numerator;
+                    double thetaDotNoSlip = (term1 + term2 + term3 + term4 + term5 + term6) / denominator;
                     double phiDdotNoSlip = 0.0;      
 
                     if (!hasSleeve)
@@ -435,7 +442,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         double term4_ = - innerRadius / outerRadius * sleeveBrakeForce;
                         double term5_ = simulationParameters.Drillstring.EccentricMass[i] 
                                         * simulationParameters.Drillstring.Eccentricity[i]
-                                        * rotationSpeed * rotationSpeed * Math.Sin(rotationAngle - whirlAngle);
+                                        * rotationSpeedSquared * Math.Sin(rotationAngle - whirlAngle);
                         phiDdotNoSlip = (term1 + term2 + term3 + term4 + term5) / denominator;                                                            
                     }
                     //Tangetial force
