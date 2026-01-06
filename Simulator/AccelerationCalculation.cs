@@ -470,7 +470,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 {
                     axialCoulombFrictionForce = axialCoulombFrictionForce *  (1 - parameters.Drillstring.AxialFrictionReduction);
                     tangentialCoulombFrictionForce = Math.Sqrt(coulombForce * coulombForce - axialCoulombFrictionForce * axialCoulombFrictionForce) * Math.Sign (tangentialCoulombFrictionForce);
-                }                    
+                }                
+                if (i == parameters.Drillstring.IndexSensor)
+                {
+                    lateralModel.PhiDdotNoSlipSensor = phiDdotNoSlip;
+                    lateralModel.ThetaDotNoSlipSensor = thetaDotNoSlip;
+                }
+
                 #endregion                   
                 #region Accelerations
                 //If there is a sleeve, no torque is actually used
@@ -504,7 +510,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 state.XAcceleration[i] = XAcceleration;
                 state.YAcceleration[i] = YAcceleration;                    
                 #endregion
-            }                                  
+            }             
+            state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / parameters.Wellbore.I_TD * parameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - lateralModel.TauTD);                
+                                     
         }
     }
 }

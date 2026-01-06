@@ -118,5 +118,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i];                         
             }                        
         }
+        public void AddNewLumpedElement()
+        {
+            SleeveAngularDisplacementMinus1 = ExtendVectorStart(SleeveAngularDisplacementMinus1[0], SleeveAngularDisplacementMinus1);
+            AngularDisplacementMinus1 = ExtendVectorStart(AngularDisplacementMinus1[0], AngularDisplacementMinus1);
+            XDisplacementMinus1 = ExtendVectorStart(XDisplacementMinus1[0], XDisplacementMinus1);
+            YDisplacementMinus1 = ExtendVectorStart(YDisplacementMinus1[0], YDisplacementMinus1);
+            AxialVelocityMinus1 = ExtendVectorStart(AxialVelocityMinus1[0], AxialVelocityMinus1);
+            AngularDisplacement = ExtendVectorStart(AngularDisplacement[0], AngularDisplacement);
+            XDisplacement = ExtendVectorStart(XDisplacement[0], XDisplacement);
+            YDisplacement = ExtendVectorStart(YDisplacement[0], YDisplacement);
+            AngularVelocity = ExtendVectorStart(AngularVelocity[0], AngularVelocity);
+            XVelocity = ExtendVectorStart(XVelocity[0], XVelocity);
+            YVelocity = ExtendVectorStart(YVelocity[0], YVelocity);
+            AxialVelocity = ExtendVectorStart(AxialVelocity[0], AxialVelocity);
+        }
     }
 }

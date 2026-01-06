@@ -26,7 +26,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public int InnerLoopIterations;
         public double dxl;
         public double dtl;
-        public SolverODEEnum SolverODEEnum = SolverODEEnum.VerletMethod;
+        public SolverODEEnum SolverODEEnum = SolverODEEnum.EulerMethod;
         public SimulationParameters(DataModel.Configuration configuration)
         {
             Fluid = new Fluid(configuration.FluidDensity);
@@ -67,9 +67,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
         
-            double dtTemp = DistributedCells.dxM / Math.Max(Drillstring.TorsionalWaveSpeed, Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
+            double dtTemp = DistributedCells.DistributedSectionLength / Math.Max(Drillstring.TorsionalWaveSpeed, Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             dxl = 1.0 / DistributedCells.CellsInDepthOfCut;
-            dtl = dxl / DistributedCells.omegaMAX;  // As per the CFL condition for the depth of cut PDE
+            dtl = dxl / DistributedCells.OmegaMax;  // As per the CFL condition for the depth of cut PDE
             InnerLoopIterations = (int)Math.Max(Math.Ceiling(configuration.TimeStep / dtTemp), Math.Ceiling(configuration.TimeStep / dtl)); // number of iterations in the inner loop
             InnerLoopTimeStep = configuration.TimeStep / InnerLoopIterations; // time step of inner loop                
         }
@@ -132,7 +132,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             // Generate the range from 0 to DistributedCells.x[0] with step size dx
             List<double> range = new List<double>();
-            for (double value = 0; value <= DistributedCells.x[0]; value += DistributedCells.dx)
+            for (double value = 0; value <= DistributedCells.x[0]; value += DistributedCells.DistributedSectionAndLumpedLength)
             {
                 range.Add(value);
             }

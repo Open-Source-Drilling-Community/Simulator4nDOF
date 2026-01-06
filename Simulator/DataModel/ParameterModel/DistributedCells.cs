@@ -5,12 +5,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class DistributedCells
     {
-        public Vector<double> x;                // [m] All sections
-        public double dx;                       // [m] Length of distributed section + lumped section
-        public double dxM;                      // [m] Length of only distributed section; all distributed sections should be same length
-        public readonly double dt_BRI = .002;   // [s] Time step for depth of cut PDE
-        public double omegaMAX;                 // [rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
-        public int CellsInDepthOfCut;                          // Number of cells in depth of cut PDE
+        // [m] All sections
+        public Vector<double> x;
+        // [m] Length of distributed section + lumped section
+        public double DistributedSectionAndLumpedLength;
+        // [m] Length of only distributed section; all distributed sections should be same length
+        public double DistributedSectionLength;
+        // [s] Time step for depth of cut PDE
+        public readonly double TimeStepForDepthOfCutPDE = .002;
+        // [rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
+        public double OmegaMax;
+        // Number of cells in depth of cut PDE
+        public int CellsInDepthOfCut;
 
         public DistributedCells(LumpedCells lc, Drillstring ds, double omega0)
         {
@@ -18,7 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                                      .Select(i => i * lc.Length / (lc.DiscretiazionCellsInDistributedSections - 1))
                                                      .ToArray());
 
-            dx = x.Skip(1).Zip(x, (a, b) => a - b).Average();
+            DistributedSectionAndLumpedLength = x.Skip(1).Zip(x, (a, b) => a - b).Average();
 
 
             // l_L is lumped drill pipe length
@@ -28,13 +34,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double end = lc.Length - mean_l_L * lc.NumberOfLumpedElements;
             double[] linspace = Linspace(start, end, lc.DiscretiazionCellsInDistributedSections);
             double[] diffArray = Diff(linspace);
-            dxM = diffArray.Average();                              //[m] Length of only distributed section; all distributed sections should be same length
+            DistributedSectionLength = diffArray.Average();                              //[m] Length of only distributed section; all distributed sections should be same length
             //dxM = Math.Min(1.0, dxM);
 
-            double dtTemp = dxM / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80;  //As per the CFL condition for the axial / torsional wave equations
-            omegaMAX = Math.Max(omega0 * 5, 2 * Math.PI);           //[rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
-            double dxl = dt_BRI * omegaMAX;                         //[m] length of cell in depth of cut PDE
-            CellsInDepthOfCut = (int)Math.Floor(1 / dxl);                          // Number of cells in depth of cut PDE
+            // As per the CFL condition for the axial / torsional wave equations
+            double dtTemp = DistributedSectionLength / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80;
+            // [rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
+            OmegaMax = Math.Max(omega0 * 5, 2 * Math.PI);
+            // [m] length of cell in depth of cut PDE
+            double dxl = TimeStepForDepthOfCutPDE * OmegaMax;
+            // Number of cells in depth of cut PDE
+            CellsInDepthOfCut = (int)Math.Floor(1 / dxl);
         }
 
 

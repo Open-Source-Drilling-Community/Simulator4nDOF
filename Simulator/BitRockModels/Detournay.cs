@@ -55,7 +55,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             // Bit - rock interaction parameters
             WeightOnBitFrictionComponent = ds.Rb * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
             TorqueFrictionComponent = gamma * Mu * ds.Rb / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
-            double dtTemp = dc.dxM / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
+            double dtTemp = dc.DistributedSectionLength / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
             double fc_ROP = 1.0;                                //[Hz] ROP filter cut-off frequency
             AlphaROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
 

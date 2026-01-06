@@ -58,5 +58,31 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             WeightOnBit = 0.0;
             TorqueOnBit = 0.0;
         }
+
+        public AxialTorsionalModel(State state, SimulationParameters simulationParameters, AxialTorsionalModel oldModel)
+        {
+            //Re-Initialize if there is a new lumped element
+            //Dimension initial state
+            DownwardTorsionalWave = state.PipeAngularVelocity + simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Downward traveling wave, torsional
+            UpwardTorsionalWave = state.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
+            DownwardAxialWave = state.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
+            UpwardAxialWave = state.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
+            OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity);
+            VL_vec = ExtendVectorStart(state.AxialVelocity[0], state.AxialVelocity);
+            // Left boundaries
+            DownwardTorsionalWaveLeftBoundary = -UpwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
+            UpwardTorsionalWaveLeftBoundary = -UpwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
+            // Right boundaries
+            DownwardAxialWaveRightBoundary = -DownwardTorsionalWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
+            UpwardAxialWaveRightBoundary = -DownwardAxialWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+            // Model with boundary conditions
+            DownwardTorsionalWaveStackedWithLeftBoundary = DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(DownwardTorsionalWave);
+            UpwardTorsionalWaveStackedWithLeftBoundary = UpwardTorsionalWave.Stack(DownwardAxialWaveRightBoundary.ToRowMatrix());               
+            DownwardAxialWaveStackedWithRightBoundary = UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(DownwardAxialWave);
+            UpwardAxialWaveStackedWithRightBoundary = UpwardAxialWave.Stack(UpwardAxialWaveRightBoundary.ToRowMatrix());                 
+            WeightOnBit = oldModel.WeightOnBit;
+            TorqueOnBit = oldModel.TorqueOnBit; 
+        }
+
     }
 }

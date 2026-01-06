@@ -30,5 +30,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             state.YDisplacement = state.YDisplacement + state.YVelocity * simulationParameters.InnerLoopTimeStep;
             state.YVelocity     = state.YVelocity + state.YAcceleration * simulationParameters.InnerLoopTimeStep;            
         }
+        public void AddNewLumpedElement()
+        {
+
+        }
     }
 }

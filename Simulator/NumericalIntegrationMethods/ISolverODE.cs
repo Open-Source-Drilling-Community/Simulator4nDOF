@@ -6,6 +6,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
     public interface ISolverODE
     {
         void IntegrationStep(State state, SimulationParameters simulationParameters);
-
+        void AddNewLumpedElement();
     }     
 }
