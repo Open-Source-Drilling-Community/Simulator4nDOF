@@ -1,4 +1,4 @@
-namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 {
     /// <summary>
     /// an enum to describe the types deriving from MyBaseData

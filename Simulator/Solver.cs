@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
-
+using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
     public class Solver
@@ -48,7 +48,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     solverODE = new EulerMethod();
                     break;
                 case SolverODEEnum.VerletMethod:
-                    solverODE = new VerletMethod();
+                    solverODE = new VerletMethod(simulationParameters);
                     break;                
                 default:
                     throw new ArgumentOutOfRangeException();

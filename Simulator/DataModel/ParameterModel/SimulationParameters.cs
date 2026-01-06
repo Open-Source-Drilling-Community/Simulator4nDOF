@@ -2,13 +2,17 @@
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
+using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
+
+using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
+
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class SimulationParameters
     {
         public Fluid Fluid;
-        public BitRock BitRock;
+        public IBitRock BitRock;
         public MudMotor MudMotor;
         public Trajectory Trajectory;
         public LumpedCells LumpedCells;

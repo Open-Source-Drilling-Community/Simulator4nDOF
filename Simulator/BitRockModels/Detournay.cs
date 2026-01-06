@@ -1,8 +1,24 @@
 using MathNet.Numerics.LinearAlgebra;
-namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 {
-    public class Detournay : BitRock
+    public class Detournay : IBitRock
     {
+        /// <summary>
+        /// [-] Bit - rock friction coefficient(used in both Detournay and MSE model)
+        /// </summary>
+        public double Mu = 0.9;                        
+        //todo flytte bitEfficiencyfactor til drillstring?
+        public double AlphaROP;                                // ROP filter weight
+        /// <summary>
+        /// [N] Frictional component of weight on bit (Detournay model)
+        /// </summary>
+        public double WeightOnBitFrictionComponent;
+        /// <summary>
+        /// [N.m] Frictional component of torque on bit (Detournay model)
+        /// </summary>
+        public double TorqueFrictionComponent;
         /// <summary>
         /// [Pa] Rock strength parameter (used in both Detournay model)
         /// </summary>
@@ -45,7 +61,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
         } 
 
-        public override double[] CalculateInteractionForce(State state, double mudoRotorAngularVelocity, Matrix<double> aa, SimulationParameters simulationParameters)
+        public double[] CalculateInteractionForce(State state, double mudoRotorAngularVelocity, Matrix<double> aa, SimulationParameters simulationParameters)
         {
             double tb = 0;
             double wb = 0;

@@ -1,4 +1,4 @@
-namespace NORCE.Drilling.Simulator4nDOF.Simulator
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     /// <summary>
     /// an enum to describe the types deriving from MyBaseData

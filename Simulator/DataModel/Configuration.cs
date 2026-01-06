@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
 using Model;
 using NORCE.Drilling.Simulator4nDOF.Model;
+using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 {

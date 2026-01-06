@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
-namespace NORCE.Drilling.Simulator4nDOF.Simulator
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public class EulerMethod : ISolverODE
     {     

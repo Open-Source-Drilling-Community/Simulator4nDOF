@@ -11,7 +11,7 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
-namespace NORCE.Drilling.Simulator4nDOF.Simulator
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public class NumericalIntegrationScheme
     {
