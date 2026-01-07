@@ -7,10 +7,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
     public class Wellbore
     {
         // Move topdrive
-        public readonly double I_TD = 2900;                     // [kg.m^2] Top drive mass moment of inertia
-        public readonly double Df = 3000.0;                     // [N.s/m] Fluid damping coefficient for lateral dynamics
-        public readonly double kw = 5.0e7;                      // [N.s/m] coefficient of damping at wellbore wall
-        public readonly double dw = 5.0e4;                      // percent of mass imbalance compared to total mass
+        public readonly double TopDriveInertia = 2900;                     // [kg.m^2] Top drive mass moment of inertia
+        public readonly double FluidDampingCoefficient = 3000.0;                     // [N.s/m] Fluid damping coefficient for lateral dynamics
+        public readonly double WallStiffness = 5.0e7;                      // [N.s/m] coefficient of damping at wellbore wall
+        public readonly double WallDamping = 5.0e4;                      // percent of mass imbalance compared to total mass
 
         // Geometry to be configured
         private List<BoreHoleSize> boreHoleSizes =
@@ -18,46 +18,46 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 new BoreHoleSize(){Depth = 120, ID = 21 * Constants.in2m },
                 new BoreHoleSize(){Depth = 2181, ID = 9.0*Constants.in2m } 
             };
-        public Vector<double> rHole;                             // [m] Wellbore radius calculation
-        public Vector<double> rc;                                // [m] drillstring radial clearance to the borehole wall
+        public Vector<double> BoreholeRadius;                   // [m] Wellbore radius calculation
+        public Vector<double> DrillStringClearance;            // [m] drillstring radial clearance to the borehole wall
 
-        public Wellbore(in Drillstring d,
-                        in LumpedCells l,
+        public Wellbore(in Drillstring drillString,
+                        in LumpedCells lumpedCells,
                         List<BoreHoleSize> boreHoleSizes,
                         double topDriveMomentOfInertia,
                         double fluidDamping)
         {
-            I_TD = topDriveMomentOfInertia;
-            Df = fluidDamping;
+            TopDriveInertia = topDriveMomentOfInertia;
+            FluidDampingCoefficient = fluidDamping;
 
             this.boreHoleSizes = boreHoleSizes; 
-            rHole = Vector<double>.Build.Dense(d.OuterRadius.Count);
-            rc = Vector<double>.Build.Dense(d.OuterRadius.Count);
+            BoreholeRadius = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
+            DrillStringClearance = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
 
-            UpdateWellbore(d, l);
+            UpdateWellbore(drillString, lumpedCells);
         }
 
-        public void UpdateWellbore(in Drillstring d, in LumpedCells l)
+        public void UpdateWellbore(in Drillstring drillString, in LumpedCells lumpedElement)
         {
             // Wellbore radius calculation
-            rHole = Vector<double>.Build.Dense(d.OuterRadius.Count);
+            BoreholeRadius = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
             int idx = 0;
-            for (int i = 1; i < l.ElementLength.Count(); i++)
+            for (int i = 1; i < lumpedElement.ElementLength.Count(); i++)
             {
                 if (idx < boreHoleSizes.Count)
                 {
-                    if (l.ElementLength[i] <= boreHoleSizes[idx].Depth)
+                    if (lumpedElement.ElementLength[i] <= boreHoleSizes[idx].Depth)
                     {
-                        rHole[i - 1] = boreHoleSizes[idx].ID / 2;
+                        BoreholeRadius[i - 1] = boreHoleSizes[idx].ID / 2;
                     }
                     else
                     {
                         while (idx < boreHoleSizes.Count)
                         {
                             idx++;
-                            if (idx < boreHoleSizes.Count && l.ElementLength[i] <= boreHoleSizes[idx].Depth)
+                            if (idx < boreHoleSizes.Count && lumpedElement.ElementLength[i] <= boreHoleSizes[idx].Depth)
                             {
-                                rHole[i - 1] = boreHoleSizes[idx].ID / 2;
+                                BoreholeRadius[i - 1] = boreHoleSizes[idx].ID / 2;
                                 break;
                             }
                         }
@@ -65,13 +65,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
                 if (idx >= boreHoleSizes.Count)
                 {
-                    rHole[i - 1] = d.Rb;
+                    BoreholeRadius[i - 1] = drillString.BitRadius;
                 }
             }
 
-            rc = rHole - d.OuterRadius;
-            foreach (int i in d.SleeveIndexPosition)
-                rc[i] = rHole[i] - d.SleeveOuterRadius;
+            DrillStringClearance = BoreholeRadius - drillString.OuterRadius;
+            foreach (int i in drillString.SleeveIndexPosition)
+                DrillStringClearance[i] = BoreholeRadius[i] - drillString.SleeveOuterRadius;
         }
     }
 }

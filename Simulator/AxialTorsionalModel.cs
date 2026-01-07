@@ -28,8 +28,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Vector<double> UpwardTorsionalWaveLeftBoundary;
         public Vector<double> DownwardAxialWaveRightBoundary;
         public Vector<double> UpwardAxialWaveRightBoundary;
-        public Vector<double> OL_vec;
-        public Vector<double> VL_vec;
 
         public double WeightOnBit;
         public double TorqueOnBit;
@@ -42,14 +40,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             UpwardTorsionalWave = state.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
             DownwardAxialWave = state.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
             UpwardAxialWave = state.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
-            OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity);
-            VL_vec = ExtendVectorStart(simulationInput.CalculateSurfaceAxialVelocity, state.AxialVelocity);
-            // Left boundaries
-            DownwardTorsionalWaveLeftBoundary = -UpwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
-            UpwardTorsionalWaveLeftBoundary = -UpwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
-            // Right boundaries
-            DownwardAxialWaveRightBoundary = -DownwardTorsionalWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-            UpwardAxialWaveRightBoundary = -DownwardAxialWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+            UpdateBoundaryConditions(state, simulationParameters, simulationInput);           
             // Model with boundary conditions
             DownwardTorsionalWaveStackedWithLeftBoundary = DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(DownwardTorsionalWave);
             UpwardTorsionalWaveStackedWithLeftBoundary = UpwardTorsionalWave.Stack(DownwardAxialWaveRightBoundary.ToRowMatrix());               
@@ -67,14 +58,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             UpwardTorsionalWave = state.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain; // Upward traveling wave, torsional
             DownwardAxialWave = state.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Downward traveling wave, axial
             UpwardAxialWave = state.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain; // Upward traveling wave, axial
-            OL_vec = ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity);
-            VL_vec = ExtendVectorStart(state.AxialVelocity[0], state.AxialVelocity);
-            // Left boundaries
-            DownwardTorsionalWaveLeftBoundary = -UpwardTorsionalWave.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
-            UpwardTorsionalWaveLeftBoundary = -UpwardAxialWave.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
-            // Right boundaries
-            DownwardAxialWaveRightBoundary = -DownwardTorsionalWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-            UpwardAxialWaveRightBoundary = -DownwardAxialWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+            
             // Model with boundary conditions
             DownwardTorsionalWaveStackedWithLeftBoundary = DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(DownwardTorsionalWave);
             UpwardTorsionalWaveStackedWithLeftBoundary = UpwardTorsionalWave.Stack(DownwardAxialWaveRightBoundary.ToRowMatrix());               
@@ -83,6 +67,33 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             WeightOnBit = oldModel.WeightOnBit;
             TorqueOnBit = oldModel.TorqueOnBit; 
         }
-
+        public void UpdateBoundaryConditions(State state, SimulationParameters parameters, Input simulationInput)
+        {   
+            double axialVelocityLeft;
+            double axialVelocityRight;
+            double torsionalVelocityLeft;
+            double torsionalVelocityRight;        
+            for (int i = 0; i < state.AxialVelocity.Count; i++)
+            {
+                axialVelocityLeft = (i == 0) ? simulationInput.CalculateSurfaceAxialVelocity : state.AxialVelocity[i - 1];
+                torsionalVelocityLeft = (i == 0) ? state.TopDriveAngularVelocity : state.AngularVelocity[i - 1];
+                axialVelocityRight = state.AxialVelocity[i];
+                torsionalVelocityRight = state.AngularVelocity[i];
+                // Left boundaries   
+                DownwardTorsionalWaveLeftBoundary[i] = - UpwardTorsionalWave[0, i] + 2 * torsionalVelocityLeft;
+                UpwardTorsionalWaveLeftBoundary[i]   = - UpwardAxialWave[0, i] + 2 * axialVelocityLeft;
+                // Right boundaries
+                DownwardAxialWaveRightBoundary[i] = - DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] + 2 * torsionalVelocityRight;
+                UpwardAxialWaveRightBoundary[i] = - DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] + 2 * axialVelocityRight;                        
+            }
+            //RotationalVelocity = ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity);
+            //AxialVelocity = ExtendVectorStart(state.AxialVelocity[0], state.AxialVelocity);
+            //// Left boundaries
+            //DownwardTorsionalWaveLeftBoundary = -UpwardTorsionalWave.Row(0) + 2 * RotationalVelocity.SubVector(0, RotationalVelocity.Count - 1);
+            //UpwardTorsionalWaveLeftBoundary = -UpwardAxialWave.Row(0) + 2 * AxialVelocity.SubVector(0, AxialVelocity.Count - 1);
+            //// Right boundaries
+            //DownwardAxialWaveRightBoundary = -DownwardTorsionalWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * RotationalVelocity.SubVector(1, RotationalVelocity.Count - 1);
+            //UpwardAxialWaveRightBoundary = -DownwardAxialWave.Row(simulationParameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * AxialVelocity.SubVector(1, AxialVelocity.Count - 1);            
+        }
     }
 }

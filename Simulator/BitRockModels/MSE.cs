@@ -44,10 +44,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 // Calculate mu_b
                 double mu_b = Mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * mudoRotorAngularVelocity / (2.0 * Math.PI)));
                 // Calculate wb
-                wb = Math.PI * Math.Pow(simulationParameters.Drillstring.Rb, 2) * CCS / BitEfficiencyFactor / (1 + 2 * mu_b * simulationParameters.Drillstring.Rb / (3 * state.DepthOfCut[lastIndex]));
+                wb = Math.PI * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * CCS / BitEfficiencyFactor / (1 + 2 * mu_b * simulationParameters.Drillstring.BitRadius / (3 * state.DepthOfCut[lastIndex]));
                 wb = Math.Max(wb, 0);
                 // Calculate tb
-                tb = 2.0 / 3.0 * mu_b * simulationParameters.Drillstring.Rb * wb;
+                tb = 2.0 / 3.0 * mu_b * simulationParameters.Drillstring.BitRadius * wb;
             }
             else
             {

@@ -53,8 +53,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             N = pdcBladeNo;
 
             // Bit - rock interaction parameters
-            WeightOnBitFrictionComponent = ds.Rb * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
-            TorqueFrictionComponent = gamma * Mu * ds.Rb / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
+            WeightOnBitFrictionComponent = ds.BitRadius * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
+            TorqueFrictionComponent = gamma * Mu * ds.BitRadius / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
             double dtTemp = dc.DistributedSectionLength / Math.Max(ds.TorsionalWaveSpeed, ds.AxialWaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
             double fc_ROP = 1.0;                                //[Hz] ROP filter cut-off frequency
             AlphaROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
@@ -71,8 +71,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             double d = this.N * maxValue; // Compute d
             double epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
             double reg = mudoRotorAngularVelocity / Math.Sqrt(Math.Pow(mudoRotorAngularVelocity, 2) + Math.Pow(epsilon, 2));
-            double wc = d * simulationParameters.Drillstring.Rb * zeta * epsilon;   // Cutting component of weight on bit
-            double tc = d * Math.Pow(simulationParameters.Drillstring.Rb, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
+            double wc = d * simulationParameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
+            double tc = d * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
             double ga = 1.0;
             double wf = WeightOnBitFrictionComponent * ga;
             double tf = 0.5 * (1 + Math.Exp(-Mu * mudoRotorAngularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;

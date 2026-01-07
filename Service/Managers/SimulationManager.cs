@@ -1166,7 +1166,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     : Utilities.ExtendVectorStart(state.TopDriveAngularVelocity,
                         Utilities.ToVector(state.AngularVelocity.SubVector(1, state.AngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
                 SleevesAngularVelocity = state.SleeveAngularVelocity.ToList(),
-                RadialClearance = parameters.Wellbore.rc.Append(0).ToList(),
+                RadialClearance = parameters.Wellbore.DrillStringClearance.Append(0).ToList(),
                 LateralDisplacement = output.RadialDisplacement.Append(0).ToList(),
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),

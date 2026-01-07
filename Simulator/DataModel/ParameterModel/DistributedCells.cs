@@ -12,7 +12,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         // [m] Length of only distributed section; all distributed sections should be same length
         public double DistributedSectionLength;
         // [s] Time step for depth of cut PDE
-        public readonly double TimeStepForDepthOfCutPDE = .002;
+        public readonly double TimeStepForDepthOfCutPDE = 0.002;//.002;
         // [rad/s] Maximum bit angular velocity for enforcing CFL condition in depth of cut PDE
         public double OmegaMax;
         // Number of cells in depth of cut PDE

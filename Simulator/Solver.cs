@@ -24,7 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private AxialTorsionalModel axialTorsionalModel;
         private LateralModel lateralModel;
 
-        private ISolverODE solverODE;
+        private ISolverODE solverODE; 
 
         public Solver(SimulationParameters simulationParameters, in DataModel.Configuration configuration)
         {
@@ -244,12 +244,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
+                if (state.Step == 5)
+                {
+                    int debug = 0;
+                }
                 // Calculate axial-torsional pde properties
                 AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                 
                 // Update axial-torsional state using upwind scheme            
                 UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                       
                 // Calculate lateral accelerations    
-                AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                                                       
+                AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);        
+                //Debbuging purpose
+                #region  Debbugging Outputs
+                if (double.IsNaN(state.XAcceleration.Sum()) || double.IsNaN(state.YAcceleration.Sum()) || double.IsNaN(state.AxialAcceleration.Sum()) || double.IsNaN(state.AngularAcceleration.Sum()))
+                {
+                    Console.WriteLine("NaN detected in step: " + innerIterationNo.ToString());
+                }
+                
+                #endregion
+                
+                                                               
                 //TO BE KEPT SO FAR
                 solverODE.IntegrationStep(state, simulationParameters);            
                 // Mud motor

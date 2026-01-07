@@ -6,12 +6,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
     public class LumpedCells
     {
         // Move somewhere else? todo
-        public double Length;                                // [m] Drillstring length
-        public int NumberOfLumpedElements;                                  // Total number of lumped elements
+        public double Length;                   // [m] Drillstring length
+        public int NumberOfLumpedElements;      // Total number of lumped elements
         public Vector<double> ElementLength;
-        public double DistanceBetweenElements = 30;                         // [m] Length between two lumped elements        
-        public int DiscretiazionCellsInDistributedSections;                                  // Actual number of cells in discretization of distributed sections
-        public readonly int DistributedToLumpedRatio = 5;                     // Ratio of distributed cells to lumped cells (rounded to nearest integer)
+        public double DistanceBetweenElements;  // [m] Length between two lumped elements        
+        public int DiscretiazionCellsInDistributedSections; // Actual number of cells in discretization of distributed sections
+        public readonly int DistributedToLumpedRatio = 5;    // Ratio of distributed cells to lumped cells (rounded to nearest integer)
 
         public LumpedCells(double MD, double LengthBetweenLumpedElements)
         {

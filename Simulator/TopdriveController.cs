@@ -54,14 +54,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             if (c.TopDriveController == 2)
             {
                 //Tuned PI controller parameters
-                I_comp = KiSoftTorqueSpeed * simulationParameters.Wellbore.I_TD; // [kg.m ^ 2] inertia compensation
+                I_comp = KiSoftTorqueSpeed * simulationParameters.Wellbore.TopDriveInertia; // [kg.m ^ 2] inertia compensation
                 KpFactor = KpSoftTorqueSpeed * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // top drive controller P gain
-                KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.Wellbore.I_TD - I_comp); // top drive controller I gain
+                KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.Wellbore.TopDriveInertia - I_comp); // top drive controller I gain
             }
             else
             {    // Stiff PI controller parameters
                 KpFactor = KpFactor * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance;
-                KiFactor = KiFactor * simulationParameters.Wellbore.I_TD;
+                KiFactor = KiFactor * simulationParameters.Wellbore.TopDriveInertia;
             }
 
             if (c.TopDriveController == 3)
@@ -99,7 +99,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         delta_Otd / c.TimeStep * (1 - Math.Exp(-2 * Math.PI * c.TimeStep / t_sp));
 
                     double previous_tau_0_ZT = tau_0_ZT;
-                    tau_0_ZT = tau_vfd- inertia_correction_factor * simulationParameters.Wellbore.I_TD * td_accel;  // estimated pipe torque
+                    tau_0_ZT = tau_vfd- inertia_correction_factor * simulationParameters.Wellbore.TopDriveInertia * td_accel;  // estimated pipe torque
 
                     tau_0_highpass = tau_0_highpass * (t_hp / 2.0 / Math.PI / (c.TimeStep + t_hp / 2.0 / Math.PI)) + 
                         (tau_0_ZT - previous_tau_0_ZT) * (t_hp / 2.0 / Math.PI / (c.TimeStep + t_hp / 2.0 / Math.PI));

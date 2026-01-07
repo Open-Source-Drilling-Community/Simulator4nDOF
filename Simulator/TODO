@@ -1,17 +1,19 @@
 * Rework friction model
 * Why is the total force calculated in polar coordinates for the friction?
-* Check if fluid forces need to be a vector or if can be used as in-loop double
 * Maybe move all the doubles to a single structure which pre-allocates all of them? This might conflict with threaded execution.
 * Check is slip_condition cannot be changed to a List or Array of booleans - might need to change the forces from a masking scheme to an "if else"
 * If we calculate all forces before the actual friction, the code becomes much simpler.
 * TauM -> TauMotor
 * For the axial-torsional, I should split the wave-state from the model class.
 * Detach the number of elements between models
-* Need to add method for expanding SleeveToLumpedIndex with the increase of lumped parameters
 * Check why there is a TimeStep in the SleeveAcceleration
-* The sleeve positions are not corrected when the system is increased!
 * There is an implicit relation on the angular acceleration on the unbalance force!
-* There is an error on how the unbalance force is calculate. It is not the whirl velocity squared, but the angular velocity squared (from torsional model). I've replaced it
-* I can create a variable with Math.Cos(rotationAngle) to avoid expensive recalculation of this values.
-
+* Pre-allocate PrepareLateral method variables. 
 * Add a copy simulation to the webapp! 
+
+
+* OK - Check if fluid forces need to be a vector or if can be used as in-loop double
+* OK - I can create a variable with Math.Cos(rotationAngle) to avoid expensive recalculation of this values.
+* OK - There is an error on how the unbalance force is calculate. It is not the whirl velocity squared, but the angular velocity squared (from torsional model). I've replaced it
+* OK - The sleeve positions are not corrected when the system is increased!
+* OK - Need to add method for expanding SleeveToLumpedIndex with the increase of lumped parameters
