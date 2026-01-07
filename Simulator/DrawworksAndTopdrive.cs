@@ -11,23 +11,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private bool make_connection = false;
         private bool pooh_before_connection = false;
 
-        public void Step(in DataModel.Configuration c,State state, Input u)
+        public void Step(in DataModel.Configuration configuration, State state, Input input)
         {
             double Vdf; //[m/s] drillfloor velocity
-            if (c.UseHeave)
-                Vdf = c.HeaveAmplitude * 2 * Math.PI / c.HeavePeriod * Math.Cos(2 * Math.PI / c.HeavePeriod * state.Step * c.TimeStep); // [m / s] drillfloor velocity
+            if (configuration.UseHeave)
+                Vdf = configuration.HeaveAmplitude * 2 * Math.PI / configuration.HeavePeriod * Math.Cos(2 * Math.PI / configuration.HeavePeriod * state.Step * configuration.TimeStep); // [m / s] drillfloor velocity
             else
                 Vdf = 0;
 
-            if (state.Step * c.TimeStep - t_topdrive_startup > c.TopdriveStartupTime && !make_connection && !pooh_before_connection)
-                u.CalculateSurfaceAxialVelocity = u.SurfaceAxialVelocity;
+            if (state.Step * configuration.TimeStep - t_topdrive_startup > configuration.TopdriveStartupTime && !make_connection && !pooh_before_connection)
+                input.CalculateSurfaceAxialVelocity = input.SurfaceAxialVelocity;
             else if (pooh_before_connection)
-                u.CalculateSurfaceAxialVelocity = u.PullingOutOfHoleTopVelocity;
+                input.CalculateSurfaceAxialVelocity = input.PullingOutOfHoleTopVelocity;
             else
-                u.CalculateSurfaceAxialVelocity = 0.0;
+                input.CalculateSurfaceAxialVelocity = 0.0;
 
             // add drilfloor velocity to top of string velocity setpoint
-            u.CalculateSurfaceAxialVelocity = u.CalculateSurfaceAxialVelocity + Vdf;
+            input.CalculateSurfaceAxialVelocity = input.CalculateSurfaceAxialVelocity + Vdf;
 
             if (state.TopOfStringPosition < 1 && !pooh_before_connection)
             {
@@ -39,20 +39,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             {
                 pooh_before_connection = false;
                 make_connection = true;
-                t_start_connection = state.Step * c.TimeStep;
+                t_start_connection = state.Step * configuration.TimeStep;
             }
 
-            if (make_connection && state.Step * c.TimeStep - t_start_connection > c.ConnectionTime)
+            if (make_connection && state.Step * configuration.TimeStep - t_start_connection > configuration.ConnectionTime)
             {
                 make_connection = false;
                 state.TopOfStringPosition = 31; // [m]
-                t_topdrive_startup = state.Step * c.TimeStep;
+                t_topdrive_startup = state.Step * configuration.TimeStep;
             }
 
             if (make_connection)
-                u.TopDriveRPMSetPoint = u.TopDriveRPMSetPoint + (0 - u.TopDriveRPMSetPoint) / (0.5 / c.TimeStep);
+                input.TopDriveRPMSetPoint = input.TopDriveRPMSetPoint + (0 - input.TopDriveRPMSetPoint) / (0.5 / configuration.TimeStep);
             else
-                u.TopDriveRPMSetPoint = u.TopDriveRPMSetPoint + (u.SurfaceRotation - u.TopDriveRPMSetPoint) / (0.5 / c.TimeStep);
+                input.TopDriveRPMSetPoint = input.TopDriveRPMSetPoint + (input.SurfaceRotation - input.TopDriveRPMSetPoint) / (0.5 / configuration.TimeStep);
         }
     }
 }

@@ -244,10 +244,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
-                if (state.Step == 5)
-                {
-                    int debug = 0;
-                }
                 // Calculate axial-torsional pde properties
                 AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                 
                 // Update axial-torsional state using upwind scheme            

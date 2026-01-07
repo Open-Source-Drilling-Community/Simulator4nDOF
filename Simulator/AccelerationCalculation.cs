@@ -121,37 +121,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
         }
         public static void AxialTorsionalSystem(AxialTorsionalModel torsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
-        {                    
-            double axialVelocityLeft;
-            double axialVelocityRight;
-            double torsionalVelocityLeft;
-            double torsionalVelocityRight;        
-            for (int i = 0; i < state.AxialVelocity.Count; i++)
-            {
-                axialVelocityLeft = (i == 0) ? simulationInput.CalculateSurfaceAxialVelocity : state.AxialVelocity[i - 1];
-                torsionalVelocityLeft = (i == 0) ? state.TopDriveAngularVelocity : state.AngularVelocity[i - 1];
-                axialVelocityRight = state.AxialVelocity[i];
-                torsionalVelocityRight = state.AngularVelocity[i];
-                // Left boundaries   
-                torsionalModel.DownwardTorsionalWaveLeftBoundary[i] = - torsionalModel.UpwardTorsionalWave[0, i] + 2 * torsionalVelocityLeft;
-                torsionalModel.UpwardTorsionalWaveLeftBoundary[i]   = - torsionalModel.UpwardAxialWave[0, i] + 2 * axialVelocityLeft;
-                // Right boundaries
-                torsionalModel.DownwardAxialWaveRightBoundary[i] = - torsionalModel.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] + 2 * torsionalVelocityRight;
-                torsionalModel.UpwardAxialWaveRightBoundary[i] = - torsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] + 2 * axialVelocityRight;                        
-            }
-            // Left boundaries
-            //torsionalModel.DownwardTorsionalWaveLeftBoundary = -torsionalModel.UpwardTorsionalWave.Row(0) + 2 * torsionalModel.RotationalVelocity.SubVector(0, torsionalModel.RotationalVelocity.Count - 1);
-            //torsionalModel.UpwardTorsionalWaveLeftBoundary = -torsionalModel.UpwardAxialWave.Row(0) + 2 * torsionalModel.AxialVelocity.SubVector(0, torsionalModel.AxialVelocity.Count - 1);
-            //// Right boundaries
-            //torsionalModel.DownwardAxialWaveRightBoundary = -torsionalModel.DownwardTorsionalWave.Row(parameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * torsionalModel.RotationalVelocity.SubVector(1, torsionalModel.RotationalVelocity.Count - 1);
-            //torsionalModel.UpwardAxialWaveRightBoundary = -torsionalModel.DownwardAxialWave.Row(parameters.LumpedCells.DistributedToLumpedRatio - 1) + 2 * torsionalModel.AxialVelocity.SubVector(1, torsionalModel.AxialVelocity.Count - 1);
-
-            state.BitVelocity = 0.5 * (torsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardAxialWave.ColumnCount - 1] + torsionalModel.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardAxialWave.ColumnCount - 1]);
-            
-            
+        {                 
+            torsionalModel.UpdateBoundaryConditions(state, parameters, simulationInput);               
+            state.BitVelocity = 0.5 * 
+                (
+                    torsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardAxialWave.ColumnCount - 1] 
+                    + torsionalModel.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardAxialWave.ColumnCount - 1]
+                );                    
             double angularVelocityBottom;
             if (!configuration.UseMudMotor)
-                angularVelocityBottom = 0.5 * (torsionalModel.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardTorsionalWave.ColumnCount - 1] + torsionalModel.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardTorsionalWave.ColumnCount - 1]);
+                angularVelocityBottom = 0.5 * 
+                    (
+                        torsionalModel.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardTorsionalWave.ColumnCount - 1] 
+                        + torsionalModel.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardTorsionalWave.ColumnCount - 1]
+                    );
             else
                 angularVelocityBottom = state.MudRotorAngularVelocity;
 
@@ -203,8 +186,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
             }   
             torsionalModel.DownwardTorsionalWaveStackedWithLeftBoundary = torsionalModel.DownwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(torsionalModel.DownwardTorsionalWave);
-            torsionalModel.UpwardTorsionalWaveStackedWithLeftBoundary = torsionalModel.UpwardTorsionalWave.Stack(torsionalModel.DownwardAxialWaveRightBoundary.ToRowMatrix());               
-            torsionalModel.DownwardAxialWaveStackedWithRightBoundary = torsionalModel.UpwardTorsionalWaveLeftBoundary.ToRowMatrix().Stack(torsionalModel.DownwardAxialWave);
+            torsionalModel.UpwardTorsionalWaveStackedWithLeftBoundary = torsionalModel.UpwardTorsionalWave.Stack(torsionalModel.UpwardAxialWaveRightBoundary.ToRowMatrix());               
+            
+            torsionalModel.DownwardAxialWaveStackedWithRightBoundary = torsionalModel.DownwardAxialWaveLeftBoundary.ToRowMatrix().Stack(torsionalModel.DownwardAxialWave);
             torsionalModel.UpwardAxialWaveStackedWithRightBoundary = torsionalModel.UpwardAxialWave.Stack(torsionalModel.UpwardAxialWaveRightBoundary.ToRowMatrix());          
         }        
         
