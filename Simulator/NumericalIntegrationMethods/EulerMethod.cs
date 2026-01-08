@@ -15,20 +15,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
     {     
         public void IntegrationStep(State state, SimulationParameters simulationParameters)
         {   
-            //Angular DoF
-            state.AngularDisplacement = state.AngularDisplacement + state.AngularVelocity * simulationParameters.InnerLoopTimeStep;
-            state.AngularVelocity     = state.AngularVelocity + state.AngularAcceleration * simulationParameters.InnerLoopTimeStep;
-            //Sleeve DoF
-            state.SleeveAngularDisplacement = state.SleeveAngularDisplacement + state.SleeveAngularVelocity * simulationParameters.InnerLoopTimeStep;
-            state.SleeveAngularVelocity     = state.SleeveAngularVelocity + state.SleeveAngularAcceleration * simulationParameters.InnerLoopTimeStep;
-            //Axial DoF
-            state.AxialVelocity = state.AxialVelocity + state.AxialAcceleration * simulationParameters.InnerLoopTimeStep;
-            //X DoF
-            state.XDisplacement = state.XDisplacement + state.XVelocity * simulationParameters.InnerLoopTimeStep;
-            state.XVelocity     = state.XVelocity + state.XAcceleration * simulationParameters.InnerLoopTimeStep;
-            //Y DoF
-            state.YDisplacement = state.YDisplacement + state.YVelocity * simulationParameters.InnerLoopTimeStep;
-            state.YVelocity     = state.YVelocity + state.YAcceleration * simulationParameters.InnerLoopTimeStep;            
+            for (int i = 0; i < state.XDisplacement.Count; i++)
+            {
+                //Angular DoF
+                state.AngularDisplacement[i] = state.AngularDisplacement[i] + state.AngularVelocity[i] * simulationParameters.InnerLoopTimeStep; 
+                state.AngularVelocity[i]     = state.AngularVelocity[i]     + state.AngularAcceleration[i] * simulationParameters.InnerLoopTimeStep;           
+                //Axial DoF
+                state.AxialVelocity = state.AxialVelocity + state.AxialAcceleration * simulationParameters.InnerLoopTimeStep;
+                //X DoF
+                state.XDisplacement[i] = state.XDisplacement[i] + state.XVelocity[i] * simulationParameters.InnerLoopTimeStep;
+                state.XVelocity[i]     = state.XVelocity[i] + state.XAcceleration[i] * simulationParameters.InnerLoopTimeStep;
+                //Y DoF
+                state.YDisplacement[i] = state.YDisplacement[i] + state.YVelocity[i] * simulationParameters.InnerLoopTimeStep;
+                state.YVelocity[i]     = state.YVelocity[i] + state.YAcceleration[i] * simulationParameters.InnerLoopTimeStep;    
+            }
+
+            for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
+            {
+                //Sleeve DoF
+                state.SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i] + state.SleeveAngularVelocity[i] * simulationParameters.InnerLoopTimeStep;
+                state.SleeveAngularVelocity[i]     = state.SleeveAngularVelocity[i] + state.SleeveAngularAcceleration[i] * simulationParameters.InnerLoopTimeStep;
+            }
         }
         public void AddNewLumpedElement()
         {

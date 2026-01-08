@@ -10,7 +10,10 @@
 * There is an implicit relation on the angular acceleration on the unbalance force!
 * Pre-allocate PrepareLateral method variables. 
 * Add a copy simulation to the webapp! 
-
+* Remove AccelerationCalculation class, Create an IModel interface for both models with :
+    * preparion step
+    * acceleration calculation
+* In TorsionalModel - RotationalVelocity and AxialVelocity can be removed 
 
 * OK - Check if fluid forces need to be a vector or if can be used as in-loop double
 * OK - I can create a variable with Math.Cos(rotationAngle) to avoid expensive recalculation of this values.

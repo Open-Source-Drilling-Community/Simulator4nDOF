@@ -5,8 +5,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 {
     public interface IBitRock
     {                    
-        
-        public double[] CalculateInteractionForce(State state, double mudoRotorAngularVelocity, Matrix<double> aa, SimulationParameters simulationParameters)
+
+        public double[] CalculateInteractionForce(AxialTorsionalModel axialTorsionalModel, State state, double mudoRotorAngularVelocity, SimulationParameters simulationParameters)
         {
             return new double[]{0,0};
         }

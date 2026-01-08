@@ -40,10 +40,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public List<int> SleeveToLumpedIndex;                // Mapping from sleeve indices to lumped element indices
         public Vector<double> slip_condition;                 // Slip condition evaluated at each lumped element
 
-        public Matrix<double> TorsionalDownwardTravelingWave; // Downward traveling torsional wave
-        public Matrix<double> TorsionalUpwardTravelingWave;   // Upward traveling torsional wave
-        public Matrix<double> AxialDownwardTravelingWave;     // Downward traveling axial wave
-        public Matrix<double> AxialUpwardTravelingWave;       // Upward traveling axial wave
+        //public Matrix<double> TorsionalDownwardTravelingWave; // Downward traveling torsional wave
+        //public Matrix<double> TorsionalUpwardTravelingWave;   // Upward traveling torsional wave
+        //public Matrix<double> AxialDownwardTravelingWave;     // Downward traveling axial wave
+        //public Matrix<double> AxialUpwardTravelingWave;       // Upward traveling axial wave
 
         // Mud motor stator and rotor angular velocities
         public double MudStatorAngularVelocity;               // Mud motor stator angular velocity
@@ -154,12 +154,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             ConnectionStartTime = 0;                                 // [s] connection start time
             TopDriveStartupTime = 0;
             onBottom_startIdx = -1;
-            TorsionalDownwardTravelingWave = this.PipeAngularVelocity + simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Downward traveling wave, torsional
-            TorsionalUpwardTravelingWave = this.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Upward traveling wave, torsional
-            AxialDownwardTravelingWave = this.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Downward traveling wave, axial
-            AxialUpwardTravelingWave = this.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Upward traveling wave, axial
-            BitVelocity = 0.5 * (AxialDownwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialDownwardTravelingWave.ColumnCount - 1] 
-                + AxialUpwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialUpwardTravelingWave.ColumnCount - 1]);
+            //TorsionalDownwardTravelingWave = this.PipeAngularVelocity + simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Downward traveling wave, torsional
+            //TorsionalUpwardTravelingWave = this.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Upward traveling wave, torsional
+            //AxialDownwardTravelingWave = this.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Downward traveling wave, axial
+            //AxialUpwardTravelingWave = this.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Upward traveling wave, axial
+            //BitVelocity = 0.5 * (AxialDownwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialDownwardTravelingWave.ColumnCount - 1] 
+            //    + AxialUpwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialUpwardTravelingWave.ColumnCount - 1]);
         }
 
         public void AddNewLumpedElement()

@@ -13,12 +13,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public static class UpwindScheme
     {     
-        public static void IntegrationStep(AxialTorsionalModel model, SimulationParameters simulationParameters)
-        {
-            model.DownwardTorsionalWave = model.DownwardTorsionalWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.DistributedSectionLength) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(model.DownwardTorsionalWaveStackedWithLeftBoundary);
-            model.UpwardTorsionalWave = model.UpwardTorsionalWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.DistributedSectionLength) * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(model.UpwardTorsionalWaveStackedWithLeftBoundary);
-            model.DownwardAxialWave = model.DownwardAxialWave - (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.DistributedSectionLength) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(model.DownwardAxialWaveStackedWithRightBoundary);
-            model.UpwardAxialWave = model.UpwardAxialWave + (simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.DistributedSectionLength) * simulationParameters.Drillstring.AxialWaveSpeed * DiffRows(model.UpwardAxialWaveStackedWithRightBoundary);         
+        public static void IntegrationStep(AxialTorsionalModel torsionalModel, SimulationParameters simulationParameters)
+        {   
+            double c1 = simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.DistributedSectionLength;            
+            torsionalModel.DownwardTorsionalWave = torsionalModel.DownwardTorsionalWave - c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(torsionalModel.DownwardTorsionalWaveStackedWithLeftBoundary);
+            torsionalModel.UpwardTorsionalWave   = torsionalModel.UpwardTorsionalWave   + c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(torsionalModel.UpwardTorsionalWaveStackedWithLeftBoundary);
+            torsionalModel.DownwardAxialWave     = torsionalModel.DownwardAxialWave     - c1 * simulationParameters.Drillstring.AxialWaveSpeed *     DiffRows(torsionalModel.DownwardAxialWaveStackedWithRightBoundary);
+            torsionalModel.UpwardAxialWave       = torsionalModel.UpwardAxialWave       + c1 * simulationParameters.Drillstring.AxialWaveSpeed *     DiffRows(torsionalModel.UpwardAxialWaveStackedWithRightBoundary);         
         }
     }
 }

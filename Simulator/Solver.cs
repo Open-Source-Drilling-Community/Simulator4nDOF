@@ -235,7 +235,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
-            double dtTemp = simulationParameters.DistributedCells.DistributedSectionLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
+            double dtTemp = simulationParameters.DistributedCells.DistributedSectionLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             
             // Wave equations are transformed into their Riemann invariants
             AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
@@ -244,24 +244,30 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
+                if (innerIterationNo > 65){
+                    int debug = 1;
+                }
                 // Calculate axial-torsional pde properties
                 AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                 
                 // Update axial-torsional state using upwind scheme            
-                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                       
                 // Calculate lateral accelerations    
                 AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);        
+                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                       
+                //TO BE KEPT SO FAR
+                solverODE.IntegrationStep(state, simulationParameters);            
+              
+               
                 //Debbuging purpose
                 #region  Debbugging Outputs
                 if (double.IsNaN(state.XAcceleration.Sum()) || double.IsNaN(state.YAcceleration.Sum()) || double.IsNaN(state.AxialAcceleration.Sum()) || double.IsNaN(state.AngularAcceleration.Sum()))
                 {
                     Console.WriteLine("NaN detected in step: " + innerIterationNo.ToString());
+                    break;
                 }
                 
                 #endregion
                 
                                                                
-                //TO BE KEPT SO FAR
-                solverODE.IntegrationStep(state, simulationParameters);            
                 // Mud motor
                 if (configuration.UseMudMotor)
                 {
@@ -272,10 +278,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
 
             // Compute states from Riemann invariants
-            state.PipeAngularVelocity = 1.0 / 2.0 * (axialTorsionalModel.DownwardTorsionalWave + axialTorsionalModel.UpwardTorsionalWave);
+            state.PipeAngularVelocity = 0.5 * (axialTorsionalModel.DownwardTorsionalWave + axialTorsionalModel.UpwardTorsionalWave);
             state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (axialTorsionalModel.DownwardTorsionalWave - axialTorsionalModel.UpwardTorsionalWave);
 
-            state.PipeAxialVelocity = 1.0 / 2.0 * (axialTorsionalModel.DownwardAxialWave + axialTorsionalModel.UpwardAxialWave);
+            state.PipeAxialVelocity = 0.5 * (axialTorsionalModel.DownwardAxialWave + axialTorsionalModel.UpwardAxialWave);
             state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (axialTorsionalModel.DownwardAxialWave - axialTorsionalModel.UpwardAxialWave);
         
             // Bending moments

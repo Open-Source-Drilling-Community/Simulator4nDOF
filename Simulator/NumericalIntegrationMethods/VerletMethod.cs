@@ -83,8 +83,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             {
                 InitializeVerletMethod(state, simulationParameters);                             
             }
-            //Temporary variable for axial velocity for data rollover
-            double axialVelocity;
             //Integrate time steps using Verlet method
             for (int i = 0; i < state.XDisplacement.Count; i++)
             {
@@ -97,7 +95,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 state.XVelocity[i] = (state.XDisplacement[i] - XDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
                 state.YVelocity[i] = (state.YDisplacement[i] - YDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
                 //Temporary allocate axial velocity for proper data rollover
-                axialVelocity = state.AxialVelocity[i]; 
+                double axialVelocity = state.AxialVelocity[i]; 
                 // Central difference for axial velocity
                 state.AxialVelocity[i] = AxialVelocityMinus1[i] + 2 * simulationParameters.InnerLoopTimeStep * state.AxialAcceleration[i];
                 //Rollover data for next iteration                

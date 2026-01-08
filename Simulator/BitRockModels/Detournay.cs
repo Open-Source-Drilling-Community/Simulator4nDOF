@@ -61,7 +61,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 
         } 
 
-        public double[] CalculateInteractionForce(State state, double mudoRotorAngularVelocity, Matrix<double> aa, SimulationParameters simulationParameters)
+        public double[] CalculateInteractionForce(AxialTorsionalModel axialTorsionalModel, State state, double angularVelocity, SimulationParameters simulationParameters)
         {
             double tb = 0;
             double wb = 0;
@@ -70,15 +70,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
             double d = this.N * maxValue; // Compute d
             double epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
-            double reg = mudoRotorAngularVelocity / Math.Sqrt(Math.Pow(mudoRotorAngularVelocity, 2) + Math.Pow(epsilon, 2));
+            double reg = angularVelocity / Math.Sqrt(Math.Pow(angularVelocity, 2) + Math.Pow(epsilon, 2));
             double wc = d * simulationParameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
             double tc = d * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
             double ga = 1.0;
             double wf = WeightOnBitFrictionComponent * ga;
-            double tf = 0.5 * (1 + Math.Exp(-Mu * mudoRotorAngularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
-            double g_tt = state.TorsionalDownwardTravelingWave[lpSize, state.TorsionalDownwardTravelingWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
-            g_tt = (mudoRotorAngularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;
-            double g_wt = aa[lpSize, aa.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
+            double tf = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
+            double g_tt = axialTorsionalModel.DownwardTorsionalWave[lpSize, axialTorsionalModel.DownwardTorsionalWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
+            g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
+            double g_wt = axialTorsionalModel.DownwardAxialWave[lpSize, axialTorsionalModel.DownwardAxialWave.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
             g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
             if (state.onBottom)
             {
@@ -93,7 +93,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 {
                     diff_l_pad[i] = l_pad[i + 1] - l_pad[i];
                 }
-                state.DepthOfCut = state.DepthOfCut - (simulationParameters.InnerLoopTimeStep / simulationParameters.dxl) * Math.Max(mudoRotorAngularVelocity, 0) * N / (2 * Math.PI) * diff_l_pad + simulationParameters.InnerLoopTimeStep  * state.BitVelocity;
+                state.DepthOfCut = state.DepthOfCut - (simulationParameters.InnerLoopTimeStep / simulationParameters.dxl) * Math.Max(angularVelocity, 0) * N / (2 * Math.PI) * diff_l_pad + simulationParameters.InnerLoopTimeStep  * state.BitVelocity;
             }
             else
             {
