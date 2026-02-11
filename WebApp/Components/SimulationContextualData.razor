@@ -109,11 +109,32 @@
         else if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringMS)
         {
             <MudItem Style="width:500px;">
-                <MudTextField @bind-Value="Simulation.ContextualData.DrillStringID"
-                              Label="Drillstring id"
-                              Variant="Variant.Text" />
-            </MudItem>
+                <MudSelect T="Guid" Label="Drill String" @bind-Value="Simulation.ContextualData.DrillStringID" Variant="Variant.Text" 
+                    Text="@(DrillStrings != null ? DrillStrings.FirstOrDefault(x => x.MetaInfo.ID == Simulation.ContextualData.DrillStringID)?.Name : "")">
+                    @if ( DrillStrings != null)
+                    {
+                        @foreach (var drillString in DrillStrings)
+                        {
+                            <MudSelectItem Value="@drillString.MetaInfo.ID">@drillString.Name</MudSelectItem>
+                        }
+                    }
+                </MudSelect>         
+            </MudItem>   
         }
+        <MudItem xs="12">
+            <MudPaper>
+                <MudSwitch @bind-Value="_loadTrajectoryFromFile" Color="Color.Primary">@(_loadTrajectoryFromFile ? "Load trajectory from file" : "Load trajectory from micro service")</MudSwitch>
+                @if(_loadTrajectoryFromFile)
+                {
+                    <MudTextField @bind-Value="Simulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
+                }
+                else
+                {
+
+                }
+            </MudPaper>
+        </MudItem>
+        
 
         <MudItem xs="12">
             <MudTextField @bind-Value="Simulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
@@ -164,6 +185,12 @@
     public List<WellBore>? WellBores { get; set; } = null;
 
     [Parameter]
+    public List<DrillStringLight>? DrillStrings { get; set; } = null;
+
+    [Parameter]
+    public List<Trajectory>? Trajectories { get; set; } = null;
+
+    [Parameter]
     public GroundMudLineDepthReferenceSource? GroundMudLineDepthSource { get; set; }
 
     [Parameter]
@@ -177,8 +204,9 @@
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
-
+    
     // UI related variables
+    private bool _loadTrajectoryFromFile = true;
     private string? _wellBoreSearchString;
     private Field? _selectedField = null;
     private Cluster? _selectedCluster = null;

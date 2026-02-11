@@ -224,10 +224,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double dt = c.TimeStep / n; // time step of inner loop
 
             // Wave equations are transformed into their Riemann invariants
-            Matrix<double> DownTors = state.o + p.ds.c_t * state.f; // Downward traveling wave, torsional
-            Matrix<double> UpTors = state.o - p.ds.c_t * state.f; // Upward traveling wave, torsional
-            Matrix<double> DownAxial = state.v + p.ds.c_a * state.e; // Downward traveling wave, axial
-            Matrix<double> UpAxial = state.v - p.ds.c_a * state.e; // Upward traveling wave, axial
+            Matrix<double> aa = state.o + p.ds.c_t * state.f; // Downward traveling wave, torsional
+            Matrix<double> bb = state.o - p.ds.c_t * state.f; // Upward traveling wave, torsional
+            Matrix<double> uu = state.v + p.ds.c_a * state.e; // Downward traveling wave, axial
+            Matrix<double> vv = state.v - p.ds.c_a * state.e; // Upward traveling wave, axial
 
             Vector<double> elementWiseProduct = p.ds.E.PointwiseMultiply(p.ds.A);
             Matrix<double> scalingMatrix = Vector<double>.Build.Dense(p.lc.PL, 1).ToColumnMatrix();
@@ -365,20 +365,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Vector<double> VL_vec = ExtendVectorStart(Vtd, state.VL);
 
                 // Left boundaries
-                Vector<double> DownTors_left = -UpTors.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
-                Vector<double> DownAxial_left = -UpAxial.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
+                Vector<double> aa_left = -bb.Row(0) + 2 * OL_vec.SubVector(0, OL_vec.Count - 1);
+                Vector<double> uu_left = -vv.Row(0) + 2 * VL_vec.SubVector(0, VL_vec.Count - 1);
 
                 // Right boundaries
-                Vector<double> UpTors_right = -DownTors.Row(p.lc.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
-                Vector<double> UpAxial_right = -DownAxial.Row(p.lc.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
+                Vector<double> bb_right = -aa.Row(p.lc.PL - 1) + 2 * OL_vec.SubVector(1, OL_vec.Count - 1);
+                Vector<double> vv_right = -uu.Row(p.lc.PL - 1) + 2 * VL_vec.SubVector(1, VL_vec.Count - 1);
 
                 // Bit rock interaction
                 // Bit velocity
-                double vb = 0.5 * (DownAxial[p.lc.PL - 1, DownAxial.ColumnCount - 1] + UpAxial[p.lc.PL - 1, UpAxial.ColumnCount - 1]);
+                double vb = 0.5 * (uu[p.lc.PL - 1, uu.ColumnCount - 1] + vv[p.lc.PL - 1, vv.ColumnCount - 1]);
 
                 double ob;
                 if (!c.UseMudMotor)
-                    ob = 0.5 * (DownTors[p.lc.PL - 1, DownTors.ColumnCount - 1] + UpTors[p.lc.PL - 1, UpTors.ColumnCount - 1]);
+                    ob = 0.5 * (aa[p.lc.PL - 1, aa.ColumnCount - 1] + bb[p.lc.PL - 1, bb.ColumnCount - 1]);
                 else
                     ob = state.Orotor;
 
@@ -398,9 +398,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     double ga = 1.0;
                     double wf = p.br.Wf * ga;
                     double tf = 0.5 * (1 + Math.Exp(-p.br.bitRockFrictionExponent * ob / (2.0 * Math.PI))) * p.br.Tf * ga;
-                    double g_tt = DownTors[(int)p.lc.PL - 1, DownTors.ColumnCount - 1] * p.ds.J.Last() * p.ds.G.Last() / p.ds.c_t - tc - tf;
+                    double g_tt = aa[(int)p.lc.PL - 1, aa.ColumnCount - 1] * p.ds.J.Last() * p.ds.G.Last() / p.ds.c_t - tc - tf;
                     g_tt = (ob < 0.1) ? Math.Min(g_tt, 0) : 0;
-                    double g_wt = DownAxial[(int)p.lc.PL - 1, DownAxial.ColumnCount - 1] * p.ds.A.Last() * p.ds.E.Last() / p.ds.c_a - wc - wf;
+                    double g_wt = uu[(int)p.lc.PL - 1, uu.ColumnCount - 1] * p.ds.A.Last() * p.ds.E.Last() / p.ds.c_a - wc - wf;
                     g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
 
                     if (state.onBottom)
@@ -459,8 +459,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     if (u.sticking)
                     {
                         int lastIndex = p.ds.G.Count - 1;
-                        Vector<double> a_t = UpTors.Row(p.lc.PL - 1);
-                        Vector<double> a_a = UpAxial.Row(p.lc.PL - 1);
+                        Vector<double> a_t = bb.Row(p.lc.PL - 1);
+                        Vector<double> a_a = vv.Row(p.lc.PL - 1);
                         tb = p.ds.J[lastIndex] * p.ds.G[lastIndex] / p.ds.c_t * a_t[a_t.Count - 1];
                         wb = p.ds.A[lastIndex] * p.ds.E[lastIndex] / p.ds.c_a * a_a[a_t.Count - 1];
                     }
@@ -494,26 +494,67 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                 }
                 // Augment Riemann invariants with interface values
-                var DownwardTorsionalWaveStackedWithLeftBoundary = DownTors_left.ToRowMatrix().Stack(DownTors);
-                var UpwardTorsionalWaveStackedWithLeftBoundary = UpTors.Stack(UpTors_right.ToRowMatrix());                
-                var DownwardAxialWaveStackedWithRightBoundary = DownAxial_left.ToRowMatrix().Stack(DownAxial);
-                var UpwardAxialWaveStackedWithRightBoundary = UpAxial.Stack(UpAxial_right.ToRowMatrix());            
-               
+                var a_pad = aa_left.ToRowMatrix().Stack(aa);
+
+                //  var rows = aa.RowCount + 1; // Extra row for aa_left
+                //  var cols = aa.ColumnCount;
+
+                // Create the final stacked matrix
+                //  var a_pad = Matrix<double>.Build.Dense(rows, cols);
+                //
+                //  // Set the first row from aa_left
+                //  a_pad.SetRow(0, aa_left.ToArray());
+                //
+                //  // Set the remaining rows from aa
+                //  for (int i = 0; i < aa.RowCount; i++)
+                //  {
+                //      a_pad.SetRow(i + 1, aa.Row(i));
+                //  }
+                //
+                //  // Create the final stacked matrix
+                //  var u_pad = Matrix<double>.Build.Dense(rows, cols);
+                //
+                //  // Set the first row from aa_left
+                //  u_pad.SetRow(0, uu_left.ToArray());
+                //
+                //  // Set the remaining rows from aa
+                //  for (int i = 0; i < uu.RowCount; i++)
+                //  {
+                //      u_pad.SetRow(i + 1, uu.Row(i));
+                //  }
+
+                var b_pad = bb.Stack(bb_right.ToRowMatrix());
+                var u_pad = uu_left.ToRowMatrix().Stack(uu);
+                var v_pad = vv.Stack(vv_right.ToRowMatrix());
+                // Stack a row vector bb_right on top of matrix bb
+                // var b_pad = Matrix<double>.Build.Dense(rows, cols);
+                // b_pad.SetRow(0, bb_right.ToArray());  // Set the first row from bb_right
+                // for (int i = 0; i < bb.RowCount; i++)  // Set remaining rows from bb
+                // {
+                //     b_pad.SetRow(i + 1, bb.Row(i));
+                // }
+                // var v_pad = Matrix<double>.Build.Dense(rows, cols);
+                //
+                // v_pad.SetRow(0, vv_right.ToArray());  // Set the first row from bb_right
+                // for (int i = 0; i < vv.RowCount; i++)  // Set remaining rows from bb
+                // {
+                //     v_pad.SetRow(i + 1, vv.Row(i));
+                // }
 
                 // Update states using Upwind scheme
-                DownTors = DownTors - (dt / p.dc.dxM) * p.ds.c_t * DiffRows(DownwardTorsionalWaveStackedWithLeftBoundary);
-                UpTors = UpTors + (dt / p.dc.dxM) * p.ds.c_t * DiffRows(UpwardTorsionalWaveStackedWithLeftBoundary);
-                DownAxial = DownAxial - (dt / p.dc.dxM) * p.ds.c_a * DiffRows(DownwardAxialWaveStackedWithRightBoundary);
-                UpAxial = UpAxial + (dt / p.dc.dxM) * p.ds.c_a * DiffRows(UpwardAxialWaveStackedWithRightBoundary);
+                aa = aa - (dt / p.dc.dxM) * p.ds.c_t * DiffRows(a_pad);
+                bb = bb + (dt / p.dc.dxM) * p.ds.c_t * DiffRows(b_pad);
+                uu = uu - (dt / p.dc.dxM) * p.ds.c_a * DiffRows(u_pad);
+                vv = vv + (dt / p.dc.dxM) * p.ds.c_a * DiffRows(v_pad);
 
                 // Compute torque from the top drive on the first distributed element
-                double tauTD = (p.ds.J[0] * p.ds.G[0]) / (2 * p.ds.c_t) * (DownTors[0, 0] - UpTors[0, 0]);
+                double tauTD = (p.ds.J[0] * p.ds.G[0]) / (2 * p.ds.c_t) * (aa[0, 0] - bb[0, 0]);
 
                 // Compute torque for every other lumped element apart from top drive
                 Vector<double> factor = p.ds.J.PointwiseMultiply(p.ds.G) / (2.0 * p.ds.c_t);
 
-                // Extract row pPL from DownTors and UpTors, then subtract
-                Vector<double> rowDiff = DownTors.Row(p.lc.PL - 1) - UpTors.Row(p.lc.PL - 1);
+                // Extract row pPL from aa and bb, then subtract
+                Vector<double> rowDiff = aa.Row(p.lc.PL - 1) - bb.Row(p.lc.PL - 1);
 
                 // Element-wise multiplication of factor with row difference
                 Vector<double> tau_m = factor.PointwiseMultiply(rowDiff);
@@ -524,12 +565,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Vector<double> G_sub = p.ds.G.SubVector(1, p.ds.G.Count - 1);
 
                 // Extract row 0 (first row) from columns 1 to end
-                Vector<double> DownTors_sub = DownTors.Row(0).SubVector(1, DownTors.ColumnCount - 1);
-                Vector<double> UpTors_sub = UpTors.Row(0).SubVector(1, UpTors.ColumnCount - 1);
+                Vector<double> aa_sub = aa.Row(0).SubVector(1, aa.ColumnCount - 1);
+                Vector<double> bb_sub = bb.Row(0).SubVector(1, bb.ColumnCount - 1);
 
                 // Compute temp
                 Vector<double> temp = J_sub.PointwiseMultiply(G_sub)
-                                      .PointwiseMultiply(DownTors_sub - UpTors_sub)
+                                      .PointwiseMultiply(aa_sub - bb_sub)
                                       / (2 * p.ds.c_t);
 
                 double tm;
@@ -554,14 +595,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
 
                 Vector<double> factor2 = p.ds.A.PointwiseMultiply(p.ds.E) / (2.0 * p.ds.c_a);
-                Vector<double> rowDiff2 = DownAxial.Row(p.lc.PL - 1) - UpAxial.Row(p.lc.PL - 1);
+                Vector<double> rowDiff2 = uu.Row(p.lc.PL - 1) - vv.Row(p.lc.PL - 1);
                 Vector<double> for_m = factor2.PointwiseMultiply(rowDiff2);
 
                 Vector<double> A_sub = p.ds.A.SubVector(1, p.ds.A.Count - 1);
                 Vector<double> E_sub = p.ds.E.SubVector(1, p.ds.E.Count - 1);
-                Vector<double> DownAxial_sub = DownAxial.Row(0).SubVector(1, DownAxial.ColumnCount - 1);
-                Vector<double> UpAxial_sub = UpAxial.Row(0).SubVector(1, UpAxial.ColumnCount - 1);
-                Vector<double> tempVector = 1.0 / (2.0 * p.ds.c_a) * A_sub.PointwiseMultiply(E_sub).PointwiseMultiply(DownAxial_sub - UpAxial_sub);
+                Vector<double> uu_sub = uu.Row(0).SubVector(1, uu.ColumnCount - 1);
+                Vector<double> vv_sub = vv.Row(0).SubVector(1, vv.ColumnCount - 1);
+                Vector<double> tempVector = 1.0 / (2.0 * p.ds.c_a) * A_sub.PointwiseMultiply(E_sub).PointwiseMultiply(uu_sub - vv_sub);
                 Vector<double> for_p = Vector<double>.Build.DenseOfArray(tempVector.Append(wb).ToArray());
 
                 rc = (Square(state.Xc) + Square(state.Yc)).PointwiseSqrt();
@@ -820,11 +861,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
 
             // Compute states from Riemann invariants
-            state.o = 1.0 / 2.0 * (DownTors + UpTors);
-            state.f = 1.0 / (2.0 * p.ds.c_t) * (DownTors - UpTors);
+            state.o = 1.0 / 2.0 * (aa + bb);
+            state.f = 1.0 / (2.0 * p.ds.c_t) * (aa - bb);
 
-            state.v = 1.0 / 2.0 * (DownAxial + UpAxial);
-            state.e = 1.0 / (2.0 * p.ds.c_a) * (DownAxial - UpAxial);
+            state.v = 1.0 / 2.0 * (uu + vv);
+            state.e = 1.0 / (2.0 * p.ds.c_a) * (uu - vv);
 
             // Bending moments
             Mb_x = p.ds.E.PointwiseMultiply(p.ds.I).PointwiseMultiply(Xc_iPlus1 - 2 * state.Xc + Xc_iMinus1) / (p.lc.dxL * p.lc.dxL); // Bending moment x-component

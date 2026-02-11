@@ -64,11 +64,11 @@
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.NewSimulationVisible)
         {
-            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Simulation="@newSimulation" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" />
+            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Simulation="@newSimulation" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" DrillStrings="@drillStringList" Trajectories="@trajectoryList"/>
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.EditSimulationVisible)
         {
-            <SimulationEdit MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" />
+            <SimulationEdit MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" DrillStrings="@drillStringList" Trajectories="@trajectoryList" />
         }
     }
 </MudUnitAndReferenceChoiceTag>
@@ -92,6 +92,8 @@
     private List<Well>? wellList { get; set; } = null;
 
     private List<WellBore>? wellBoreList { get; set; } = null;
+    private List<DrillStringLight>? drillStringList { get; set; } = null;
+    private List<Trajectory>? trajectoryList { get; set; } = null;
 
     private Color GetProgressColor(double? progress)
     {
@@ -185,8 +187,13 @@
             var clusterTask = APIUtils.ClientCluster.GetAllClusterAsync();
             logger.LogInformation("Trying to load list of Field from client: " + APIUtils.HostNameField);
             var fieldTask = APIUtils.ClientField.GetAllFieldAsync();
+            logger.LogInformation("Trying to load list of DrillString from client: " + APIUtils.HostNameDrillString);
+            var drillStringTask = APIUtils.ClientDrillString.GetAllDrillStringLightAsync();
+            logger.LogInformation("Trying to load list of Trajectory from client: " + APIUtils.HostNameTrajectory);
+            var trajectoryTask = APIUtils.ClientTrajectory.GetAllTrajectoryAsync();
 
-            List<Task> loadingTaskList = new List<Task> { SimulationTask, wellBoreTask, wellTask, clusterTask, fieldTask };
+
+            List<Task> loadingTaskList = new List<Task> { SimulationTask, wellBoreTask, wellTask, clusterTask, fieldTask, drillStringTask, trajectoryTask };
 
             // Awaiting tasks and retrieve results as they become available
             while (loadingTaskList.Count > 0)
@@ -318,6 +325,46 @@
                         logger.LogError(ex, "Impossible to load Fields from client");
                     }
                 }
+                else if (finishedTask == drillStringTask)
+                {
+                    try
+                    {
+                        drillStringList = (List<DrillStringLight>)await drillStringTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (drillStringList != null)
+                        {
+                            drillStringList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of DrillString was null on initialization");
+                            Snackbar.Add("Returned list of DrillString was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load DrillString from client");
+                    }
+                }
+                else if (finishedTask == trajectoryTask)
+                {
+                    try
+                    {
+                        trajectoryList = (List<Trajectory>)await trajectoryTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (trajectoryList != null)
+                        {
+                            trajectoryList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Trajectory was null on initialization");
+                            Snackbar.Add("Returned list of Trajectory was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Trajectory from client");
+                    }
+                }
 
                 loadingTaskList.Remove(finishedTask);
             }
@@ -380,8 +427,8 @@
                 DrillStringSource = DrillStringSourceType.DrillStringMS,
                 AnnulusPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/AnnulusHydraulicProfiles.txt",
                 DrillstringPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/DrillstringHydraulicProfiles.txt",
-                DrillstringFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/Drillstring.csv",
-                DrillStringID = new Guid("8a42e59b-9785-4343-8e3e-5f84fcf1770b"), //new Guid("fee4592a-8ed9-4937-86b5-53489c55957e"),
+                DrillstringFile = "C:\\HarbourEnergy\\Drillstring.csv",
+                DrillStringID = new Guid("c8deb96c-dc6a-403c-9502-1029fddf8917"), //new Guid("fee4592a-8ed9-4937-86b5-53489c55957e"),
                 DrillStringOpenLabID = new Guid("c5cf7441-7e9b-4c18-84c7-e0707f13ee1a"),
                 BoreHoleSizeList = new List<BoreHoleSize>() { new BoreHoleSize() { Depth = 336.0, ID = 19.188 * 0.0254 }, new BoreHoleSize() { Depth = 4160.0, ID = 8.553 * 0.0254 }, new BoreHoleSize() { Depth = 4170.0, ID = 12.25 * 0.0254 } },
                 BitRadius = 8.5 * 0.0254 / 2.0,

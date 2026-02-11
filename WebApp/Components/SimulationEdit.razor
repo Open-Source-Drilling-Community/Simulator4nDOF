@@ -82,7 +82,7 @@ else if (currentLightSimulation != null)
             @if (currentSimulation.ContextualData != null)
             {
                 <MudExpansionPanel Text="Contextual Data">
-                    <SimulationContextualData Simulation="@currentSimulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" />
+                    <SimulationContextualData Simulation="@currentSimulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" DrillStrings="@DrillStrings" Trajectories="@Trajectories"/>
                 </MudExpansionPanel>
             }
             @if (currentSimulation.Config != null)
@@ -127,6 +127,10 @@ else if (currentLightSimulation != null)
 
     [Parameter]
     public List<WellBore>? WellBores { get; set; } = null;
+    [Parameter]
+    public List<Trajectory>? Trajectories { get; set; } = null;
+    [Parameter]
+    public List<DrillStringLight>? DrillStrings { get; set; } = null;
 
     [Parameter]
     public MainPanelLogic? MainPanelLogic { get; set; } = null;

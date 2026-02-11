@@ -244,30 +244,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
-                if (innerIterationNo > 65){
-                    int debug = 1;
-                }
                 // Calculate axial-torsional pde properties
-                AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                 
-                // Update axial-torsional state using upwind scheme            
-                // Calculate lateral accelerations    
+                AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                                 
+                // Update axial-torsional state using upwind scheme
+                // The staggered method is used for a semi-implicit integration, increasing stability           
+                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                                                     
+                // Calculate lateral accelerations                    
                 AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);        
-                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                       
-                //TO BE KEPT SO FAR
-                solverODE.IntegrationStep(state, simulationParameters);            
-              
-               
-                //Debbuging purpose
-                #region  Debbugging Outputs
-                if (double.IsNaN(state.XAcceleration.Sum()) || double.IsNaN(state.YAcceleration.Sum()) || double.IsNaN(state.AxialAcceleration.Sum()) || double.IsNaN(state.AngularAcceleration.Sum()))
-                {
-                    Console.WriteLine("NaN detected in step: " + innerIterationNo.ToString());
-                    break;
-                }
-                
-                #endregion
-                
-                                                               
+                solverODE.IntegrationStep(state, simulationParameters);                                                                                           
                 // Mud motor
                 if (configuration.UseMudMotor)
                 {

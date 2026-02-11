@@ -28,6 +28,16 @@ public static class APIUtils
     public static readonly HttpClient HttpClientField = APIUtils.SetHttpClient(HostNameField, HostBasePathField);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientField = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientField.BaseAddress!.ToString(), APIUtils.HttpClientField);
 
+    public static readonly string HostNameDrillString = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.DrillStringHostURL!;
+    public static readonly string HostBasePathDrillString = "DrillString/api/";
+    public static readonly HttpClient HttpClientDrillString = APIUtils.SetHttpClient(HostNameDrillString, HostBasePathDrillString);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientDrillString = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientDrillString.BaseAddress!.ToString(), APIUtils.HttpClientDrillString);
+
+    public static readonly string HostNameTrajectory = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.TrajectoryHostURL!;
+    public static readonly string HostBasePathTrajectory = "Trajectory/api/";
+    public static readonly HttpClient HttpClientTrajectory = APIUtils.SetHttpClient(HostNameTrajectory, HostBasePathTrajectory);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientTrajectory = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientTrajectory.BaseAddress!.ToString(), APIUtils.HttpClientTrajectory);
+
     public static readonly string HostNameUnitConversion = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.UnitConversionHostURL!;
     public static readonly string HostBasePathUnitConversion = "UnitConversion/api/";
 

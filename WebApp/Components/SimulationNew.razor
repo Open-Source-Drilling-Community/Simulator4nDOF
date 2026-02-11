@@ -25,7 +25,7 @@
                 {
                     <br>
                     <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Contextual data </MudText>
-                    <SimulationContextualData Simulation="@Simulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" />
+                    <SimulationContextualData Simulation="@Simulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" DrillStrings="@DrillStrings" Trajectories="@Trajectories"/>
                 }
                 @if (Simulation?.Config != null)
                 {
@@ -69,12 +69,19 @@
 
     [Parameter]
     public List<WellBore>? WellBores { get; set; } = null;
+    [Parameter]
+    public List<DrillStringLight>? DrillStrings { get; set; } = null;
+    [Parameter]
+    public List<Trajectory>? Trajectories { get; set; } = null;
 
     [Parameter]
     public MainPanelLogic? MainPanelLogic { get; set; } = null;
 
     [Parameter]
     public EventCallback OnRefresh { get; set; }
+
+
+
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
@@ -88,6 +95,11 @@
     {
         if (Simulation != null)
         {
+            if (Simulation.ContextualData.DrillStringID == Guid.Empty || Simulation.ContextualData.DrillStringOpenLabID == Guid.Empty)
+            {
+                Snackbar.Add("Please select a Drill String", Severity.Warning);
+                return;
+            }
             try
             {
                 MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
