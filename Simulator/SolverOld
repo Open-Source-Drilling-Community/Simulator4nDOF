@@ -495,52 +495,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
                 // Augment Riemann invariants with interface values
                 var DownwardTorsionalWaveStackedWithLeftBoundary = DownTors_left.ToRowMatrix().Stack(DownTors);
-
-                //  var rows = DownTors.RowCount + 1; // Extra row for DownTors_left
-                //  var cols = DownTors.ColumnCount;
-
-                // Create the final stacked matrix
-                //  var DownwardTorsionalWaveStackedWithLeftBoundary = Matrix<double>.Build.Dense(rows, cols);
-                //
-                //  // Set the first row from DownTors_left
-                //  DownwardTorsionalWaveStackedWithLeftBoundary.SetRow(0, DownTors_left.ToArray());
-                //
-                //  // Set the remaining rows from DownTors
-                //  for (int i = 0; i < DownTors.RowCount; i++)
-                //  {
-                //      DownwardTorsionalWaveStackedWithLeftBoundary.SetRow(i + 1, DownTors.Row(i));
-                //  }
-                //
-                //  // Create the final stacked matrix
-                //  var DownwardAxialWaveStackedWithRightBoundary = Matrix<double>.Build.Dense(rows, cols);
-                //
-                //  // Set the first row from DownTors_left
-                //  DownwardAxialWaveStackedWithRightBoundary.SetRow(0, DownAxial_left.ToArray());
-                //
-                //  // Set the remaining rows from DownTors
-                //  for (int i = 0; i < DownAxial.RowCount; i++)
-                //  {
-                //      DownwardAxialWaveStackedWithRightBoundary.SetRow(i + 1, DownAxial.Row(i));
-                //  }
-
                 var UpwardTorsionalWaveStackedWithLeftBoundary = UpTors.Stack(UpTors_right.ToRowMatrix());
                 
                 var DownwardAxialWaveStackedWithRightBoundary = DownAxial_left.ToRowMatrix().Stack(DownAxial);
-                var UpwardAxialWaveStackedWithRightBoundary = UpAxial.Stack(UpAxial_right.ToRowMatrix());
-                // Stack a row vector UpTors_right on top of matrix UpTors
-                // var UpwardTorsionalWaveStackedWithLeftBoundary = Matrix<double>.Build.Dense(rows, cols);
-                // UpwardTorsionalWaveStackedWithLeftBoundary.SetRow(0, UpTors_right.ToArray());  // Set the first row from UpTors_right
-                // for (int i = 0; i < UpTors.RowCount; i++)  // Set remaining rows from UpTors
-                // {
-                //     UpwardTorsionalWaveStackedWithLeftBoundary.SetRow(i + 1, UpTors.Row(i));
-                // }
-                // var UpwardAxialWaveStackedWithRightBoundary = Matrix<double>.Build.Dense(rows, cols);
-                //
-                // UpwardAxialWaveStackedWithRightBoundary.SetRow(0, UpAxial_right.ToArray());  // Set the first row from UpTors_right
-                // for (int i = 0; i < UpAxial.RowCount; i++)  // Set remaining rows from UpTors
-                // {
-                //     UpwardAxialWaveStackedWithRightBoundary.SetRow(i + 1, UpAxial.Row(i));
-                // }
+                var UpwardAxialWaveStackedWithRightBoundary = UpAxial.Stack(UpAxial_right.ToRowMatrix());            
+               
 
                 // Update states using Upwind scheme
                 DownTors = DownTors - (dt / p.dc.dxM) * p.ds.c_t * DiffRows(DownwardTorsionalWaveStackedWithLeftBoundary);

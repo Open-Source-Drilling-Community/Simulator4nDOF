@@ -295,14 +295,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 double rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocity[i];                            
                 double rotationSpeedSquared = rotationSpeed * rotationSpeed;
                 double fluidDampingCoefficient = parameters.Wellbore.FluidDampingCoefficient / parameters.Drillstring.FluidAddedMass[i];                    
-                double fluidForceX = - 0 * parameters.Drillstring.FluidAddedMass[i] * 
+                double fluidForceX = -  parameters.Drillstring.FluidAddedMass[i] * 
                                     (
                                         fluidDampingCoefficient * state.XVelocity[i]
                                         - 0.25 * rotationSpeedSquared * state.XDisplacement[i]
                                         + rotationSpeed * state.YVelocity[i]
                                         + 0.5 * fluidDampingCoefficient * rotationSpeed * state.YDisplacement[i]
                                     );
-                double fluidForceY = -  0 * parameters.Drillstring.FluidAddedMass[i] * 
+                double fluidForceY = -  parameters.Drillstring.FluidAddedMass[i] * 
                                     (
                                         fluidDampingCoefficient * state.YVelocity[i]
                                         - 0.25 * rotationSpeedSquared * state.YDisplacement[i]
@@ -339,7 +339,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 double tangentialVelocity = whirlVelocity * radialDisplacement + rotationSpeed * outerRadius;
                 double axialStaticForce = 1.0 / parameters.InnerLoopTimeStep * state.AxialVelocity[i] * parameters.Drillstring.LumpedElementMass[i] 
                         + lateralModel.ForceM[i] - lateralModel.ForceDistribution[i] - parameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i];                    
-                //UNUSED                    
+                //UNUSED         
+                /*           
                 double sumForcesX = ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX;
                 double sumForcesY = ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY;
                 
@@ -363,7 +364,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     velocityTangential[1] / velocityTangentialMagnitude,
                     velocityTangential[2] / velocityTangentialMagnitude
                 };
-
+                */
                 // ----------------------------- Needs to be corrected! ---------------------------- 
                 // The tangential velocity must be the difference of the total velocity from the normal velocity.
                 // The total velocity is calculated by [dx, dy, dz] + omega x R.
@@ -532,8 +533,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 double YAcceleration= (ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - parameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - lateralModel.NormalCollisionForce[i] * sinWhirlAngle
                     - tangentialCoulombFrictionForce * cosWhirlAngle) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
                 state.AxialAcceleration[i] = ZAcceleration;
-                state.XAcceleration[i] = XAcceleration;
-                state.YAcceleration[i] = YAcceleration;   
+                state.XAcceleration[i] = 0;//XAcceleration;
+                state.YAcceleration[i] = 0;//YAcceleration;   
                 state.AngularAcceleration[i] = angularAcceleration;       
                 
                 #endregion
@@ -569,7 +570,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             }             
             state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / parameters.Wellbore.TopDriveInertia * parameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - lateralModel.TauTD);                
-                                     
+            //To debug the top drive, we can check if the angular velocity exceeds a certain threshold, which is physically impossible. If it does, we can set a breakpoint to investigate further.
+            if (state.TopDriveAngularVelocity > configuration.SurfaceRPM || state.TopDriveAngularVelocity < 0)
+            {
+                int debug = 0;  
+            }                    
         }
     }
 }

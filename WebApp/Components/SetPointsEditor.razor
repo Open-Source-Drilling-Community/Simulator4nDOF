@@ -13,7 +13,7 @@
             <TemplateColumn Title="Time duration" CellStyle="width: 30%;" Sortable="false">
                 <HeaderTemplate>
                     <div>
-                        Time duration @TimeUnit
+                        Time duration [@(Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.Time))]
                     </div>
                 </HeaderTemplate>
                 <EditTemplate Context="c">
@@ -30,7 +30,7 @@
             <TemplateColumn Title="Surface Rotational Speed" CellStyle="width: 30%;" Sortable="false">
                 <HeaderTemplate>
                     <div>
-                        Surface rotational speed @RotationalVelocityUnit
+                        Surface rotational speed [@Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling)]
                     </div>
                 </HeaderTemplate>
                 <EditTemplate Context="c">
@@ -47,7 +47,7 @@
             <TemplateColumn Title="Top of string velocity" CellStyle="width: 30%;" Sortable="false">
                 <HeaderTemplate>
                     <div>
-                        Top of string velocity @AxialVelocityUnit
+                        Top of string velocity [@Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AxialVelocityDrilling)]
                     </div>
                 </HeaderTemplate>
                 <EditTemplate Context="c">
@@ -99,7 +99,15 @@
             AxialVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AxialVelocityDrilling) + "]";
         }
     }
-
+    public void ManageUnits()
+    {
+        if (Parent != null)
+        {
+            TimeUnit = "[" + Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.Time) + "]";
+            RotationalVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]";
+            AxialVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AxialVelocityDrilling) + "]";
+        }
+    }
     private async Task DeleteSetPoints(SetPoints item)
     {
         if (item != null)
