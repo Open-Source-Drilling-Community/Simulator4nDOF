@@ -25,11 +25,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Matrix<double> ScalingMatrix;
         public Vector<double> ToolFaceAngle;
 
-        public Vector<double> TorqueDistribution;
-        public Vector<double> ForceDistribution;
-        public double MudTorque;
-        public Vector<double> TauM;
-        public Vector<double> ForceM;        
+        //public Vector<double> TorqueDistribution;
+        //public Vector<double> ForceDistribution;
+        //public Vector<double> TauM;
+        //public Vector<double> ForceM;        
+        public double MudTorque;        
         public double TauTD;
         public Vector<double> HeavesideStep;
 
@@ -136,10 +136,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Compute the toolface angle
             ToolFaceAngle = dotProduct.PointwiseAcos().PointwiseMultiply(signToolFace);
             MudTorque = 0.0;
-            ForceDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipeArea.Count); 
-            TorqueDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipePolarMoment.Count);
-            TauM = Vector<double>.Build.Dense(simulationParameters.Drillstring.ShearModuli.Count);
-            ForceM = Vector<double>.Build.Dense(simulationParameters.Drillstring.YoungModuli.Count);            
+            //ForceDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipeArea.Count); 
+            //TorqueDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipePolarMoment.Count);
+            //TauM = Vector<double>.Build.Dense(simulationParameters.Drillstring.ShearModuli.Count);
+            //ForceM = Vector<double>.Build.Dense(simulationParameters.Drillstring.YoungModuli.Count);            
             TauTD = 0.0;
             HeavesideStep = Vector<double>.Build.Dense(state.XDisplacement.Count);
             NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);

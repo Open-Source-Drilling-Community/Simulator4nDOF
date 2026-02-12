@@ -16,14 +16,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         public static void IntegrationStep(AxialTorsionalModel torsionalModel, SimulationParameters simulationParameters)
         {   
             double c1 = simulationParameters.InnerLoopTimeStep / simulationParameters.DistributedCells.DistributedSectionLength;            
-            //torsionalModel.DownwardTorsionalWave = torsionalModel.DownwardTorsionalWave - c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(torsionalModel.DownwardTorsionalWaveStackedWithLeftBoundary);
-            //torsionalModel.UpwardTorsionalWave   = torsionalModel.UpwardTorsionalWave   + c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * DiffRows(torsionalModel.UpwardTorsionalWaveStackedWithLeftBoundary);
-            //torsionalModel.DownwardAxialWave     = torsionalModel.DownwardAxialWave     - c1 * simulationParameters.Drillstring.AxialWaveSpeed *     DiffRows(torsionalModel.DownwardAxialWaveStackedWithRightBoundary);
-            //torsionalModel.UpwardAxialWave       = torsionalModel.UpwardAxialWave       + c1 * simulationParameters.Drillstring.AxialWaveSpeed *     DiffRows(torsionalModel.UpwardAxialWaveStackedWithRightBoundary);         
             for (int i = 0; i < simulationParameters.LumpedCells.DistributedToLumpedRatio; i++)          
-            {
+            {                                
                 for (int j = 0; j < simulationParameters.LumpedCells.NumberOfLumpedElements; j++)
                 {
+                    // The variation is needed for the upwind scheme. To avoid unnecessary allocations, the variation is calculated on the fly. 
+                    // The boundary conditions are masked depending on the position.
                     double diffDownwardTorsionalWave = (
                         (i == 0) ? 
                         (torsionalModel.DownwardTorsionalWave[i,j] - torsionalModel.DownwardTorsionalWaveLeftBoundary[j]) 
@@ -47,8 +45,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                         (torsionalModel.UpwardAxialWaveRightBoundary[j] - torsionalModel.UpwardAxialWave[i, j]) 
                         : 
                         (torsionalModel.UpwardAxialWave[i + 1, j] - torsionalModel.UpwardAxialWave[i, j])
-                    );
-                
+                    );                
                     torsionalModel.DownwardTorsionalWave[i, j] -= c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * diffDownwardTorsionalWave;
                     torsionalModel.UpwardTorsionalWave[i, j]   += c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * diffUpwardTorsionalWave;
                     torsionalModel.DownwardAxialWave[i, j]     -= c1 * simulationParameters.Drillstring.AxialWaveSpeed * diffDownwardAxialWave;
