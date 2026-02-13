@@ -393,18 +393,28 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 //CHECKED UP SO FAR
                 
                 //UNUSED         
-                /*           
+                           
                 double sumForcesX = ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX;
                 double sumForcesY = ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY;
                 
                 double[] totalForce = new double[3] { sumForcesX, sumForcesY, axialStaticForce }; 
                 double[] normalVector = new double[3] { cosWhirlAngle, sinWhirlAngle, 0 };        
-                double[] velocityVector = new double[3] { state.XVelocity[i], state.YVelocity[i], axialVelocity };
+                double[] velocityVector = new double[3] 
+                { 
+                    state.XVelocity[i] + rotationSpeed * outerRadius * normalVector[1], 
+                    state.YVelocity[i] - rotationSpeed * outerRadius * normalVector[0], 
+                    axialVelocity
+                };
+                double velocityMagnitude = Math.Sqrt(
+                    velocityVector[0] * velocityVector[0] +
+                    velocityVector[1] * velocityVector[1] +
+                    velocityVector[2] * velocityVector[2]
+                );                
                 double[] velocityTangential = new double[3]
                 {
-                    velocityVector[0] - (velocityVector[0] * normalVector[0]  ),
-                    velocityVector[1] - (velocityVector[1] * normalVector[1]  ),
-                    velocityVector[2] - (velocityVector[2] * normalVector[2]  )
+                    velocityVector[0] - (velocityMagnitude * normalVector[0]),
+                    velocityVector[1] - (velocityMagnitude * normalVector[1]),
+                    velocityVector[2] - (velocityMagnitude * normalVector[2])
                 };
                 double velocityTangentialMagnitude = Math.Sqrt(
                     velocityTangential[0] * velocityTangential[0] +
@@ -417,11 +427,93 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     velocityTangential[1] / velocityTangentialMagnitude,
                     velocityTangential[2] / velocityTangentialMagnitude
                 };
-                */
+                
+                double normalForceMagnitude = (totalForce[0] * normalVector[0] + totalForce[1] * normalVector[1] + totalForce[2] * normalVector[2]);
+                double[] normalForce = new double[3]
+                {
+                    normalForceMagnitude * normalVector[0],
+                    normalForceMagnitude * normalVector[1],
+                    normalForceMagnitude * normalVector[2]
+                }; 
+
+                double[] tangentialStaticForce = new double[3]
+                {
+                    parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[0],
+                    parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[1],
+                    parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[2]
+                };
+                double tangentialStaticForceMagnitude = Math.Sqrt(
+                    tangentialStaticForce[0] * tangentialStaticForce[0] +
+                    tangentialStaticForce[1] * tangentialStaticForce[1] +
+                    tangentialStaticForce[2] * tangentialStaticForce[2]
+                );
+
+                double tangentialStaticMagnitudeForce = sumForcesX * tangentialVector[0] + sumForcesY * tangentialVector[1];
+                double[] stopForce = new double[3]
+                {
+                    tangentialStaticForce[0],
+                    tangentialStaticForce[1],
+                    axialStaticForce + tangentialStaticForce[2] 
+                };
+                double stopForceMagnitude = Math.Sqrt(
+                    stopForce[0] * stopForce[0] +
+                    stopForce[1] * stopForce[1] +
+                    stopForce[2] * stopForce[2]
+                ) + Constants.eps;
+                                
+                double coulombStaticForceMagnitude = parameters.Friction.mu_k[i] * normalForceMagnitude;
+                
+                if (state.SlipCondition[i] == 0)
+                    // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
+                    state.SlipCondition[i] = stopForceMagnitude > coulombStaticForceMagnitude ? 1:0;
+                else
+                    // If the previous state was a slip condition  
+                    state.SlipCondition[i] = velocityMagnitude < parameters.Friction.v_c ? 0 : state.SlipCondition[i];
+                double coulombForceTemp;
+                double axialCoulombFrictionForce;
+                double[] coulombFrictionForce;
+
+                if (state.SlipCondition[i] == 0)
+                {
+                    //Project in the direction of the actual force
+                    coulombForceTemp = Math.Min(stopForceMagnitude, Math.Abs(coulombStaticForceMagnitude));
+                    coulombFrictionForce = new double[3];
+                    for (int j = 0; j < 3; j++)
+                    {
+                        coulombFrictionForce[j] = coulombForceTemp * stopForce[j]/stopForceMagnitude;
+                    }
+                }
+                else
+                {
+                    //Project on the tangential velocity direction  
+                    coulombForceTemp = normalCollisionForce * (parameters.Friction.mu_k[i] + (parameters.Friction.mu_s[i] - parameters.Friction.mu_k[i]) * Math.Exp( - parameters.Friction.stribeck *  velocityMagnitude));
+                    coulombFrictionForce = new double[3];
+                    for (int j = 0; j < 3; j++)
+                    {
+                        coulombFrictionForce[j] = coulombForceTemp * stopForce[j]/stopForceMagnitude;
+                    }                
+                }
+                double coulombFrictionX = coulombFrictionForce[0];
+                double coulombFrictionY = coulombFrictionForce[1];
+                double coulombFrictionZ = coulombFrictionForce[2];
+                if (hasSleeve)
+                {
+                    axialCoulombFrictionForce = coulombFrictionForce[2] *  (1 - parameters.Drillstring.AxialFrictionReduction);
+                    coulombFrictionZ = Math.Sqrt(coulombForceTemp * coulombForceTemp - axialCoulombFrictionForce * axialCoulombFrictionForce) * Math.Sign(coulombFrictionForce[2]);
+                    if (i == parameters.Drillstring.IndexSensor)
+                    {
+                        lateralModel.PhiDdotNoSlipSensor = stopForceMagnitude;
+                        // Needs to be checked!
+                        lateralModel.ThetaDotNoSlipSensor = sumForcesY * normalVector[0] - sumForcesX * normalVector[1];
+                    }
+                }                
+                
+                
                 // ----------------------------- Needs to be corrected! ---------------------------- 
                 // The tangential velocity must be the difference of the total velocity from the normal velocity.
                 // The total velocity is calculated by [dx, dy, dz] + omega x R.
                 // The normal velocity is the projection of the total on the direction of the collision [cos(whirlAngle); sin(whirlAngle); 0]                                                                                                    
+                /*
                 double term1 = (
                                 -2 * (parameters.Drillstring.LumpedElementMass[i] 
                                 + parameters.Drillstring.FluidAddedMass[i]) 
@@ -452,8 +544,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                         / parameters.Drillstring.OuterRadius[i] 
                                         * Math.Cos(rotationAngle - whirlAngle)
                                     );
-                double thetaDotNoSlip = (term1 + term2 + term3 + term4 + term5 + term6) / denominator;
-                double phiDdotNoSlip = 0.0;
+                double rotationalTorqueNoSlip = (term1 + term2 + term3 + term4 + term5 + term6) / denominator;
+                double whirlTorqueNoSlip = 0.0;
                 double denominator_ = 0.0;      
                 if (!hasSleeve)
                 {                        
@@ -479,7 +571,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                     * parameters.Drillstring.Eccentricity[i]
                                     * state.AngularVelocity[i] 
                                     * state.AngularVelocity[i] * Math.Sin(rotationAngle - whirlAngle);              
-                    phiDdotNoSlip = (term1_ + term2_ + term3_ + term4_ + term5_)/denominator_;
+                    whirlTorqueNoSlip = (term1_ + term2_ + term3_ + term4_ + term5_)/denominator_;
                 }
                 else
                 {                        
@@ -502,36 +594,37 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     double term5_ = parameters.Drillstring.EccentricMass[i] 
                                     * parameters.Drillstring.Eccentricity[i]
                                     * rotationSpeedSquared * Math.Sin(rotationAngle - whirlAngle);
-                    phiDdotNoSlip = (term1_ + term2_ + term3_ + term4_ + term5_) / denominator_;                                                            
+                    whirlTorqueNoSlip = (term1_ + term2_ + term3_ + term4_ + term5_) / denominator_;                                                            
                 }
                 //Tangetial force
                 double tangentialStaticForce = inertia/(outerRadius * outerRadius) * radialVelocity * whirlVelocity
-                    + radialDisplacement * phiDdotNoSlip 
+                    + radialDisplacement * whirlTorqueNoSlip 
                     + (
                         torqueDifference 
                         - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed
                     )/outerRadius;                  
                 double velocityMagnitude = Math.Sqrt(axialVelocity * axialVelocity  + tangentialVelocity * tangentialVelocity) + Constants.eps;
-                double staticFrictionForceCalculated = Math.Sqrt(axialStaticForce * axialStaticForce + tangentialStaticForce * tangentialStaticForce) + Constants.eps;
+                double stopForce = Math.Sqrt(axialStaticForce * axialStaticForce + tangentialStaticForce * tangentialStaticForce) + Constants.eps;
                 double staticFrictionForceCriteria = normalCollisionForce * parameters.Friction.mu_s[i];
                 //Check for slip
-                if (state.slip_condition[i] == 0)
+                if (state.SlipCondition[i] == 0)
                     // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
-                    state.slip_condition[i] = staticFrictionForceCalculated > staticFrictionForceCriteria ? 1:0;
+                    state.SlipCondition[i] = stopForce > staticFrictionForceCriteria ? 1:0;
                 else
                     // If the previous state was a slip condition  
-                    state.slip_condition[i] = velocityMagnitude < parameters.Friction.v_c ? 0 : state.slip_condition[i];
-                //Masking system for no slip
+                    state.SlipCondition[i] = velocityMagnitude < parameters.Friction.v_c ? 0 : state.SlipCondition[i];
+               
+                //Masking system for no slip                
                 double coulombForce;
                 double axialCoulombFrictionForce;
                 double tangentialCoulombFrictionForce;
                 //THE TANGENTIAL VELOCITY PROJECTION NEEDS TO BE CORRECTED
-                if (state.slip_condition[i] == 0)
+                if (state.SlipCondition[i] == 0)
                 {
                     //Project in the direction of the actual force
-                    coulombForce = Math.Max(Math.Min(staticFrictionForceCalculated, staticFrictionForceCriteria), - staticFrictionForceCriteria);
-                    axialCoulombFrictionForce = coulombForce * axialStaticForce / staticFrictionForceCalculated;
-                    tangentialCoulombFrictionForce = coulombForce * tangentialStaticForce / staticFrictionForceCalculated;
+                    coulombForce = Math.Max(Math.Min(stopForce, staticFrictionForceCriteria), - staticFrictionForceCriteria);
+                    axialCoulombFrictionForce = coulombForce * axialStaticForce / stopForce;
+                    tangentialCoulombFrictionForce = coulombForce * tangentialStaticForce / stopForce;
                 }
                 else
                 {
@@ -546,22 +639,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     tangentialCoulombFrictionForce = Math.Sqrt(coulombForce * coulombForce - axialCoulombFrictionForce * axialCoulombFrictionForce) * Math.Sign(tangentialCoulombFrictionForce);
                     if (i == parameters.Drillstring.IndexSensor)
                     {
-                        lateralModel.PhiDdotNoSlipSensor = phiDdotNoSlip;
-                        lateralModel.ThetaDotNoSlipSensor = thetaDotNoSlip;
+                        lateralModel.PhiDdotNoSlipSensor = whirlTorqueNoSlip;
+                        lateralModel.ThetaDotNoSlipSensor = rotationalTorqueNoSlip;
                     }
                 }                
-                
+                 */
 
                 #endregion                   
                 #region Accelerations
                 //If there is a sleeve, no torque is actually used
-                double frictionTorque = hasSleeve ? sleeveBrakeForce * outerRadius : tangentialCoulombFrictionForce * outerRadius;
+                double frictionTorque = hasSleeve ? sleeveBrakeForce * outerRadius : 
+                (
+                    outerRadius * (coulombFrictionForce[1] * normalVector[0] - coulombFrictionForce[0] * normalVector[1]) 
+                );
                 
                 // It needs to be zeroed before, as there might have changes in the sleeve position when the number of lumped parameters change 
                 state.SleeveForces[i] = 0;
                 if (hasSleeve)
                 {
-                    state.SleeveForces[i] = hasSleeve ? tangentialCoulombFrictionForce : 0;
+                    state.SleeveForces[i] = hasSleeve ? Math.Sqrt(
+                            coulombFrictionForce[0]*coulombFrictionForce[0] + coulombFrictionForce[1]*coulombFrictionForce[1]
+                        ): 0;
                     // Why is there a TimeStep in here?                    
                     state.SleeveAngularAcceleration[sleeveIndex] = parameters.InnerLoopTimeStep * (sleeveBrakeForce * parameters.Drillstring.SleeveInnerRadius - parameters.Drillstring.SleeveOuterRadius * state.SleeveForces[i]) / parameters.Drillstring.SleeveMassMomentOfInertia;;
                 }
@@ -579,10 +677,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                              - frictionTorque
                         )/inertia;      
                 double XAcceleration = (ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - parameters.Drillstring.CalculateLateralDamping * state.XVelocity[i] - lateralModel.NormalCollisionForce[i] * cosWhirlAngle
-                    + tangentialCoulombFrictionForce * sinWhirlAngle) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
+                    + coulombFrictionX) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
                 double YAcceleration= (ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - parameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - lateralModel.NormalCollisionForce[i] * sinWhirlAngle
-                    - tangentialCoulombFrictionForce * cosWhirlAngle) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
-                double ZAcceleration = (axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i] - axialCoulombFrictionForce)/parameters.Drillstring.LumpedElementMass[i];
+                    + coulombFrictionY) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
+                double ZAcceleration = (axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i] - coulombFrictionZ)/parameters.Drillstring.LumpedElementMass[i];
                 
 
                 //XAcceleration = 0;
@@ -620,7 +718,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                             " WhirlVel: " + whirlVelocity.ToString() +
                             " TangentialVel: " + tangentialVelocity.ToString() +
                             " AxialVel: " + axialVelocity.ToString() +
-                            " SlipCondition: " + state.slip_condition[i].ToString()
+                            " SlipCondition: " + state.SlipCondition[i].ToString()
                             );
                     }
                 

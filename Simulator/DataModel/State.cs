@@ -38,7 +38,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 
         public Vector<double> SleeveForces;                   // Sleeve forces
         public List<int> SleeveToLumpedIndex;                // Mapping from sleeve indices to lumped element indices
-        public Vector<double> slip_condition;                 // Slip condition evaluated at each lumped element
+        public Vector<double> SlipCondition;                 // Slip condition evaluated at each lumped element
 
         //public Matrix<double> TorsionalDownwardTravelingWave; // Downward traveling torsional wave
         //public Matrix<double> TorsionalUpwardTravelingWave;   // Upward traveling torsional wave
@@ -123,7 +123,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize sleeve forces
             SleeveForces = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize slip condition
-            slip_condition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            SlipCondition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
 
             // Initialize sleeve to lumped index mapping
             SleeveToLumpedIndex = new List<int>();
@@ -226,7 +226,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             RadialVelocity = ExtendVectorStart(RadialVelocity[0], RadialVelocity);
 
             // Extend slip_condition vector by prepending the first element
-            slip_condition = ExtendVectorStart(slip_condition[0], slip_condition);
+            SlipCondition = ExtendVectorStart(SlipCondition[0], SlipCondition);
 
             // Extend SleeveForce vector by prepending the first element            
             SleeveForces = ExtendVectorStart(SleeveForces[0], SleeveForces);
