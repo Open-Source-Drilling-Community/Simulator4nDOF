@@ -1,3 +1,4 @@
+* add textbox to UI in the "time interval" section
 * Rework friction model
 * Why is the total force calculated in polar coordinates for the friction?
 * Maybe move all the doubles to a single structure which pre-allocates all of them? This might conflict with threaded execution.
