@@ -21,7 +21,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 state.AngularDisplacement[i] = state.AngularDisplacement[i] + state.AngularVelocity[i] * simulationParameters.InnerLoopTimeStep; 
                 state.AngularVelocity[i]     = state.AngularVelocity[i]     + state.AngularAcceleration[i] * simulationParameters.InnerLoopTimeStep;           
                 //Axial DoF
-                state.AxialVelocity = state.AxialVelocity + state.AxialAcceleration * simulationParameters.InnerLoopTimeStep;
+                state.AxialVelocity[i] = state.AxialVelocity[i] + state.AxialAcceleration[i] * simulationParameters.InnerLoopTimeStep;
                 //X DoF
                 state.XDisplacement[i] = state.XDisplacement[i] + state.XVelocity[i] * simulationParameters.InnerLoopTimeStep;
                 state.XVelocity[i]     = state.XVelocity[i] + state.XAcceleration[i] * simulationParameters.InnerLoopTimeStep;

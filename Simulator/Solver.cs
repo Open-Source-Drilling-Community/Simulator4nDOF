@@ -356,7 +356,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / simulationParameters.LumpedCells.DistanceBetweenElements; // Bending angle second derivative y-component*/
             }
           
-            output.BitVelocity = state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
+            output.BitVelocity = state.BitVelocity;
+            //state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
 
             // Parse outputs
             output.NormalForceProfileStiffString = lateralModel.NormalCollisionForce; // Pipe shear strain 
