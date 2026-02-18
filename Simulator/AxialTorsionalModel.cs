@@ -37,29 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             DownwardTorsionalWave = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, torsional
             UpwardTorsionalWave   = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, torsional
             DownwardAxialWave     = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, axial
-            UpwardAxialWave       = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, axial
-            /*
-
-            for (int i = 0; i < simulationParameters.LumpedCells.DistributedToLumpedRatio; i++)          
-            {
-                for (int j = 0; j < simulationParameters.LumpedCells.NumberOfLumpedElements; j++)          
-                {
-                    // --- Update Torsional waves                   
-                    //Downward torsional wave
-                    DownwardTorsionalWave[i, j] = state.PipeAngularVelocity[i, j] 
-                        + simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain[i, j];
-                    //Upward torsional wave
-                    UpwardTorsionalWave[i, j]   = state.PipeAngularVelocity[i, j] 
-                        - simulationParameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain[i, j]; 
-                    // --- Update Axial waves
-                    // Downward axial wave
-                    DownwardAxialWave[i, j] = state.PipeAxialVelocity[i, j] 
-                        + simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain[i, j]; 
-                    //Upward axial wave
-                    UpwardAxialWave[i, j] = state.PipeAxialVelocity[i, j] 
-                        - simulationParameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain[i, j];                        
-                }
-            }*/
+            UpwardAxialWave       = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, axial            
             // Allocate boundary condition vectors
             DownwardTorsionalWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             UpwardTorsionalWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);

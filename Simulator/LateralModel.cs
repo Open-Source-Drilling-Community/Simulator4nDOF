@@ -26,8 +26,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Vector<double> ToolFaceAngle;
 
         public double MudTorque;        
-        public double TauTD;
-
+    
         public Vector<double> BendingMomentX;
         public Vector<double> BendingMomentY;
 
@@ -36,7 +35,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         
         public LateralModel(SimulationParameters simulationParameters, State state)
         {
-            
+
+            NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);;        
+            SoftStringNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            Tension = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            BendingStiffness = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            PolarMomentTimesShearModuli = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            PreStressNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            PreStressBinormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
+            ToolFaceAngle = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            MudTorque = 0;        
+            BendingMomentX = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            BendingMomentY = Vector<double>.Build.Dense(state.YDisplacement.Count);
+            PhiDdotNoSlipSensor = 0;
+            ThetaDotNoSlipSensor = 0;
+        
+            /*
             Vector<double> elementWiseProduct = simulationParameters.Drillstring.YoungModuli.PointwiseMultiply(simulationParameters.Drillstring.PipeArea);
             ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
             Matrix<double> dragMatrix = ScalingMatrix * elementWiseProduct.ToRowMatrix();
@@ -59,10 +74,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             BendingMomentX = Vector<double>.Build.Dense(state.XDisplacement.Count);
             BendingMomentY = Vector<double>.Build.Dense(state.YDisplacement.Count);
-            /*Vector<double> F_comp = AiExtended.PointwiseMultiply(simulationParameters.Buoyancy.stringPressure - simulationParameters.Buoyancy.hydrostaticStringPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
-                                    - AoExtended.PointwiseMultiply(simulationParameters.Buoyancy.annularPressure - simulationParameters.Buoyancy.hydrostaticAnnularPressure) * (1 - 2 * simulationParameters.Drillstring.PoissonRatio)
-                                  - Tension;
-            Tension = -F_comp;*/
+    
             
             Tension +=  (1 - 2 * simulationParameters.Drillstring.PoissonRatio) * 
                 (  
@@ -135,8 +147,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             //TorqueDistribution = Vector<double>.Build.Dense(simulationParameters.Drillstring.PipePolarMoment.Count);
             //TauM = Vector<double>.Build.Dense(simulationParameters.Drillstring.ShearModuli.Count);
             //ForceM = Vector<double>.Build.Dense(simulationParameters.Drillstring.YoungModuli.Count);            
-            TauTD = 0.0;
-            NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);*/
         }
 
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
@@ -148,7 +159,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 XiMinus1 = (i == 0) ? 0.0 : state.XDisplacement[i - 1];
                 YiMinus1 = (i == 0) ? 0.0 : state.YDisplacement[i - 1];
                 XiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.XDisplacement[i + 1];
-                YiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.YDisplacement[i + 1];
+                YiPlus1 = (i == state.YDisplacement.Count - 1) ? 0.0 : state.YDisplacement[i + 1];
                 //Calcualte the bending moments using the central difference scheme
                 BendingMomentX[i] = simulationParameters.Drillstring.YoungModuli[i] * simulationParameters.Drillstring.PipeInertia[i] *
                     (XiPlus1 - 2 * state.XDisplacement[i] + XiMinus1) * invElementLengthSquared; // Bending moment x-component

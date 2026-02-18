@@ -550,8 +550,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 #endregion
 
             }             
-            state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / parameters.Wellbore.TopDriveInertia * parameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - lateralModel.TauTD);                
-            state.TopOfStringPosition = state.TopOfStringPosition + state.TopDriveAngularVelocity * parameters.InnerLoopTimeStep;                
+            //state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / parameters.Wellbore.TopDriveInertia * parameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - lateralModel.TauTD);                
+            //state.TopOfStringPosition = state.TopOfStringPosition + state.TopDriveAngularVelocity * parameters.InnerLoopTimeStep;                
         }
     }
 }
