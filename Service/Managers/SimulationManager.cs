@@ -1175,7 +1175,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
                 Inclination = parameters.Trajectory.thetaVec.Append(parameters.Trajectory.thetaVec.LastOrDefault<double>()).ToList(),
                 Azimuth = parameters.Trajectory.phiVec.Append(parameters.Trajectory.phiVec.LastOrDefault<double>()).ToList(),
-                Curvature = parameters.Trajectory.curvature.Append(parameters.Trajectory.curvature.LastOrDefault<double>()).ToList(),
+                Curvature = parameters.Trajectory.Curvature.Append(parameters.Trajectory.Curvature.LastOrDefault<double>()).ToList(),
                 BuildUpRate = parameters.Trajectory.thetaVec_dot.Append(parameters.Trajectory.thetaVec_dot.LastOrDefault<double>()).ToList()
             };
         }

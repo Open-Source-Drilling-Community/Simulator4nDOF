@@ -253,8 +253,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
             return result;
         }
+        public static double[] CummulativeIntegration(double[] x, double[] y)
+        {
+            double[] result = new double[y.Length];
+            result[0] = 0;
+            for (int i = 1; i < y.Length; i++)
+            {
+                result[i] = result[i - 1] + y[i] * (x[i] - x[i - 1]);
+            }
+            return result;
+        }
 
-        public static Vector<double> CummulativeTrapezoidal(Vector<double> x, Vector<double> y)
+            public static Vector<double> CummulativeTrapezoidal(Vector<double> x, Vector<double> y)
         {
             return ToVector(CummulativeTrapezoidal( x.ToArray(), y.ToArray()));
         }

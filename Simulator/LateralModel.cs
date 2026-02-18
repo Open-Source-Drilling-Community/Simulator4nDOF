@@ -25,13 +25,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Matrix<double> ScalingMatrix;
         public Vector<double> ToolFaceAngle;
 
-        //public Vector<double> TorqueDistribution;
-        //public Vector<double> ForceDistribution;
-        //public Vector<double> TauM;
-        //public Vector<double> ForceM;        
         public double MudTorque;        
         public double TauTD;
-        public Vector<double> HeavesideStep;
 
         public Vector<double> BendingMomentX;
         public Vector<double> BendingMomentY;
@@ -84,13 +79,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Normal force components in Frenet-Serret coordinate system
             Vector<double> binormal = ExtendVectorStart(simulationParameters.Trajectory.bz[0], simulationParameters.Trajectory.bz);
             Vector<double> normal = ExtendVectorStart(simulationParameters.Trajectory.nz[0], simulationParameters.Trajectory.nz);
-            Vector<double> curvatureExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature[0], simulationParameters.Trajectory.curvature);
-            Vector<double> curvature_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature_dot[0], simulationParameters.Trajectory.curvature_dot);
-            Vector<double> curvature_ddotExtended = ExtendVectorStart(simulationParameters.Trajectory.curvature_ddot[0], simulationParameters.Trajectory.curvature_ddot);
+            Vector<double> curvatureExtended = ExtendVectorStart(simulationParameters.Trajectory.Curvature[0], simulationParameters.Trajectory.Curvature);
+            Vector<double> curvature_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.CurvatureDerivative[0], simulationParameters.Trajectory.CurvatureDerivative);
+            Vector<double> curvature_ddotExtended = ExtendVectorStart(simulationParameters.Trajectory.CurvatureSecondDerivative[0], simulationParameters.Trajectory.CurvatureSecondDerivative);
             Vector<double> youngModulus = ExtendVectorStart(simulationParameters.Drillstring.YoungModuli[0], simulationParameters.Drillstring.YoungModuli);
             Vector<double> momentOfInertia = ExtendVectorStart(simulationParameters.Drillstring.PipeInertia[0], simulationParameters.Drillstring.PipeInertia);
-            Vector<double> torsionExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion[0], simulationParameters.Trajectory.torsion);
-            Vector<double> torsion_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.torsion_dot[0], simulationParameters.Trajectory.torsion_dot);
+            Vector<double> torsionExtended = ExtendVectorStart(simulationParameters.Trajectory.Torsion[0], simulationParameters.Trajectory.Torsion);
+            Vector<double> torsion_dotExtended = ExtendVectorStart(simulationParameters.Trajectory.TorsionDerivative[0], simulationParameters.Trajectory.TorsionDerivative);
             Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / simulationParameters.LumpedCells.DistanceBetweenElements);
 
             Vector<double> fB =
@@ -141,7 +136,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             //TauM = Vector<double>.Build.Dense(simulationParameters.Drillstring.ShearModuli.Count);
             //ForceM = Vector<double>.Build.Dense(simulationParameters.Drillstring.YoungModuli.Count);            
             TauTD = 0.0;
-            HeavesideStep = Vector<double>.Build.Dense(state.XDisplacement.Count);
             NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
         }
 

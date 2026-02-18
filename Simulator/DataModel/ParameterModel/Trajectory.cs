@@ -17,11 +17,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Vector<double> phiVec_dot;
         public Vector<double> thetaVec_ddot;
         public Vector<double> phiVec_ddot;
-        public Vector<double> curvature;
-        public Vector<double> torsion;
-        public Vector<double> curvature_dot;
-        public Vector<double> curvature_ddot;
-        public Vector<double> torsion_dot;
+        public Vector<double> Curvature;
+        public Vector<double> Torsion;
+        public Vector<double> CurvatureDerivative;
+        public Vector<double> CurvatureSecondDerivative;
+        public Vector<double> TorsionDerivative;
         public Vector<double> tx;
         public Vector<double> ty;
         public Vector<double> tz;
@@ -66,38 +66,38 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             thetaVec_ddot = ComputeSecondDerivative(thetaVec, lumpedCells.DistanceBetweenElements);
             phiVec_ddot = ComputeSecondDerivative(phiVec, lumpedCells.DistanceBetweenElements);
 
-            curvature = Vector<double>.Build.Dense(thetaVec_dot.Count);
+            Curvature = Vector<double>.Build.Dense(thetaVec_dot.Count);
             for (int i = 0; i < thetaVec_dot.Count(); i++)
             {
-                curvature[i] = Math.Sqrt(
+                Curvature[i] = Math.Sqrt(
                     Math.Pow(thetaVec_dot[i], 2) +
                     Math.Pow(phiVec_dot[i], 2) * Math.Pow(Math.Sin(thetaVec[i]), 2)
                 );  
             }
 
             // Compute torsion using element-wise operations
-            torsion = Vector<double>.Build.Dense(thetaVec_dot.Count);
+            Torsion = Vector<double>.Build.Dense(thetaVec_dot.Count);
 
-            for (int i = 0; i < torsion.Count; i++)
+            for (int i = 0; i < Torsion.Count; i++)
             {
                 double num1 = thetaVec_dot[i] * phiVec_ddot[i] - thetaVec_ddot[i] * phiVec_dot[i];
-                double denom = Math.Pow(curvature[i], 2);
+                double denom = Math.Pow(Curvature[i], 2);
                 double term1 = num1 / denom * Math.Sin(thetaVec[i]);
                 double term2 = phiVec_dot[i] * (1 + Math.Pow(thetaVec_dot[i], 2) / denom) * Math.Cos(thetaVec[i]);
 
                 if (denom > 0)
-                    torsion[i] = term1 + term2;
+                    Torsion[i] = term1 + term2;
                 else
-                    torsion[i] = 0;
+                    Torsion[i] = 0;
             }
 
-            curvature_dot = ComputeDerivative(curvature, lumpedCells.DistanceBetweenElements);
-            curvature_ddot = ComputeSecondDerivative(curvature, lumpedCells.DistanceBetweenElements);
-            torsion_dot = ComputeDerivative(torsion, lumpedCells.DistanceBetweenElements);
+            CurvatureDerivative = ComputeDerivative(Curvature, lumpedCells.DistanceBetweenElements);
+            CurvatureSecondDerivative = ComputeSecondDerivative(Curvature, lumpedCells.DistanceBetweenElements);
+            TorsionDerivative = ComputeDerivative(Torsion, lumpedCells.DistanceBetweenElements);
 
-            int[] idxZeroCurvature = curvature.Select((value, index) => value == 0 ? index : -1).Where(x => x != -1).ToArray();
+            int[] idxZeroCurvature = Curvature.Select((value, index) => value == 0 ? index : -1).Where(x => x != -1).ToArray();
             foreach (int index in idxZeroCurvature)
-                torsion[index] = 0;
+                Torsion[index] = 0;
 
             tx = thetaVec.PointwiseSin().PointwiseMultiply(phiVec.PointwiseCos());
             ty = thetaVec.PointwiseSin().PointwiseMultiply(phiVec.PointwiseSin());
@@ -110,24 +110,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             for (int i = 0; i < n; i++)
             {
-                if (curvature[i] != 0)
+                if (Curvature[i] != 0)
                 {
                     nx[i] = (Math.Cos(thetaVec[i]) * Math.Cos(phiVec[i]) * thetaVec_dot[i] -
-                             Math.Sin(thetaVec[i]) * Math.Sin(phiVec[i]) * phiVec_dot[i]) / curvature[i];
+                             Math.Sin(thetaVec[i]) * Math.Sin(phiVec[i]) * phiVec_dot[i]) / Curvature[i];
 
                     ny[i] = (Math.Cos(thetaVec[i]) * Math.Sin(phiVec[i]) * thetaVec_dot[i] +
-                             Math.Sin(thetaVec[i]) * Math.Cos(phiVec[i]) * phiVec_dot[i]) / curvature[i];
+                             Math.Sin(thetaVec[i]) * Math.Cos(phiVec[i]) * phiVec_dot[i]) / Curvature[i];
 
-                    nz[i] = -thetaVec_dot[i] * Math.Sin(thetaVec[i]) / curvature[i];
+                    nz[i] = -thetaVec_dot[i] * Math.Sin(thetaVec[i]) / Curvature[i];
 
-                    bz[i] = phiVec_dot[i] * Math.Pow(Math.Sin(thetaVec[i]), 2) / curvature[i];
+                    bz[i] = phiVec_dot[i] * Math.Pow(Math.Sin(thetaVec[i]), 2) / Curvature[i];
                 }
             }
 
             // Handling idx_zerocurvature (curvature = 0) cases
             for (int i = 0; i < n; i++)
             {
-                if (curvature[i] == 0)
+                if (Curvature[i] == 0)
                 {
                     nx[i] = Math.Cos(thetaVec[i]) * Math.Cos(phiVec[i]);
                     ny[i] = Math.Cos(thetaVec[i]) * Math.Sin(phiVec[i]);
