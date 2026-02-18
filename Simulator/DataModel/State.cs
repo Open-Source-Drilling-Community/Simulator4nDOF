@@ -56,7 +56,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double BitVelocity;                            // Bit velocity
 
         // Simulation flags and indices
-        public double previousCalculatedBitDepth;             // Previous calculated bit depth (used for trajectory update)
+        public double PreviousCalculatedBitDepth;             // Previous calculated bit depth (used for trajectory update)
         public bool make_connection;                          // Flag indicating if making a connection
         public bool pooh_before_connection;                   // Flag for POOH before connection
         public double onBottom_startIdx;                      // Start index of on-bottom in results array
@@ -144,7 +144,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             MudRotorAngularVelocity = 0;
 
             this.BitDepth = BitDepth;                               // Initial values set in SimulationParameters - to be moved
-            previousCalculatedBitDepth = BitDepth;
+            PreviousCalculatedBitDepth = BitDepth;
             this.HoleDepth = HoleDepth;
             this.TopOfStringPosition = TopOfStringPosition;
             onBottom = false;
@@ -154,14 +154,96 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             ConnectionStartTime = 0;                                 // [s] connection start time
             TopDriveStartupTime = 0;
             onBottom_startIdx = -1;
-            //TorsionalDownwardTravelingWave = this.PipeAngularVelocity + simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Downward traveling wave, torsional
-            //TorsionalUpwardTravelingWave = this.PipeAngularVelocity - simulationParameters.Drillstring.TorsionalWaveSpeed * this.PipeShearStrain; // Upward traveling wave, torsional
-            //AxialDownwardTravelingWave = this.PipeAxialVelocity + simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Downward traveling wave, axial
-            //AxialUpwardTravelingWave = this.PipeAxialVelocity - simulationParameters.Drillstring.AxialWaveSpeed * this.PipeAxialStrain; // Upward traveling wave, axial
-            //BitVelocity = 0.5 * (AxialDownwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialDownwardTravelingWave.ColumnCount - 1] 
-            //    + AxialUpwardTravelingWave[simulationParameters.LumpedCells.DistributedToLumpedRatio - 1, AxialUpwardTravelingWave.ColumnCount - 1]);
-        }
+          }
+        public State(in SimulationParameters simulationParameters, Configuration configuration)
+        {
+            Step = 0;
 
+            // Initialize pipe shear strain matrix
+            PipeShearStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize pipe angular velocity matrix
+            PipeAngularVelocity = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize pipe axial strain matrix
+            PipeAxialStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize pipe axial velocity matrix
+            PipeAxialVelocity = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
+
+            // Initialize lumped element whirl angle
+            WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element radial displacement
+            RadialDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element radial velocity
+            RadialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element whirl velocity
+            WhirlVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize top drive angular velocity
+            TopDriveAngularVelocity = 0;
+            // Initialize lumped element angular displacement
+            AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element angular velocity
+            AngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element angular acceleration
+            AngularAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element axial velocity
+            AxialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element axial acceleration
+            AxialAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element lateral displacement in x-direction
+            XDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element lateral velocity in x-direction
+            XVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element lateral acceleration in x-direction
+            XAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element lateral displacement in y-direction
+            YDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element lateral velocity in y-direction
+            YVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize lumped element lateral acceleration in y-direction
+            YAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize sleeve angular displacement
+            SleeveAngularDisplacement = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
+            // Initialize sleeve angular velocity
+            SleeveAngularVelocity = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
+            // Initialize sleeve angular acceleration
+            SleeveAngularAcceleration = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
+            // Initialize depth of cut
+            DepthOfCut = Vector<double>.Build.Dense(simulationParameters.DistributedCells.CellsInDepthOfCut);
+            // Initialize sleeve forces
+            SleeveForces = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize slip condition
+            SlipCondition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+
+            // Initialize sleeve to lumped index mapping
+            SleeveToLumpedIndex = new List<int>();
+            for (int i = 0; i < simulationParameters.LumpedCells.NumberOfLumpedElements; i++)
+            {
+                SleeveToLumpedIndex.Add(simulationParameters.Drillstring.SleeveIndexPosition.Contains(i) ? i : -1);
+            }
+            // Add 1 to every positive number in SleeveToLumpedIndex
+            for (int i = 0; i < SleeveToLumpedIndex.Count; i++)
+            {
+                if (SleeveToLumpedIndex[i] > 0)
+                {
+                    SleeveToLumpedIndex[i] += 1;
+                }
+            }
+
+            MudStatorAngularVelocity = 0;
+            MudRotorAngularVelocity = 0;
+
+            this.BitDepth = configuration.BitDepth;                               // Initial values set in SimulationParameters - to be moved
+            PreviousCalculatedBitDepth = configuration.BitDepth;
+            this.HoleDepth = configuration.HoleDepth;
+            this.TopOfStringPosition = configuration.TopOfStringPosition;
+            this. AxialVelocity[0] = configuration.TopOfStringVelocity;
+            onBottom = false;
+
+            make_connection = false;
+            pooh_before_connection = false;
+            ConnectionStartTime = 0;                                 // [s] connection start time
+            TopDriveStartupTime = 0;
+            onBottom_startIdx = -1;
+          }
         public void AddNewLumpedElement()
         {
             // Extend PipeShearStrain matrix by prepending a column with the first column's values

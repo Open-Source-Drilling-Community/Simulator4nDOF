@@ -103,7 +103,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double InertiaTimesYoungModulus;
             double hVectorProductNormalDorProductTangent;
             double signToolFace;
-            double dotProduct;
+            double dotProduct;            
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
             {               
                 // Normal force components in Frenet-Serret coordinate system
@@ -141,24 +141,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 model.PreStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * (parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i]);
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
-                oldBinormalForce = binormalForce;            
+                oldBinormalForce = binormalForce;     
             }            
             
             
         }
         public static void AxialTorsionalSystem(AxialTorsionalModel torsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
-        {                 
-
-            double topDriveTorque = 0.5 * parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] * state.TopDriveAngularVelocity / parameters.Drillstring.TorsionalWaveSpeed *
-                (   
-                    torsionalModel.DownwardTorsionalWave[0, 0] 
-                    - torsionalModel.UpwardTorsionalWave[0, 0]
-                );
-
-            state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / parameters.Wellbore.TopDriveInertia * parameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - topDriveTorque);                
-            state.TopOfStringPosition = state.TopOfStringPosition + simulationInput.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;                
- 
-            
+        {                                        
             torsionalModel.UpdateBoundaryConditions(state, parameters, simulationInput);               
             state.BitVelocity = 0.5 * 
                 (

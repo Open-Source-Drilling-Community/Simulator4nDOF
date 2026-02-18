@@ -150,11 +150,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public static void AxialTorsionalSystem(AxialTorsionalModel torsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
         {                 
             torsionalModel.UpdateBoundaryConditions(state, parameters, simulationInput);               
-            state.BitVelocity = 0.5 * 
-                (
-                    torsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardAxialWave.ColumnCount - 1] 
-                    + torsionalModel.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardAxialWave.ColumnCount - 1]
-                );
+            //state.BitVelocity = 0.5 * 
+            //    (
+            //        torsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardAxialWave.ColumnCount - 1] 
+            //        + torsionalModel.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardAxialWave.ColumnCount - 1]
+            //    );
            
             double angularVelocityBottom;
             if (!configuration.UseMudMotor)

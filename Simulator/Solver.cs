@@ -92,12 +92,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 simulationParameters.LumpedCells.ElementLength.SetSubVector(1, simulationParameters.LumpedCells.ElementLength.Count() - 1, simulationParameters.LumpedCells.ElementLength.SubVector(1, simulationParameters.LumpedCells.ElementLength.Count - 1) + state.AxialVelocity * configuration.TimeStep);
 
                 // update trajectory parameters and buoyancy force calculations
-                if (Math.Abs(state.BitDepth - state.previousCalculatedBitDepth) > 1.0)
+                if (Math.Abs(state.BitDepth - state.PreviousCalculatedBitDepth) > 1.0)
                 {
                     simulationParameters.Trajectory.UpdateTrajectory(simulationParameters.LumpedCells);
                     simulationParameters.Buoyancy.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, configuration.UseBuoyancyFactor);
                     simulationParameters.Wellbore.UpdateWellbore(simulationParameters.Drillstring, simulationParameters.LumpedCells);
-                    state.previousCalculatedBitDepth = state.BitDepth;
+                    state.PreviousCalculatedBitDepth = state.BitDepth;
                 }
 
                 // if the top most element has traveled more than the distance between
@@ -240,7 +240,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Wave equations are transformed into their Riemann invariants
             AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
             AccelerationCalculation.PreprareLateral(lateralModel, state, simulationParameters);            
-                     
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
@@ -248,7 +247,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                                 
                 // Update axial-torsional state using upwind scheme
                 // The staggered method is used for a semi-implicit integration, increasing stability           
-                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                                                     
+                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                  
+                // Calculate torque on bit and top drive torque for the next iteration                                                                   
+                axialTorsionalModel.CalculateTopDriveTorque(state, simulationParameters, simulationInput);
                 // Calculate lateral accelerations                    
                 AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);        
                 solverODE.IntegrationStep(state, simulationParameters);                                                                                           
@@ -356,8 +357,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / simulationParameters.LumpedCells.DistanceBetweenElements; // Bending angle second derivative y-component*/
             }
           
-            //output.BitVelocity = state.BitVelocity;
-            output.BitVelocity = state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
+            output.BitVelocity = state.AxialVelocity[state.AxialVelocity.Count-1];//Bit Velocity
+            //output.BitVelocity = state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
 
             // Parse outputs
             output.NormalForceProfileStiffString = lateralModel.NormalCollisionForce; // Pipe shear strain 
@@ -371,11 +372,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             //output.TangentialForceProfile = TangentialCoulombFrictionForce;// Bending moment y-component profile Tangential force profile
             output.WeightOnBit = axialTorsionalModel.WeightOnBit;  // Weight on bit
             output.TorqueOnBit = axialTorsionalModel.TorqueOnBit;  // Torque on bit
-            for (int i = 0; i < output.Depth.Count(); i++)
-            {
-                output.Depth[i] = simulationParameters.LumpedCells.ElementLength[i] + state.AxialVelocity[i] * configuration.TimeStep; // depth of each lumped element, updated with axial velocity for better accuracy in case of moving drillstring
-            }
-            //output.Depth = simulationParameters.LumpedCells.ElementLength;
+            
+            output.Depth = simulationParameters.DistributedCells.x;
             output.SensorMb_x = lateralModel.BendingMomentX[simulationParameters.Drillstring.IndexSensor];
             output.SensorMb_y = lateralModel.BendingMomentY[simulationParameters.Drillstring.IndexSensor];
             output.RadialDisplacement = state.RadialDisplacement;

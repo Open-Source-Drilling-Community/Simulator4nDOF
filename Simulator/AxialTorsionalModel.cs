@@ -24,9 +24,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Vector<double> DownwardAxialWaveLeftBoundary;
         public Vector<double> UpwardAxialWaveRightBoundary;
 
-        public Vector<double> AxialVelocity;
-        public Vector<double> RotationalVelocity;
-
         public double WeightOnBit;
         public double TorqueOnBit;
         
@@ -82,7 +79,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 UpwardTorsionalWaveRightBoundary[i] = - DownwardTorsionalWave[idx, i] + 2 * state.AngularVelocity[i];
                 UpwardAxialWaveRightBoundary[i]    = - DownwardAxialWave[idx, i] + 2 * state.AxialVelocity[i];
             }         
-        
+        }
+        public void CalculateTopDriveTorque(State state, SimulationParameters parameters, Input simulationInput)
+        {
+           double topDriveTorque = 0.5 * parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] * state.TopDriveAngularVelocity / parameters.Drillstring.TorsionalWaveSpeed *
+                (   
+                    DownwardTorsionalWave[0, 0] 
+                    - UpwardTorsionalWave[0, 0]
+                );
+
+            state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + 1.0 / parameters.Wellbore.TopDriveInertia * parameters.InnerLoopTimeStep * (simulationInput.TopDriveTorque - topDriveTorque);                
+            state.TopOfStringPosition = state.TopOfStringPosition + simulationInput.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;                             
         }
     }
 }
