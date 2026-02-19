@@ -15,8 +15,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         // Geometry to be configured
         private List<BoreHoleSize> boreHoleSizes =
             new List<BoreHoleSize>() {
-                new BoreHoleSize(){Depth = 120, ID = 21 * Constants.in2m },
-                new BoreHoleSize(){Depth = 2181, ID = 9.0*Constants.in2m } 
+                new BoreHoleSize(){Depth = 120, ID = 21 * Constants.InchToMeterConversion },
+                new BoreHoleSize(){Depth = 2181, ID = 9.0*Constants.InchToMeterConversion } 
             };
         public Vector<double> BoreholeRadius;                   // [m] Wellbore radius calculation
         public Vector<double> DrillStringClearance;            // [m] drillstring radial clearance to the borehole wall

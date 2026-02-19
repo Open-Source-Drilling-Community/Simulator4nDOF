@@ -65,8 +65,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             annularDensity = LinearInterpolate(annulusMD_prof, annularDensity_prof, lc.ElementLength);
 
             // Compute hydrostatic pressures
-            hydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.g * stringDensity);
-            hydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.g * annularDensity);
+            hydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * stringDensity);
+            hydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * annularDensity);
 
             // Calculate buoyant weight using the appropriate method
             double[] Aie = new double[ds.InnerArea.Count() + 1];
@@ -102,7 +102,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 Wb = Vector<double>.Build.Dense(Aie.Length);
                 for (int i = 0; i < Aie.Length; i++)
                 {
-                    Wb[i] = Constants.g * buoyancyFactor[i] * ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
+                    Wb[i] = Constants.GravitationalAcceleration * buoyancyFactor[i] * ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
                 }
             }
             else
@@ -121,7 +121,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                Aie[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * stringDensity[i] -
                                Atjoe[i] * ds.ToolJointLength * annularDensity[i] -
                                Aoe[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * annularDensity[i]) /
-                               lc.DistanceBetweenElements) * Constants.g;
+                               lc.DistanceBetweenElements) * Constants.GravitationalAcceleration;
                 }
             }
 

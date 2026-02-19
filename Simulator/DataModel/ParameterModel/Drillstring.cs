@@ -132,7 +132,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             bool readFromMS = DrillStringSource == DrillStringSourceType.DrillStringMS
                || DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS;
 
-            double scaleFactor = readFromMS ? 1.0 : Constants.in2m;
+            double scaleFactor = readFromMS ? 1.0 : Constants.InchToMeterConversion;
             
             if (DrillStringSource == DrillStringSourceType.DrillStringMS)
             {

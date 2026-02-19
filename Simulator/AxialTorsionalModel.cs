@@ -24,6 +24,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Vector<double> DownwardAxialWaveLeftBoundary;
         public Vector<double> UpwardAxialWaveRightBoundary;
 
+        public Matrix<double> DiffDownwardTorsionalWave; // Downward traveling wave, torsional
+        public Matrix<double> DiffUpwardTorsionalWave; // Upward traveling wave, torsional
+        public Matrix<double> DiffDownwardAxialWave; // Downward traveling wave, axial
+        public Matrix<double> DiffUpwardAxialWave; // Upward traveling wave, axial
+        
+
         public double WeightOnBit;
         public double TorqueOnBit;
         
@@ -35,6 +41,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             UpwardTorsionalWave   = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, torsional
             DownwardAxialWave     = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, axial
             UpwardAxialWave       = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, axial            
+            //Delta of the wave used for Upwind Scheme
+            DiffDownwardTorsionalWave = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, torsional
+            DiffUpwardTorsionalWave   = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, torsional
+            DiffDownwardAxialWave     = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, axial
+            DiffUpwardAxialWave       = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, axial                        
+
             // Allocate boundary condition vectors
             DownwardTorsionalWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             UpwardTorsionalWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -89,7 +101,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 );
 
             state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (simulationInput.TopDriveMotorTorque - topDriveTorque) / parameters.Wellbore.TopDriveInertia;                
-            state.TopOfStringPosition = state.TopOfStringPosition + simulationInput.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;                             
+            //state.TopOfStringPosition = state.TopOfStringPosition + simulationInput.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;                             
         }
     }
 }

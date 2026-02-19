@@ -207,7 +207,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             // Calculate acceleration in global frame
             var accelerationInGlobalFrameM = LateralRotationCenterToGlobal * PipeLocalToLateralRotationCenterSecondDerivative * SensorToPipeLocal * ToVector((simulationParameters.Drillstring.SensorDisplacementsInLocalFrame.Append(1).ToArray()));
-            var accelerationInGlobalFrame = accelerationInGlobalFrameM.SubVector(0, 3) - Vector<double>.Build.DenseOfArray(new double[] { 0, 0, Constants.g });
+            var accelerationInGlobalFrame = accelerationInGlobalFrameM.SubVector(0, 3) - Vector<double>.Build.DenseOfArray(new double[] { 0, 0, Constants.GravitationalAcceleration });
 
             var accelerationInLocalFrame = PipeLocalToSensor * PipeNonRotatingToPipeLocal * LateralRotationCenterToPipeNonRotating * GlobalToLateralRotationCenter * accelerationInGlobalFrame;
 
@@ -295,8 +295,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                 state.XVelocity[simulationParameters.Drillstring.IndexSensor] * state.WhirlVelocity[simulationParameters.Drillstring.IndexSensor] * Math.Sin(state.WhirlAngle[simulationParameters.Drillstring.IndexSensor]) +
                                 state.YVelocity[simulationParameters.Drillstring.IndexSensor] * state.WhirlVelocity[simulationParameters.Drillstring.IndexSensor] * Math.Cos(state.WhirlAngle[simulationParameters.Drillstring.IndexSensor]);
 
-                phi_ddot = state.SlipCondition[simulationParameters.Drillstring.IndexSensor] * (1.0 / (Math.Pow(state.RadialDisplacement[simulationParameters.Drillstring.IndexSensor], 2) + Constants.eps) * (state.YAcceleration[simulationParameters.Drillstring.IndexSensor] * state.XDisplacement[simulationParameters.Drillstring.IndexSensor] -
-                    state.XAcceleration[simulationParameters.Drillstring.IndexSensor] * state.YDisplacement[simulationParameters.Drillstring.IndexSensor]) - 2.0 * state.RadialVelocity[simulationParameters.Drillstring.IndexSensor] * state.WhirlVelocity[simulationParameters.Drillstring.IndexSensor] / (state.RadialDisplacement[simulationParameters.Drillstring.IndexSensor] + Constants.eps)) +
+                phi_ddot = state.SlipCondition[simulationParameters.Drillstring.IndexSensor] * (1.0 / (Math.Pow(state.RadialDisplacement[simulationParameters.Drillstring.IndexSensor], 2) + Constants.RegularizationCoefficient) * (state.YAcceleration[simulationParameters.Drillstring.IndexSensor] * state.XDisplacement[simulationParameters.Drillstring.IndexSensor] -
+                    state.XAcceleration[simulationParameters.Drillstring.IndexSensor] * state.YDisplacement[simulationParameters.Drillstring.IndexSensor]) - 2.0 * state.RadialVelocity[simulationParameters.Drillstring.IndexSensor] * state.WhirlVelocity[simulationParameters.Drillstring.IndexSensor] / (state.RadialDisplacement[simulationParameters.Drillstring.IndexSensor] + Constants.RegularizationCoefficient)) +
                     (1 - state.SlipCondition[simulationParameters.Drillstring.IndexSensor]) * lateralModel.PhiDdotNoSlipSensor;
                 double phi0_sensor = 0;
                 phi_ddot = 0.0;
@@ -357,7 +357,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / simulationParameters.LumpedCells.DistanceBetweenElements; // Bending angle second derivative y-component*/
             }
           
-            output.BitVelocity = state.AxialVelocity[state.AxialVelocity.Count-1];//Bit Velocity
+            output.BitVelocity = state.BitVelocity;//Bit Velocity
             // Parse outputs
             output.NormalForceProfileStiffString = lateralModel.NormalCollisionForce; // Pipe shear strain 
             output.NormalForceProfileSoftString = lateralModel.SoftStringNormalForce;

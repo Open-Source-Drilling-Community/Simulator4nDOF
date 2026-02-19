@@ -423,7 +423,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         stopForce[0] * stopForce[0] +
                         stopForce[1] * stopForce[1] +
                         stopForce[2] * stopForce[2]
-                    ) + Constants.eps;
+                    ) + Constants.RegularizationCoefficient;
 
                     double coulombStaticForceMagnitude = parameters.Friction.mu_k[i] * normalForceMagnitude;
 

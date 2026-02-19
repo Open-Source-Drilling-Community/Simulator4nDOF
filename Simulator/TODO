@@ -15,7 +15,7 @@
     * preparion step
     * acceleration calculation
 * In TorsionalModel - RotationalVelocity and AxialVelocity can be removed 
-
+* Upwind scheme can be parallelized if there is a copy of torsionalModel. In this case, the Diff variables do not need to be preallocated. 
 * OK - Check if fluid forces need to be a vector or if can be used as in-loop double
 * OK - I can create a variable with Math.Cos(rotationAngle) to avoid expensive recalculation of this values.
 * OK - There is an error on how the unbalance force is calculate. It is not the whirl velocity squared, but the angular velocity squared (from torsional model). I've replaced it

@@ -268,5 +268,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         {
             return ToVector(CummulativeTrapezoidal( x.ToArray(), y.ToArray()));
         }
+        public static double DotProduct(double[] vec1, double[] vec2)
+        {
+            double dotProd = 0;
+            for (int i = 0; i < vec1.Length; i++)
+            {
+                dotProd += vec1[i]*vec2[i];
+            }
+            return dotProd;            
+        }
     }
 }

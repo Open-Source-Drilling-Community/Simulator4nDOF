@@ -255,6 +255,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double velocityTangentialMagnitude;
             double normalForceMagnitude;                
             double[] tangentialStaticForce = new double[3];
+            double tangentialStaticForceMagnitude;            
             double[] stopForce = new double[3];
             double stopForceMagnitude;
             double coulombStaticForceMagnitude;
@@ -271,6 +272,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double axialStaticForce;
             double sumForcesX;
             double sumForcesY;
+            double sumForcesZ;            
             double sleeveBrakeForce;            
             //Elastic force-related variables
             double XiMinus1;
@@ -444,7 +446,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     // The total normal force is the sum of elastic, pre-stress, fluid, and unbalance forces                        
                     sumForcesX = ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX;
                     sumForcesY = ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY;
-                    totalForce = new double[3] { sumForcesX, sumForcesY, axialStaticForce };                                     
+                    sumForcesZ = axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * axialVelocity;
+                    totalForce = new double[3] { sumForcesX, sumForcesY, sumForcesZ };                                     
                     // Estaimate principal direction in the used coordinate system 
                     normalVector = new double[3] {cosWhirlAngle, sinWhirlAngle, 0}; // In the direction of the radial displacement, which is the normal direction in the case of a cylindrical wellbore
                 
@@ -477,25 +480,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     };
 
                     normalForceMagnitude = (totalForce[0] * normalVector[0] + totalForce[1] * normalVector[1] + totalForce[2] * normalVector[2]);                
+                    tangentialStaticForceMagnitude = (totalForce[0] * tangentialVector[0] + totalForce[1] * tangentialVector[1] + totalForce[2] * tangentialVector[2]);
 
                     tangentialStaticForce = new double[3]
                     {
-                        parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[0],
-                        parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[1],
-                        parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[2]
+                        tangentialStaticForceMagnitude * tangentialVector[0],
+                        tangentialStaticForceMagnitude * tangentialVector[1],
+                        tangentialStaticForceMagnitude * tangentialVector[2]
                     };               
 
                     stopForce = new double[3]
                     {
                         tangentialStaticForce[0],
                         tangentialStaticForce[1],
-                        axialStaticForce + tangentialStaticForce[2] 
+                        tangentialStaticForce[2] 
                     };
                     stopForceMagnitude = Math.Sqrt(
                         stopForce[0] * stopForce[0] +
                         stopForce[1] * stopForce[1] +
                         stopForce[2] * stopForce[2]
-                    ) + Constants.eps;
+                    ) + Constants.RegularizationCoefficient;
 
                     coulombStaticForceMagnitude = parameters.Friction.mu_k[i] * normalForceMagnitude;
 
@@ -583,7 +587,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     + coulombFrictionX) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
                 YAcceleration= (ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - parameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - lateralModel.NormalCollisionForce[i] * sinWhirlAngle
                     + coulombFrictionY) / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
-                ZAcceleration = ( axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * axialVelocity + coulombFrictionZ)/parameters.Drillstring.LumpedElementMass[i];                
+                ZAcceleration = ( axialForceDifference 
+                    - parameters.Drillstring.CalculatedAxialDamping * axialVelocity 
+                    + coulombFrictionZ)/parameters.Drillstring.LumpedElementMass[i];                
 
                 //Update state
                 lateralModel.NormalCollisionForce[i] = normalCollisionForce;

@@ -16,12 +16,12 @@
                         Time duration @TimeUnit
                     </div>
                 </HeaderTemplate>
-                <EditTemplate Context="c">
+                <EditTemplate Context="context">
                     <MudInputWithUnit VariantType="Variant.Text"
                                       QuantityName="Time"
-                                      SIValue="c.Item.TimeDuration"
+                                      SIValue="context.Item.TimeDuration"
                                       SIValueNullableChanged="val => {
-                                          if (val != null) c.Item.TimeDuration = (double)val;
+                                          if (val != null) context.Item.TimeDuration = (double)val;
                                       }" />
                 </EditTemplate>
             </TemplateColumn>
@@ -33,12 +33,12 @@
                         Surface rotational speed @RotationalVelocityUnit
                     </div>
                 </HeaderTemplate>
-                <EditTemplate Context="c">
+                <EditTemplate Context="context">
                     <MudInputWithUnit VariantType="Variant.Text"
                                       QuantityName="AngularVelocityDrilling"
-                                      SIValue="c.Item.SurfaceRPM"
+                                      SIValue="context.Item.SurfaceRPM"
                                       SIValueNullableChanged="val => {
-                                          if (val != null) c.Item.SurfaceRPM = (double)val;
+                                          if (val != null) context.Item.SurfaceRPM = (double)val;
                                       }" />
                 </EditTemplate>
             </TemplateColumn>
@@ -50,12 +50,12 @@
                         Top of string velocity @AxialVelocityUnit
                     </div>
                 </HeaderTemplate>
-                <EditTemplate Context="c">
+                <EditTemplate Context="context">
                     <MudInputWithUnit VariantType="Variant.Text"
-                                      QuantityName="AxialVelocityDrilling"
-                                      SIValue="c.Item.TopOfStringVelocity"
-                                      SIValueNullableChanged="val => {
-                                          if (val != null) c.Item.TopOfStringVelocity = (double)val;
+                                      QuantityName="RateOfPenetrationDrilling"
+                                      SIValue="context.Item.TopOfStringVelocity"
+                                      SIValueChanged="val => {
+                                          context.Item.TopOfStringVelocity = (double)val;
                                       }" />
                 </EditTemplate>
             </TemplateColumn>
@@ -96,7 +96,7 @@
         {
             TimeUnit = "[" + Parent.GetUnitLabel(BasePhysicalQuantity.QuantityEnum.Time) + "]";
             RotationalVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling) + "]";
-            AxialVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.AxialVelocityDrilling) + "]";
+            AxialVelocityUnit = "[" + Parent.GetUnitLabel(DrillingPhysicalQuantity.QuantityEnum.RateOfPenetrationDrilling) + "]";
         }
     }
 
