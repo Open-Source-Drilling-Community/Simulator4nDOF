@@ -339,7 +339,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> OL_dot = Vector<double>.Build.Dense(p.lc.NL);
             Vector<double> OS_dot = Vector<double>.Build.Dense(p.lc.NL);
 
-            Vector<double> Fc_t = Vector<double>.Build.Dense(p.lc.NL);
+            Vector<double> Fc_t = Vect  or<double>.Build.Dense(p.lc.NL);
             Vector<double> Fc_a = Vector<double>.Build.Dense(p.lc.NL);
             Vector<double> F_N = Vector<double>.Build.Dense(p.lc.NL);
             Vector<double> VL_dot = Vector<double>.Build.Dense(p.lc.NL);

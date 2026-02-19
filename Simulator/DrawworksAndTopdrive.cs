@@ -50,9 +50,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
 
             if (make_connection)
-                input.TopDriveRPMSetPoint = input.TopDriveRPMSetPoint + (0 - input.TopDriveRPMSetPoint) / (0.5 / configuration.TimeStep);
+                input.TopDriveRPMSetPoint = input.TopDriveRPMSetPoint + 2 * configuration.TimeStep * (0 - input.TopDriveRPMSetPoint);
             else
-                input.TopDriveRPMSetPoint = input.TopDriveRPMSetPoint + (input.SurfaceRotation - input.TopDriveRPMSetPoint) / (0.5 / configuration.TimeStep);
+                input.TopDriveRPMSetPoint = input.TopDriveRPMSetPoint + 2 * configuration.TimeStep * (input.SurfaceRotation - input.TopDriveRPMSetPoint);
         }
     }
 }

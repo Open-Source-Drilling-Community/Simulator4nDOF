@@ -35,7 +35,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             simulationInput.SurfaceRotation = configuration.SurfaceRPM;
             simulationInput.SurfaceAxialVelocity = configuration.TopOfStringVelocity;
 
-            state = new State(in simulationParameters, configuration.BitDepth, configuration.HoleDepth, configuration.TopOfStringPosition);
+            state = new State(in simulationParameters, configuration);
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdrive();
@@ -249,7 +249,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // The staggered method is used for a semi-implicit integration, increasing stability           
                 UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                  
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
-                axialTorsionalModel.CalculateTopDriveTorque(state, simulationParameters, simulationInput);
+                axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters, simulationInput);
                 // Calculate lateral accelerations                    
                 AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);        
                 solverODE.IntegrationStep(state, simulationParameters);                                                                                           
@@ -358,8 +358,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
           
             output.BitVelocity = state.AxialVelocity[state.AxialVelocity.Count-1];//Bit Velocity
-            //output.BitVelocity = state.PipeAxialVelocity[state.PipeAxialVelocity.RowCount - 1, state.PipeAxialVelocity.ColumnCount - 1]; // Bit velocity
-
             // Parse outputs
             output.NormalForceProfileStiffString = lateralModel.NormalCollisionForce; // Pipe shear strain 
             output.NormalForceProfileSoftString = lateralModel.SoftStringNormalForce;
@@ -388,7 +386,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (!simulationParameters.Drillstring.SleeveIndexPosition.Contains(simulationParameters.Drillstring.IndexSensor)) //sleeve angular velocity
                 {
                     output.SensorAngularPosition = state.AngularDisplacement[simulationParameters.Drillstring.IndexSensor]; //pipe angular displacement
-                    output.SensorAngularVelocity = state.WhirlVelocity[simulationParameters.Drillstring.IndexSensor]; //pipe angular velocity
+                    output.SensorAngularVelocity = state.AngularVelocity[simulationParameters.Drillstring.IndexSensor]; //pipe angular velocity
                 }
                 else
                 {

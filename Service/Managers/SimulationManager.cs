@@ -1190,7 +1190,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             scalars.BitRPM.Add(output.BitRotationInRPM);
             scalars.BitDepth.Add(state.BitDepth);
             scalars.HoleDepth.Add(state.HoleDepth);
-            scalars.SurfaceTorque.Add(u.TopDriveTorque);
+            scalars.SurfaceTorque.Add(u.TopDriveMotorTorque);
             scalars.BitTorque.Add(output.TorqueOnBit);
             scalars.TopOfStringAxialVelocity.Add(u.CalculateSurfaceAxialVelocity);
             scalars.BitAxialVelocity.Add(output.BitVelocity);
