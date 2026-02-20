@@ -408,9 +408,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
                     double[] tangentialStaticForce = new double[3]
                     {
-                        parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[0],
-                        parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[1],
-                        parameters.Friction.mu_s[i] * normalForceMagnitude * tangentialVector[2]
+                        parameters.Friction.StaticFrictionCoefficient[i] * normalForceMagnitude * tangentialVector[0],
+                        parameters.Friction.StaticFrictionCoefficient[i] * normalForceMagnitude * tangentialVector[1],
+                        parameters.Friction.StaticFrictionCoefficient[i] * normalForceMagnitude * tangentialVector[2]
                     };               
 
                     double[] stopForce = new double[3]
@@ -425,7 +425,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         stopForce[2] * stopForce[2]
                     ) + Constants.RegularizationCoefficient;
 
-                    double coulombStaticForceMagnitude = parameters.Friction.mu_k[i] * normalForceMagnitude;
+                    double coulombStaticForceMagnitude = parameters.Friction.KinematicFrictionCoefficient[i] * normalForceMagnitude;
 
                     if (state.SlipCondition[i] == 0)
                         // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
@@ -450,7 +450,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     else
                     {
                         //Project on the tangential velocity direction  
-                        coulombForceTemp =  normalCollisionForce * (parameters.Friction.mu_k[i] + (parameters.Friction.mu_s[i] - parameters.Friction.mu_k[i]) * Math.Exp( - parameters.Friction.stribeck *  velocityMagnitude));
+                        coulombForceTemp =  normalCollisionForce * (parameters.Friction.KinematicFrictionCoefficient[i] + (parameters.Friction.StaticFrictionCoefficient[i] - parameters.Friction.KinematicFrictionCoefficient[i]) * Math.Exp( - parameters.Friction.stribeck *  velocityMagnitude));
                         coulombFrictionForce = new double[3];
                         for (int j = 0; j < 3; j++)
                         {

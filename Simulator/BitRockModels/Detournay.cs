@@ -63,37 +63,48 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 
         public double[] CalculateInteractionForce(AxialTorsionalModel axialTorsionalModel, State state, double angularVelocity, SimulationParameters simulationParameters)
         {
-            double tb = 0;
-            double wb = 0;
-            int lpSize = (int)simulationParameters.LumpedCells.DistributedToLumpedRatio - 1;
-            double lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
-            double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
-            double d = this.N * maxValue; // Compute d
-            double epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
-            double reg = angularVelocity / Math.Sqrt(Math.Pow(angularVelocity, 2) + Math.Pow(epsilon, 2));
-            double wc = d * simulationParameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
-            double tc = d * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
-            double ga = 1.0;
-            double wf = WeightOnBitFrictionComponent * ga;
-            double tf = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
-            double g_tt = axialTorsionalModel.DownwardTorsionalWave[lpSize, axialTorsionalModel.DownwardTorsionalWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
-            g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
-            double g_wt = axialTorsionalModel.DownwardAxialWave[lpSize, axialTorsionalModel.DownwardAxialWave.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
-            g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
+            double tb;
+            double wb;
+                
             if (state.onBottom)
             {
+                double previousDepthOfCut;
+                double diffDepthOfCut;
+                int lpSize = (int)simulationParameters.LumpedCells.DistributedToLumpedRatio - 1;
+                double lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
+                double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
+                double d = this.N * maxValue; // Compute d
+                double epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
+                double reg = angularVelocity / Math.Sqrt(Math.Pow(angularVelocity, 2) + Math.Pow(epsilon, 2));
+                double wc = d * simulationParameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
+                double tc = d * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
+                double ga = 1.0;
+                double wf = WeightOnBitFrictionComponent * ga;
+                double tf = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
+                double g_tt = axialTorsionalModel.DownwardTorsionalWave[lpSize, axialTorsionalModel.DownwardTorsionalWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
+                g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
+                double g_wt = axialTorsionalModel.DownwardAxialWave[lpSize, axialTorsionalModel.DownwardAxialWave.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
+                g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
+            
                 // Calculate torque on bit and weight on bit
                 tb = tc + tf + g_tt;
                 wb = wc + wf + g_wt;
-                Vector<double> l_pad = Vector<double>.Build.Dense(state.DepthOfCut.Count + 1);
-                l_pad[0] = 0; // Left padding
-                state.DepthOfCut.CopySubVectorTo(l_pad, 0, 1, state.DepthOfCut.Count);
-                Vector<double> diff_l_pad = Vector<double>.Build.Dense(l_pad.Count - 1);
-                for (int i = 0; i < diff_l_pad.Count; i++)
+                double constant = Math.Max(angularVelocity, 0) * N / (2 * Math.PI/simulationParameters.dxl);
+                for (int i = 0; i < state.DepthOfCut.Count; i++)
                 {
-                    diff_l_pad[i] = l_pad[i + 1] - l_pad[i];
+                    previousDepthOfCut = i == 0 ? 0:state.DepthOfCut[i-1];
+                    diffDepthOfCut = state.DepthOfCut[i] - previousDepthOfCut;
+                    state.DepthOfCut[i] -= simulationParameters.InnerLoopTimeStep * ( constant * diffDepthOfCut - state.BitVelocity);        
                 }
-                state.DepthOfCut = state.DepthOfCut - (simulationParameters.InnerLoopTimeStep / simulationParameters.dxl) * Math.Max(angularVelocity, 0) * N / (2 * Math.PI) * diff_l_pad + simulationParameters.InnerLoopTimeStep  * state.BitVelocity;
+                //Vector<double> l_pad = Vector<double>.Build.Dense(state.DepthOfCut.Count + 1);
+                //l_pad[0] = 0; // Left padding
+                //state.DepthOfCut.CopySubVectorTo(l_pad, 0, 1, state.DepthOfCut.Count);
+                //Vector<double> diff_l_pad = Vector<double>.Build.Dense(l_pad.Count - 1);
+                //for (int i = 0; i < diff_l_pad.Count; i++)
+                //{
+                //    diff_l_pad[i] = l_pad[i + 1] - l_pad[i];
+                //}
+                //state.DepthOfCut = state.DepthOfCut - (simulationParameters.InnerLoopTimeStep / simulationParameters.dxl) * Math.Max(angularVelocity, 0) * N / (2 * Math.PI) * diff_l_pad + simulationParameters.InnerLoopTimeStep  * state.BitVelocity;
             }
             else
             {

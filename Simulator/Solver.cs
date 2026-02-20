@@ -68,11 +68,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 simulationInput.StribeckCriticalVelocity = stribeckCriticalVelocity;
                 simulationParameters.Friction.stribeck = 1.0 / simulationInput.StribeckCriticalVelocity;
             }
-            if (simulationParameters.Friction.mu_s.Count == simulationParameters.Friction.mu_k.Count)
+            if (simulationParameters.Friction.StaticFrictionCoefficient.Count == simulationParameters.Friction.KinematicFrictionCoefficient.Count)
             {
-                for (int i = 0; i < simulationParameters.Friction.mu_s.Count; i++)
+                for (int i = 0; i < simulationParameters.Friction.StaticFrictionCoefficient.Count; i++)
                 {
-                    simulationParameters.Friction.mu_s[i] = simulationParameters.Friction.mu_k[i] + simulationInput.DifferenceStaticKineticFriction;
+                    simulationParameters.Friction.StaticFrictionCoefficient[i] = simulationParameters.Friction.KinematicFrictionCoefficient[i] + simulationInput.DifferenceStaticKineticFriction;
                 }
             }
 
@@ -82,7 +82,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Controller for top drive - calculate u.tau_Motor
             topdriveController.Step(in configuration, in state, in simulationParameters, ref simulationInput);
 
-            UpdateDepths(); // BitDepth, HoleDepth, TopOfStringPosition, OnBottom
+            //UpdateDepths(); // BitDepth, HoleDepth, TopOfStringPosition, OnBottom
 
             if (configuration.MovingDrillstring)
             {
@@ -113,7 +113,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
             }
             InnerStep();
-
+            if (state.Step * configuration.TimeStep >= 3)
+            {
+                int debug = 0;
+            }
             output.UpdateSSI(state.Step * configuration.TimeStep);
 
             state.Step = state.Step + 1;
@@ -126,10 +129,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             state.BitDepth = state.BitDepth + (output.BitVelocity * configuration.TimeStep);
             state.TopOfStringPosition = state.TopOfStringPosition - simulationInput.CalculateSurfaceAxialVelocity * configuration.TimeStep;
 
-            if (state.HoleDepth - state.BitDepth < 0.1 && !state.onBottom)
+            if (state.HoleDepth - state.BitDepth < 1E-5 && !state.onBottom)
                 state.onBottom_startIdx = state.Step;
 
-            state.onBottom = state.HoleDepth - state.BitDepth < 0.1 || state.onBottom_startIdx > 0;
+            state.onBottom = state.HoleDepth - state.BitDepth < 1E-5 || state.onBottom_startIdx > 0;
+            if (state.onBottom)
+            {
+                int debug = 0;
+            }
             state.HoleDepth = Math.Max(state.BitDepth, state.HoleDepth);
         }
 
@@ -236,7 +243,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
             double dtTemp = simulationParameters.DistributedCells.DistributedSectionLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
-            
+            UpdateDepths();
             // Wave equations are transformed into their Riemann invariants
             AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
             AccelerationCalculation.PreprareLateral(lateralModel, state, simulationParameters);            

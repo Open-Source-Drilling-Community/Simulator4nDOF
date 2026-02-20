@@ -120,8 +120,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Drillstring.WeightCorrectionFactor = ExtendVectorStart(Drillstring.WeightCorrectionFactor[0], Drillstring.WeightCorrectionFactor);
             Drillstring.LumpedElementMassMomentOfInertia = ExtendVectorStart(Drillstring.LumpedElementMassMomentOfInertia[0], Drillstring.LumpedElementMassMomentOfInertia);
             Drillstring.LumpedElementMomentOfInertia = ExtendVectorStart(Drillstring.SteelDensity * Drillstring.LumpedElementMassMomentOfInertia[0] * Jp, Drillstring.LumpedElementMomentOfInertia);
-            Friction.mu_s = ExtendVectorStart(Friction.mu_s[0], Friction.mu_s);
-            Friction.mu_k = ExtendVectorStart(Friction.mu_k[0], Friction.mu_k);
+            Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient);
+            Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient);
             Drillstring.BendingStiffness = ExtendVectorStart(Drillstring.BendingStiffness[0], Drillstring.BendingStiffness);
             Drillstring.FluidAddedMass = ExtendVectorStart(Math.PI * Fluid.rhoMud * (Math.Pow(Drillstring.InnerRadius[0], 2) + Drillstring.AddedFluidMassCoefficient * Math.Pow(Drillstring.OuterRadius[0], 2)) * Drillstring.LumpedElementMassMomentOfInertia[0] / 2.0, Drillstring.FluidAddedMass);
             Drillstring.EccentricMass = ExtendVectorStart(mass_imbalance_percent * Drillstring.LumpedElementMass[0], Drillstring.EccentricMass);
