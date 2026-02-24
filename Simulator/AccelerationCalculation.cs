@@ -59,9 +59,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
             Vector<double> drag = LinearInterpolate(parameters.DistributedCells.x, drag_flattened, parameters.LumpedCells.ElementLength);
 
-            Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.phiVec_dot);
-            Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.thetaVec_dot);
-            Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.thetaVec);
+            Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffPhiInterpolated);
+            Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffThetaInterpolated);
+            Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.InterpolatedTheta);
             Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDx));
             model.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.AxialBuoyancyForceChangeOfDiameters - drag;
             Vector<double> fN_softstring = (Square((model.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.BuoyantWeightPerLength.PointwiseMultiply(thetaVece.PointwiseSin())) +

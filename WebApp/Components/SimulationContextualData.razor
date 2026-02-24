@@ -120,24 +120,17 @@
                     }
                 </MudSelect>         
             </MudItem>   
-        }
+        }      
         <MudItem xs="12">
-            <MudPaper>
-                <MudSwitch @bind-Value="_loadTrajectoryFromFile" Color="Color.Primary">@(_loadTrajectoryFromFile ? "Load trajectory from file" : "Load trajectory from micro service")</MudSwitch>
-                @if(_loadTrajectoryFromFile)
+            <MudSelect T="Trajectory" Label="Trajectory source" @bind-Value="Simulation.ContextualData.Trajectory" Variant="Variant.Text">
+                @if(Trajectories != null)
                 {
-                    <MudTextField @bind-Value="Simulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
+                    @foreach (Trajectory trajectory in Trajectories)
+                    {
+                        <MudSelectItem Value="@trajectory">@trajectory.Name</MudSelectItem>
+                    }
                 }
-                else
-                {
-
-                }
-            </MudPaper>
-        </MudItem>
-        
-
-        <MudItem xs="12">
-            <MudTextField @bind-Value="Simulation.ContextualData.TrajectoryFile" Label="Trajectory file name" Variant="Variant.Text"></MudTextField>
+            </MudSelect>
         </MudItem>
         <MudItem xs="12">
             <MudTextField @bind-Value="Simulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>

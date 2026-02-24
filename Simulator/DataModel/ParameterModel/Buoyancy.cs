@@ -51,9 +51,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             tension = Reverse(cumTrapz) + AxialBuoyancyForceChangeOfDiameters - drag;
 
-            Vector<double> phiVec_dote = ExtendVectorStart(0, t.phiVec_dot);
-            Vector<double> thetaVec_dote = ExtendVectorStart(0, t.thetaVec_dot);
-            Vector<double> thetaVece = ExtendVectorStart(0, t.thetaVec);
+            Vector<double> phiVec_dote = ExtendVectorStart(0, t.DiffPhiInterpolated);
+            Vector<double> thetaVec_dote = ExtendVectorStart(0, t.DiffThetaInterpolated);
+            Vector<double> thetaVece = ExtendVectorStart(0, t.InterpolatedTheta);
         }
 
         public void UpdateBuoyancy(in LumpedCells lc, in Trajectory t, in Drillstring ds, bool useBuoyancyFactor)
@@ -65,8 +65,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             AnnularDensity = LinearInterpolate(AnnulusMDProfile, AnnularDensityProfile, lc.ElementLength);
 
             // Compute hydrostatic pressures
-            HydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * StringDensity);
-            HydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * AnnularDensity);
+            HydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * StringDensity);
+            HydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * AnnularDensity);
 
             // Calculate buoyant weight using the appropriate method
             double[] Aie = new double[ds.InnerArea.Count() + 1];
@@ -125,9 +125,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }
             }
 
-            double[] thetaVece = new double[t.thetaVec.Count() + 1];
+            double[] thetaVece = new double[t.InterpolatedTheta.Count() + 1];
             thetaVece[0] = 0;
-            Array.Copy(t.thetaVec.ToArray(), 0, thetaVece, 1, t.thetaVec.Count());
+            Array.Copy(t.InterpolatedTheta.ToArray(), 0, thetaVece, 1, t.InterpolatedTheta.Count());
 
             // Compute the tension per length
             dSigmaDx = Vector<double>.Build.Dense(BuoyantWeightPerLength.Count);

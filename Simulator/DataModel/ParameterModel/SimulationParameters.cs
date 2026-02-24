@@ -51,7 +51,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                              configuration.BoreHoleSizes,
                              configuration.TopDriveMomentOfInertia,
                              configuration.FluidDamping);
-            Trajectory = new Trajectory(LumpedCells, configuration.TrajectoryFile);
+            Trajectory = new Trajectory(LumpedCells, configuration.Trajectory);
             Buoyancy = new Buoyancy(LumpedCells, Trajectory, Drillstring, configuration.StringPressureFile, configuration.AnnulusPressureFile, configuration.UseBuoyancyFactor);
 
 

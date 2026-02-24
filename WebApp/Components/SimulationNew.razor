@@ -100,6 +100,11 @@
                 Snackbar.Add("Please select a Drill String", Severity.Warning);
                 return;
             }
+            if (Simulation.ContextualData.Trajectory == null)
+            {
+                Snackbar.Add("Please select a Trajectory", Severity.Warning);
+                return;
+            }
             try
             {
                 MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };

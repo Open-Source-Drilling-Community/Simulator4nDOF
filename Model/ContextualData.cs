@@ -10,7 +10,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
 {
     public class ContextualData
     {
-        public string TrajectoryFile { get; set; }
+        public ModelShared.Trajectory? Trajectory { get; set; }
         public string DrillstringFile { get; set; }
         public string DrillstringPressureFile { get; set; }
         public double FluidDensity { get; set; }

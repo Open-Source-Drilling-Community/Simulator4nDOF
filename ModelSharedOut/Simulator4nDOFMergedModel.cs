@@ -11694,8 +11694,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
     public partial class ContextualData
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("TrajectoryFile")]
-        public string TrajectoryFile { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("Trajectory")]
+        public Trajectory Trajectory { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("DrillstringFile")]
         public string DrillstringFile { get; set; }

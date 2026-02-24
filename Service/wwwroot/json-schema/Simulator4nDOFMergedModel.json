@@ -6,12 +6,12 @@
     "version": "1.0"
   },
   "paths": {
-    "/Simulation": {
+    "/Trajectory": {
       "get": {
         "tags": [
-          "Simulation"
+          "Trajectory"
         ],
-        "operationId": "GetAllSimulationId",
+        "operationId": "GetAllTrajectoryId",
         "responses": {
           "200": {
             "description": "OK",
@@ -31,24 +31,24 @@
       },
       "post": {
         "tags": [
-          "Simulation"
+          "Trajectory"
         ],
-        "operationId": "PostSimulation",
+        "operationId": "PostTrajectory",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Simulation"
+                "$ref": "#/components/schemas/Trajectory"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Simulation"
+                "$ref": "#/components/schemas/Trajectory"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Simulation"
+                "$ref": "#/components/schemas/Trajectory"
               }
             }
           }
@@ -60,12 +60,12 @@
         }
       }
     },
-    "/Simulation/MetaInfo": {
+    "/Trajectory/MetaInfo": {
       "get": {
         "tags": [
-          "Simulation"
+          "Trajectory"
         ],
-        "operationId": "GetAllSimulationMetaInfo",
+        "operationId": "GetAllTrajectoryMetaInfo",
         "responses": {
           "200": {
             "description": "OK",
@@ -83,12 +83,12 @@
         }
       }
     },
-    "/Simulation/Light/{id}\"": {
+    "/Trajectory/{id}": {
       "get": {
         "tags": [
-          "Simulation"
+          "Trajectory"
         ],
-        "operationId": "GetSimulatioLightById",
+        "operationId": "GetTrajectoryById",
         "parameters": [
           {
             "name": "id",
@@ -106,137 +106,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SimulationLight"
+                  "$ref": "#/components/schemas/Trajectory"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/Simulation/Heavy/{id}\"": {
-      "get": {
-        "tags": [
-          "Simulation"
-        ],
-        "operationId": "GetSimulationById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Simulation"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Simulation/Results/{id}/page/{sequenceNumber}\"": {
-      "get": {
-        "tags": [
-          "Simulation"
-        ],
-        "operationId": "GetSimulationResultById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "sequenceNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Results"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Simulation/LightData": {
-      "get": {
-        "tags": [
-          "Simulation"
-        ],
-        "operationId": "GetAllSimulationLight",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SimulationLight"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Simulation/HeavyData": {
-      "get": {
-        "tags": [
-          "Simulation"
-        ],
-        "operationId": "GetAllSimulation",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Simulation"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Simulation/{id}": {
+      },
       "put": {
         "tags": [
-          "Simulation"
+          "Trajectory"
         ],
-        "operationId": "PutSimulationById",
+        "operationId": "PutTrajectoryById",
         "parameters": [
           {
             "name": "id",
@@ -252,17 +133,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Simulation"
+                "$ref": "#/components/schemas/Trajectory"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Simulation"
+                "$ref": "#/components/schemas/Trajectory"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Simulation"
+                "$ref": "#/components/schemas/Trajectory"
               }
             }
           }
@@ -275,9 +156,9 @@
       },
       "delete": {
         "tags": [
-          "Simulation"
+          "Trajectory"
         ],
-        "operationId": "DeleteSimulationById",
+        "operationId": "DeleteTrajectoryById",
         "parameters": [
           {
             "name": "id",
@@ -292,6 +173,83 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/Trajectory/LightData": {
+      "get": {
+        "tags": [
+          "Trajectory"
+        ],
+        "operationId": "GetAllTrajectoryLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrajectoryLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Trajectory/HeavyData": {
+      "get": {
+        "tags": [
+          "Trajectory"
+        ],
+        "operationId": "GetAllTrajectory",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Trajectory"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Trajectory/{id}/Interpolated": {
+      "get": {
+        "tags": [
+          "Trajectory"
+        ],
+        "operationId": "GetInterpolatedTrajectoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trajectory"
+                }
+              }
+            }
           }
         }
       }
@@ -2580,581 +2538,713 @@
           }
         }
       }
+    },
+    "/DrillString": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillStringId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "PostDrillString",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillString/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillStringMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillString/{id}": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetDrillStringById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillString"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "PutDrillStringById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "DeleteDrillStringById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillString/LightData": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillStringLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillStringLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillString/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillString",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillString"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringComponent": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetAllDrillStringComponentId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "PostDrillStringComponent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringComponent/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetAllDrillStringComponentMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringComponent/{id}": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetDrillStringComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillStringComponent"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "PutDrillStringComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "DeleteDrillStringComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringComponent/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetAllDrillStringComponent",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillStringComponent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulationId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "PostSimulation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Simulation/MetaInfo": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulationMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/Light/{id}\"": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetSimulatioLightById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationLight"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/Heavy/{id}\"": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Simulation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/Results/{id}/page/{sequenceNumber}\"": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetSimulationResultById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sequenceNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Results"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/LightData": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulationLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimulationLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/HeavyData": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "GetAllSimulation",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Simulation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Simulation/{id}": {
+      "put": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "PutSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Simulation"
+        ],
+        "operationId": "DeleteSimulationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "DrillStringSourceType": {
-        "enum": [
-          "DrillStringOpenLabFile",
-          "DrillStringOpenLabMS",
-          "DrillStringMS"
-        ],
-        "type": "string"
-      },
-      "BoreHoleSize": {
-        "type": "object",
-        "properties": {
-          "Depth": {
-            "type": "number",
-            "format": "double"
-          },
-          "ID": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "Config": {
-        "type": "object",
-        "properties": {
-          "VirtualSensorPositionFromBit": {
-            "type": "number",
-            "format": "double"
-          },
-          "LoggingIntervalScalarValues": {
-            "type": "number",
-            "format": "double"
-          },
-          "LoggingIntervalProfiles": {
-            "type": "number",
-            "format": "double"
-          },
-          "CoulombStaticFriction": {
-            "type": "number",
-            "format": "double"
-          },
-          "CoulombKineticFriction": {
-            "type": "number",
-            "format": "double"
-          },
-          "UseHeave": {
-            "type": "boolean"
-          },
-          "HeaveAmplitude": {
-            "type": "number",
-            "format": "double"
-          },
-          "HeavePeriod": {
-            "type": "number",
-            "format": "double"
-          },
-          "TopDriveController": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TopDriveStartupTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "VFDFilterTimeconstantZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "EncoderTimeConstantZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "AccelerationFilterTimeConstantZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "TorqueHighPassFilterTimeConstantZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "TorqueLowPassFilterTimeConstantZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "AdditionalTuningFactorZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "InertiaCorrectionFactorZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "KpSoftTorqueSpeed": {
-            "type": "number",
-            "format": "double"
-          },
-          "KiSoftTorqueSpeed": {
-            "type": "number",
-            "format": "double"
-          },
-          "TuningFrequenceySoftTorqueSpeed": {
-            "type": "number",
-            "format": "double"
-          },
-          "KpStiffAndZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "KiStiffAndZTorque": {
-            "type": "number",
-            "format": "double"
-          },
-          "LengthBetweenLumpedElements": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "ContextualData": {
-        "type": "object",
-        "properties": {
-          "TrajectoryFile": {
-            "type": "string",
-            "nullable": true
-          },
-          "DrillstringFile": {
-            "type": "string",
-            "nullable": true
-          },
-          "DrillstringPressureFile": {
-            "type": "string",
-            "nullable": true
-          },
-          "FluidDensity": {
-            "type": "number",
-            "format": "double"
-          },
-          "BoreHoleSizeList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BoreHoleSize"
-            },
-            "nullable": true
-          },
-          "BitRadius": {
-            "type": "number",
-            "format": "double"
-          },
-          "DrillStringID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "DrillStringOpenLabID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "AnnulusPressureFile": {
-            "type": "string",
-            "nullable": true
-          },
-          "DrillStringSource": {
-            "$ref": "#/components/schemas/DrillStringSourceType"
-          }
-        }
-      },
-      "InitialValues": {
-        "type": "object",
-        "properties": {
-          "BitDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "HoleDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "TopOfStringPosition": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "Profiles": {
-        "type": "object",
-        "properties": {
-          "Time": {
-            "type": "number",
-            "format": "double"
-          },
-          "Depth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "DepthAll": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SleevesDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SideForce": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SideForceSoftString": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "PipeAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SleevesAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "RadialClearance": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "LateralDisplacement": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "LateralDisplacementAngle": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BendingMoment": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Torque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Tension": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "AxialVelocityD": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Inclination": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Azimuth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Curvature": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BuildUpRate": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "Results": {
-        "type": "object",
-        "properties": {
-          "AvgCumulativeSSI": {
-            "type": "number",
-            "format": "double"
-          },
-          "Scalars": {
-            "$ref": "#/components/schemas/Scalars"
-          },
-          "Profiles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Profiles"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "Scalars": {
-        "type": "object",
-        "properties": {
-          "AvgCumulativeSSI": {
-            "type": "number",
-            "format": "double"
-          },
-          "BitAxialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "TopOfStringAxialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "WOB": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BitRPM": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SurfaceRPM": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BitDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "HoleDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SurfaceTorque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BitTorque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorWhirlVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorAxialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorRadialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorRadialAcc": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTangentialAcc": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorAxialAcc": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorBendingMomentX": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorBendingMomentY": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTension": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTorque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Time": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SSI": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "SetPoints": {
-        "type": "object",
-        "properties": {
-          "TimeDuration": {
-            "type": "number",
-            "format": "double"
-          },
-          "SurfaceRPM": {
-            "type": "number",
-            "format": "double"
-          },
-          "TopOfStringVelocity": {
-            "type": "number",
-            "format": "double"
-          },
-          "BottomExtraSideForce": {
-            "type": "number",
-            "format": "double"
-          },
-          "StribeckCriticalVelocity": {
-            "type": "number",
-            "format": "double"
-          },
-          "DifferenceStaticKineticFriction": {
-            "type": "number",
-            "format": "double"
-          },
-          "Sticking": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Simulation": {
+      "Trajectory": {
         "type": "object",
         "properties": {
           "MetaInfo": {
@@ -3178,47 +3268,216 @@
             "format": "date-time",
             "nullable": true
           },
-          "ContextualData": {
-            "$ref": "#/components/schemas/ContextualData"
-          },
           "WellBoreID": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           },
-          "Config": {
-            "$ref": "#/components/schemas/Config"
-          },
-          "InitialValues": {
-            "$ref": "#/components/schemas/InitialValues"
-          },
-          "SetPointsList": {
+          "SurveyStationList": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SetPoints"
+              "$ref": "#/components/schemas/SurveyStation"
             },
             "nullable": true
           },
-          "CurrentTime": {
+          "InterpolatedTrajectory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyPoint"
+            },
+            "nullable": true
+          },
+          "MDStep": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "TrajectoryLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
           },
-          "Progress": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ErrorCode": {
+        "enum": [
+          "XYM1",
+          "XYM2",
+          "XYM3",
+          "XYM4",
+          "SAG",
+          "DRFR",
+          "DRFS",
+          "DSFS",
+          "DSTG",
+          "XYM3E",
+          "XYM4E",
+          "SAGE",
+          "XCLH",
+          "XCLL",
+          "XCLA",
+          "ABXY_TI1S",
+          "ABXY_TI2S",
+          "ABIXY_TI1S",
+          "ABIXY_TI2S",
+          "ABZ",
+          "ASXY_TI1S",
+          "ASXY_TI2S",
+          "ASXY_TI3S",
+          "ASZ",
+          "MBXY_TI1",
+          "MBXY_TI2",
+          "MBZ",
+          "MSXY_TI1",
+          "MSXY_TI2",
+          "MSXY_TI3",
+          "MSZ",
+          "AMIL",
+          "DEC_U",
+          "DEC_OS",
+          "DEC_OH",
+          "DEC_OI",
+          "DECR",
+          "DBH_U",
+          "DBH_OS",
+          "DBH_OH",
+          "DBH_OI",
+          "DBHR",
+          "AXYZ_XYB",
+          "AXYZ_ZB",
+          "AXYZ_SF",
+          "AXYZ_MIS",
+          "AXY_B",
+          "AXY_SF",
+          "AXY_MS",
+          "AXY_GB",
+          "GXYZ_XYB1",
+          "GXYZ_XYB2",
+          "GXYZ_XYRN",
+          "GXYZ_XYG1",
+          "GXYZ_XYG2",
+          "GXYZ_XYG3",
+          "GXYZ_XYG4",
+          "GXYZ_ZB",
+          "GXYZ_ZRN",
+          "GXYZ_ZG1",
+          "GXYZ_ZG2",
+          "GXYZ_SF",
+          "GXYZ_MIS",
+          "GXY_B1",
+          "GXY_B2",
+          "GXY_RN",
+          "GXY_G1",
+          "GXY_G2",
+          "GXY_G3",
+          "GXY_G4",
+          "GXY_SF",
+          "GXY_MIS",
+          "EXT_REF",
+          "EXT_TIE",
+          "EXT_MIS",
+          "GXYZ_GD",
+          "GXYZ_RW",
+          "GXY_GD",
+          "GXY_RW",
+          "GZ_GD",
+          "GZ_RW"
+        ],
+        "type": "string"
+      },
+      "ErrorSource": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "ErrorCode": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "IsSystematic": {
+            "type": "boolean"
+          },
+          "IsRandom": {
+            "type": "boolean"
+          },
+          "IsGlobal": {
+            "type": "boolean"
+          },
+          "SingularIssues": {
+            "type": "boolean"
+          },
+          "IsContinuous": {
+            "type": "boolean"
+          },
+          "IsStationary": {
+            "type": "boolean"
+          },
+          "KOperatorImposed": {
+            "type": "boolean"
+          },
+          "Magnitude": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "TerminationState": {
-            "type": "integer",
-            "format": "int32",
+          "MagnitudeQuantity": {
+            "type": "string",
             "nullable": true
           },
-          "Results": {
-            "$ref": "#/components/schemas/Results"
+          "UseInclinationInterval": {
+            "type": "boolean"
+          },
+          "StartInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EndInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InitInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": { }
       },
-      "SimulationLight": {
+      "SurveyInstrument": {
         "type": "object",
         "properties": {
           "MetaInfo": {
@@ -3242,20 +3501,324 @@
             "format": "date-time",
             "nullable": true
           },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
+          "ModelType": {
+            "$ref": "#/components/schemas/SurveyInstrumentModelType"
+          },
+          "ErrorSourceList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorSource"
+            },
             "nullable": true
           },
-          "Progress": {
+          "Dip": {
             "type": "number",
             "format": "double"
           },
-          "TerminationState": {
-            "type": "integer",
-            "format": "int32"
+          "Declination": {
+            "type": "number",
+            "format": "double"
+          },
+          "Gravity": {
+            "type": "number",
+            "format": "double"
+          },
+          "BField": {
+            "type": "number",
+            "format": "double"
+          },
+          "Convergence": {
+            "type": "number",
+            "format": "double"
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "EarthRotRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "CantAngle": {
+            "type": "number",
+            "format": "double"
+          },
+          "GyroRunningSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ExtRefInitInc": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GyroSwitching": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GyroMinDist": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GyroNoiseRed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseRelDepthError": {
+            "type": "boolean"
+          },
+          "RelDepthError": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseMisalignment": {
+            "type": "boolean"
+          },
+          "Misalignment": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseTrueInclination": {
+            "type": "boolean"
+          },
+          "TrueInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseReferenceError": {
+            "type": "boolean"
+          },
+          "ReferenceError": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseDrillStringMag": {
+            "type": "boolean"
+          },
+          "DrillStringMag": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseGyroCompassError": {
+            "type": "boolean"
+          },
+          "GyroCompassError": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": { }
+      },
+      "SurveyInstrumentModelType": {
+        "enum": [
+          "MWD_WolffDeWardt",
+          "Gyro_WolffDeWardt",
+          "MWD_ISCWSA",
+          "Gyro_ISCWSA"
+        ],
+        "type": "string"
+      },
+      "SurveyPoint": {
+        "type": "object",
+        "properties": {
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Abscissa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TVD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianNorth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianEast": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Toolface": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "SurveyStation": {
+        "type": "object",
+        "properties": {
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Abscissa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TVD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianNorth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianEast": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Toolface": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Covariance": {
+            "$ref": "#/components/schemas/SymmetricMatrix3x3"
+          },
+          "EigenVectors": {
+            "$ref": "#/components/schemas/Matrix3x3"
+          },
+          "EigenValues": {
+            "$ref": "#/components/schemas/Vector3D"
+          },
+          "Bias": {
+            "$ref": "#/components/schemas/Vector3D"
+          },
+          "SurveyTool": {
+            "$ref": "#/components/schemas/SurveyInstrument"
+          },
+          "BoreholeRadius": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
       },
       "MetaInfo": {
         "type": "object",
@@ -3277,6 +3840,59 @@
             "nullable": true
           }
         }
+      },
+      "Matrix3x3": {
+        "type": "object",
+        "properties": {
+          "RowCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ColumnCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "SymmetricMatrix3x3": {
+        "type": "object",
+        "properties": {
+          "ColumnCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "RowCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "Vector3D": {
+        "type": "object",
+        "properties": {
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Dim": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": { }
       },
       "Cluster": {
         "type": "object",
@@ -4848,6 +5464,1063 @@
           },
           "IsSingleWell": {
             "type": "boolean"
+          }
+        }
+      },
+      "DrillStringComponentTypes": {
+        "enum": [
+          "DrillPipe",
+          "DrillCollar",
+          "HeavyWeightDrillPipe",
+          "Jar",
+          "Mwd",
+          "Stabilizer",
+          "SteerableRotaryTool",
+          "Bit"
+        ],
+        "type": "string"
+      },
+      "DrillStringSensorTypes": {
+        "enum": [
+          "Acoustic",
+          "AccelerometerX",
+          "AccelerometerY",
+          "AccelerometerZ",
+          "ResistivitySource",
+          "ResistivityReceiver",
+          "NeutronDensity",
+          "NeutronPorosity",
+          "MagnetometerX",
+          "MagnetometerY",
+          "RotationalPitch",
+          "RotationalRoll",
+          "RotationalYaw",
+          "BendingMomentX",
+          "BendingMomentY",
+          "Pressure",
+          "Temperature",
+          "GammaRay",
+          "Other",
+          "Tension",
+          "Torque"
+        ],
+        "type": "string"
+      },
+      "DrillString": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "DrillStringSectionList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringSection"
+            },
+            "nullable": true
+          },
+          "SensorsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringSensor"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringComponent": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "FieldID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/DrillStringComponentTypes"
+          },
+          "PartList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponentPart"
+            },
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        }
+      },
+      "DrillStringComponentPart": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "InnerDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameterState2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterDiameterStateBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FrictionFactorRotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FrictionFactorAxialDisplacement": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantLowFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantHighFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityDistance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityAngle": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition1": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaConditionBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FlowrateThresholdValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "YieldStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UltimateStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SecondCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FirstCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double"
+          },
+          "CrossSectionArea": {
+            "type": "number",
+            "format": "double"
+          },
+          "YoungModulus": {
+            "type": "number",
+            "format": "double"
+          },
+          "PoissonRatio": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaterialDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "AveragePartDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mass": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeatCapacity": {
+            "type": "number",
+            "format": "double"
+          },
+          "ThermalCondutivity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "DrillStringLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringSection": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SectionComponentList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponent"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringSensor": {
+        "type": "object",
+        "properties": {
+          "DistanceFromBit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MeasurementRange": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SensorAngles": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTypeInt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SensorType": {
+            "$ref": "#/components/schemas/DrillStringSensorTypes"
+          }
+        }
+      },
+      "DrillStringSourceType": {
+        "enum": [
+          "DrillStringOpenLabFile",
+          "DrillStringOpenLabMS",
+          "DrillStringMS"
+        ],
+        "type": "string"
+      },
+      "BoreHoleSize": {
+        "type": "object",
+        "properties": {
+          "Depth": {
+            "type": "number",
+            "format": "double"
+          },
+          "ID": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Config": {
+        "type": "object",
+        "properties": {
+          "VirtualSensorPositionFromBit": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalScalarValues": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalProfiles": {
+            "type": "number",
+            "format": "double"
+          },
+          "CoulombStaticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "CoulombKineticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "UseHeave": {
+            "type": "boolean"
+          },
+          "HeaveAmplitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeavePeriod": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopDriveController": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TopDriveStartupTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "VFDFilterTimeconstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "EncoderTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "AccelerationFilterTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "TorqueHighPassFilterTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "TorqueLowPassFilterTimeConstantZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "AdditionalTuningFactorZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "InertiaCorrectionFactorZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "KpSoftTorqueSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "KiSoftTorqueSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "TuningFrequenceySoftTorqueSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "KpStiffAndZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "KiStiffAndZTorque": {
+            "type": "number",
+            "format": "double"
+          },
+          "LengthBetweenLumpedElements": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "ContextualData": {
+        "type": "object",
+        "properties": {
+          "Trajectory": {
+            "$ref": "#/components/schemas/Trajectory"
+          },
+          "DrillstringFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillstringPressureFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "FluidDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "BoreHoleSizeList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoreHoleSize"
+            },
+            "nullable": true
+          },
+          "BitRadius": {
+            "type": "number",
+            "format": "double"
+          },
+          "DrillStringID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "DrillStringOpenLabID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "AnnulusPressureFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillStringSource": {
+            "$ref": "#/components/schemas/DrillStringSourceType"
+          }
+        }
+      },
+      "InitialValues": {
+        "type": "object",
+        "properties": {
+          "BitDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "HoleDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringPosition": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Profiles": {
+        "type": "object",
+        "properties": {
+          "Time": {
+            "type": "number",
+            "format": "double"
+          },
+          "Depth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "DepthAll": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SleevesDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SideForce": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SideForceSoftString": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "PipeAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SleevesAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "RadialClearance": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "LateralDisplacement": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "LateralDisplacementAngle": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BendingMoment": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Torque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Tension": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "AxialVelocityD": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BuildUpRate": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Results": {
+        "type": "object",
+        "properties": {
+          "AvgCumulativeSSI": {
+            "type": "number",
+            "format": "double"
+          },
+          "Scalars": {
+            "$ref": "#/components/schemas/Scalars"
+          },
+          "Profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Profiles"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Scalars": {
+        "type": "object",
+        "properties": {
+          "AvgCumulativeSSI": {
+            "type": "number",
+            "format": "double"
+          },
+          "BitAxialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "TopOfStringAxialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "WOB": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BitRPM": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SurfaceRPM": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BitDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "HoleDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SurfaceTorque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BitTorque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorWhirlVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorAxialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorRadialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorRadialAcc": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTangentialAcc": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorAxialAcc": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorBendingMomentX": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorBendingMomentY": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTension": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTorque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Time": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SSI": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SetPoints": {
+        "type": "object",
+        "properties": {
+          "TimeDuration": {
+            "type": "number",
+            "format": "double"
+          },
+          "SurfaceRPM": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringVelocity": {
+            "type": "number",
+            "format": "double"
+          },
+          "BottomExtraSideForce": {
+            "type": "number",
+            "format": "double"
+          },
+          "StribeckCriticalVelocity": {
+            "type": "number",
+            "format": "double"
+          },
+          "DifferenceStaticKineticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "Sticking": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Simulation": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ContextualData": {
+            "$ref": "#/components/schemas/ContextualData"
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Config": {
+            "$ref": "#/components/schemas/Config"
+          },
+          "InitialValues": {
+            "$ref": "#/components/schemas/InitialValues"
+          },
+          "SetPointsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SetPoints"
+            },
+            "nullable": true
+          },
+          "CurrentTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "Progress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TerminationState": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Results": {
+            "$ref": "#/components/schemas/Results"
+          }
+        }
+      },
+      "SimulationLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Progress": {
+            "type": "number",
+            "format": "double"
+          },
+          "TerminationState": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       }

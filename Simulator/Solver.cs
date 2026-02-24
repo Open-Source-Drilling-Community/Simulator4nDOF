@@ -415,8 +415,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.SensorBendingAngleY = Theta_y; // bending angle y-component
                 output.SecondDerivativeSensorBendingAngleX = Theta_x_ddot; // bending angle second derivative x-component
                 output.SecondDerivativeSensorBendingAngleY = Theta_y_ddot; // bending angle second derivative y-component
-                output.SensorPipeInclination = simulationParameters.Trajectory.thetaVec[simulationParameters.Drillstring.IndexSensor];
-                output.SensorPipeAzimuthAt = simulationParameters.Trajectory.phiVec[simulationParameters.Drillstring.IndexSensor];
+                output.SensorPipeInclination = simulationParameters.Trajectory.InterpolatedTheta[simulationParameters.Drillstring.IndexSensor];
+                output.SensorPipeAzimuthAt = simulationParameters.Trajectory.InterpolatedPhi[simulationParameters.Drillstring.IndexSensor];
                 output.SensorTension = lateralModel.Tension[simulationParameters.Drillstring.IndexSensor];
                 output.SensorTorque = output.Torque[simulationParameters.Drillstring.IndexSensor];
 

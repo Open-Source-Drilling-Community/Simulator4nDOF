@@ -623,7 +623,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
 
 
-                Simulator.DataModel.Configuration config;
+                Configuration config;
                 //initialize simulation
                 try
                 {
@@ -1102,13 +1102,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             }
             return output;
         }
-        public Simulator.DataModel.Configuration Initialize(Simulation simulation, DrillString drillString, DrillStringOpenLab drillStringOpenLab, DrillStringSourceType DrillStringSource)
+        public Configuration Initialize(Simulation simulation, DrillString drillString, DrillStringOpenLab drillStringOpenLab, DrillStringSourceType DrillStringSource)
         {
-
-            var config = new Simulator.DataModel.Configuration()
+            if (simulation.ContextualData!.Trajectory == null)
+            {
+                throw new Exception("Trajectory data is required for the simulation.");
+            }
+            var config = new Configuration()
             {
                 AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
-                TrajectoryFile = simulation.ContextualData.TrajectoryFile,
+                Trajectory = simulation.ContextualData.Trajectory!,
                 DrillStringSourceType = DrillStringSource,
                 DrillstringFile = simulation.ContextualData.DrillstringFile,
                 DrillString = drillString,
@@ -1173,10 +1176,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 Tension = output.TensionProfile.ToList(),
                 AxialVelocityD = Utilities.ExtendVectorStart(u.CalculateSurfaceAxialVelocity, state.AngularVelocity).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
-                Inclination = parameters.Trajectory.thetaVec.Append(parameters.Trajectory.thetaVec.LastOrDefault<double>()).ToList(),
-                Azimuth = parameters.Trajectory.phiVec.Append(parameters.Trajectory.phiVec.LastOrDefault<double>()).ToList(),
+                Inclination = parameters.Trajectory.InterpolatedTheta.Append(parameters.Trajectory.InterpolatedTheta.LastOrDefault<double>()).ToList(),
+                Azimuth = parameters.Trajectory.InterpolatedPhi.Append(parameters.Trajectory.InterpolatedPhi.LastOrDefault<double>()).ToList(),
                 Curvature = parameters.Trajectory.Curvature.Append(parameters.Trajectory.Curvature.LastOrDefault<double>()).ToList(),
-                BuildUpRate = parameters.Trajectory.thetaVec_dot.Append(parameters.Trajectory.thetaVec_dot.LastOrDefault<double>()).ToList()
+                BuildUpRate = parameters.Trajectory.DiffThetaInterpolated.Append(parameters.Trajectory.DiffThetaInterpolated.LastOrDefault<double>()).ToList()
             };
         }
 
@@ -1232,7 +1235,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         /// - Real-time access to up-to-date scalar and profile results throughout the run.
         /// </summary>
 
-        public async Task<bool> CalculateAsync(Simulation simulation, Simulator.DataModel.Configuration config)
+        public async Task<bool> CalculateAsync(Simulation simulation, Configuration config)
         {
             if (simulation.SetPointsList == null || simulation.SetPointsList.Count == 0)
                 return false;
