@@ -20,7 +20,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Vector<double> hydrostaticStringPressure;
         public Vector<double> hydrostaticAnnularPressure;
         public Vector<double> Wb;                                   // [N/m] Buoyant drill string weight per length
-        public Vector<double> dsigma_dx;                            // [N/m] Tension per length
+        public Vector<double> dSigmaDX;                            // [N/m] Tension per length
         public Vector<double> axialBuoyancyForceChangeOfDiameters;
         public Vector<double> normalBuoyancyForceChangeOfDiameters;
 
@@ -47,7 +47,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Vector<double> drag = Vector<double>.Build.Dense(lc.NumberOfLumpedElements + 1);
             Vector<double> tension = Vector<double>.Build.Dense(lc.NumberOfLumpedElements + 1);
 
-            var cumTrapz = CummulativeTrapezoidal(lc.ElementLength, Reverse(dsigma_dx));
+            var cumTrapz = CummulativeTrapezoidal(lc.ElementLength, Reverse(dSigmaDX));
 
             tension = Reverse(cumTrapz) + axialBuoyancyForceChangeOfDiameters - drag;
 
@@ -130,10 +130,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Array.Copy(t.thetaVec.ToArray(), 0, thetaVece, 1, t.thetaVec.Count());
 
             // Compute the tension per length
-            dsigma_dx = Vector<double>.Build.Dense(Wb.Count);
+            dSigmaDX = Vector<double>.Build.Dense(Wb.Count);
             for (int i = 0; i < Wb.Count; i++)
             {
-                dsigma_dx[i] = Wb[i] * Math.Cos(thetaVece[i]);
+                dSigmaDX[i] = Wb[i] * Math.Cos(thetaVece[i]);
             }
 
             // Axial and normal buoyancy force changes if buoyancy factor is not used

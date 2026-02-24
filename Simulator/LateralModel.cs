@@ -17,6 +17,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public Vector<double> NormalCollisionForce;        
         public Vector<double> SoftStringNormalForce;
         public Vector<double> Tension;
+        public Vector<double> Torque;
         public Vector<double> BendingStiffness;
         public Vector<double> PolarMomentTimesShearModuli;
         public Vector<double> PreStressNormalForce;
@@ -39,6 +40,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);;        
             SoftStringNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
             Tension = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            Torque = Vector<double>.Build.Dense(state.XDisplacement.Count);
             BendingStiffness = Vector<double>.Build.Dense(state.XDisplacement.Count);
             PolarMomentTimesShearModuli = Vector<double>.Build.Dense(state.XDisplacement.Count);
             PreStressNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);

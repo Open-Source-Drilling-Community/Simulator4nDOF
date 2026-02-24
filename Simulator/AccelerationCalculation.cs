@@ -42,12 +42,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         }
         public static void PreprareLateral(LateralModel model, State state, SimulationParameters parameters)
         {
-            
-        
             // Initialize scaling matrix and compute element-wise product    
-            Vector<double> elementWiseProduct = parameters.Drillstring.YoungModuli.PointwiseMultiply(parameters.Drillstring.PipeArea);
+            //Vector<double> elementWiseProduct = parameters.Drillstring.YoungModuli.PointwiseMultiply(parameters.Drillstring.PipeArea);
             //Column matrix with ones
-            model.ScalingMatrix = Vector<double>.Build.Dense(parameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
+            //model.ScalingMatrix = Vector<double>.Build.Dense(parameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
             //Matrix with YoungModulus * Area repeated in each column
             /*
             |EA1 EA2 EA3 ... EAn|
@@ -55,44 +53,44 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             |...                |
             |EA1 EA2 EA3 ... EAn|
             */
-            Matrix<double> dragMatrix = model.ScalingMatrix * elementWiseProduct.ToRowMatrix();
-            dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
-        
-            Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
-            Vector<double> drag = LinearInterpolate(parameters.DistributedCells.x, drag_flattened, parameters.LumpedCells.ElementLength);
-      
+            //Matrix<double> dragMatrix = model.ScalingMatrix * elementWiseProduct.ToRowMatrix();
+            //dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
+            //Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
+            //Vector<double> drag = LinearInterpolate(parameters.DistributedCells.x, drag_flattened, parameters.LumpedCells.ElementLength);                  
             
+            //Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.phiVec_dot);
+            //Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.thetaVec_dot);
+            //Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.thetaVec);
+            //Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDX));
+            //model.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
+            //Vector<double> trapezoidalsIntegration = Reverse(CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDX)));
+            //model.Tension = trapezoidalsIntegration + parameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
             
-            Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.phiVec_dot);
-            Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.thetaVec_dot);
-            Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.thetaVec);
-            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dsigma_dx));
-            model.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
-            Vector<double> fN_softstring = (Square((model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
-                                            Square((model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
-            Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
-            model.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
+            //Vector<double> fN_softstring = (Square((model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
+            //                                Square((model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
+            //Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
+            //model.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
 
-            Vector<double> AiExtended = ExtendVectorStart(parameters.Drillstring.InnerArea[0], parameters.Drillstring.InnerArea);
-            Vector<double> AoExtended = ExtendVectorStart(parameters.Drillstring.OuterArea[0], parameters.Drillstring.OuterArea);
+            //Vector<double> AiExtended = ExtendVectorStart(parameters.Drillstring.InnerArea[0], parameters.Drillstring.InnerArea);
+            //Vector<double> AoExtended = ExtendVectorStart(parameters.Drillstring.OuterArea[0], parameters.Drillstring.OuterArea);
             
             /*Vector<double> F_comp = AiExtended.PointwiseMultiply(parameters.Buoyancy.stringPressure - parameters.Buoyancy.hydrostaticStringPressure) * (1 - 2 * parameters.Drillstring.PoissonRatio)
                                     - AoExtended.PointwiseMultiply(parameters.Buoyancy.annularPressure - parameters.Buoyancy.hydrostaticAnnularPressure) * (1 - 2 * parameters.Drillstring.PoissonRatio)
                                   - Tension;
             Tension = -F_comp;*/
             
-            model.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
-                (  
-                    AoExtended.PointwiseMultiply(parameters.Buoyancy.annularPressure - parameters.Buoyancy.hydrostaticAnnularPressure) 
-                    - AiExtended.PointwiseMultiply(parameters.Buoyancy.stringPressure - parameters.Buoyancy.hydrostaticStringPressure)
-                );   
+            //model.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
+            //    (  
+            //        AoExtended.PointwiseMultiply(parameters.Buoyancy.annularPressure - parameters.Buoyancy.hydrostaticAnnularPressure) 
+            //        - AiExtended.PointwiseMultiply(parameters.Buoyancy.stringPressure - parameters.Buoyancy.hydrostaticStringPressure)
+            //    );   
 
-            Vector<double> bendingStiffness = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
-            model.BendingStiffness = - (bendingStiffness - Math.Pow(Math.PI, 2) * model.Tension / (2 * parameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);                                            
-            model.PolarMomentTimesShearModuli = parameters.Drillstring.PipePolarMoment.PointwiseMultiply(parameters.Drillstring.ShearModuli); // Element-wise multiplication
-            Matrix<double> torqueMatrix = state.PipeShearStrain.PointwiseMultiply(model.ScalingMatrix * model.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
-            Vector<double> torqueFlattened = ToVector(torqueMatrix.ToColumnMajorArray());
-            Vector<double> torque = LinearInterpolate(parameters.DistributedCells.x, torqueFlattened, parameters.LumpedCells.ElementLength);
+            //Vector<double> bendingStiffness = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
+            //model.BendingStiffness = - (bendingStiffness - Math.Pow(Math.PI, 2) * model.Tension / (2 * parameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);                                            
+            //model.PolarMomentTimesShearModuli = parameters.Drillstring.PipePolarMoment.PointwiseMultiply(parameters.Drillstring.ShearModuli); // Element-wise multiplication
+            //Matrix<double> torqueMatrix = state.PipeShearStrain.PointwiseMultiply(model.ScalingMatrix * model.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
+            //Vector<double> torqueFlattened = ToVector(torqueMatrix.ToColumnMajorArray());
+            //Vector<double> torque = LinearInterpolate(parameters.DistributedCells.x, torqueFlattened, parameters.LumpedCells.ElementLength);
 
             //Allocate variables for the loop. For synchronous computing
             double normalForce;
@@ -103,18 +101,85 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             double InertiaTimesYoungModulus;
             double hVectorProductNormalDorProductTangent;
             double signToolFace;
-            double dotProduct;            
+            double dotProduct;  
+            //New part          
+            double youngModulusTimesArea;
+            double shearModulusTimesPolarMoment;
+            double localDrag;
+            double localTorque;
+            double localBuoyancyForce = 0;
+            double buoyancyForce = 0;
+            double tension;
+            double softStringNormalForce;
+            double oldSoftStringNormalForce = 0;
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
-            {               
+            {         
+                int revIndex = parameters.LumpedCells.NumberOfLumpedElements - i;
+                buoyancyForce += 0.5*(parameters.Buoyancy.dSigmaDX[revIndex] + parameters.Buoyancy.dSigmaDX[revIndex-1]) 
+                    * (parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i]);
+            }
+            for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
+            {         
+         
+                youngModulusTimesArea = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeArea[i];
+                shearModulusTimesPolarMoment = parameters.Drillstring.ShearModuli[i] * parameters.Drillstring.PipePolarMoment[i];
+                //Average axial strain for the lumped element
+                double averagePipeAxialStrain = 0;
+                double averagePipeShearStrain = 0;
+                double thetaDot = (i==0) ? 0 : parameters.Trajectory.thetaVec_dot[i-1];
+                double theta = (i==0) ? 0 : parameters.Trajectory.thetaVec[i-1];
+                double phiDot = (i==0) ? 0 : parameters.Trajectory.phiVec_dot[i-1];
+                for (int j = 0; j < parameters.LumpedCells.DistributedToLumpedRatio; j++)
+                {
+                    averagePipeAxialStrain += state.PipeAxialStrain[j, i];
+                    averagePipeShearStrain += state.PipeShearStrain[j, i];
+                }
+                averagePipeAxialStrain /= parameters.LumpedCells.DistributedToLumpedRatio;
+                localDrag = youngModulusTimesArea * averagePipeAxialStrain;
+                localTorque = shearModulusTimesPolarMoment * averagePipeShearStrain;
+                int revIndex = parameters.LumpedCells.NumberOfLumpedElements - i;
+                localBuoyancyForce = 0.5 * (parameters.Buoyancy.dSigmaDX[i+1] + parameters.Buoyancy.dSigmaDX[i]) * (parameters.LumpedCells.ElementLength[revIndex] - parameters.LumpedCells.ElementLength[revIndex-1]);
+                double projection1NormalForce = (model.Tension[i] + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters[i]) * thetaDot - parameters.Buoyancy.Wb[i] * theta * Math.Sin(theta);
+                double projection2NormalForce = (model.Tension[i] + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters[i]) * phiDot * Math.Sin(theta);               
+                softStringNormalForce = Math.Sqrt(projection1NormalForce * projection1NormalForce + projection2NormalForce * projection2NormalForce);
+                double innerArea = (i==0) ? parameters.Drillstring.InnerArea[0]:parameters.Drillstring.InnerArea[i-1];
+                double outerArea = (i==0) ? parameters.Drillstring.OuterArea[0]:parameters.Drillstring.OuterArea[i-1];                                
+                tension = buoyancyForce + parameters.Buoyancy.axialBuoyancyForceChangeOfDiameters[i] - localDrag + (1 - 2 * parameters.Drillstring.PoissonRatio) * 
+                    (  
+                        outerArea * (parameters.Buoyancy.annularPressure[i] - parameters.Buoyancy.hydrostaticAnnularPressure[i]) 
+                        - innerArea * (parameters.Buoyancy.stringPressure[i] - parameters.Buoyancy.hydrostaticStringPressure[i])
+                    );
+                buoyancyForce -= localBuoyancyForce;
+                if (i == 0)
+                {
+                    oldSoftStringNormalForce = softStringNormalForce;            
+                }
+                double deltaLength = parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i];                    
+                double localBendingStiffness = (i==0) ? parameters.Drillstring.BendingStiffness[0] : parameters.Drillstring.BendingStiffness[i-1];
+                model.BendingStiffness[i] = - Math.Max(localBendingStiffness - Math.PI*Math.PI * tension / (2 * parameters.Drillstring.PipeLengthForBending), 0.0);
+                model.PolarMomentTimesShearModuli[i] = parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i]; // Element-wise multiplication
+                model.SoftStringNormalForce[i] = 0.5 * (oldSoftStringNormalForce + softStringNormalForce) * deltaLength; //new
+                model.Tension[i] = tension; 
+                model.Torque[i] = localTorque;
+                oldSoftStringNormalForce = softStringNormalForce;
+            
+            }
+
+            for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
+            {          
+
+                double localTension = (i==0) ? model.Tension[i] : model.Tension[i-1];
+                double torque = (i==0) ? model.Torque[i] : model.Torque[i-1];
+                
                 // Normal force components in Frenet-Serret coordinate system
-                differentialTorque = (i==0) ?  0 : (torque[i+1] - torque[i]) / parameters.LumpedCells.DistanceBetweenElements;
+                differentialTorque = (i==0) ?  0 : (model.Torque[i+1] - model.Torque[i]) / parameters.LumpedCells.DistanceBetweenElements;
                 InertiaTimesYoungModulus = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeInertia[i];
                 binormalForce = parameters.Buoyancy.Wb[i] * parameters.Trajectory.bz[i] 
                     + parameters.Trajectory.Curvature[i] * differentialTorque 
-                    + parameters.Trajectory.CurvatureDerivative[i] * torque[i+1] 
+                    + parameters.Trajectory.CurvatureDerivative[i] * model.Torque[i+1] 
                     - 2 * InertiaTimesYoungModulus * parameters.Trajectory.CurvatureDerivative[i] * parameters.Trajectory.Torsion[i] 
                     - InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * parameters.Trajectory.TorsionDerivative[i];
-                normalForce = parameters.Trajectory.Curvature[i] * (model.Tension[i+1] + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * torque[i+1]) 
+                normalForce = parameters.Trajectory.Curvature[i] * (model.Tension[i+1] + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * model.Torque[i+1]) 
                     + parameters.Buoyancy.Wb[i] * parameters.Trajectory.nz[i] 
                     - InertiaTimesYoungModulus * parameters.Trajectory.CurvatureSecondDerivative[i] 
                     + InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * (parameters.Trajectory.Torsion[i] * parameters.Trajectory.Torsion[i]);
@@ -136,13 +201,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 dotProduct = Math.Min(1, dotProduct);
                 // ========== Update relevant model variables ==========
                 model.ToolFaceAngle[i] = Math.Acos(dotProduct) * signToolFace;
-                //This is equivalent of integrating with the trapezoidal rule and then getting the difference.                    
-                model.PreStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * (parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i]);
-                model.PreStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * (parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i]);
+                //This is equivalent of integrating with the trapezoidal rule and then getting the difference.
+                double deltaLength = parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i];                    
+                model.PreStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * deltaLength;
+                model.PreStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * deltaLength;                
+                //model.Tension[i] = tension; //new
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
-                oldBinormalForce = binormalForce;     
-            }            
+                oldBinormalForce = binormalForce;    
+            }             
             
             
         }
@@ -471,6 +538,56 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                                 ) * Math.Exp( - parameters.Friction.stribeck *  tangentialMagnitude)
                             )
                         );
+                    double kinematicFriction = Math.Abs( normalCollisionForce * parameters.Friction.KinematicFrictionCoefficient[i]);
+                    //if (Math.Abs(axialVelocity) < 1e-6)
+                    //{
+                        // The no slip condition: noSlipThetaDot * Router + whirlVelocity * radialDisplacement = 0
+                        // No slide acceleration: noSlipThetaDotDot = - (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/Router
+                        // noSlipWhirlAcceleration = (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement
+                        // xDotDot = sumForceX/Mass, yDotDot = sumForceY/Mass
+                        //double xDotDot = sumForcesX / parameters.Drillstring.LumpedElementMass[i];
+                        //double yDotDot = sumForcesY / parameters.Drillstring.LumpedElementMass[i];
+                        //noSlipWhirlAcceleration = radialDisplacement == 0 ? 10E5 : (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement;
+                        //noSlipThetaDotDot = (radialVelocity * whirlVelocity + yDotDot * cosWhirlAngle - xDotDot * sinWhirlAngle) / outerRadius;//- (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/outerRadius;                                            
+                        //double forceNoSlipTangent = 
+                        //        (
+                        //            torqueDifference 
+                        //            - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed 
+                        //            + noSlipThetaDotDot * parameters.Drillstring.PipePolarMoment[i] / outerRadius
+                        //        )/outerRadius;  
+                        //stopForceMagnitude = Math.Sqrt(forceNoSlipTangent * forceNoSlipTangent + sumForcesZ * sumForcesZ) + Constants.RegularizationCoefficient;
+                        //// Static friction force
+                        //if (state.SlipCondition[i] == 0)
+                        //{
+                        //    // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
+                        //    state.SlipCondition[i] = stopForceMagnitude > Math.Abs(coulombStaticForceMagnitude) ? 1:0;                        
+                        //}
+                        //else
+                        //{
+                        //    // Check the critical velocity
+                        //    if (tangentialMagnitude < parameters.Friction.v_c)
+                        //    {
+                        //        state.SlipCondition[i] = 0;
+                        //    }                        
+                        //}
+                        //staticFriction =  Math.Max(Math.Min(stopForceMagnitude, coulombStaticForceMagnitude), - coulombStaticForceMagnitude);                       
+                        ////Masks friction magnitude to be either static or kinematic
+                        //coulombForceTemp = (state.SlipCondition[i] == 0) ? staticFriction : stribeckFriction;
+                        //Projects into the lateral and axial directions
+                        //coulombFrictionX = - coulombForceTemp * tangentialDirection[0];
+                        //coulombFrictionY = - coulombForceTemp * tangentialDirection[1];
+                        //coulombFrictionZ = - coulombForceTemp * tangentialDirection[2];                                                                                                
+                    //}
+                    //else
+                    //{
+                    //    // If there is axial velocity, this model must have a slip condition. Thus, we can directly calculate the stribeck friction and project it.
+                    //    //coulombForceTemp = stribeckFriction;
+                    //    coulombFrictionX = - stribeckFriction * tangentialDirection[0];
+                    //    coulombFrictionY = - stribeckFriction * tangentialDirection[1];
+                    //    coulombFrictionZ = - stribeckFriction * tangentialDirection[2];
+                    //    state.SlipCondition[i] = 1;                                 
+                    //}
+                    //Calculate the no slip conditions 
                     if (Math.Abs(axialVelocity) < 1e-6)
                     {
                         // The no slip condition: noSlipThetaDot * Router + whirlVelocity * radialDisplacement = 0
@@ -479,48 +596,39 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         // xDotDot = sumForceX/Mass, yDotDot = sumForceY/Mass
                         double xDotDot = sumForcesX / parameters.Drillstring.LumpedElementMass[i];
                         double yDotDot = sumForcesY / parameters.Drillstring.LumpedElementMass[i];
-
                         noSlipWhirlAcceleration = radialDisplacement == 0 ? 10E5 : (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement;
-                        noSlipThetaDotDot = (radialVelocity * whirlVelocity + yDotDot * cosWhirlAngle - xDotDot * sinWhirlAngle) / outerRadius;//- (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/outerRadius;
-                        double forceNoSlipTangent = 
-                                (
-                                    torqueDifference 
-                                    - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed 
-                                    + noSlipThetaDotDot * parameters.Drillstring.PipePolarMoment[i] / outerRadius
-                                )/outerRadius;  
-                        stopForceMagnitude = Math.Sqrt(forceNoSlipTangent * forceNoSlipTangent + sumForcesZ * sumForcesZ) + Constants.RegularizationCoefficient;
-                        // Static friction force
-                        if (state.SlipCondition[i] == 0)
+                        noSlipThetaDotDot = (radialVelocity * whirlVelocity + yDotDot * cosWhirlAngle - xDotDot * sinWhirlAngle) / outerRadius;//- (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/outerRadius;                                            
+                    }
+                    //Check for a static condition
+                    if (Math.Abs(tangentialMagnitude) < 1E-6)
+                    {
+                        state.SlipCondition[i] = 0;
+                        double tangentialForceProjection = Math.Abs(sumForcesX * tangentialDirection[0] + sumForcesY * tangentialDirection[1] + sumForcesZ * tangentialDirection[2]);
+                        //if the total of forces applied in the tangential direction is smaller than the maximum static friction force, then it is a no slip condition. Otherwise, it is a slip condition and the friction is equal to the stribeck friction.
+                        if (tangentialForceProjection < coulombStaticForceMagnitude)
                         {
-                            // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
-                            state.SlipCondition[i] = stopForceMagnitude > Math.Abs(coulombStaticForceMagnitude) ? 1:0;                        
+                            state.SlipCondition[i] = 0;                        
+                            //Projects into the lateral and axial directions
+                            coulombFrictionX = - tangentialForceProjection * tangentialDirection[0];
+                            coulombFrictionY = - tangentialForceProjection * tangentialDirection[1];
+                            coulombFrictionZ = - tangentialForceProjection * tangentialDirection[2];    
                         }
                         else
                         {
-                            // Check the critical velocity
-                            if (tangentialMagnitude < parameters.Friction.v_c)
-                            {
-                                state.SlipCondition[i] = 0;
-                            }                        
+                            state.SlipCondition[i] = 1;
+                            //Projects into the lateral and axial directions
+                            coulombFrictionX = - kinematicFriction * tangentialDirection[0];
+                            coulombFrictionY = - kinematicFriction * tangentialDirection[1];
+                            coulombFrictionZ = - kinematicFriction * tangentialDirection[2];    
                         }
-                        staticFriction =  Math.Max(Math.Min(stopForceMagnitude, coulombStaticForceMagnitude), - coulombStaticForceMagnitude);                       
-                        //Masks friction magnitude to be either static or kinematic
-                        coulombForceTemp = (state.SlipCondition[i] == 0) ? staticFriction : stribeckFriction;
-                        //Projects into the lateral and axial directions
-                        coulombFrictionX = - coulombForceTemp * tangentialDirection[0];
-                        coulombFrictionY = - coulombForceTemp * tangentialDirection[1];
-                        coulombFrictionZ = - coulombForceTemp * tangentialDirection[2];                                                                         
-                    }
+                    } 
                     else
-                    {
-                        // If there is axial velocity, this model must have a slip condition. Thus, we can directly calculate the stribeck friction and project it.
-                        //coulombForceTemp = stribeckFriction;
-                        coulombFrictionX = - stribeckFriction * tangentialDirection[0];
-                        coulombFrictionY = - stribeckFriction * tangentialDirection[1];
-                        coulombFrictionZ = - stribeckFriction * tangentialDirection[2];
-                        state.SlipCondition[i] = 1;                                 
+                    {                                
+                        //Projects into the lateral and axial directions
+                        coulombFrictionX = - kinematicFriction * tangentialDirection[0];
+                        coulombFrictionY = - kinematicFriction * tangentialDirection[1];
+                        coulombFrictionZ = - kinematicFriction * tangentialDirection[2];    
                     }
-                    
                     //Store no slip data
                     if (i == parameters.Drillstring.IndexSensor)
                     {
