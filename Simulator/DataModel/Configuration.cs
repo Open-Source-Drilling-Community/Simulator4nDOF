@@ -68,10 +68,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required double SurfaceRPM;
         public required double TopOfStringVelocity;
         public required ModelShared.Trajectory Trajectory;
-        public required string DrillstringFile;
         public required ModelShared.DrillString DrillString;
-        public required ModelShared.DrillStringOpenLab DrillStringOpenLab;
-        public required DrillStringSourceType DrillStringSourceType;
         public required string StringPressureFile;
         public required string AnnulusPressureFile;
         public List<BoreHoleSize> BoreHoleSizes = new List<BoreHoleSize>();

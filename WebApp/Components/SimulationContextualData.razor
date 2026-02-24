@@ -80,47 +80,18 @@
         }
     </MudGrid>
     <MudGrid RowSpacing="0" Style="margin-top:-0px;">
-        <MudItem Style="width:250px;">
-            <MudSelect Style="width:250px;"
-                       Label="DrillString Source"
-                       @bind-Value="Simulation.ContextualData.DrillStringSource"
-                       Variant="Variant.Text">
-                <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabFile">DrillString OpenLab file</MudSelectItem>
-                <MudSelectItem Value="@DrillStringSourceType.DrillStringOpenLabMS">DrillString OpenLab micro service</MudSelectItem>
-                <MudSelectItem Value="@DrillStringSourceType.DrillStringMS">DrillString micro service</MudSelectItem>
-            </MudSelect>
-        </MudItem>
-        @if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringOpenLabFile)
-        {
-            <MudItem Style="width:500px;">
-                <MudTextField @bind-Value="Simulation.ContextualData.DrillstringFile"
-                              Label="Drillstring file name"
-                              Variant="Variant.Text" />
-            </MudItem>
-        }
-        else if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS)
-        {
-            <MudItem Style="width:500px;">
-                <MudTextField @bind-Value="Simulation.ContextualData.DrillStringOpenLabID"
-                              Label="Drillstring OpenLab id"
-                              Variant="Variant.Text" />
-            </MudItem>
-        }
-        else if (Simulation.ContextualData.DrillStringSource == DrillStringSourceType.DrillStringMS)
-        {
-            <MudItem Style="width:500px;">
-                <MudSelect T="Guid" Label="Drill String" @bind-Value="Simulation.ContextualData.DrillStringID" Variant="Variant.Text" 
-                    Text="@(DrillStrings != null ? DrillStrings.FirstOrDefault(x => x.MetaInfo.ID == Simulation.ContextualData.DrillStringID)?.Name : "")">
-                    @if ( DrillStrings != null)
+        <MudItem Style="width:500px;">
+            <MudSelect T="Guid" Label="Drill String" Value="drillStringGuid" Variant="Variant.Text" ValueChanged="@(val => UpdateDrillString(val))">
+                @if(DrillStrings != null)
+                {
+                    @foreach (var drillString in DrillStrings)
                     {
-                        @foreach (var drillString in DrillStrings)
-                        {
-                            <MudSelectItem Value="@drillString.MetaInfo.ID">@drillString.Name</MudSelectItem>
-                        }
+                        <MudSelectItem Value="@drillString.MetaInfo.ID">@drillString.Name</MudSelectItem>
                     }
-                </MudSelect>         
-            </MudItem>   
-        }      
+                }
+            </MudSelect>         
+        </MudItem>   
+        
         <MudItem xs="12">
             <MudSelect T="Trajectory" Label="Trajectory source" @bind-Value="Simulation.ContextualData.Trajectory" Variant="Variant.Text">
                 @if(Trajectories != null)
@@ -198,6 +169,7 @@
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
     
+    private Guid drillStringGuid = Guid.Empty;
     // UI related variables
     private bool _loadTrajectoryFromFile = true;
     private string? _wellBoreSearchString;
@@ -234,7 +206,15 @@
     private double? _sidetrackDepth = null;
     private double? _sidetrackDepthAccuracy = null;
     private SidetrackType _sidetrackType = SidetrackType.Undefined;
-
+    private async void UpdateDrillString(Guid val)
+    {
+        
+        drillStringGuid = val;
+        if (val != Guid.Empty && Simulation != null)
+        {
+            Simulation.ContextualData.DrillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync((Guid) val);
+        }
+    }
     private void ProcessSelectedCluster()
     {
         if (_selectedCluster == null)

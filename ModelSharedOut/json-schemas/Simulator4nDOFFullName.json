@@ -298,14 +298,6 @@
   },
   "components": {
     "schemas": {
-      "Model.DrillStringSourceType": {
-        "enum": [
-          "DrillStringOpenLabFile",
-          "DrillStringOpenLabMS",
-          "DrillStringMS"
-        ],
-        "type": "string"
-      },
       "NORCE.Drilling.Simulator4nDOF.Model.BoreHoleSize": {
         "type": "object",
         "properties": {
@@ -446,20 +438,12 @@
             "type": "number",
             "format": "double"
           },
-          "DrillStringID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "DrillStringOpenLabID": {
-            "type": "string",
-            "format": "uuid"
+          "DrillString": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillString"
           },
           "AnnulusPressureFile": {
             "type": "string",
             "nullable": true
-          },
-          "DrillStringSource": {
-            "$ref": "#/components/schemas/Model.DrillStringSourceType"
           }
         },
         "additionalProperties": false
@@ -979,6 +963,300 @@
           }
         },
         "additionalProperties": false
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillString": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "DrillStringSectionList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringSection"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringComponent": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "FieldID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringComponentTypes"
+          },
+          "PartList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringComponentPart"
+            },
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringComponentPart": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "InnerDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameterState2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterDiameterStateBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FrictionFactorRotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FrictionFactorAxialDisplacement": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantLowFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantHighFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityDistance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityAngle": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition1": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaConditionBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FlowrateThresholdValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "YieldStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UltimateStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SecondCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FirstCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double"
+          },
+          "CrossSectionArea": {
+            "type": "number",
+            "format": "double"
+          },
+          "YoungModulus": {
+            "type": "number",
+            "format": "double"
+          },
+          "PoissonRatio": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaterialDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "AveragePartDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mass": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeatCapacity": {
+            "type": "number",
+            "format": "double"
+          },
+          "ThermalCondutivity": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringComponentTypes": {
+        "enum": [
+          "DrillPipe",
+          "DrillCollar",
+          "HeavyWeightDrillPipe",
+          "Jar",
+          "Mwd",
+          "Stabilizer",
+          "SteerableRotaryTool",
+          "Bit"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringSection": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SectionComponentList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillStringComponent"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
       },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.ErrorCode": {
         "enum": [

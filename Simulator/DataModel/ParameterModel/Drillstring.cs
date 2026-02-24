@@ -97,10 +97,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
         public Drillstring(LumpedCells lumpedCells, 
                            Fluid fluid,
-                           DrillStringSourceType DrillStringSource,
-                           string drillstringFile, 
                            DrillString drillString,
-                           DrillStringOpenLab drillStringOpenLab,
                            double MD, 
                            double Rb, 
                            double sensorDistanceFromBit, 
@@ -128,315 +125,299 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             List<double> id = new List<double>();
             List<double> od = new List<double>();
             List<double> linearWeight = new List<double>();
-
-            bool readFromMS = DrillStringSource == DrillStringSourceType.DrillStringMS
-               || DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS;
-
+            bool readFromMS = true; 
+           
             double scaleFactor = readFromMS ? 1.0 : Constants.InchToMeterConversion;
             
-            if (DrillStringSource == DrillStringSourceType.DrillStringMS)
+      
+            foreach (var section in drillString.DrillStringSectionList)
             {
-                foreach (var section in drillString.DrillStringSectionList)
+                var compCount = section.Count;
+                // If same component in a section then simplify and insert one component with length adjusted
+                var repetitions = section.SectionComponentList.Count == 1 ? 1 : compCount;
+                for (int i = 0; i < repetitions; i++)
                 {
-                    var compCount = section.Count;
-                    // If same component in a section then simplify and insert one component with length adjusted
-                    var repetitions = section.SectionComponentList.Count == 1 ? 1 : compCount;
-
-                    for (int i = 0; i < repetitions; i++)
+                    foreach (var comp in section.SectionComponentList)
                     {
-                        foreach (var comp in section.SectionComponentList)
+                        var type = comp.Type;
+                        var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
+                        var mass = 0.0;
+                        var sectionConnectionID = double.MaxValue;
+                        var sectionConnectionOD = double.MinValue;
+                        var sectionConnectionLength = double.MaxValue;
+                        foreach (var part in comp.PartList)
                         {
-                            var type = comp.Type;
-                            var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
-                            var mass = 0.0;
-                            var sectionConnectionID = double.MaxValue;
-                            var sectionConnectionOD = double.MinValue;
-                            var sectionConnectionLength = double.MaxValue;
-
-                            foreach (var part in comp.PartList)
-                            {
-                                mass += part.Mass;
-                                sectionConnectionID = Math.Min(sectionConnectionID, part.InnerDiameter);
-                                sectionConnectionOD = Math.Max(sectionConnectionOD, part.OuterDiameter);
-                                sectionConnectionLength = Math.Min(sectionConnectionLength, part.TotalLength);
-                            }
-
-                            var partList = comp.PartList.ToList();
-                            var iD = (partList.Count == 3) ? partList[1].InnerDiameter : sectionConnectionID;
-                            var oD = (partList.Count == 3) ? partList[1].OuterDiameter : sectionConnectionOD;
-
-                            var adjustedType = type switch
-                            {
-                                DrillStringComponentTypes.DrillPipe => "Drillpipe",
-                                DrillStringComponentTypes.HeavyWeightDrillPipe => "HW drillpipe",
-                                _ => type.ToString()
-                            };
-
-                            componentType.Add(adjustedType);
-                            componentLength.Add(length);
-                            connectionID.Add(sectionConnectionID);
-                            connectionOD.Add(sectionConnectionOD);
-                            connectionLength.Add(sectionConnectionLength);
-                            id.Add(iD);
-                            od.Add(oD);
-                            linearWeight.Add(mass / length);
+                            mass += part.Mass;
+                            sectionConnectionID = Math.Min(sectionConnectionID, part.InnerDiameter);
+                            sectionConnectionOD = Math.Max(sectionConnectionOD, part.OuterDiameter);
+                            sectionConnectionLength = Math.Min(sectionConnectionLength, part.TotalLength);
                         }
-                    }
-                }
-                bool reverse = false;
-                if (componentType.Count > 0)
-                {
-                    reverse = componentType[0] == "Drillpipe" || componentType[0] == "HW drillpipe" || componentType[0] == "Jar";
-                }
-                if (reverse)
-                {
-                    componentType.Reverse();
-                    componentLength.Reverse();
-                    connectionID.Reverse();
-                    connectionOD.Reverse();
-                    connectionLength.Reverse();
-                    id.Reverse();
-                    od.Reverse();
-                    linearWeight.Reverse();
-                }
-            }
-            else if (DrillStringSource == DrillStringSourceType.DrillStringOpenLabFile)
-            {
-                List<string[]> data = new List<string[]>();
-                using (StreamReader sr = new StreamReader(drillstringFile))
-                {
-                    string line;
-                    // Skip header line
-                    sr.ReadLine();
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] values = line.Split(';');
-                        data.Add(values);
-                    }
-                }
-
-                foreach (var row in data)
-                {
-                    componentType.Add(row[7]);
-                }
-
-                foreach (var row in data)
-                {
-                    var str = row[10];
-                    if (str == "N/A")
-                        componentLength.Add(double.NaN);
-                    else
-                        componentLength.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-
-                foreach (var row in data)
-                {
-                    var str = row[0];
-                    if (str == "N/A")
-                        connectionID.Add(double.NaN);
-                    else
-                        connectionID.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-
-                foreach (var row in data)
-                {
-                    var str = row[5];
-                    if (str == "N/A")
-                        connectionOD.Add(double.NaN);
-                    else
-                        connectionOD.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-
-                foreach (var row in data)
-                {
-                    var str = row[4];
-                    if (str == "N/A")
-                        connectionLength.Add(double.NaN);
-                    else
-                        connectionLength.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-
-                foreach (var row in data)
-                {
-                    var str = row[12];
-                    if (str == "N/A")
-                        id.Add(double.NaN);
-                    else
-                        id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-
-                foreach (var row in data)
-                {
-                    var str = row[6];
-                    if (str == "N/A")
-                        od.Add(double.NaN);
-                    else
-                        od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
-                }
-                foreach (var row in data)
-                {
-                    linearWeight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
-                }
-            }
-            else if (DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS)
-            {
-                var ds = drillStringOpenLab;
-                foreach (var comp in drillStringOpenLab.DrillStringComponentOpenLabList)
-                {
-                    if (comp.BitOpenLab != null)
-                    {
-                    }
-                    else
-                    {
-                        string type;
-                        if (comp.CrossOverOpenLab != null)
+                        var partList = comp.PartList.ToList();
+                        var iD = (partList.Count == 3) ? partList[1].InnerDiameter : sectionConnectionID;
+                        var oD = (partList.Count == 3) ? partList[1].OuterDiameter : sectionConnectionOD;
+                        var adjustedType = type switch
                         {
-                            type = "Cross-over";
-                            var thisComp = comp.CrossOverOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.HWDPOpenLab != null)
-                        {
-                            type = "HW drillpipe";
-                            var thisComp = comp.HWDPOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(thisComp.ConnectionID ?? 0);
-                            connectionOD.Add(thisComp.ConnectionOD ?? 0);
-                            connectionLength.Add(thisComp.ConnectionLength ?? 0);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.DrillPipeOpenLab != null)
-                        {
-                            type = "Drillpipe";
-                            var thisComp = comp.DrillPipeOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(thisComp.ConnectionID ?? 0);
-                            connectionOD.Add(thisComp.ConnectionOD ?? 0);
-                            connectionLength.Add(thisComp.ConnectionLength ?? 0);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.StabilizerOpenLab != null)
-                        {
-                            type = "Stabilizer";
-                            var thisComp = comp.StabilizerOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.JarOpenLab != null)
-                        {
-                            type = "Jar";
-                            var thisComp = comp.JarOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(thisComp.ConnectionID ?? 0);
-                            connectionOD.Add(thisComp.ConnectionOD ?? 0);
-                            connectionLength.Add(thisComp.ConnectionLength ?? 0);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.LWDOpenLab != null)
-                        {
-                            type = "LWD";
-                            var thisComp = comp.LWDOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.MWDOpenLab != null)
-                        {
-                            type = "MWD";
-                            var thisComp = comp.MWDOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.PWDOpenLab != null)
-                        {
-                            type = "PWD";
-                            var thisComp = comp.PWDOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.StabilizerOpenLab != null)
-                        {
-                            type = "Stabilizer";
-                            var thisComp = comp.StabilizerOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                        }
-                        else if (comp.SteerableRotaryToolOpenLab != null)
-                        {
-                            type = "SteerableRotaryTool";
-                            var thisComp = comp.SteerableRotaryToolOpenLab;
-                            componentType.Add(type);
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                            type = "";
-                        }
-                        else
-                        {
-                            var thisComp = comp.PWDOpenLab;
-                            componentType.Add("");
-                            componentLength.Add(comp.Length ?? 0);
-                            connectionID.Add(double.NaN);
-                            connectionOD.Add(double.NaN);
-                            connectionLength.Add(double.NaN);
-                            id.Add(comp.BodyID ?? 0);
-                            od.Add(comp.BodyOD ?? 0);
-                            linearWeight.Add(comp.LinearWeight ?? 0);
-                            type = "";
-                        }
+                            DrillStringComponentTypes.DrillPipe => "Drillpipe",
+                            DrillStringComponentTypes.HeavyWeightDrillPipe => "HW drillpipe",
+                            _ => type.ToString()
+                        };
+                        componentType.Add(adjustedType);
+                        componentLength.Add(length);
+                        connectionID.Add(sectionConnectionID);
+                        connectionOD.Add(sectionConnectionOD);
+                        connectionLength.Add(sectionConnectionLength);
+                        id.Add(iD);
+                        od.Add(oD);
+                        linearWeight.Add(mass / length);
                     }
                 }
             }
-
+            bool reverse = false;
+            if (componentType.Count > 0)
+            {
+                reverse = componentType[0] == "Drillpipe" || componentType[0] == "HW drillpipe" || componentType[0] == "Jar";
+            }
+            if (reverse)
+            {
+                componentType.Reverse();
+                componentLength.Reverse();
+                connectionID.Reverse();
+                connectionOD.Reverse();
+                connectionLength.Reverse();
+                id.Reverse();
+                od.Reverse();
+                linearWeight.Reverse();
+            }
+        
+            //else if (DrillStringSource == DrillStringSourceType.DrillStringOpenLabFile)
+            //{
+            //    List<string[]> data = new List<string[]>();
+            //    using (StreamReader sr = new StreamReader(drillstringFile))
+            //    {
+            //        string line;
+            //        // Skip header line
+            //        sr.ReadLine();
+            //        while ((line = sr.ReadLine()) != null)
+            //        {
+            //            string[] values = line.Split(';');
+            //            data.Add(values);
+            //        }
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        componentType.Add(row[7]);
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        var str = row[10];
+            //        if (str == "N/A")
+            //            componentLength.Add(double.NaN);
+            //        else
+            //            componentLength.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        var str = row[0];
+            //        if (str == "N/A")
+            //            connectionID.Add(double.NaN);
+            //        else
+            //            connectionID.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        var str = row[5];
+            //        if (str == "N/A")
+            //            connectionOD.Add(double.NaN);
+            //        else
+            //            connectionOD.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        var str = row[4];
+            //        if (str == "N/A")
+            //            connectionLength.Add(double.NaN);
+            //        else
+            //            connectionLength.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        var str = row[12];
+            //        if (str == "N/A")
+            //            id.Add(double.NaN);
+            //        else
+            //            id.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        var str = row[6];
+            //        if (str == "N/A")
+            //            od.Add(double.NaN);
+            //        else
+            //            od.Add(Convert.ToDouble(str, CultureInfo.InvariantCulture));
+            //    }
+            //    foreach (var row in data)
+            //    {
+            //        linearWeight.Add(Convert.ToDouble(row[3], CultureInfo.InvariantCulture));
+            //    }
+            //}
+            //else if (DrillStringSource == DrillStringSourceType.DrillStringOpenLabMS)
+            //{
+            //    var ds = drillStringOpenLab;
+            //    foreach (var comp in drillStringOpenLab.DrillStringComponentOpenLabList)
+            //    {
+            //        if (comp.BitOpenLab != null)
+            //        {
+            //        }
+            //        else
+            //        {
+            //            string type;
+            //            if (comp.CrossOverOpenLab != null)
+            //            {
+            //                type = "Cross-over";
+            //                var thisComp = comp.CrossOverOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.HWDPOpenLab != null)
+            //            {
+            //                type = "HW drillpipe";
+            //                var thisComp = comp.HWDPOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(thisComp.ConnectionID ?? 0);
+            //                connectionOD.Add(thisComp.ConnectionOD ?? 0);
+            //                connectionLength.Add(thisComp.ConnectionLength ?? 0);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.DrillPipeOpenLab != null)
+            //            {
+            //                type = "Drillpipe";
+            //                var thisComp = comp.DrillPipeOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(thisComp.ConnectionID ?? 0);
+            //                connectionOD.Add(thisComp.ConnectionOD ?? 0);
+            //                connectionLength.Add(thisComp.ConnectionLength ?? 0);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.StabilizerOpenLab != null)
+            //            {
+            //                type = "Stabilizer";
+            //                var thisComp = comp.StabilizerOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.JarOpenLab != null)
+            //            {
+            //                type = "Jar";
+            //                var thisComp = comp.JarOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(thisComp.ConnectionID ?? 0);
+            //                connectionOD.Add(thisComp.ConnectionOD ?? 0);
+            //                connectionLength.Add(thisComp.ConnectionLength ?? 0);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.LWDOpenLab != null)
+            //            {
+            //                type = "LWD";
+            //                var thisComp = comp.LWDOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.MWDOpenLab != null)
+            //            {
+            //                type = "MWD";
+            //                var thisComp = comp.MWDOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.PWDOpenLab != null)
+            //            {
+            //                type = "PWD";
+            //                var thisComp = comp.PWDOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.StabilizerOpenLab != null)
+            //            {
+            //                type = "Stabilizer";
+            //                var thisComp = comp.StabilizerOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //            }
+            //            else if (comp.SteerableRotaryToolOpenLab != null)
+            //            {
+            //                type = "SteerableRotaryTool";
+            //                var thisComp = comp.SteerableRotaryToolOpenLab;
+            //                componentType.Add(type);
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //                type = "";
+            //            }
+            //            else
+            //            {
+            //                var thisComp = comp.PWDOpenLab;
+            //                componentType.Add("");
+            //                componentLength.Add(comp.Length ?? 0);
+            //                connectionID.Add(double.NaN);
+            //                connectionOD.Add(double.NaN);
+            //                connectionLength.Add(double.NaN);
+            //                id.Add(comp.BodyID ?? 0);
+            //                od.Add(comp.BodyOD ?? 0);
+            //                linearWeight.Add(comp.LinearWeight ?? 0);
+            //                type = "";
+            //            }
+            //        }
+            //    }
+            //}
 
             int n = componentType.Count();
             List<double> LcBha = new List<double>();            // [m] BHA component length vector

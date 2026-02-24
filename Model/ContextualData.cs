@@ -17,12 +17,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public List<BoreHoleSize> BoreHoleSizeList { get; set; } = new List<BoreHoleSize>();
         public double BitRadius { get; set; }
 
-        public Guid DrillStringID { get; set; }
-        public Guid DrillStringOpenLabID { get; set; }
+        public ModelShared.DrillString DrillString { get; set; }
         public string AnnulusPressureFile { get; set; }
 
-        public DrillStringSourceType DrillStringSource { get; set; } = DrillStringSourceType.DrillStringMS;
-
+        
 
         // ID 066505f3-bbeb-47e1-a0c9-b48b16a1f3aa
         //HttpHostName  https://dev.digiwells.no/

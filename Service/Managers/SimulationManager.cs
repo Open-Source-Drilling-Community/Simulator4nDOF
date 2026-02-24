@@ -588,53 +588,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 // get drillstring from MS
                 DrillString drillString = null;
 
-                DrillStringOpenLab drillStringOpenLab = null;
-                switch (simulation.ContextualData.DrillStringSource)
-                {
-                    case DrillStringSourceType.DrillStringOpenLabFile:
-                        // Use AnnulusPressureFile (assumed used elsewhere in your logic)
-                        break;
-
-                    case DrillStringSourceType.DrillStringOpenLabMS:
-                        try
-                        {
-                            drillStringOpenLab = await APIUtils.ClientDrillStringOpenLab.GetDrillStringOpenLabByIdAsync(simulation.ContextualData.DrillStringOpenLabID);
-                        }
-
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning("Unable to get the drillstring from OpenLab MS for the 4ndof simulation: " + ex);
-                            return false;
-                        }
-                        break;
-
-                    case DrillStringSourceType.DrillStringMS:
-                        try
-                        {
-                            drillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync(simulation.ContextualData.DrillStringID);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning("Unable to get the drillstring from MS for the 4ndof simulation: " + ex);
-                            return false;
-                        }
-                        break;
-                }
-
-
 
                 Configuration config;
                 //initialize simulation
                 try
                 {
-                    config = Initialize(simulation, drillString, drillStringOpenLab, simulation.ContextualData.DrillStringSource);
+                    config = Initialize(simulation);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning("Impossible to intialize the 4ndof simulation: " + ex.ToString());
                     return false;
                 }
-
                 //if successful, check if another parent data with the same ID was calculated/added during the calculation time
                 Model.Simulation? newSimulation = GetSimulationById(simulation.MetaInfo.ID);
                 if (newSimulation == null)
@@ -1102,20 +1067,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             }
             return output;
         }
-        public Configuration Initialize(Simulation simulation, DrillString drillString, DrillStringOpenLab drillStringOpenLab, DrillStringSourceType DrillStringSource)
+        public Configuration Initialize(Simulation simulation)
         {
             if (simulation.ContextualData!.Trajectory == null)
             {
                 throw new Exception("Trajectory data is required for the simulation.");
             }
+            if (simulation.ContextualData!.DrillString == null)
+            {
+                throw new Exception("DrillString data is required for the simulation.");
+            }
+            
             var config = new Configuration()
             {
                 AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
                 Trajectory = simulation.ContextualData.Trajectory!,
-                DrillStringSourceType = DrillStringSource,
-                DrillstringFile = simulation.ContextualData.DrillstringFile,
-                DrillString = drillString,
-                DrillStringOpenLab = drillStringOpenLab,
+                DrillString = simulation.ContextualData.DrillString,
                 StringPressureFile = simulation.ContextualData.DrillstringPressureFile,
                 BitDepth = simulation.InitialValues.BitDepth,                            // [m]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]

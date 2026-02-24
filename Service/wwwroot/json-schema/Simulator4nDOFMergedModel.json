@@ -5541,15 +5541,9 @@
               "$ref": "#/components/schemas/DrillStringSection"
             },
             "nullable": true
-          },
-          "SensorsList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringSensor"
-            },
-            "nullable": true
           }
-        }
+        },
+        "additionalProperties": { }
       },
       "DrillStringComponent": {
         "type": "object",
@@ -5592,10 +5586,10 @@
           },
           "Length": {
             "type": "number",
-            "format": "double",
-            "readOnly": true
+            "format": "double"
           }
-        }
+        },
+        "additionalProperties": { }
       },
       "DrillStringComponentPart": {
         "type": "object",
@@ -5769,7 +5763,8 @@
             "type": "number",
             "format": "double"
           }
-        }
+        },
+        "additionalProperties": { }
       },
       "DrillStringLight": {
         "type": "object",
@@ -5820,7 +5815,8 @@
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": { }
       },
       "DrillStringSensor": {
         "type": "object",
@@ -5851,14 +5847,6 @@
             "$ref": "#/components/schemas/DrillStringSensorTypes"
           }
         }
-      },
-      "DrillStringSourceType": {
-        "enum": [
-          "DrillStringOpenLabFile",
-          "DrillStringOpenLabMS",
-          "DrillStringMS"
-        ],
-        "type": "string"
       },
       "BoreHoleSize": {
         "type": "object",
@@ -5998,20 +5986,12 @@
             "type": "number",
             "format": "double"
           },
-          "DrillStringID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "DrillStringOpenLabID": {
-            "type": "string",
-            "format": "uuid"
+          "DrillString": {
+            "$ref": "#/components/schemas/DrillString"
           },
           "AnnulusPressureFile": {
             "type": "string",
             "nullable": true
-          },
-          "DrillStringSource": {
-            "$ref": "#/components/schemas/DrillStringSourceType"
           }
         }
       },

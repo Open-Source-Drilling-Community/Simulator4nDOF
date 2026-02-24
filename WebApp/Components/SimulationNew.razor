@@ -95,7 +95,7 @@
     {
         if (Simulation != null)
         {
-            if (Simulation.ContextualData.DrillStringID == Guid.Empty || Simulation.ContextualData.DrillStringOpenLabID == Guid.Empty)
+            if (Simulation.ContextualData.DrillString == null)
             {
                 Snackbar.Add("Please select a Drill String", Severity.Warning);
                 return;
