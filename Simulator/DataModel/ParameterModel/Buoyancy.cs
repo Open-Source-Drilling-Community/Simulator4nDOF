@@ -7,22 +7,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class Buoyancy
     {
-        private Vector<double> stringMD_prof;
-        private Vector<double> stringPressure_prof;
-        private Vector<double> stringDensity_prof;
-        private Vector<double> annulusMD_prof;
-        private Vector<double> annularPressure_prof;
-        private Vector<double> annularDensity_prof;
-        public Vector<double> stringPressure;
-        public Vector<double> stringDensity;
-        public Vector<double> annularPressure;
-        public Vector<double> annularDensity;
-        public Vector<double> hydrostaticStringPressure;
-        public Vector<double> hydrostaticAnnularPressure;
-        public Vector<double> Wb;                                   // [N/m] Buoyant drill string weight per length
-        public Vector<double> dSigmaDX;                            // [N/m] Tension per length
-        public Vector<double> axialBuoyancyForceChangeOfDiameters;
-        public Vector<double> normalBuoyancyForceChangeOfDiameters;
+        private Vector<double> StringMDProfile;
+        private Vector<double> StringPressureProf;
+        private Vector<double> StringDensityProfile;
+        private Vector<double> AnnulusMDProfile;
+        private Vector<double> AnnularPressureProfile;
+        private Vector<double> AnnularDensityProfile;
+        public Vector<double> StringPressure;
+        public Vector<double> StringDensity;
+        public Vector<double> AnnularPressure;
+        public Vector<double> AnnularDensity;
+        public Vector<double> HydrostaticStringPressure;
+        public Vector<double> HydrostaticAnnularPressure;
+        public Vector<double> BuoyantWeightPerLength;                                   // [N/m] Buoyant drill string weight per length
+        public Vector<double> dSigmaDx;                            // [N/m] Tension per length
+        public Vector<double> AxialBuoyancyForceChangeOfDiameters;
+        public Vector<double> NormalBuoyancyForceChangeOfDiameters;
 
         public Buoyancy(in LumpedCells lc, in Trajectory t, in Drillstring ds, string stringPressureFilename, string annulusPressureFilename, bool useBuoyancyFactor)
         {
@@ -30,16 +30,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             var stringData = ReadTextFile(stringPressureFilename);
 
             int rowsStringData = stringData.GetLength(0);
-            stringMD_prof = Reverse(GetColumn(stringData, 0));
-            stringPressure_prof = Reverse(1E5 * GetColumn(stringData, 1));
-            stringDensity_prof = Reverse(GetColumn(stringData, 2)); ;
+            StringMDProfile = Reverse(GetColumn(stringData, 0));
+            StringPressureProf = Reverse(1E5 * GetColumn(stringData, 1));
+            StringDensityProfile = Reverse(GetColumn(stringData, 2)); ;
 
             var annulusData = ReadTextFile(annulusPressureFilename);
 
             int rowsAnnulusData = annulusData.GetLength(0);
-            annulusMD_prof = GetColumn(annulusData, 0);
-            annularPressure_prof = 1E5 * GetColumn(annulusData, 1);
-            annularDensity_prof = GetColumn(annulusData, 2);
+            AnnulusMDProfile = GetColumn(annulusData, 0);
+            AnnularPressureProfile = 1E5 * GetColumn(annulusData, 1);
+            AnnularDensityProfile = GetColumn(annulusData, 2);
 
             UpdateBuoyancy(lc, t, ds, useBuoyancyFactor);
 
@@ -47,9 +47,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Vector<double> drag = Vector<double>.Build.Dense(lc.NumberOfLumpedElements + 1);
             Vector<double> tension = Vector<double>.Build.Dense(lc.NumberOfLumpedElements + 1);
 
-            var cumTrapz = CummulativeTrapezoidal(lc.ElementLength, Reverse(dSigmaDX));
+            var cumTrapz = CummulativeTrapezoidal(lc.ElementLength, Reverse(dSigmaDx));
 
-            tension = Reverse(cumTrapz) + axialBuoyancyForceChangeOfDiameters - drag;
+            tension = Reverse(cumTrapz) + AxialBuoyancyForceChangeOfDiameters - drag;
 
             Vector<double> phiVec_dote = ExtendVectorStart(0, t.phiVec_dot);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, t.thetaVec_dot);
@@ -59,14 +59,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public void UpdateBuoyancy(in LumpedCells lc, in Trajectory t, in Drillstring ds, bool useBuoyancyFactor)
         {
             // Interpolate pressures and densities at positions xL
-            stringPressure = LinearInterpolate(stringMD_prof, stringPressure_prof, lc.ElementLength);
-            stringDensity = LinearInterpolate(stringMD_prof, stringDensity_prof, lc.ElementLength);
-            annularPressure = LinearInterpolate(annulusMD_prof, annularPressure_prof, lc.ElementLength);
-            annularDensity = LinearInterpolate(annulusMD_prof, annularDensity_prof, lc.ElementLength);
+            StringPressure = LinearInterpolate(StringMDProfile, StringPressureProf, lc.ElementLength);
+            StringDensity = LinearInterpolate(StringMDProfile, StringDensityProfile, lc.ElementLength);
+            AnnularPressure = LinearInterpolate(AnnulusMDProfile, AnnularPressureProfile, lc.ElementLength);
+            AnnularDensity = LinearInterpolate(AnnulusMDProfile, AnnularDensityProfile, lc.ElementLength);
 
             // Compute hydrostatic pressures
-            hydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * stringDensity);
-            hydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * annularDensity);
+            HydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * StringDensity);
+            HydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, t.TVDVec), Constants.GravitationalAcceleration * AnnularDensity);
 
             // Calculate buoyant weight using the appropriate method
             double[] Aie = new double[ds.InnerArea.Count() + 1];
@@ -94,15 +94,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 double[] buoyancyFactor = new double[Aoe.Length];
                 for (int i = 0; i < Aoe.Length; i++)
                 {
-                    buoyancyFactor[i] = (Aoe[i] * (1 - annularDensity[i] / ds.SteelDensity) -
-                                         Aie[i] * (1 - stringDensity[i] / ds.SteelDensity)) /
+                    buoyancyFactor[i] = (Aoe[i] * (1 - AnnularDensity[i] / ds.SteelDensity) -
+                                         Aie[i] * (1 - StringDensity[i] / ds.SteelDensity)) /
                                          (Aoe[i] - Aie[i]);
                 }
 
-                Wb = Vector<double>.Build.Dense(Aie.Length);
+                BuoyantWeightPerLength = Vector<double>.Build.Dense(Aie.Length);
                 for (int i = 0; i < Aie.Length; i++)
                 {
-                    Wb[i] = Constants.GravitationalAcceleration * buoyancyFactor[i] * ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
+                    BuoyantWeightPerLength[i] = Constants.GravitationalAcceleration * buoyancyFactor[i] * ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
                 }
             }
             else
@@ -113,14 +113,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     mass_per_length[i] = ds.SteelDensity * Ae[i] * ds.WeightCorrectionFactor[i];
                 }
 
-                Wb = Vector<double>.Build.Dense(mass_per_length.Length);
+                BuoyantWeightPerLength = Vector<double>.Build.Dense(mass_per_length.Length);
                 for (int i = 0; i < mass_per_length.Length; i++)
                 {
-                    Wb[i] = (mass_per_length[i] +
-                             (Atjie[i] * ds.ToolJointLength * stringDensity[i] +
-                               Aie[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * stringDensity[i] -
-                               Atjoe[i] * ds.ToolJointLength * annularDensity[i] -
-                               Aoe[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * annularDensity[i]) /
+                    BuoyantWeightPerLength[i] = (mass_per_length[i] +
+                             (Atjie[i] * ds.ToolJointLength * StringDensity[i] +
+                               Aie[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * StringDensity[i] -
+                               Atjoe[i] * ds.ToolJointLength * AnnularDensity[i] -
+                               Aoe[i] * (lc.DistanceBetweenElements - ds.ToolJointLength) * AnnularDensity[i]) /
                                lc.DistanceBetweenElements) * Constants.GravitationalAcceleration;
                 }
             }
@@ -130,47 +130,47 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Array.Copy(t.thetaVec.ToArray(), 0, thetaVece, 1, t.thetaVec.Count());
 
             // Compute the tension per length
-            dSigmaDX = Vector<double>.Build.Dense(Wb.Count);
-            for (int i = 0; i < Wb.Count; i++)
+            dSigmaDx = Vector<double>.Build.Dense(BuoyantWeightPerLength.Count);
+            for (int i = 0; i < BuoyantWeightPerLength.Count; i++)
             {
-                dSigmaDX[i] = Wb[i] * Math.Cos(thetaVece[i]);
+                dSigmaDx[i] = BuoyantWeightPerLength[i] * Math.Cos(thetaVece[i]);
             }
 
             // Axial and normal buoyancy force changes if buoyancy factor is not used
             if (!useBuoyancyFactor)
             {
-                Vector<double> hydrostaticAnnularPressureShifted = ExtendVectorStart(0, hydrostaticAnnularPressure);
-                Vector<double> hydrostaticStringPressureShifted = ExtendVectorStart(0, hydrostaticStringPressure);
+                Vector<double> hydrostaticAnnularPressureShifted = ExtendVectorStart(0, HydrostaticAnnularPressure);
+                Vector<double> hydrostaticStringPressureShifted = ExtendVectorStart(0, HydrostaticStringPressure);
 
                 // Compute axial buoyancy force change of diameters
-                axialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(hydrostaticAnnularPressure.Count);
-                normalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(hydrostaticAnnularPressure.Count);
+                AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
+                NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
 
-                for (int i = 0; i < hydrostaticAnnularPressure.Count; i++)
+                for (int i = 0; i < HydrostaticAnnularPressure.Count; i++)
                 {
                     double AoCurrent = i == 0 ? ds.OuterArea[0] : ds.OuterArea[i - 1];
                     double AiCurrent = i == 0 ? ds.InnerArea[0] : ds.InnerArea[i - 1];
-                    double hydrostaticAnnularCurrent = hydrostaticAnnularPressure[i];
-                    double hydrostaticStringCurrent = hydrostaticStringPressure[i];
+                    double hydrostaticAnnularCurrent = HydrostaticAnnularPressure[i];
+                    double hydrostaticStringCurrent = HydrostaticStringPressure[i];
 
                     double AtjoPrev = i == 0 ? 0 : ds.ToolJointOuterArea[i - 1];
                     double AtjiPrev = i == 0 ? 0 : ds.ToolJointInnerArea[i - 1];
-                    double hydrostaticAnnularPrev = i == 0 ? 0 : hydrostaticAnnularPressure[i - 1];
-                    double hydrostaticStringPrev = i == 0 ? 0 : hydrostaticStringPressure[i - 1];
+                    double hydrostaticAnnularPrev = i == 0 ? 0 : HydrostaticAnnularPressure[i - 1];
+                    double hydrostaticStringPrev = i == 0 ? 0 : HydrostaticStringPressure[i - 1];
 
-                    axialBuoyancyForceChangeOfDiameters[i] = AoCurrent * hydrostaticAnnularCurrent
+                    AxialBuoyancyForceChangeOfDiameters[i] = AoCurrent * hydrostaticAnnularCurrent
                                                              - AtjoPrev * hydrostaticAnnularPrev
                                                              - AiCurrent * hydrostaticStringCurrent
                                                              + AtjiPrev * hydrostaticStringPrev;
 
-                    normalBuoyancyForceChangeOfDiameters[i] = AtjoPrev * hydrostaticAnnularPrev - AtjiPrev * hydrostaticStringPrev;
+                    NormalBuoyancyForceChangeOfDiameters[i] = AtjoPrev * hydrostaticAnnularPrev - AtjiPrev * hydrostaticStringPrev;
                 }
             }
             else
             {
                 // If buoyancy factor is used, axial and normal components are set to zero
-                axialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(hydrostaticAnnularPressure.Count);
-                normalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(hydrostaticAnnularPressure.Count);
+                AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
+                NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
             }
         }
     }

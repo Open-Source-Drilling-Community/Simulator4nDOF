@@ -65,10 +65,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.phiVec_dot);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.thetaVec_dot);
             Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.thetaVec);
-            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDX));
-            model.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.axialBuoyancyForceChangeOfDiameters - drag;
-            Vector<double> fN_softstring = (Square((model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.Wb.PointwiseMultiply(thetaVece.PointwiseSin())) +
-                                            Square((model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
+            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDx));
+            model.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.AxialBuoyancyForceChangeOfDiameters - drag;
+            Vector<double> fN_softstring = (Square((model.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.BuoyantWeightPerLength.PointwiseMultiply(thetaVece.PointwiseSin())) +
+                                            Square((model.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
             Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
             model.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
 
@@ -82,8 +82,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             
             model.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                 (  
-                    AoExtended.PointwiseMultiply(parameters.Buoyancy.annularPressure - parameters.Buoyancy.hydrostaticAnnularPressure) 
-                    - AiExtended.PointwiseMultiply(parameters.Buoyancy.stringPressure - parameters.Buoyancy.hydrostaticStringPressure)
+                    AoExtended.PointwiseMultiply(parameters.Buoyancy.AnnularPressure - parameters.Buoyancy.HydrostaticAnnularPressure) 
+                    - AiExtended.PointwiseMultiply(parameters.Buoyancy.StringPressure - parameters.Buoyancy.HydrostaticStringPressure)
                 );   
 
             Vector<double> bendingStiffness = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
@@ -105,7 +105,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> diffTorqueExtended = ExtendVectorStart(0, Diff(torque) / parameters.LumpedCells.DistanceBetweenElements);
 
             Vector<double> fB =
-                parameters.Buoyancy.Wb.PointwiseMultiply(binormal) +
+                parameters.Buoyancy.BuoyantWeightPerLength.PointwiseMultiply(binormal) +
                 curvatureExtended.PointwiseMultiply(diffTorqueExtended) +
                 curvature_dotExtended.PointwiseMultiply(torque) -
                 2 * youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvature_dotExtended).PointwiseMultiply(torsionExtended) -
@@ -115,8 +115,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> I_fB = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, fB);
 
             Vector<double> fN =
-                curvatureExtended.PointwiseMultiply(model.Tension + parameters.Buoyancy.normalBuoyancyForceChangeOfDiameters) +
-                parameters.Buoyancy.Wb.PointwiseMultiply(normal) -
+                curvatureExtended.PointwiseMultiply(model.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters) +
+                parameters.Buoyancy.BuoyantWeightPerLength.PointwiseMultiply(normal) -
                 youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvature_ddotExtended) +
                 youngModulus.PointwiseMultiply(momentOfInertia).PointwiseMultiply(curvatureExtended).PointwiseMultiply(Square(torsionExtended)) -
                 curvatureExtended.PointwiseMultiply(torsionExtended).PointwiseMultiply(torque);
