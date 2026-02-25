@@ -10,6 +10,7 @@ using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
+using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
     public class Solver
@@ -24,8 +25,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private AxialTorsionalModel axialTorsionalModel;
         private LateralModel lateralModel;
 
-        private ISolverODE solverODE; 
+        private ISolverODE<LateralModel> solverODELateral; 
+        // Upwind scheme is used for the axial and torsional wave equations to better capture the wave propagation dynamics
 
+        private ISolverODE<AxialTorsionalModel> solverODEAxialTorsional = new UpwindScheme(); 
         public Solver(SimulationParameters simulationParameters, in DataModel.Configuration configuration)
         {
             this.simulationParameters = simulationParameters;
@@ -45,10 +48,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             switch (simulationParameters.SolverODEEnum)
             {
                 case SolverODEEnum.EulerMethod:
-                    solverODE = new EulerMethod();
+                    solverODELateral = new EulerMethod();
                     break;
                 case SolverODEEnum.VerletMethod:
-                    solverODE = new VerletMethod(simulationParameters);
+                    solverODELateral = new VerletMethod(simulationParameters);
                     break;                
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -246,37 +249,36 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             double dtTemp = simulationParameters.DistributedCells.DistributedSectionLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             // Wave equations are transformed into their Riemann invariants
-            AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
-            AccelerationCalculation.PreprareLateral(lateralModel, state, simulationParameters);            
+            axialTorsionalModel.PrepareModel(axialTorsionalModel, state, simulationParameters);
+            lateralModel.PrepareModel(lateralModel, state, simulationParameters);
+            //AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
+            //AccelerationCalculation.PreprareLateral(lateralModel, state, simulationParameters);            
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
                 UpdateDepthInnerLoop();            
-                // Calculate axial-torsional pde properties
-                AccelerationCalculation.AxialTorsionalSystem(axialTorsionalModel, simulationInput, configuration, state, simulationParameters);                                 
                 // Update axial-torsional state using upwind scheme
                 // The staggered method is used for a semi-implicit integration, increasing stability           
-                UpwindScheme.IntegrationStep(axialTorsionalModel, simulationParameters);                  
+                solverODEAxialTorsional.IntegrationStep(state, axialTorsionalModel, simulationInput, configuration, simulationParameters);                   
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
                 axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters, simulationInput);
                 // Calculate lateral accelerations                    
-                AccelerationCalculation.LateralSystem(lateralModel, axialTorsionalModel, simulationInput, configuration, state, simulationParameters);        
-                solverODE.IntegrationStep(state, simulationParameters);                                                                                           
+                solverODELateral.IntegrationStep(state, lateralModel, simulationInput, configuration, simulationParameters);
                 // Mud motor
                 if (configuration.UseMudMotor)
                 {
                     state.MudStatorAngularVelocity = state.WhirlVelocity[state.WhirlVelocity.Count - 1];
                     state.MudRotorAngularVelocity = state.MudRotorAngularVelocity + simulationParameters.InnerLoopTimeStep / (simulationParameters.MudMotor.I_rotor + simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * Math.Pow(simulationParameters.MudMotor.N_rotor, 2)) *
-                        (state.AngularAcceleration[state.WhirlVelocity.Count - 1] * simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * simulationParameters.MudMotor.N_stator * simulationParameters.MudMotor.N_rotor + lateralModel.MudTorque - axialTorsionalModel.TorqueOnBit);
+                        (state.AngularAcceleration[state.WhirlVelocity.Count - 1] * simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * simulationParameters.MudMotor.N_stator * simulationParameters.MudMotor.N_rotor + lateralModel.MudTorque - state.TorqueOnBit);
                 }
             }
 
             // Compute states from Riemann invariants
-            state.PipeAngularVelocity = 0.5 * (axialTorsionalModel.DownwardTorsionalWave + axialTorsionalModel.UpwardTorsionalWave);
-            state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (axialTorsionalModel.DownwardTorsionalWave - axialTorsionalModel.UpwardTorsionalWave);
+            state.PipeAngularVelocity = 0.5 * (state.DownwardTorsionalWave + state.UpwardTorsionalWave);
+            state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (state.DownwardTorsionalWave - state.UpwardTorsionalWave);
 
-            state.PipeAxialVelocity = 0.5 * (axialTorsionalModel.DownwardAxialWave + axialTorsionalModel.UpwardAxialWave);
-            state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (axialTorsionalModel.DownwardAxialWave - axialTorsionalModel.UpwardAxialWave);
+            state.PipeAxialVelocity = 0.5 * (state.DownwardAxialWave + state.UpwardAxialWave);
+            state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (state.DownwardAxialWave - state.UpwardAxialWave);
         
             // Bending moments
             lateralModel.UpdateBendingMoments(state, simulationParameters);
@@ -377,8 +379,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.BendingMomentX = lateralModel.BendingMomentX;// Bending moment x-component profile
             output.BendingMomentY = lateralModel.BendingMomentY;// Bending moment y-component profile
             //output.TangentialForceProfile = TangentialCoulombFrictionForce;// Bending moment y-component profile Tangential force profile
-            output.WeightOnBit = axialTorsionalModel.WeightOnBit;  // Weight on bit
-            output.TorqueOnBit = axialTorsionalModel.TorqueOnBit;  // Torque on bit
+            output.WeightOnBit = state.WeightOnBit;  // Weight on bit
+            output.TorqueOnBit = state.TorqueOnBit;  // Torque on bit
             
             output.Depth = simulationParameters.DistributedCells.x;
             output.SensorMb_x = lateralModel.BendingMomentX[simulationParameters.Drillstring.IndexSensor];
@@ -430,7 +432,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             state.AddNewLumpedElement();
 
-            solverODE.AddNewLumpedElement();        
+            solverODELateral.AddNewLumpedElement();        
 
             //axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters, axialTorsionalModel);            
             //lateralModel = new LateralModel(simulationParameters, state);

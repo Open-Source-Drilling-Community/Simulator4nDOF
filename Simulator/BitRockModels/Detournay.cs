@@ -61,7 +61,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 
         } 
 
-        public double[] CalculateInteractionForce(AxialTorsionalModel axialTorsionalModel, State state, double angularVelocity, SimulationParameters simulationParameters)
+        public double[] CalculateInteractionForce(State state, double angularVelocity, SimulationParameters simulationParameters)
         {
             double tb;
             double wb;
@@ -81,9 +81,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 double ga = 1.0;
                 double wf = WeightOnBitFrictionComponent * ga;
                 double tf = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
-                double g_tt = axialTorsionalModel.DownwardTorsionalWave[lpSize, axialTorsionalModel.DownwardTorsionalWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
+                double g_tt = state.DownwardTorsionalWave[lpSize, state.DownwardTorsionalWave.ColumnCount - 1] * simulationParameters.Drillstring.PipePolarMoment.Last() * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
                 g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
-                double g_wt = axialTorsionalModel.DownwardAxialWave[lpSize, axialTorsionalModel.DownwardAxialWave.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
+                double g_wt = state.DownwardAxialWave[lpSize, state.DownwardAxialWave.ColumnCount - 1] * simulationParameters.Drillstring.PipeArea.Last() * simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
                 g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
             
                 // Calculate torque on bit and weight on bit

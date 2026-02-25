@@ -2,6 +2,12 @@
 
 The Simulator4nDOF repository hosts a microservice and client webapp for Simulator4nDOF.
 
+# Simulator4nDOF - Model definition
+
+Every model is defined as a variation of IModel< ModelType > interaface. In this case, each IModel must contain a definition of the treatment in case of addition of a lumped parameter and a definition of how the accelerations/forces are calculated.
+
+An ODE solver option requires a model input. It is when the accelerations are calculated. This choice was made to facilitate the addition of new solvers/models.
+
 # Solution architecture
 
 The solution is composed of:

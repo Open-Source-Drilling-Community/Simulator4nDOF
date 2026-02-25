@@ -34,7 +34,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Vector<double> WhirlVelocity;                  // Lumped element whirl velocity (angular velocity)        
         public Vector<double> RadialDisplacement;             // Lumped element radial displacement
         public Vector<double> RadialVelocity;                 // Lumped element radial velocity
+        //Torsional Axial variables
+        public Matrix<double> DownwardTorsionalWave; // Downward traveling wave, torsional
+        public Matrix<double> UpwardTorsionalWave; // Upward traveling wave, torsional
+        public Matrix<double> DownwardAxialWave; // Downward traveling wave, axial
+        public Matrix<double> UpwardAxialWave; // Upward traveling wave, axial
+        public Vector<double> DownwardTorsionalWaveLeftBoundary;
+        public Vector<double> UpwardTorsionalWaveRightBoundary;
+        public Vector<double> DownwardAxialWaveLeftBoundary;
+        public Vector<double> UpwardAxialWaveRightBoundary;
 
+        public Matrix<double> DiffDownwardTorsionalWave; // Downward traveling wave, torsional
+        public Matrix<double> DiffUpwardTorsionalWave; // Upward traveling wave, torsional
+        public Matrix<double> DiffDownwardAxialWave; // Downward traveling wave, axial
+        public Matrix<double> DiffUpwardAxialWave; // Upward traveling wave, axial
+        
+        public double WeightOnBit;
+        public double TorqueOnBit;
+        
 
         public Vector<double> SleeveForces;                   // Sleeve forces
         public List<int> SleeveToLumpedIndex;                // Mapping from sleeve indices to lumped element indices
@@ -63,9 +80,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public bool onBottom;                                 // Flag indicating if on bottom
         public int Step;                                      // Simulation step counter
 
+
+
         // Timestamps
         public double ConnectionStartTime;                     // Connection start time [s]
         public double TopDriveStartupTime;                     // Top drive startup time [s]
+
+
 
         public State(in SimulationParameters simulationParameters, double BitDepth, double HoleDepth, double TopOfStringPosition)
         {

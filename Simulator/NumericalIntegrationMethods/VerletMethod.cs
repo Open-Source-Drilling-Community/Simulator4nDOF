@@ -3,6 +3,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
+using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 using OSDC.DotnetLibraries.General.Common;
 using System;
 using System.Reflection;
@@ -11,7 +12,7 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
-    public class VerletMethod : ISolverODE
+    public class VerletMethod : ISolverODE<LateralModel>
     {     
         public bool FirstStep = true;
         public Vector<double> SleeveAngularDisplacementMinus1;        
@@ -78,8 +79,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             FirstStep = false;
         }
 
-        public void IntegrationStep(State state, SimulationParameters simulationParameters)
+        public void IntegrationStep(State state, LateralModel lateralModel, Input simulationInput, Configuration configuration, SimulationParameters simulationParameters)
         {               
+            // Use the lateral model instance to estimate the accelerations
+            lateralModel.CalculateAccelerations(state, simulationInput, configuration, simulationParameters);
             timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;            
             int n = state.SleeveAngularDisplacement.Count;
             // If it is the first step, initialize the minus one values                        

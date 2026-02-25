@@ -7,40 +7,74 @@ using OSDC.DotnetLibraries.General.Common;
 using System;
 using System.Reflection;
 using System.Reflection.Metadata;
-using System.Security.Cryptography.X509Certificates;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
-namespace NORCE.Drilling.Simulator4nDOF.Simulator
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
-    public static class AccelerationCalculation
+    public class LateralModel : IModel<LateralModel>
     {
        
+        public Vector<double> NormalCollisionForce;        
+        public Vector<double> SoftStringNormalForce;
+        public Vector<double> Tension;
+        public Vector<double> Torque;
+        public Vector<double> BendingStiffness;
+        public Vector<double> PolarMomentTimesShearModuli;
+        public Vector<double> PreStressNormalForce;
+        public Vector<double> PreStressBinormalForce;
+                        
+        public Matrix<double> ScalingMatrix;
+        public Vector<double> ToolFaceAngle;
 
-        public static void PrepareAxialTorsional(AxialTorsionalModel model, State state, SimulationParameters parameters)
+        public double MudTorque;        
+    
+        public Vector<double> BendingMomentX;
+        public Vector<double> BendingMomentY;
+
+        public double PhiDdotNoSlipSensor;
+        public double ThetaDotNoSlipSensor;
+        
+        public LateralModel(SimulationParameters simulationParameters, State state)
         {
+
+            NormalCollisionForce = Vector<double>.Build.Dense(state.XDisplacement.Count);;        
+            SoftStringNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            Tension = Vector<double>.Build.Dense(state.XDisplacement.Count + 1);
+            Torque = Vector<double>.Build.Dense(state.XDisplacement.Count + 1);
+            BendingStiffness = Vector<double>.Build.Dense(state.XDisplacement.Count+1);
+            PolarMomentTimesShearModuli = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            PreStressNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            PreStressBinormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
+            ToolFaceAngle = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            MudTorque = 0;        
+            BendingMomentX = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            BendingMomentY = Vector<double>.Build.Dense(state.YDisplacement.Count);
+            PhiDdotNoSlipSensor = 0;
+            ThetaDotNoSlipSensor = 0;
+        }
+        public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
+        {
+            double XiMinus1, YiMinus1, XiPlus1, YiPlus1;
+            double invElementLengthSquared = 1.0 / (simulationParameters.LumpedCells.ElementLength * simulationParameters.LumpedCells.ElementLength);
+            double momentX, momentY;
             
-            for (int i = 0; i < parameters.LumpedCells.DistributedToLumpedRatio; i++)          
+            for (int i = 1; i < state.XDisplacement.Count - 1; i++)
             {
-                for (int j = 0; j < parameters.LumpedCells.NumberOfLumpedElements; j++)          
-                {
-                    // --- Update Torsional waves                   
-                    //Downward torsional wave
-                    model.DownwardTorsionalWave[i, j] = state.PipeAngularVelocity[i, j] 
-                        + parameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain[i, j];
-                    //Upward torsional wave
-                    model.UpwardTorsionalWave[i, j]   = state.PipeAngularVelocity[i, j] 
-                        - parameters.Drillstring.TorsionalWaveSpeed * state.PipeShearStrain[i, j]; 
-                    // --- Update Axial waves
-                    // Downward axial wave
-                    model.DownwardAxialWave[i, j] = state.PipeAxialVelocity[i, j] 
-                        + parameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain[i, j]; 
-                    //Upward axial wave
-                    model.UpwardAxialWave[i, j] = state.PipeAxialVelocity[i, j] 
-                        - parameters.Drillstring.AxialWaveSpeed * state.PipeAxialStrain[i, j];                        
-                }
+                XiMinus1 = (i == 0) ? 0.0 : state.XDisplacement[i - 1];
+                YiMinus1 = (i == 0) ? 0.0 : state.YDisplacement[i - 1];
+                XiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.XDisplacement[i + 1];
+                YiPlus1 = (i == state.YDisplacement.Count - 1) ? 0.0 : state.YDisplacement[i + 1];
+                //Calcualte the bending moments using the central difference scheme
+                momentX = simulationParameters.Drillstring.YoungModuli[i] * simulationParameters.Drillstring.PipeInertia[i] *
+                    (XiPlus1 - 2 * state.XDisplacement[i] + XiMinus1) * invElementLengthSquared; // Bending moment x-component
+                momentY = simulationParameters.Drillstring.YoungModuli[i] * simulationParameters.Drillstring.PipeInertia[i] *
+                    (YiPlus1 - 2 * state.YDisplacement[i] + YiMinus1) * invElementLengthSquared; //
+                 BendingMomentX[i] =  momentX;
+                 BendingMomentY[i] =  momentY;
             }
         }
-        public static void PreprareLateral(LateralModel model, State state, SimulationParameters parameters)
+        public void PrepareModel(LateralModel model, State state, SimulationParameters parameters)
         {
             // Initialize scaling matrix and compute element-wise product    
             Vector<double> elementWiseProduct = parameters.Drillstring.YoungModuli.PointwiseMultiply(parameters.Drillstring.PipeArea);
@@ -132,78 +166,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
                 oldBinormalForce = binormalForce;     
-            }             
-            
-            
+            }                         
         }
-        public static void AxialTorsionalSystem(AxialTorsionalModel torsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
-        {                                        
-            torsionalModel.UpdateBoundaryConditions(state, parameters, simulationInput);               
-            state.BitVelocity = 0.5 * 
-                (
-                    torsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardAxialWave.ColumnCount - 1] 
-                    + torsionalModel.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardAxialWave.ColumnCount - 1]
-                );
-           
-            double angularVelocityBottom;
-            if (!configuration.UseMudMotor)
-                angularVelocityBottom = 0.5 * 
-                    (
-                        torsionalModel.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.DownwardTorsionalWave.ColumnCount - 1] 
-                        + torsionalModel.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, torsionalModel.UpwardTorsionalWave.ColumnCount - 1]
-                    );
-            else
-                angularVelocityBottom = state.MudRotorAngularVelocity;
-
-            double[] bitForces = parameters.BitRock.
-                CalculateInteractionForce(torsionalModel, state, angularVelocityBottom, parameters);
-            torsionalModel.TorqueOnBit = bitForces[0];
-            torsionalModel.WeightOnBit = bitForces[1];
-           
-            // manage the bit sticking off bottom condition
-            if (!state.onBottom)
-            {
-                double omega_ = state.AngularVelocity[state.AngularVelocity.Count - 1];
-                if (simulationInput.StickingBoolean)
-                {
-                    int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;             
-                    double torsionalAcceleration = torsionalModel.UpwardTorsionalWave[torsionalModel.UpwardTorsionalWave.RowCount - 1, torsionalModel.UpwardTorsionalWave.ColumnCount - 1];
-                    double axialAcceleration = torsionalModel.UpwardAxialWave[torsionalModel.UpwardAxialWave.RowCount - 1, torsionalModel.UpwardAxialWave.ColumnCount - 1];                                            
-                    torsionalModel.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] / parameters.Drillstring.TorsionalWaveSpeed * torsionalAcceleration;
-                    torsionalModel.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] / parameters.Drillstring.AxialWaveSpeed * axialAcceleration;
-                }
-                else
-                {
-                    double normalForce_ = simulationInput.BottomExtraNormalForce;
-                    if (normalForce_ > 0)
-                    {
-                        double ro_ = parameters.Drillstring.OuterRadius[parameters.Drillstring.OuterRadius.Count - 1];
-                        double Fs_ = normalForce_ * 1.0; //Static force
-                        double Fc_ = normalForce_ * 0.5; //Kinematic force
-                        double va_ = state.AxialVelocity[state.AxialVelocity.Count - 1]; //Axial velocity
-                        double v_ = Math.Sqrt(va_ * va_ + omega_ * omega_ * ro_ * ro_); //Tangential velocity
-                        if (Math.Abs(v_) < 1e-6)
-                        {
-                            torsionalModel.TorqueOnBit = 0;
-                            torsionalModel.WeightOnBit = 0;
-                        }
-                        else
-                        {
-                            //Commented unnecessary regularization
-                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / parameters.Friction.v_c)) * v_ / Math.Sqrt(v_ * v_);// + 0.001 * 0.001);                        
-                            torsionalModel.TorqueOnBit = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                            torsionalModel.WeightOnBit = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
-                        }
-                    }
-                    else
-                    {
-                        torsionalModel.TorqueOnBit = 0;
-                        torsionalModel.WeightOnBit = 0;
-                    }
-                }
-            }   
-       }                
-        public static void LateralSystem(LateralModel lateralModel, AxialTorsionalModel axialTorsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
+        public void CalculateAccelerations(State state, Input simulationInput, Configuration configuration, SimulationParameters parameters)
         {
             #region  Allocation
             // State variables -> can be simplified but decided to leave for the sake of debugging and readability. Can be optimized later if needed.
@@ -272,15 +237,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
            
             if (!configuration.UseMudMotor)
             {
-                lateralModel.MudTorque = 0;
+                this.MudTorque = 0;
             }
             else
             {
                 double speedRatio = (state.MudRotorAngularVelocity - state.MudStatorAngularVelocity) / parameters.MudMotor.omega0_motor;              
                 if (speedRatio <= 1)
-                    lateralModel.MudTorque = parameters.MudMotor.T_max_motor * Math.Pow(1 - speedRatio, 1.0 / parameters.MudMotor.alpha_motor);
+                    this.MudTorque = parameters.MudMotor.T_max_motor * Math.Pow(1 - speedRatio, 1.0 / parameters.MudMotor.alpha_motor);
                 else
-                    lateralModel.MudTorque = -parameters.MudMotor.P0_motor * parameters.MudMotor.V_motor * (speedRatio - 1);                
+                    this.MudTorque = -parameters.MudMotor.P0_motor * parameters.MudMotor.V_motor * (speedRatio - 1);                
             }
             
             
@@ -303,10 +268,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 whirlVelocity = radialDisplacement == 0.0 ? 1E6 : (state.YVelocity[i] * state.XDisplacement[i] - state.XVelocity[i] * state.YDisplacement[i])/(radialDisplacement * radialDisplacement);
                 #endregion
                 #region Axial-Torsional Distributed Forces Forces
-                torqueOnBit = configuration.UseMudMotor ? lateralModel.MudTorque : axialTorsionalModel.TorqueOnBit;
+                torqueOnBit = configuration.UseMudMotor ? this.MudTorque : state.TorqueOnBit;
                 //Calculated the torque and force difference in each element (TorqueElement and TorqueNextElement)                
-                deltaTorsionalWave = axialTorsionalModel.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - axialTorsionalModel.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
-                deltaAxialWave = axialTorsionalModel.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - axialTorsionalModel.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
+                deltaTorsionalWave = state.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - state.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
+                deltaAxialWave = state.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - state.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
                 
                 torqueElement = parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i] / (2.0 * parameters.Drillstring.TorsionalWaveSpeed) * deltaTorsionalWave;                
                 forceElement = parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] / (2.0 * parameters.Drillstring.AxialWaveSpeed) * deltaAxialWave;
@@ -317,16 +282,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     : 
                     parameters.Drillstring.PipePolarMoment[i + 1] * parameters.Drillstring.ShearModuli[i + 1] / (2.0 * parameters.Drillstring.TorsionalWaveSpeed) * 
                         (
-                            axialTorsionalModel.DownwardTorsionalWave[0, i + 1] 
-                          - axialTorsionalModel.UpwardTorsionalWave[0, i + 1]
+                            state.DownwardTorsionalWave[0, i + 1] 
+                          - state.UpwardTorsionalWave[0, i + 1]
                         );                
                 forceNextElement = (i == state.XDisplacement.Count - 1) ? 
-                    axialTorsionalModel.WeightOnBit 
+                    state.WeightOnBit 
                     : 
                     parameters.Drillstring.PipeArea[i + 1] * parameters.Drillstring.YoungModuli[i + 1] / (2.0 * parameters.Drillstring.AxialWaveSpeed) * 
                         (
-                            axialTorsionalModel.DownwardAxialWave[0, i + 1] 
-                          - axialTorsionalModel.UpwardAxialWave[0, i + 1]
+                            state.DownwardAxialWave[0, i + 1] 
+                          - state.UpwardAxialWave[0, i + 1]
                         );            
 
                 torqueDifference = torqueElement - torqueNextElement;
@@ -342,7 +307,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                        + parameters.Wellbore.WallDamping * radialVelocity
                     );  
                                         
-                if (lateralModel.NormalCollisionForce.Count > 1 && i == lateralModel.NormalCollisionForce.Count - 2)
+                if (this.NormalCollisionForce.Count > 1 && i == this.NormalCollisionForce.Count - 2)
                     normalCollisionForce += simulationInput.ForceToInduceBitWhirl;    
                 #endregion
                 #region Elastic Force Calculation
@@ -353,16 +318,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 XiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.XDisplacement[i + 1];
                 YiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.YDisplacement[i + 1];
                 // Same with the stiffness
-                kMinus1 = lateralModel.BendingStiffness[i];
-                kPlus1 = lateralModel.BendingStiffness[i + 1];
+                kMinus1 = this.BendingStiffness[i];
+                kPlus1 = this.BendingStiffness[i + 1];
                 ElasticForceX = kMinus1 * XiMinus1  - (kMinus1 + kPlus1) * state.XDisplacement[i] + kPlus1 * XiPlus1;
                 ElasticForceY = kMinus1 * YiMinus1  - (kMinus1 + kPlus1) * state.YDisplacement[i] + kPlus1 * YiPlus1;
                 #endregion
                 #region Pre-Stress Force Calculation
-                PreStressForceX = lateralModel.PreStressNormalForce[i] * Math.Sin(lateralModel.ToolFaceAngle[i]) + 
-                                lateralModel.PreStressBinormalForce[i] * Math.Cos(lateralModel.ToolFaceAngle[i]) ;
-                PreStressForceY = lateralModel.PreStressNormalForce[i] * Math.Cos(lateralModel.ToolFaceAngle[i]) - 
-                                lateralModel.PreStressBinormalForce[i] * Math.Sin(lateralModel.ToolFaceAngle[i]) ;                                    
+                PreStressForceX = this.PreStressNormalForce[i] * Math.Sin(this.ToolFaceAngle[i]) + 
+                                this.PreStressBinormalForce[i] * Math.Cos(this.ToolFaceAngle[i]) ;
+                PreStressForceY = this.PreStressNormalForce[i] * Math.Cos(this.ToolFaceAngle[i]) - 
+                                this.PreStressBinormalForce[i] * Math.Sin(this.ToolFaceAngle[i]) ;                                    
                 #endregion
                 #region Fluid Force Calculation
                 //Extracts angular speed depending on if it is a sleeve or not
@@ -554,8 +519,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     //Store no slip data
                     if (i == parameters.Drillstring.IndexSensor)
                     {
-                        lateralModel.PhiDdotNoSlipSensor = noSlipWhirlAcceleration;
-                        lateralModel.ThetaDotNoSlipSensor = noSlipThetaDotDot;
+                        this.PhiDdotNoSlipSensor = noSlipWhirlAcceleration;
+                        this.ThetaDotNoSlipSensor = noSlipThetaDotDot;
                     }
                     // It needs to be zeroed before, as there might have changes in the sleeve position when the number of lumped parameters change 
                     state.SleeveForces[i] = 0;                
@@ -580,8 +545,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 {
                     frictionTorque = 0.0;
                     state.SleeveForces[i] = 0;
-                    lateralModel.PhiDdotNoSlipSensor = 0.0;
-                    lateralModel.ThetaDotNoSlipSensor = 0.0;
+                    this.PhiDdotNoSlipSensor = 0.0;
+                    this.ThetaDotNoSlipSensor = 0.0;
                 }                            
                 #endregion                   
                 #region Accelerations                              
@@ -604,7 +569,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 ZAcceleration = sumForcesZ / parameters.Drillstring.LumpedElementMass[i];                
 
                 //Update state
-                lateralModel.NormalCollisionForce[i] = normalCollisionForce;
+                this.NormalCollisionForce[i] = normalCollisionForce;
                 state.RadialDisplacement[i] = radialDisplacement;
                 state.RadialVelocity[i] = radialVelocity;
                 state.WhirlAngle[i] = whirlAngle;

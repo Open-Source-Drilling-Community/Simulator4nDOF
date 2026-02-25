@@ -8,13 +8,15 @@ using System;
 using System.Reflection;
 using System.Reflection.Metadata;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
-
+using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
-    public class EulerMethod : ISolverODE
+    public class EulerMethod : ISolverODE<LateralModel>
     {     
-        public void IntegrationStep(State state, SimulationParameters simulationParameters)
+        public void IntegrationStep(State state, LateralModel lateralModel, Input simulationInput, Configuration configuration, SimulationParameters simulationParameters)
         {   
+            // Use the lateral model instance to estimate the accelerations
+            lateralModel.CalculateAccelerations(state, simulationInput, configuration, simulationParameters);
             for (int i = 0; i < state.XDisplacement.Count; i++)
             {
                 //Angular DoF
