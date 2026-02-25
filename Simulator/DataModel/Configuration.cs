@@ -1,5 +1,4 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
-using Model;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 
@@ -73,8 +72,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required string AnnulusPressureFile;
         public List<BoreHoleSize> BoreHoleSizes = new List<BoreHoleSize>();
         public required double BitRadius;
-        public BitRockModelEnum BitRockModelEnum = BitRockModelEnum.Detournay;
-
+        public BitRockModelEnum BitRockModelEnum { get; set; } = BitRockModelEnum.Detournay;
+        public SolverType SolverType { get; set; } = SolverType.VerletMethod;
     }
 
 }

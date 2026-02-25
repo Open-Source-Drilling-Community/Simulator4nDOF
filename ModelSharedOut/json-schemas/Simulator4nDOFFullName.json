@@ -440,6 +440,9 @@
           "DrillstringPressureFile": {
             "type": "string",
             "nullable": true
+          },
+          "SolverType": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.SolverType"
           }
         },
         "additionalProperties": false
@@ -959,6 +962,13 @@
           }
         },
         "additionalProperties": false
+      },
+      "NORCE.Drilling.Simulator4nDOF.Model.SolverType": {
+        "enum": [
+          "EulerMethod",
+          "VerletMethod"
+        ],
+        "type": "string"
       },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillString": {
         "type": "object",

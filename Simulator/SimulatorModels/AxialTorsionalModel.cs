@@ -34,7 +34,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         //public double TorqueOnBit;
         
 
-        public AxialTorsionalModel(State state, SimulationParameters simulationParameters, Input simulationInput)
+        public AxialTorsionalModel(State state, SimulationParameters simulationParameters)
         {
             //Dimension initial state
             state.DownwardTorsionalWave = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, torsional
@@ -52,7 +52,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             state.UpwardTorsionalWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             state.DownwardAxialWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             state.UpwardAxialWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            UpdateBoundaryConditions(state, simulationParameters, simulationInput);           
+            UpdateBoundaryConditions(state, simulationParameters, simulationParameters.Input);           
             state.WeightOnBit = 0.0;
             state.TorqueOnBit = 0.0;
         }
@@ -110,9 +110,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
             }
         }
-        public void CalculateAccelerations(State state,  Input simulationInput, Configuration configuration, SimulationParameters parameters)
+        public void CalculateAccelerations(State state, SimulationParameters parameters)
         {                                        
-            this.UpdateBoundaryConditions(state, parameters, simulationInput);               
+            this.UpdateBoundaryConditions(state, parameters, parameters.Input);               
             state.BitVelocity = 0.5 * 
                 (
                     state.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, state.DownwardAxialWave.ColumnCount - 1] 
@@ -120,7 +120,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 );
            
             double angularVelocityBottom;
-            if (!configuration.UseMudMotor)
+            if (!parameters.UseMudMotor)
                 angularVelocityBottom = 0.5 * 
                     (
                         state.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, state.DownwardTorsionalWave.ColumnCount - 1] 
@@ -137,7 +137,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             if (!state.onBottom)
             {
                 double omega_ = state.AngularVelocity[state.AngularVelocity.Count - 1];
-                if (simulationInput.StickingBoolean)
+                if (parameters.Input.StickingBoolean)
                 {
                     int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;             
                     double torsionalAcceleration = state.UpwardTorsionalWave[state.UpwardTorsionalWave.RowCount - 1, state.UpwardTorsionalWave.ColumnCount - 1];
@@ -147,7 +147,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 else
                 {
-                    double normalForce_ = simulationInput.BottomExtraNormalForce;
+                    double normalForce_ = parameters.Input.BottomExtraNormalForce;
                     if (normalForce_ > 0)
                     {
                         double ro_ = parameters.Drillstring.OuterRadius[parameters.Drillstring.OuterRadius.Count - 1];

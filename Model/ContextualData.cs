@@ -1,5 +1,4 @@
-﻿using Model;
-using OSDC.DotnetLibraries.General.DataManagement;
+﻿using OSDC.DotnetLibraries.General.DataManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +16,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public ModelShared.DrillString DrillString { get; set; }
         public string AnnulusPressureFile { get; set; }
         public string DrillstringPressureFile { get; set; }
+        public SolverType SolverType { get; set; } = SolverType.VerletMethod;
         
 
         // ID 066505f3-bbeb-47e1-a0c9-b48b16a1f3aa

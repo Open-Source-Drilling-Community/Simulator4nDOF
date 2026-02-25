@@ -5848,6 +5848,13 @@
           }
         }
       },
+      "SolverType": {
+        "enum": [
+          "EulerMethod",
+          "VerletMethod"
+        ],
+        "type": "string"
+      },
       "BoreHoleSize": {
         "type": "object",
         "properties": {
@@ -5988,6 +5995,9 @@
           "DrillstringPressureFile": {
             "type": "string",
             "nullable": true
+          },
+          "SolverType": {
+            "$ref": "#/components/schemas/SolverType"
           }
         }
       },

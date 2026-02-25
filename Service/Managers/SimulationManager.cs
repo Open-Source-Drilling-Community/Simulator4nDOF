@@ -2,7 +2,6 @@
 using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using Model;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using NORCE.Drilling.Simulator4nDOF.Simulator;
@@ -1115,6 +1114,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 TuningFrequenceySoftTorqueSpeed = simulation.Config.TuningFrequenceySoftTorqueSpeed,
                 KpStiffAndZTorque = simulation.Config.KpStiffAndZTorque,
                 KiStiffAndZTorque = simulation.Config.KiStiffAndZTorque,
+                SolverType = simulation.ContextualData.SolverType
+
 
             };
 

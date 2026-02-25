@@ -5,12 +5,14 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
+using NORCE.Drilling.Simulator4nDOF.Model;
 
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class SimulationParameters
     {
+        public Input Input;
         public Fluid Fluid;
         public IBitRock BitRock;
         public MudMotor MudMotor;
@@ -26,9 +28,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public int InnerLoopIterations;
         public double dxl;
         public double dtl;
-        public SolverODEEnum SolverODEEnum = SolverODEEnum.VerletMethod;
+        public bool UseMudMotor;
         public SimulationParameters(DataModel.Configuration configuration)
         {
+            Input = new Input()
+            {
+                SurfaceRotation = configuration.SurfaceRPM,
+                SurfaceAxialVelocity = configuration.TopOfStringVelocity,
+            };
             Fluid = new Fluid(configuration.FluidDensity);
             LumpedCells = new LumpedCells(configuration.BitDepth, configuration.LengthBetweenLumpedElements);
             Drillstring = new Drillstring(LumpedCells, 
@@ -68,7 +75,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             dxl = 1.0 / DistributedCells.CellsInDepthOfCut;
             dtl = dxl / DistributedCells.OmegaMax;  // As per the CFL condition for the depth of cut PDE
             InnerLoopIterations = (int)Math.Max(Math.Ceiling(configuration.TimeStep / dtTemp), Math.Ceiling(configuration.TimeStep / dtl)); // number of iterations in the inner loop
-            InnerLoopTimeStep = configuration.TimeStep / InnerLoopIterations; // time step of inner loop                
+            InnerLoopTimeStep = configuration.TimeStep / InnerLoopIterations; // time step of inner loop      
+            UseMudMotor = configuration.UseMudMotor;
+
         }
 
         public void AddNewLumpedElement()

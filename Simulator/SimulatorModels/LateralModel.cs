@@ -168,7 +168,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 oldBinormalForce = binormalForce;     
             }                         
         }
-        public void CalculateAccelerations(State state, Input simulationInput, Configuration configuration, SimulationParameters parameters)
+        public void CalculateAccelerations(State state, SimulationParameters parameters)
         {
             #region  Allocation
             // State variables -> can be simplified but decided to leave for the sake of debugging and readability. Can be optimized later if needed.
@@ -235,7 +235,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double unbalanceForceY;            
             #endregion            
            
-            if (!configuration.UseMudMotor)
+            if (!parameters.UseMudMotor)
             {
                 this.MudTorque = 0;
             }
@@ -268,7 +268,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 whirlVelocity = radialDisplacement == 0.0 ? 1E6 : (state.YVelocity[i] * state.XDisplacement[i] - state.XVelocity[i] * state.YDisplacement[i])/(radialDisplacement * radialDisplacement);
                 #endregion
                 #region Axial-Torsional Distributed Forces Forces
-                torqueOnBit = configuration.UseMudMotor ? this.MudTorque : state.TorqueOnBit;
+                torqueOnBit = parameters.UseMudMotor ? this.MudTorque : state.TorqueOnBit;
                 //Calculated the torque and force difference in each element (TorqueElement and TorqueNextElement)                
                 deltaTorsionalWave = state.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - state.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
                 deltaAxialWave = state.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - state.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
@@ -308,7 +308,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     );  
                                         
                 if (this.NormalCollisionForce.Count > 1 && i == this.NormalCollisionForce.Count - 2)
-                    normalCollisionForce += simulationInput.ForceToInduceBitWhirl;    
+                    normalCollisionForce += parameters.Input.ForceToInduceBitWhirl;    
                 #endregion
                 #region Elastic Force Calculation
                 // If it is the first element, get the pinned boundary condition

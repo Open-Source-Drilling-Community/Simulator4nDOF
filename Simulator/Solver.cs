@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
+
+
 namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
     public class Solver
@@ -19,7 +21,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private Output output;
         private SimulationParameters simulationParameters;
         private readonly Configuration configuration;
-        private Input simulationInput;
+        //private Input simulationParameters.Input;
         private TopdriveController topdriveController;
         private DrawworksAndTopdrive drawworksAndTopdrive;
         private AxialTorsionalModel axialTorsionalModel;
@@ -34,56 +36,51 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             this.simulationParameters = simulationParameters;
             this.configuration = configuration;
 
-            simulationInput = new Input();
-            simulationInput.SurfaceRotation = configuration.SurfaceRPM;
-            simulationInput.SurfaceAxialVelocity = configuration.TopOfStringVelocity;
+            //simulationParameters.Input = new Input();
+            //simulationParameters.Input.SurfaceRotation = configuration.SurfaceRPM;
+            //simulationParameters.Input.SurfaceAxialVelocity = configuration.TopOfStringVelocity;
 
             state = new State(in simulationParameters, configuration);
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdrive();
-            axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters, simulationInput);
+            axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters);
             lateralModel = new LateralModel(simulationParameters, state);
             //Create an instance of the selected ODE solver
-            switch (simulationParameters.SolverODEEnum)
+            solverODELateral = configuration.SolverType switch
             {
-                case SolverODEEnum.EulerMethod:
-                    solverODELateral = new EulerMethod();
-                    break;
-                case SolverODEEnum.VerletMethod:
-                    solverODELateral = new VerletMethod(simulationParameters);
-                    break;                
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                Model.SolverType.EulerMethod => solverODELateral = new EulerMethod(),
+                Model.SolverType.VerletMethod => solverODELateral = new VerletMethod(simulationParameters),
+                _ => throw new ArgumentException($"Unknown SolverType: {configuration.SolverType}")
+            };       
         }
 
         public (State, Output, Input) OuterStep(double SurfaceRPM, double TopOfStringVelocity, double bottomExtraVerticalForce, double differenceStaticKineticFriction, double stribeckCriticalVelocity, bool sticking)
         {
-            simulationInput.SurfaceRotation = SurfaceRPM;
-            simulationInput.SurfaceAxialVelocity = TopOfStringVelocity;
-            simulationInput.BottomExtraNormalForce = bottomExtraVerticalForce;
-            simulationInput.DifferenceStaticKineticFriction = differenceStaticKineticFriction;
-            simulationInput.StickingBoolean = sticking;
+            simulationParameters.Input.SurfaceRotation = SurfaceRPM;
+            simulationParameters.Input.SurfaceAxialVelocity = TopOfStringVelocity;
+            simulationParameters.Input.BottomExtraNormalForce = bottomExtraVerticalForce;
+            simulationParameters.Input.DifferenceStaticKineticFriction = differenceStaticKineticFriction;
+            simulationParameters.Input.StickingBoolean = sticking;
 
             if (stribeckCriticalVelocity > 0)
             {
-                simulationInput.StribeckCriticalVelocity = stribeckCriticalVelocity;
-                simulationParameters.Friction.stribeck = 1.0 / simulationInput.StribeckCriticalVelocity;
+                simulationParameters.Input.StribeckCriticalVelocity = stribeckCriticalVelocity;
+                simulationParameters.Friction.stribeck = 1.0 / simulationParameters.Input.StribeckCriticalVelocity;
             }
             if (simulationParameters.Friction.StaticFrictionCoefficient.Count == simulationParameters.Friction.KinematicFrictionCoefficient.Count)
             {
                 for (int i = 0; i < simulationParameters.Friction.StaticFrictionCoefficient.Count; i++)
                 {
-                    simulationParameters.Friction.StaticFrictionCoefficient[i] = simulationParameters.Friction.KinematicFrictionCoefficient[i] + simulationInput.DifferenceStaticKineticFriction;
+                    simulationParameters.Friction.StaticFrictionCoefficient[i] = simulationParameters.Friction.KinematicFrictionCoefficient[i] + simulationParameters.Input.DifferenceStaticKineticFriction;
                 }
             }
 
             // Calculate u.v0 and u.omega_sp 
-            drawworksAndTopdrive.Step(in configuration, state, simulationInput);
+            drawworksAndTopdrive.Step(in configuration, state, simulationParameters.Input);
 
             // Controller for top drive - calculate u.tau_Motor
-            topdriveController.Step(in configuration, in state, in simulationParameters, ref simulationInput);
+            topdriveController.Step(in configuration, in state, in simulationParameters, ref simulationParameters.Input);
 
             //UpdateDepths(); // BitDepth, HoleDepth, TopOfStringPosition, OnBottom
 
@@ -91,7 +88,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             {
                 // update axial position of distributed and lumped elements to simulate moving drillstring
                 simulationParameters.DistributedCells.x = simulationParameters.DistributedCells.x + ToVector(state.PipeAxialVelocity.ToColumnMajorArray()) * configuration.TimeStep;
-                simulationParameters.LumpedCells.ElementLength[0] = simulationParameters.LumpedCells.ElementLength[0] + simulationInput.CalculateSurfaceAxialVelocity * configuration.TimeStep;
+                simulationParameters.LumpedCells.ElementLength[0] = simulationParameters.LumpedCells.ElementLength[0] + simulationParameters.Input.CalculateSurfaceAxialVelocity * configuration.TimeStep;
                 simulationParameters.LumpedCells.ElementLength.SetSubVector(1, simulationParameters.LumpedCells.ElementLength.Count() - 1, simulationParameters.LumpedCells.ElementLength.SubVector(1, simulationParameters.LumpedCells.ElementLength.Count - 1) + state.AxialVelocity * configuration.TimeStep);
 
                 // update trajectory parameters and buoyancy force calculations
@@ -118,13 +115,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             InnerStep();
             output.UpdateSSI(state.Step * configuration.TimeStep);
             state.Step = state.Step + 1;
-            return (state, output, simulationInput);
+            return (state, output, simulationParameters.Input);
         }
 
         public void UpdateDepths()
         {
             state.BitDepth = state.BitDepth + output.BitVelocity * configuration.TimeStep;
-            state.TopOfStringPosition = state.TopOfStringPosition - simulationInput.CalculateSurfaceAxialVelocity * configuration.TimeStep;
+            state.TopOfStringPosition = state.TopOfStringPosition - simulationParameters.Input.CalculateSurfaceAxialVelocity * configuration.TimeStep;
 
             if (state.HoleDepth - state.BitDepth < 1E-3 && !state.onBottom)
                 state.onBottom_startIdx = state.Step;
@@ -135,7 +132,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
          public void UpdateDepthInnerLoop()
         {
             state.BitDepth = state.BitDepth + state.BitVelocity * simulationParameters.InnerLoopTimeStep;
-            state.TopOfStringPosition = state.TopOfStringPosition - simulationInput.CalculateSurfaceAxialVelocity * simulationParameters.InnerLoopTimeStep;
+            state.TopOfStringPosition = state.TopOfStringPosition - simulationParameters.Input.CalculateSurfaceAxialVelocity * simulationParameters.InnerLoopTimeStep;
 
             if (state.HoleDepth < state.BitDepth && !state.onBottom)
                 state.onBottom_startIdx = state.Step;
@@ -242,7 +239,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         {
             // Set these output values in the beginning to match matlab plotting
             output.TopDriveRotationInRPM = state.TopDriveAngularVelocity;
-            if (!configuration.UseMudMotor)
+            if (!simulationParameters.UseMudMotor)
                 output.BitRotationInRPM = state.PipeAngularVelocity[state.PipeAngularVelocity.RowCount - 1, state.PipeAngularVelocity.ColumnCount - 1];
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
@@ -259,13 +256,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 UpdateDepthInnerLoop();            
                 // Update axial-torsional state using upwind scheme
                 // The staggered method is used for a semi-implicit integration, increasing stability           
-                solverODEAxialTorsional.IntegrationStep(state, axialTorsionalModel, simulationInput, configuration, simulationParameters);                   
+                solverODEAxialTorsional.IntegrationStep(state, axialTorsionalModel, simulationParameters);                   
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
-                axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters, simulationInput);
+                axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters, simulationParameters.Input);
                 // Calculate lateral accelerations                    
-                solverODELateral.IntegrationStep(state, lateralModel, simulationInput, configuration, simulationParameters);
+                solverODELateral.IntegrationStep(state, lateralModel, simulationParameters);
                 // Mud motor
-                if (configuration.UseMudMotor)
+                if (simulationParameters.UseMudMotor)
                 {
                     state.MudStatorAngularVelocity = state.WhirlVelocity[state.WhirlVelocity.Count - 1];
                     state.MudRotorAngularVelocity = state.MudRotorAngularVelocity + simulationParameters.InnerLoopTimeStep / (simulationParameters.MudMotor.I_rotor + simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * Math.Pow(simulationParameters.MudMotor.N_rotor, 2)) *

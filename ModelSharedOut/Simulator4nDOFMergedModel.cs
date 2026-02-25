@@ -11568,6 +11568,18 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SolverType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"EulerMethod")]
+        EulerMethod = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"VerletMethod")]
+        VerletMethod = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class BoreHoleSize
     {
 
@@ -11696,6 +11708,10 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("DrillstringPressureFile")]
         public string DrillstringPressureFile { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SolverType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public SolverType SolverType { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

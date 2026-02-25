@@ -79,10 +79,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             FirstStep = false;
         }
 
-        public void IntegrationStep(State state, LateralModel lateralModel, Input simulationInput, Configuration configuration, SimulationParameters simulationParameters)
+        public void IntegrationStep(State state, LateralModel lateralModel, SimulationParameters simulationParameters)
         {               
             // Use the lateral model instance to estimate the accelerations
-            lateralModel.CalculateAccelerations(state, simulationInput, configuration, simulationParameters);
+            lateralModel.CalculateAccelerations(state, simulationParameters);
             timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;            
             int n = state.SleeveAngularDisplacement.Count;
             // If it is the first step, initialize the minus one values                        
