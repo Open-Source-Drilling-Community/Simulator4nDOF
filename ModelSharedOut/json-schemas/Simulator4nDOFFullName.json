@@ -415,14 +415,6 @@
           "Trajectory": {
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.Trajectory"
           },
-          "DrillstringFile": {
-            "type": "string",
-            "nullable": true
-          },
-          "DrillstringPressureFile": {
-            "type": "string",
-            "nullable": true
-          },
           "FluidDensity": {
             "type": "number",
             "format": "double"
@@ -442,6 +434,10 @@
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillString"
           },
           "AnnulusPressureFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillstringPressureFile": {
             "type": "string",
             "nullable": true
           }

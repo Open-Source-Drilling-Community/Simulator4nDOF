@@ -427,25 +427,24 @@
                 DrillString = new DrillString(),
                 AnnulusPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/AnnulusHydraulicProfiles.txt",
                 DrillstringPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/DrillstringHydraulicProfiles.txt",
-                DrillstringFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/Drillstring.csv",
                 BoreHoleSizeList = new List<BoreHoleSize>() { new BoreHoleSize() { Depth = 336.0, ID = 19.188 * 0.0254 }, new BoreHoleSize() { Depth = 4160.0, ID = 8.553 * 0.0254 }, new BoreHoleSize() { Depth = 4170.0, ID = 12.25 * 0.0254 } },
                 BitRadius = 8.5 * 0.0254 / 2.0,
                 FluidDensity = 1260,
             },
             InitialValues = new InitialValues()
             {
-                BitDepth = 4280,
-                HoleDepth = 6170,
+                BitDepth = 200,
+                HoleDepth = 500,
                 TopOfStringPosition = 5
             },
             SetPointsList = new List<SetPoints>
             {
-                    new SetPoints
-                    {
-                        TimeDuration = 30,
-                        SurfaceRPM = 2.0792184547429953,
-                        TopOfStringVelocity = 0
-                    },
+                new SetPoints
+                {
+                    TimeDuration = 30, // seconds
+                    SurfaceRPM = 2 * Math.PI / 30, // rpm
+                    TopOfStringVelocity = 0 // m/s
+                },
             },
         };
     }

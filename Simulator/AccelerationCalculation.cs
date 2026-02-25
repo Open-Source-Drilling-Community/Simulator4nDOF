@@ -202,8 +202,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     }
                 }
             }   
-       }        
-        
+       }                
         public static void LateralSystem(LateralModel lateralModel, AxialTorsionalModel axialTorsionalModel, Input simulationInput, Configuration configuration, State state, SimulationParameters parameters)
         {
             #region  Allocation

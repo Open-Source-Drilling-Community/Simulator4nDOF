@@ -26,7 +26,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public int InnerLoopIterations;
         public double dxl;
         public double dtl;
-        public SolverODEEnum SolverODEEnum = SolverODEEnum.EulerMethod;
+        public SolverODEEnum SolverODEEnum = SolverODEEnum.VerletMethod;
         public SimulationParameters(DataModel.Configuration configuration)
         {
             Fluid = new Fluid(configuration.FluidDensity);

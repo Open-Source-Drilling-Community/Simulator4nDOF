@@ -11679,12 +11679,6 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("Trajectory")]
         public Trajectory Trajectory { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("DrillstringFile")]
-        public string DrillstringFile { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillstringPressureFile")]
-        public string DrillstringPressureFile { get; set; }
-
         [System.Text.Json.Serialization.JsonPropertyName("FluidDensity")]
         public double FluidDensity { get; set; }
 
@@ -11699,6 +11693,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("AnnulusPressureFile")]
         public string AnnulusPressureFile { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillstringPressureFile")]
+        public string DrillstringPressureFile { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

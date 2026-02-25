@@ -31,6 +31,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         public Vector<double> XVelocity;                
         public Vector<double> YVelocity;
         public Vector<double> AxialVelocity;
+        public Vector<double> AxialAcceleration;
         
         public VerletMethod(SimulationParameters simulationParameters)
         {
@@ -42,7 +43,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             XVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             YVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             AxialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);                
-        
+            AxialAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+
             SleeveAngularDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             AngularDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             XDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -59,12 +61,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 AngularDisplacementMinus1[i] = state.AngularDisplacement[i] - state.AngularVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.AngularAcceleration[i];
                 XDisplacementMinus1[i] = state.XDisplacement[i] - state.XVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.XAcceleration[i];
                 YDisplacementMinus1[i] = state.YDisplacement[i] - state.YVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.YAcceleration[i];
-                AxialVelocityMinus1[i] = state.AxialVelocity[i] - 2 * state.AxialAcceleration[i] * simulationParameters.InnerLoopTimeStep;
+                AxialVelocityMinus1[i] = state.AxialVelocity[i] - state.AxialAcceleration[i] * simulationParameters.InnerLoopTimeStep;
 
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];
                 YDisplacement[i] = state.YDisplacement[i];
                 AxialVelocity[i] = state.AxialVelocity[i];
+
+                AxialAcceleration[i] = state.AxialAcceleration[i];            
             }
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {
@@ -94,18 +98,28 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 state.AngularVelocity[i] = (state.AngularDisplacement[i] - AngularDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
                 state.XVelocity[i] = (state.XDisplacement[i] - XDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
                 state.YVelocity[i] = (state.YDisplacement[i] - YDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
-                //Temporary allocate axial velocity for proper data rollover
-                double axialVelocity = state.AxialVelocity[i]; 
-                // Central difference for axial velocity
-                state.AxialVelocity[i] = AxialVelocityMinus1[i] + 2 * simulationParameters.InnerLoopTimeStep * state.AxialAcceleration[i];
+                // Verlet Method for velocity update: v(t+dt) = v(t) + 0.5*dt*(a(t) + a(t+dt))
+                state.AxialVelocity[i] = AxialVelocityMinus1[i] + 0.5 * simulationParameters.InnerLoopTimeStep * (AxialAcceleration[i] + state.AxialAcceleration[i]);
                 //Rollover data for next iteration                
                 AngularDisplacementMinus1[i] = AngularDisplacement[i];
                 XDisplacementMinus1[i] = XDisplacement[i];
                 YDisplacementMinus1[i] = YDisplacement[i];
-                AxialVelocityMinus1[i] = axialVelocity;
+                AxialVelocityMinus1[i] = AxialVelocity[i];
+                
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];
                 YDisplacement[i] = state.YDisplacement[i];            
+                AxialVelocity[i] = state.AxialVelocity[i]; // Rollover axial velocity for next iteration
+                AxialAcceleration[i] = state.AxialAcceleration[i]; // Rollover axial acceleration for next iteration
+
+                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]))
+                {
+                    Console.WriteLine("NaN detected in lateral calculations at element " + i.ToString() +
+                        " XVel: " + state.XVelocity[i].ToString() +
+                        " YVel: " + state.YVelocity[i].ToString() +
+                        " ZVel: " + state.AxialVelocity[i].ToString()
+                        );
+                }              
             }
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {
