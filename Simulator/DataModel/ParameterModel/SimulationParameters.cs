@@ -19,11 +19,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Fluid Fluid;
         public IBitRock BitRock;
         public MudMotor MudMotor;
-        public Trajectory Trajectory;
+        public SimulatorTrajectory Trajectory;
         public LumpedCells LumpedCells;
         public DistributedCells DistributedCells;
         public Wellbore Wellbore;
-        public Drillstring Drillstring;
+        public SimulatorDrillString Drillstring;
         public Buoyancy Buoyancy;
         public Friction Friction;
         public BitRockModelEnum BitRockModelEnum;
@@ -51,7 +51,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             };
             Fluid = new Fluid(configuration.FluidDensity);
             LumpedCells = new LumpedCells(configuration.BitDepth, configuration.LengthBetweenLumpedElements);
-            Drillstring = new Drillstring(LumpedCells, 
+            Drillstring = new SimulatorDrillString(LumpedCells, 
                                  Fluid, 
                                  configuration.DrillString,
                                  configuration.BitDepth, 
@@ -68,7 +68,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                              configuration.BoreHoleSizes,
                              configuration.TopDriveMomentOfInertia,
                              configuration.FluidDamping);
-            Trajectory = new Trajectory(LumpedCells, configuration.Trajectory);
+            Trajectory = new SimulatorTrajectory(LumpedCells, configuration.Trajectory);
             Buoyancy = new Buoyancy(LumpedCells, Trajectory, Drillstring, configuration.StringPressureFile, configuration.AnnulusPressureFile, configuration.UseBuoyancyFactor);
 
 

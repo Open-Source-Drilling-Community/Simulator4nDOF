@@ -18,7 +18,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         // Number of cells in depth of cut PDE
         public int CellsInDepthOfCut;
 
-        public DistributedCells(LumpedCells lc, Drillstring ds, double omega0)
+        public DistributedCells(LumpedCells lc, SimulatorDrillString ds, double omega0)
         {
             x = Vector<double>.Build.Dense(Enumerable.Range(0, lc.DiscretiazionCellsInDistributedSections)
                                                      .Select(i => i * lc.Length / (lc.DiscretiazionCellsInDistributedSections - 1))

@@ -21,7 +21,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Vector<double> BoreholeRadius;                   // [m] Wellbore radius calculation
         public Vector<double> DrillStringClearance;            // [m] drillstring radial clearance to the borehole wall
 
-        public Wellbore(in Drillstring drillString,
+        public Wellbore(in SimulatorDrillString drillString,
                         in LumpedCells lumpedCells,
                         List<BoreHoleSize> boreHoleSizes,
                         double topDriveMomentOfInertia,
@@ -37,7 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             UpdateWellbore(drillString, lumpedCells);
         }
 
-        public void UpdateWellbore(in Drillstring drillString, in LumpedCells lumpedElement)
+        public void UpdateWellbore(in SimulatorDrillString drillString, in LumpedCells lumpedElement)
         {
             // Wellbore radius calculation
             BoreholeRadius = Vector<double>.Build.Dense(drillString.OuterRadius.Count);

@@ -4,7 +4,7 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
-    public class Trajectory
+    public class SimulatorTrajectory
     {
         // Trajectory (from trajectory file processing)
         private Vector<double> MeasuredDepthProfile;      // [m] MD orig
@@ -37,7 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> vy;
         private Vector<double> vz;
 
-        public Trajectory(LumpedCells lumpedCells, ModelShared.Trajectory trajectory)
+        public SimulatorTrajectory(LumpedCells lumpedCells, ModelShared.Trajectory trajectory)
         {
             
 

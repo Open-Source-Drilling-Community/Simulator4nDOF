@@ -45,7 +45,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         public readonly double N = 5;        
         
         
-        public Detournay(DistributedCells dc, Drillstring ds, double rockStrengthEpsilon, double bitWearLength, double bitRockFrictionCoeff, double pdcBladeNo)
+        public Detournay(DistributedCells dc, SimulatorDrillString ds, double rockStrengthEpsilon, double bitWearLength, double bitRockFrictionCoeff, double pdcBladeNo)
         {
             epsilon = rockStrengthEpsilon;
             l = bitWearLength;

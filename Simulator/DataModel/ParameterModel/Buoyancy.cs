@@ -24,7 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Vector<double> AxialBuoyancyForceChangeOfDiameters;
         public Vector<double> NormalBuoyancyForceChangeOfDiameters;
 
-        public Buoyancy(in LumpedCells lc, in Trajectory t, in Drillstring ds, string stringPressureFilename, string annulusPressureFilename, bool useBuoyancyFactor)
+        public Buoyancy(in LumpedCells lc, in SimulatorTrajectory t, in SimulatorDrillString ds, string stringPressureFilename, string annulusPressureFilename, bool useBuoyancyFactor)
         {
             // Read the string and annulus data files
             var stringData = ReadTextFile(stringPressureFilename);
@@ -56,7 +56,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Vector<double> thetaVece = ExtendVectorStart(0, t.InterpolatedTheta);
         }
 
-        public void UpdateBuoyancy(in LumpedCells lc, in Trajectory t, in Drillstring ds, bool useBuoyancyFactor)
+        public void UpdateBuoyancy(in LumpedCells lc, in SimulatorTrajectory t, in SimulatorDrillString ds, bool useBuoyancyFactor)
         {
             // Interpolate pressures and densities at positions xL
             StringPressure = LinearInterpolate(StringMDProfile, StringPressureProf, lc.ElementLength);
