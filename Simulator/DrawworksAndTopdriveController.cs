@@ -33,7 +33,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             if (state.TopOfStringPosition < 1 && !pooh_before_connection)
             {
                 pooh_before_connection = true;
-                state.onBottom_startIdx = -1;
+                state.OnBottomStart = -1;
             }
 
             if (state.TopOfStringPosition > 2 && pooh_before_connection)

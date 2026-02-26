@@ -8,7 +8,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
     public interface IModel<TypeModel> where TypeModel : IModel<TypeModel>
     {
         void PrepareModel(TypeModel model, State state, SimulationParameters simulationParameters);
-        void CalculateAccelerations(State state, SimulationParameters parameters);
+        void CalculateAccelerations(State state, in SimulationParameters parameters);
         
     }     
 }

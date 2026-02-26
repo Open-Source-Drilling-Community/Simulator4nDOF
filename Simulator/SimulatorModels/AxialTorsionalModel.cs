@@ -14,58 +14,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
     public class AxialTorsionalModel : IModel<AxialTorsionalModel>
     {     
-
-        //public Matrix<double> DownwardTorsionalWave; // Downward traveling wave, torsional
-        //public Matrix<double> UpwardTorsionalWave; // Upward traveling wave, torsional
-        //public Matrix<double> DownwardAxialWave; // Downward traveling wave, axial
-        //public Matrix<double> UpwardAxialWave; // Upward traveling wave, axial
-        //public Vector<double> DownwardTorsionalWaveLeftBoundary;
-        //public Vector<double> UpwardTorsionalWaveRightBoundary;
-        //public Vector<double> DownwardAxialWaveLeftBoundary;
-        //public Vector<double> UpwardAxialWaveRightBoundary;
-//
-        //public Matrix<double> DiffDownwardTorsionalWave; // Downward traveling wave, torsional
-        //public Matrix<double> DiffUpwardTorsionalWave; // Upward traveling wave, torsional
-        //public Matrix<double> DiffDownwardAxialWave; // Downward traveling wave, axial
-        //public Matrix<double> DiffUpwardAxialWave; // Upward traveling wave, axial
-        
-
-        //public double WeightOnBit;
-        //public double TorqueOnBit;
-        
-
-        public AxialTorsionalModel(State state, SimulationParameters simulationParameters)
+        private double topDriveTorque;
+        private double torsionalVelocityLeft;
+        private double axialVelocityLeft;
+        private double[] bitForces;
+        public AxialTorsionalModel(State state, in SimulationParameters simulationParameters)
         {
-            //Dimension initial state
-            state.DownwardTorsionalWave = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, torsional
-            state.UpwardTorsionalWave   = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, torsional
-            state.DownwardAxialWave     = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, axial
-            state.UpwardAxialWave       = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, axial            
-            //Delta of the wave used for Upwind Scheme
-            state.DiffDownwardTorsionalWave = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, torsional
-            state.DiffUpwardTorsionalWave   = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, torsional
-            state.DiffDownwardAxialWave     = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Downward traveling wave, axial
-            state.DiffUpwardAxialWave       = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements); // Upward traveling wave, axial                        
-
-            // Allocate boundary condition vectors
-            state.DownwardTorsionalWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            state.UpwardTorsionalWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            state.DownwardAxialWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            state.UpwardAxialWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            bitForces = new double[2]{0,0};
             UpdateBoundaryConditions(state, simulationParameters);           
-            state.WeightOnBit = 0.0;
-            state.TorqueOnBit = 0.0;
         }
-
-
-        public void UpdateBoundaryConditions(State state, SimulationParameters parameters)
+        public void UpdateBoundaryConditions(State state, in SimulationParameters parameters)
         {                                               
             int N = state.AxialVelocity.Count;
             int idx = parameters.LumpedCells.DistributedToLumpedRatio - 1;
             for (int i = 0; i < N; i++)
             {
-                double torsionalVelocityLeft = (i == 0) ? state.TopDrive.TopDriveAngularVelocity : state.AngularVelocity[i - 1];
-                double axialVelocityLeft = (i == 0) ? state.TopDrive.CalculateSurfaceAxialVelocity : state.AxialVelocity[i - 1];                
+                torsionalVelocityLeft = (i == 0) ? state.TopDrive.TopDriveAngularVelocity : state.AngularVelocity[i - 1];
+                axialVelocityLeft = (i == 0) ? state.TopDrive.CalculateSurfaceAxialVelocity : state.AxialVelocity[i - 1];                
                 //Left boundaries
                 state.DownwardTorsionalWaveLeftBoundary[i] = - state.UpwardTorsionalWave[0, i] + 2 * torsionalVelocityLeft;
                 state.DownwardAxialWaveLeftBoundary[i]    = - state.UpwardAxialWave[0, i] + 2 * axialVelocityLeft;
@@ -76,14 +41,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         }
         public void IntegrateTopDriveSpeed(State state, SimulationParameters parameters)
         {
-           double topDriveTorque = 0.5 * parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] / parameters.Drillstring.TorsionalWaveSpeed *
+            topDriveTorque = 0.5 * parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] / parameters.Drillstring.TorsionalWaveSpeed *
                 (   
                     state.DownwardTorsionalWave[0, 0] 
                     - state.UpwardTorsionalWave[0, 0]
                 );
 
             state.TopDrive.TopDriveAngularVelocity = state.TopDrive.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.Wellbore.TopDriveInertia;                
-            //state.TopOfStringPosition = state.TopOfStringPosition + simulationInput.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;                             
         }
 
         public void PrepareModel(AxialTorsionalModel model, State state, SimulationParameters parameters)
@@ -110,7 +74,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
             }
         }
-        public void CalculateAccelerations(State state, SimulationParameters parameters)
+        public void CalculateAccelerations(State state, in SimulationParameters parameters)
         {                                        
             this.UpdateBoundaryConditions(state, parameters);               
             state.BitVelocity = 0.5 * 
@@ -129,12 +93,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             else
                 angularVelocityBottom = state.MudRotorAngularVelocity;
 
-            double[] bitForces = parameters.BitRock.CalculateInteractionForce(state, angularVelocityBottom, parameters);
+            bitForces = parameters.BitRock.CalculateInteractionForce(state, angularVelocityBottom, parameters);
             state.TorqueOnBit = bitForces[0];
             state.WeightOnBit = bitForces[1];
            
             // manage the bit sticking off bottom condition
-            if (!state.onBottom)
+            if (!state.BitOnBotton)
             {
                 double omega_ = state.AngularVelocity[state.AngularVelocity.Count - 1];
                 if (parameters.Input.StickingBoolean)

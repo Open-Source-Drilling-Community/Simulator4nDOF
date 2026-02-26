@@ -66,7 +66,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             double tb;
             double wb;
                 
-            if (state.onBottom)
+            if (state.BitOnBotton)
             {
                 double previousDepthOfCut;
                 double diffDepthOfCut;

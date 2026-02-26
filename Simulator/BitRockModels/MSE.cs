@@ -37,7 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         {
             double tb = 0.0;
             double wb = 0.0;
-            if (state.onBottom)
+            if (state.BitOnBotton)
             {
                 // Update the last element of l
                 int lastIndex = state.DepthOfCut.Count - 1;
