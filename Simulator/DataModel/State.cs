@@ -11,7 +11,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Matrix<double> PipeAxialStrain;                // Pipe axial strain
         public Matrix<double> PipeAxialVelocity;              // Pipe axial velocity
 
-        public double TopDriveAngularVelocity;                // Top drive angular velocity
         public Vector<double> SleeveAngularVelocity;          // Sleeve angular velocity
         public Vector<double> DepthOfCut;                     // Depth of cut
 
@@ -48,20 +47,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Matrix<double> DiffUpwardTorsionalWave; // Upward traveling wave, torsional
         public Matrix<double> DiffDownwardAxialWave; // Downward traveling wave, axial
         public Matrix<double> DiffUpwardAxialWave; // Upward traveling wave, axial
-        
+        // Bit interaction generalized forces        
         public double WeightOnBit;
         public double TorqueOnBit;
-        
-
+        // Top Drive state variables
+        public TopDriveAndDrawworkState TopDrive;
+        //public double TopDriveAngularVelocity;                // Top drive angular velocity        
+        //public double TopDriveMotorTorque;                           // Top drive motor torque
+        //public double TopDriveRPMSetPoint;
         public Vector<double> SleeveForces;                   // Sleeve forces
         public List<int> SleeveToLumpedIndex;                // Mapping from sleeve indices to lumped element indices
         public Vector<double> SlipCondition;                 // Slip condition evaluated at each lumped element
 
-        //public Matrix<double> TorsionalDownwardTravelingWave; // Downward traveling torsional wave
-        //public Matrix<double> TorsionalUpwardTravelingWave;   // Upward traveling torsional wave
-        //public Matrix<double> AxialDownwardTravelingWave;     // Downward traveling axial wave
-        //public Matrix<double> AxialUpwardTravelingWave;       // Upward traveling axial wave
-
+   
         // Mud motor stator and rotor angular velocities
         public double MudStatorAngularVelocity;               // Mud motor stator angular velocity
         public double MudRotorAngularVelocity;                // Mud motor rotor angular velocity
@@ -110,7 +108,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize lumped element whirl velocity
             WhirlVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize top drive angular velocity
-            TopDriveAngularVelocity = 0;
+            TopDrive = new TopDriveAndDrawworkState()
+            {
+                TopDriveAngularVelocity = simulationParameters.TopDriveDrawwork.SurfaceRotation,
+                TopDriveMotorTorque = simulationParameters.TopDriveDrawwork.TopDriveMotorTorque,
+                MaximumTopDriveTorque = simulationParameters.TopDriveDrawwork.MaximumTopDriveTorque,
+                TopDriveRPMSetPoint = simulationParameters.TopDriveDrawwork.TopDriveRPMSetPoint
+            };
             // Initialize lumped element angular displacement
             AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element angular velocity
@@ -176,10 +180,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             TopDriveStartupTime = 0;
             onBottom_startIdx = -1;
           }
-        public State(in SimulationParameters simulationParameters, Configuration configuration)
+        public State(in SimulationParameters simulationParameters)
         {
-            Step = 0;
-
+            
             // Initialize pipe shear strain matrix
             PipeShearStrain = Matrix<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize pipe angular velocity matrix
@@ -198,7 +201,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize lumped element whirl velocity
             WhirlVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize top drive angular velocity
-            TopDriveAngularVelocity = 0;
+            TopDrive = new TopDriveAndDrawworkState()
+            {
+                TopDriveAngularVelocity = simulationParameters.TopDriveDrawwork.SurfaceRotation,
+                TopDriveMotorTorque = simulationParameters.TopDriveDrawwork.TopDriveMotorTorque,
+                MaximumTopDriveTorque = simulationParameters.TopDriveDrawwork.MaximumTopDriveTorque,
+                TopDriveRPMSetPoint = simulationParameters.TopDriveDrawwork.TopDriveRPMSetPoint
+            };
             // Initialize lumped element angular displacement
             AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element angular velocity
@@ -252,11 +261,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             MudStatorAngularVelocity = 0;
             MudRotorAngularVelocity = 0;
 
-            this.BitDepth = configuration.BitDepth;                               // Initial values set in SimulationParameters - to be moved
-            PreviousCalculatedBitDepth = configuration.BitDepth;
-            this.HoleDepth = configuration.HoleDepth;
-            this.TopOfStringPosition = configuration.TopOfStringPosition;
-            this. AxialVelocity[0] = configuration.TopOfStringVelocity;
+            this.BitDepth = simulationParameters.Input.InitialBitDepth;                               // Initial values set in SimulationParameters - to be moved
+            PreviousCalculatedBitDepth = simulationParameters.Input.InitialBitDepth;
+            this.HoleDepth = simulationParameters.Input.InitialHoleDepth;
+            this.TopOfStringPosition = simulationParameters.Input.InitialTopOfStringPosition;
+            this. AxialVelocity[0] = simulationParameters.Input.InitialTopOfStringVelocity;
             onBottom = false;
 
             make_connection = false;

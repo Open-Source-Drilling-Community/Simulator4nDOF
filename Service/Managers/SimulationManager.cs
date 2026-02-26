@@ -1133,8 +1133,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor
-                    ? Utilities.ExtendVectorStart(state.TopDriveAngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
-                    : Utilities.ExtendVectorStart(state.TopDriveAngularVelocity,
+                    ? Utilities.ExtendVectorStart(state.TopDrive.TopDriveAngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
+                    : Utilities.ExtendVectorStart(state.TopDrive.TopDriveAngularVelocity,
                         Utilities.ToVector(state.AngularVelocity.SubVector(1, state.AngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
                 SleevesAngularVelocity = state.SleeveAngularVelocity.ToList(),
                 RadialClearance = parameters.Wellbore.DrillStringClearance.Append(0).ToList(),
@@ -1142,7 +1142,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(u.CalculateSurfaceAxialVelocity, state.AngularVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.AngularVelocity).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
                 Inclination = parameters.Trajectory.InterpolatedTheta.Append(parameters.Trajectory.InterpolatedTheta.LastOrDefault<double>()).ToList(),
                 Azimuth = parameters.Trajectory.InterpolatedPhi.Append(parameters.Trajectory.InterpolatedPhi.LastOrDefault<double>()).ToList(),
@@ -1161,9 +1161,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             scalars.BitRPM.Add(output.BitRotationInRPM);
             scalars.BitDepth.Add(state.BitDepth);
             scalars.HoleDepth.Add(state.HoleDepth);
-            scalars.SurfaceTorque.Add(u.TopDriveMotorTorque);
+            scalars.SurfaceTorque.Add(state.TopDrive.TopDriveMotorTorque);
             scalars.BitTorque.Add(output.TorqueOnBit);
-            scalars.TopOfStringAxialVelocity.Add(u.CalculateSurfaceAxialVelocity);
+            scalars.TopOfStringAxialVelocity.Add(state.TopDrive.CalculateSurfaceAxialVelocity);
             scalars.BitAxialVelocity.Add(output.BitVelocity);
             scalars.WOB.Add(output.WeightOnBit);
             scalars.SSI.Add(output.SSI);
@@ -1245,13 +1245,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
                 for (int i = 0; i < steps; i++)
                 {
-                    var (state, output, u) = solver.OuterStep(setPoints.SurfaceRPM, setPoints.TopOfStringVelocity, setPoints.BottomExtraSideForce, setPoints.DifferenceStaticKineticFriction, setPoints.StribeckCriticalVelocity, setPoints.Sticking);
+                    var (state, output, input) = solver.OuterStep(setPoints);
                     currentTime = (state.Step - 1) * outerTimeStep; // start with 0 sec
                     simulation.Progress = currentTime / totalDuration;
 
                     lastState = state;
                     lastOutput = output;
-                    lastControl = u;
+                    lastControl = input;
 
                     bool logScalar = currentTime >= nextScalarLogTime;
                     bool logProfile = logProfilesAtFixedInterval && currentTime + 0.5 * outerTimeStep >= nextProfileLogTime;
@@ -1259,13 +1259,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     if (logScalar)
                     {
                         nextScalarLogTime += scalarInterval;
-                        LogScalarValues(simulation.Results.Scalars, currentTime, output, state, u);
+                        LogScalarValues(simulation.Results.Scalars, currentTime, output, state, input);
                     }
 
                     if (logProfile)
                     {
                         nextProfileLogTime += profileInterval;
-                        simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, u, config));
+                        simulation.Results.Profiles.Add(CreateProfile(currentTime, output, state, parameters, input, config));
                     }
 
                     if (logProfile || logScalar)

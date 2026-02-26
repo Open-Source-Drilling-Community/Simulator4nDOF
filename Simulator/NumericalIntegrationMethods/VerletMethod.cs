@@ -53,7 +53,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             AxialVelocityMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
         }    
 
-        public void InitializeVerletMethod(State state, SimulationParameters simulationParameters)
+        public void InitializeVerletMethod(State state, in SimulationParameters simulationParameters)
         {
 
             timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;
@@ -79,7 +79,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             FirstStep = false;
         }
 
-        public void IntegrationStep(State state, LateralModel lateralModel, SimulationParameters simulationParameters)
+        public void IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
         {               
             // Use the lateral model instance to estimate the accelerations
             lateralModel.CalculateAccelerations(state, simulationParameters);
@@ -88,7 +88,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             // If it is the first step, initialize the minus one values                        
             if (FirstStep)
             {
-                InitializeVerletMethod(state, simulationParameters);                             
+                InitializeVerletMethod(state, in simulationParameters);                             
             }
             //Integrate time steps using Verlet method
             for (int i = 0; i < state.XDisplacement.Count; i++)

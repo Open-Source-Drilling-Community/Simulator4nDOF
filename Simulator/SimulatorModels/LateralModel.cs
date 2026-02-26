@@ -426,54 +426,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                             )
                         );
                     double kinematicFriction = Math.Abs( normalCollisionForce * parameters.Friction.KinematicFrictionCoefficient[i]);
-                    //if (Math.Abs(axialVelocity) < 1e-6)
-                    //{
-                        // The no slip condition: noSlipThetaDot * Router + whirlVelocity * radialDisplacement = 0
-                        // No slide acceleration: noSlipThetaDotDot = - (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/Router
-                        // noSlipWhirlAcceleration = (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement
-                        // xDotDot = sumForceX/Mass, yDotDot = sumForceY/Mass
-                        //double xDotDot = sumForcesX / parameters.Drillstring.LumpedElementMass[i];
-                        //double yDotDot = sumForcesY / parameters.Drillstring.LumpedElementMass[i];
-                        //noSlipWhirlAcceleration = radialDisplacement == 0 ? 10E5 : (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement;
-                        //noSlipThetaDotDot = (radialVelocity * whirlVelocity + yDotDot * cosWhirlAngle - xDotDot * sinWhirlAngle) / outerRadius;//- (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/outerRadius;                                            
-                        //double forceNoSlipTangent = 
-                        //        (
-                        //            torqueDifference 
-                        //            - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed 
-                        //            + noSlipThetaDotDot * parameters.Drillstring.PipePolarMoment[i] / outerRadius
-                        //        )/outerRadius;  
-                        //stopForceMagnitude = Math.Sqrt(forceNoSlipTangent * forceNoSlipTangent + sumForcesZ * sumForcesZ) + Constants.RegularizationCoefficient;
-                        //// Static friction force
-                        //if (state.SlipCondition[i] == 0)
-                        //{
-                        //    // If the previous state was a not a slip condition, re-evaluate by comparing forces.  
-                        //    state.SlipCondition[i] = stopForceMagnitude > Math.Abs(coulombStaticForceMagnitude) ? 1:0;                        
-                        //}
-                        //else
-                        //{
-                        //    // Check the critical velocity
-                        //    if (tangentialMagnitude < parameters.Friction.v_c)
-                        //    {
-                        //        state.SlipCondition[i] = 0;
-                        //    }                        
-                        //}
-                        //staticFriction =  Math.Max(Math.Min(stopForceMagnitude, coulombStaticForceMagnitude), - coulombStaticForceMagnitude);                       
-                        ////Masks friction magnitude to be either static or kinematic
-                        //coulombForceTemp = (state.SlipCondition[i] == 0) ? staticFriction : stribeckFriction;
-                        //Projects into the lateral and axial directions
-                        //coulombFrictionX = - coulombForceTemp * tangentialDirection[0];
-                        //coulombFrictionY = - coulombForceTemp * tangentialDirection[1];
-                        //coulombFrictionZ = - coulombForceTemp * tangentialDirection[2];                                                                                                
-                    //}
-                    //else
-                    //{
-                    //    // If there is axial velocity, this model must have a slip condition. Thus, we can directly calculate the stribeck friction and project it.
-                    //    //coulombForceTemp = stribeckFriction;
-                    //    coulombFrictionX = - stribeckFriction * tangentialDirection[0];
-                    //    coulombFrictionY = - stribeckFriction * tangentialDirection[1];
-                    //    coulombFrictionZ = - stribeckFriction * tangentialDirection[2];
-                    //    state.SlipCondition[i] = 1;                                 
-                    //}
+            
                     //Calculate the no slip conditions 
                     if (Math.Abs(axialVelocity) < 1e-6)
                     {
@@ -486,7 +439,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                         noSlipWhirlAcceleration = radialDisplacement == 0 ? 10E5 : (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement;
                         noSlipThetaDotDot = (radialVelocity * whirlVelocity + yDotDot * cosWhirlAngle - xDotDot * sinWhirlAngle) / outerRadius;//- (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/outerRadius;                                            
                     }
-                    //Check for a static condition
+                    //  Check for a static condition by evaluating the tangential speed at the contact point.
+                    // Note that on a pure rolling condition, must be tangentialMagnitude = 0. This does not imply that there 
+                    // the pipe is static. 
                     if (Math.Abs(tangentialMagnitude) < 1E-6)
                     {
                         state.SlipCondition[i] = 0;

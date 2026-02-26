@@ -12,6 +12,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class SimulationParameters
     {
+        //Simulation metadata
+        public bool UseMudMotor;
+        public bool MovingDrillstring {get; set;} = true;
         public Input Input;
         public Fluid Fluid;
         public IBitRock BitRock;
@@ -24,17 +27,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Buoyancy Buoyancy;
         public Friction Friction;
         public BitRockModelEnum BitRockModelEnum;
+        public TopDriveDrawwork TopDriveDrawwork;
+        //Integration properties
+        public double OuterLoopTimeStep;
         public double InnerLoopTimeStep;
         public int InnerLoopIterations;
         public double dxl;
         public double dtl;
-        public bool UseMudMotor;
+        public SolverType SolverType {get; set;} = SolverType.VerletMethod;
+        //Buyoancy
+        public bool UseBuoyancyFactor {get; set;} = true;
+        //Output properties
+        public bool UsePipeMovementReconstruction {get; set;} = true;
+
         public SimulationParameters(DataModel.Configuration configuration)
         {
             Input = new Input()
             {
-                SurfaceRotation = configuration.SurfaceRPM,
-                SurfaceAxialVelocity = configuration.TopOfStringVelocity,
+                InitialBitDepth = configuration.BitDepth,
+                InitialHoleDepth = configuration.HoleDepth,
+                InitialTopOfStringPosition = configuration.TopOfStringPosition,
+                InitialTopOfStringVelocity = configuration.TopOfStringVelocity
             };
             Fluid = new Fluid(configuration.FluidDensity);
             LumpedCells = new LumpedCells(configuration.BitDepth, configuration.LengthBetweenLumpedElements);
@@ -74,10 +87,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double dtTemp = DistributedCells.DistributedSectionLength / Math.Max(Drillstring.TorsionalWaveSpeed, Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             dxl = 1.0 / DistributedCells.CellsInDepthOfCut;
             dtl = dxl / DistributedCells.OmegaMax;  // As per the CFL condition for the depth of cut PDE
+            OuterLoopTimeStep = configuration.TimeStep; // time step of outer loop, which updates the distributed cells and calculates the bit forces
             InnerLoopIterations = (int)Math.Max(Math.Ceiling(configuration.TimeStep / dtTemp), Math.Ceiling(configuration.TimeStep / dtl)); // number of iterations in the inner loop
             InnerLoopTimeStep = configuration.TimeStep / InnerLoopIterations; // time step of inner loop      
             UseMudMotor = configuration.UseMudMotor;
-
+            TopDriveDrawwork = new TopDriveDrawwork()
+            {
+                SurfaceRotation = configuration.SurfaceRPM,
+                SurfaceAxialVelocity = configuration.TopOfStringVelocity,
+                TopDriveControllerType = configuration.TopDriveController,
+                HeaveAmplitude = configuration.HeaveAmplitude,
+                HeavePeriod = configuration.HeavePeriod,
+                TopDriveStartupTime = configuration.TopdriveStartupTime,
+                ConnectionTime = configuration.ConnectionTime
+            };
+            MovingDrillstring = configuration.MovingDrillstring;
+            UseBuoyancyFactor = configuration.UseBuoyancyFactor;
+            UsePipeMovementReconstruction = configuration.UsePipeMovementReconstruction;
+            SolverType = configuration.SolverType;
         }
 
         public void AddNewLumpedElement()

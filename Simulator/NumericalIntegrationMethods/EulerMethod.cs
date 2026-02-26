@@ -13,7 +13,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public class EulerMethod : ISolverODE<LateralModel>
     {     
-        public void IntegrationStep(State state, LateralModel lateralModel, SimulationParameters simulationParameters)
+        public void IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
         {   
             // Use the lateral model instance to estimate the accelerations
             lateralModel.CalculateAccelerations(state, simulationParameters);

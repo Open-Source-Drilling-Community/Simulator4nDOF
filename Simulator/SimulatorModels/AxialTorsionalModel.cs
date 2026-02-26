@@ -52,20 +52,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             state.UpwardTorsionalWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             state.DownwardAxialWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             state.UpwardAxialWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            UpdateBoundaryConditions(state, simulationParameters, simulationParameters.Input);           
+            UpdateBoundaryConditions(state, simulationParameters);           
             state.WeightOnBit = 0.0;
             state.TorqueOnBit = 0.0;
         }
 
 
-        public void UpdateBoundaryConditions(State state, SimulationParameters parameters, Input simulationInput)
+        public void UpdateBoundaryConditions(State state, SimulationParameters parameters)
         {                                               
             int N = state.AxialVelocity.Count;
             int idx = parameters.LumpedCells.DistributedToLumpedRatio - 1;
             for (int i = 0; i < N; i++)
             {
-                double torsionalVelocityLeft = (i == 0) ? state.TopDriveAngularVelocity : state.AngularVelocity[i - 1];
-                double axialVelocityLeft = (i == 0) ? simulationInput.CalculateSurfaceAxialVelocity : state.AxialVelocity[i - 1];                
+                double torsionalVelocityLeft = (i == 0) ? state.TopDrive.TopDriveAngularVelocity : state.AngularVelocity[i - 1];
+                double axialVelocityLeft = (i == 0) ? state.TopDrive.CalculateSurfaceAxialVelocity : state.AxialVelocity[i - 1];                
                 //Left boundaries
                 state.DownwardTorsionalWaveLeftBoundary[i] = - state.UpwardTorsionalWave[0, i] + 2 * torsionalVelocityLeft;
                 state.DownwardAxialWaveLeftBoundary[i]    = - state.UpwardAxialWave[0, i] + 2 * axialVelocityLeft;
@@ -74,7 +74,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 state.UpwardAxialWaveRightBoundary[i]    = - state.DownwardAxialWave[idx, i] + 2 * state.AxialVelocity[i];
             }         
         }
-        public void IntegrateTopDriveSpeed(State state, SimulationParameters parameters, Input simulationInput)
+        public void IntegrateTopDriveSpeed(State state, SimulationParameters parameters)
         {
            double topDriveTorque = 0.5 * parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] / parameters.Drillstring.TorsionalWaveSpeed *
                 (   
@@ -82,7 +82,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     - state.UpwardTorsionalWave[0, 0]
                 );
 
-            state.TopDriveAngularVelocity = state.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (simulationInput.TopDriveMotorTorque - topDriveTorque) / parameters.Wellbore.TopDriveInertia;                
+            state.TopDrive.TopDriveAngularVelocity = state.TopDrive.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.Wellbore.TopDriveInertia;                
             //state.TopOfStringPosition = state.TopOfStringPosition + simulationInput.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;                             
         }
 
@@ -112,7 +112,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         }
         public void CalculateAccelerations(State state, SimulationParameters parameters)
         {                                        
-            this.UpdateBoundaryConditions(state, parameters, parameters.Input);               
+            this.UpdateBoundaryConditions(state, parameters);               
             state.BitVelocity = 0.5 * 
                 (
                     state.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, state.DownwardAxialWave.ColumnCount - 1] 

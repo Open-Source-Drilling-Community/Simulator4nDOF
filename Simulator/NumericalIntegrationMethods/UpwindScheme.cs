@@ -14,7 +14,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
     public class UpwindScheme : ISolverODE<AxialTorsionalModel>
     {     
         public void AddNewLumpedElement(){}
-        public void IntegrationStep(State state, AxialTorsionalModel axialTorsionalModel, SimulationParameters simulationParameters)
+        public void IntegrationStep(State state, AxialTorsionalModel axialTorsionalModel, in SimulationParameters simulationParameters)
         {   
             // Use the torsional model instance to estimate the accelerations
             axialTorsionalModel.CalculateAccelerations(state, simulationParameters);
