@@ -40,6 +40,12 @@ if (!String.IsNullOrEmpty(builder.Configuration["DrillStringHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.DrillStringHostURL = builder.Configuration["DrillStringHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["TrajectoryHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.TrajectoryHostURL = builder.Configuration["TrajectoryHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["WellBoreArchitectureHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellBoreArchitectureHostURL = builder.Configuration["WellBoreArchitectureHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["DrillingFluidHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.DrillingFluidHostURL = builder.Configuration["DrillingFluidHostURL"];
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

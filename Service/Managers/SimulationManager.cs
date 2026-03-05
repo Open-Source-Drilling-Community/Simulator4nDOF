@@ -1079,16 +1079,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             
             var config = new Configuration()
             {
-                AnnulusPressureFile = simulation.ContextualData.AnnulusPressureFile,
+                DrillingFluidDescription = simulation.ContextualData.DrillingFluidDescription, 
                 Trajectory = simulation.ContextualData.Trajectory!,
                 DrillString = simulation.ContextualData.DrillString,
-                StringPressureFile = simulation.ContextualData.DrillstringPressureFile,
-                BitDepth = simulation.InitialValues.BitDepth,                            // [m]
+                BitDepth = simulation.InitialValues.BitDepth,                             // [m]
+                FluidTemperature = simulation.ContextualData.Temperature,                 // [K]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]
                 TopOfStringPosition = simulation.InitialValues.TopOfStringPosition,                   // [m]
                 SurfaceRPM = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].SurfaceRPM : 0,            // [rad/s]
                 TopOfStringVelocity = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].TopOfStringVelocity : 0,         // [m/s] 
-                BoreHoleSizes = simulation.ContextualData.BoreHoleSizeList,
+                CasingSection = simulation.ContextualData.CasingSection,
                 BitRadius = simulation.ContextualData.BitRadius,                     // [m]
                 //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),

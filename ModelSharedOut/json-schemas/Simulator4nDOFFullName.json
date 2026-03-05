@@ -433,6 +433,12 @@
           "DrillString": {
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillString"
           },
+          "DrillingFluidDescription": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillingFluidDescription"
+          },
+          "WellBoreArchitecture": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.WellBoreArchitecture"
+          },
           "AnnulusPressureFile": {
             "type": "string",
             "nullable": true
@@ -970,6 +976,350 @@
         ],
         "type": "string"
       },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.BaseCompositionProperties": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ThermalConductivity"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.BaseOil": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ThermalConductivity"
+          },
+          "MetaInfo": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "PVTParameters": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BaseOilPVTParameters"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.BaseOilPVTParameters": {
+        "type": "object",
+        "properties": {
+          "A0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "B0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "C0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "D0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "E0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "F0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.BoreHoleSize": {
+        "type": "object",
+        "properties": {
+          "HoleSize": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Length": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.Brine": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ThermalConductivity"
+          },
+          "MetaInfo": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "PVTParameters": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BrinePVTParameters"
+          },
+          "SaltContent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SaltContent"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.BrinePVTParameters": {
+        "type": "object",
+        "properties": {
+          "S0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "S1": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "S2": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "S3": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Bw": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Cw": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Dw": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Ew": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Fw": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.CasingSection": {
+        "type": "object",
+        "properties": {
+          "TopDepth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Length": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TopCementDepth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "CasingSectionElements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.CasingSectionElement"
+            },
+            "nullable": true
+          },
+          "CasingSectionSizeTable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BoreHoleSize"
+            },
+            "nullable": true
+          },
+          "OpenHoleSection": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.OpenHoleSection"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.CasingSectionElement": {
+        "type": "object",
+        "properties": {
+          "BodyOD": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "BodyID": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "CollarOD": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "JointLength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "SectionLength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MaxDLS": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
+          },
+          "ConnectionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "Grade": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialDensity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "YoungModulus": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "LinearWeight": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TensileStrength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TorsionalStrength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "BurstPressure": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "CollapsePressure": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "YieldStress": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MakeUpTorqueRecommended": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.CouetteRheometer": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rheometerType": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.RheometerTypeEnum"
+          },
+          "bobRadius": {
+            "type": "number",
+            "format": "double"
+          },
+          "gap": {
+            "type": "number",
+            "format": "double"
+          },
+          "newtonianEndEffectCorrection": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "conicalAngle": {
+            "type": "number",
+            "format": "double"
+          },
+          "measurementPrecision": {
+            "type": "number",
+            "format": "double"
+          },
+          "useISOConvention": {
+            "type": "boolean"
+          },
+          "fixedSpeedList": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DiracDistribution": {
+        "type": "object",
+        "properties": {
+          "MinValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaxValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "Value": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillString": {
         "type": "object",
         "properties": {
@@ -1264,6 +1614,91 @@
         },
         "additionalProperties": { }
       },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillingFluidComposition": {
+        "type": "object",
+        "properties": {
+          "BrineProperies": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.Brine"
+          },
+          "BaseOilProperies": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BaseOil"
+          },
+          "WaterOilRatio": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "HighGravitySolid": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BaseCompositionProperties"
+          },
+          "LowGravitySolid": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BaseCompositionProperties"
+          },
+          "LostCirculationMaterials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.LostCirculationMaterial"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.DrillingFluidDescription": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidComposition": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DrillingFluidComposition"
+          },
+          "FluidPVTParameters": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.FluidPVTParameters"
+          },
+          "GellingProperties": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GellingProperties"
+          },
+          "FlowCurve": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.FlowCurve"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ThermalConductivity"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.ElementConnectivity": {
+        "type": "object",
+        "properties": {
+          "UpstreamElement": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SideElement"
+          },
+          "DownstreamElement": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SideElement"
+          }
+        },
+        "additionalProperties": { }
+      },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.ErrorCode": {
         "enum": [
           "XYM1",
@@ -1418,6 +1853,169 @@
         },
         "additionalProperties": { }
       },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.FlowCurve": {
+        "type": "object",
+        "properties": {
+          "CouetteRheometer": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.CouetteRheometer"
+          },
+          "TableValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.FlowCurveTable"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.FlowCurveTable": {
+        "type": "object",
+        "properties": {
+          "Temperature": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Pressure": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "RheometerMeasurements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.RheometerMeasurement"
+            },
+            "nullable": true
+          },
+          "ShearRateReference": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MeasurementTypesShearRate"
+          },
+          "ShearStressReference": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MeasurementTypesShearStress"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.FluidPVTParameters": {
+        "type": "object",
+        "properties": {
+          "A0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "B0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "C0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "D0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "E0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "F0": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.FluidType": {
+        "enum": [
+          "Air",
+          "Water"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDistribution": {
+        "type": "object",
+        "properties": {
+          "MinValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaxValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mean": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StandardDeviation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty": {
+        "type": "object",
+        "properties": {
+          "GaussianValue": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDistribution"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.GelData": {
+        "type": "object",
+        "properties": {
+          "GelDuration": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "GelStrength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "Temperature": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.GellingProperties": {
+        "type": "object",
+        "properties": {
+          "GelPropertiesTable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GelData"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.LostCirculationMaterial": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ThermalConductivity"
+          },
+          "GrainSize": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.LostCiruclationMaterialGrainType"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.LostCiruclationMaterialGrainType": {
+        "enum": [
+          "UltraFine",
+          "Fine",
+          "Medium",
+          "Coarse"
+        ],
+        "type": "string"
+      },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.Matrix3x3": {
         "type": "object",
         "properties": {
@@ -1431,6 +2029,22 @@
           }
         },
         "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.MeasurementTypesShearRate": {
+        "enum": [
+          "Rotation",
+          "IsoNewtonianShearRate",
+          "BobNewtonianShearRate"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.MeasurementTypesShearStress": {
+        "enum": [
+          "Torque",
+          "IsoNewtonianShearStress",
+          "BobNewtonianShearStress"
+        ],
+        "type": "string"
       },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo": {
         "type": "object",
@@ -1453,6 +2067,247 @@
           }
         },
         "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.OpenHoleSection": {
+        "type": "object",
+        "properties": {
+          "HoleSizes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.BoreHoleSize"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.RheometerMeasurement": {
+        "type": "object",
+        "properties": {
+          "rotationalSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "torque": {
+            "type": "number",
+            "format": "double"
+          },
+          "isoNewtonianShearRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "isoNewtonianShearStress": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobNewtonianShearRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobNewtonianShearStress": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.RheometerTypeEnum": {
+        "enum": [
+          "_0",
+          "_1"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SaltContent": {
+        "type": "object",
+        "properties": {
+          "Salt": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SaltOptions"
+          },
+          "WeightPerCubicMeter": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SaltOptions": {
+        "enum": [
+          "NaCl",
+          "NaBr",
+          "KCl",
+          "KBr",
+          "CaCl2",
+          "CaBr2",
+          "ZnCl2",
+          "ZnBr2"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty": {
+        "type": "object",
+        "properties": {
+          "DiracDistributionValue": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.DiracDistribution"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SideConnector": {
+        "type": "object",
+        "properties": {
+          "Position": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "VerticalDepth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "FirstSideElement": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SideElement"
+          },
+          "ElementConnectivities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ElementConnectivity"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SideElement": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SideElementType"
+          },
+          "Length": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TopVerticalDepth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "OD": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "ID": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SideElementType": {
+        "enum": [
+          "Unknown",
+          "Pipe",
+          "Hose",
+          "GateValve",
+          "Choke",
+          "Pump"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SpecificHeatCapacity": {
+        "type": "object",
+        "properties": {
+          "Slope": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "HeatCapacityAtZeroKelvin": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TemperatureRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "CoefficientRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SurfaceSection": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SurfaceSectionType"
+          },
+          "SectionLength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "BodyOD": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "BodyID": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "ConnectionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "Grade": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialDensity": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "YoungModulus": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "LinearWeight": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TensileStrength": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "BurstPressure": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "CollapsePressure": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "YieldStress": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "MakeUpTorqueRecommended": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
+          },
+          "SideConnectors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SideConnector"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.SurfaceSectionType": {
+        "enum": [
+          "Unknown",
+          "BOP",
+          "HighPressureRiser",
+          "LowPressureRiser",
+          "MarineRiser",
+          "ExpansionJoint",
+          "BellNipple",
+          "Diverter",
+          "RotatingControlDevice"
+        ],
+        "type": "string"
       },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.SurveyInstrument": {
         "type": "object",
@@ -1811,6 +2666,34 @@
         },
         "additionalProperties": { }
       },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.ThermalConductivity": {
+        "type": "object",
+        "properties": {
+          "Slope": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "ThermalConductivityAtZeroKelvin": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "TemperatureRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "CoefficientRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
       "NORCE.Drilling.Simulator4nDOF.ModelShared.Trajectory": {
         "type": "object",
         "properties": {
@@ -1881,6 +2764,95 @@
           "Dim": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.WellBoreArchitecture": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "WellHead": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.WellHead"
+          },
+          "FluidsAboveGroundLevel": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.WellBoreArchitectureFluid"
+            },
+            "nullable": true
+          },
+          "SurfaceSections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.SurfaceSection"
+            },
+            "nullable": true
+          },
+          "CasingSections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.CasingSection"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.WellBoreArchitectureFluid": {
+        "type": "object",
+        "properties": {
+          "Fluid": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.FluidType"
+          },
+          "Depth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.WellHead": {
+        "type": "object",
+        "properties": {
+          "MaxOD": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
+          },
+          "MinOD": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
+          },
+          "Depth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.GaussianDrillingProperty"
+          },
+          "CasingHangerDepth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
+          },
+          "TubingHangerDepth": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.ScalarDrillingProperty"
           }
         },
         "additionalProperties": { }

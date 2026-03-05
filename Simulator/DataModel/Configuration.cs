@@ -37,7 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 
         public double TopDriveMomentOfInertia = 2900;       // [kg.m^2] Top drive mass moment of inertia
         public double FluidDamping = 3000.0;                // [N.s/m] Fluid damping coefficient for lateral dynamics
-
+        public double FluidTemperature {get; set;} = 323;
         public double CoulombStaticFriction = 0.3;          // [-] Coulomb static friction coefficient, f.mu_s_factor
         public double CoulombKineticFriction = 0.2;         // [-] coulomb kinetic friction coefficient, f.mu_k_factor
         public double Stribeck = 5;                         // [s/rad] Parameter controlling smoothness of transition from static to kinetic friction (Stribeck model)
@@ -68,9 +68,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required double TopOfStringVelocity;
         public required ModelShared.Trajectory Trajectory;
         public required ModelShared.DrillString DrillString;
-        public required string StringPressureFile;
-        public required string AnnulusPressureFile;
-        public List<BoreHoleSize> BoreHoleSizes = new List<BoreHoleSize>();
+        public required ModelShared.DrillingFluidDescription DrillingFluidDescription;        
+        public ModelShared.CasingSection CasingSection;
         public required double BitRadius;
         public BitRockModelEnum BitRockModelEnum { get; set; } = BitRockModelEnum.Detournay;
         public SolverType SolverType { get; set; } = SolverType.VerletMethod;

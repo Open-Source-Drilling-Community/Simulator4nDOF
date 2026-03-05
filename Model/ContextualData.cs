@@ -11,11 +11,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
     {
         public ModelShared.Trajectory? Trajectory { get; set; }
         public double FluidDensity { get; set; }
-        public List<BoreHoleSize> BoreHoleSizeList { get; set; } = new List<BoreHoleSize>();
         public double BitRadius { get; set; }
         public ModelShared.DrillString DrillString { get; set; }
-        public string AnnulusPressureFile { get; set; }
-        public string DrillstringPressureFile { get; set; }
+        public ModelShared.DrillingFluidDescription DrillingFluidDescription {get; set;}
+        public ModelShared.CasingSection CasingSection {get; set;}
+        public double Temperature {get; set;} = 323;
         public SolverType SolverType { get; set; } = SolverType.VerletMethod;
         
 
@@ -25,9 +25,4 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         //HttpEndPoint DrillString/
     }
 
-    public class BoreHoleSize()
-    {
-        public double Depth { get; set; }
-        public double ID { get; set; }
-    }
 }

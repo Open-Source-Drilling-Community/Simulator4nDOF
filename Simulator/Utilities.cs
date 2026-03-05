@@ -19,8 +19,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public static Vector<double> Square(Vector<double> vector)
         {
             return vector.PointwiseMultiply(vector);
-        }
-
+        }        
         public static Vector<double> ToVector(List<double> list)
         {
             return ToVector(list.ToArray());

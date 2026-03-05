@@ -13,22 +13,38 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public readonly double WallDamping = 5.0e4;                      // percent of mass imbalance compared to total mass
 
         // Geometry to be configured
-        private List<BoreHoleSize> boreHoleSizes =
-            new List<BoreHoleSize>() {
-                new BoreHoleSize(){Depth = 120, ID = 21 * Constants.InchToMeterConversion },
-                new BoreHoleSize(){Depth = 2181, ID = 9.0*Constants.InchToMeterConversion } 
-            };
+        private List<SimulatorBoreHole> boreHoleSizes {get; set;}
         public Vector<double> BoreholeRadius;                   // [m] Wellbore radius calculation
         public Vector<double> DrillStringClearance;            // [m] drillstring radial clearance to the borehole wall
 
         public Wellbore(in SimulatorDrillString drillString,
                         in LumpedCells lumpedCells,
-                        List<BoreHoleSize> boreHoleSizes,
+                        ModelShared.CasingSection casingSection,
                         double topDriveMomentOfInertia,
                         double fluidDamping)
         {
             TopDriveInertia = topDriveMomentOfInertia;
             FluidDampingCoefficient = fluidDamping;
+            List<SimulatorBoreHole> boreHoleSizes = new();
+            double depth = 0;
+            if(casingSection.TopDepth.GaussianValue.Mean != null)
+            {
+                depth += (double) casingSection.TopDepth.GaussianValue.Mean;
+            }
+            foreach (ModelShared.BoreHoleSize bhSize in casingSection.CasingSectionSizeTable)
+            {
+  
+
+                boreHoleSizes.Add(new SimulatorBoreHole
+                    {
+                        Depth = (double ) casingSection.TopDepth.GaussianValue.Mean!,
+                        Diameter = (double) bhSize.HoleSize.GaussianValue.Mean!,
+                        Length  = (double) bhSize.Length.GaussianValue.Mean!  
+                    }
+                );
+                if (bhSize.Length.GaussianValue.Mean != null)
+                    depth += (double) bhSize.Length.GaussianValue.Mean;                
+            }
 
             this.boreHoleSizes = boreHoleSizes; 
             BoreholeRadius = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
@@ -48,7 +64,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 {
                     if (lumpedElement.ElementLength[i] <= boreHoleSizes[idx].Depth)
                     {
-                        BoreholeRadius[i - 1] = boreHoleSizes[idx].ID / 2;
+                        BoreholeRadius[i - 1] = boreHoleSizes[idx].Diameter / 2;
                     }
                     else
                     {
@@ -57,7 +73,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                             idx++;
                             if (idx < boreHoleSizes.Count && lumpedElement.ElementLength[i] <= boreHoleSizes[idx].Depth)
                             {
-                                BoreholeRadius[i - 1] = boreHoleSizes[idx].ID / 2;
+                                BoreholeRadius[i - 1] = boreHoleSizes[idx].Diameter / 2;
                                 break;
                             }
                         }
