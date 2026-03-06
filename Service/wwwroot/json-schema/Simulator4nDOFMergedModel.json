@@ -6163,8 +6163,7 @@
           "DownstreamElement": {
             "$ref": "#/components/schemas/SideElement"
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "FluidType": {
         "enum": [
@@ -6205,8 +6204,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "SideElement": {
         "type": "object",
@@ -6230,8 +6228,7 @@
           "ID": {
             "$ref": "#/components/schemas/GaussianDrillingProperty"
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "SideElementType": {
         "enum": [
@@ -6298,8 +6295,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "SurfaceSectionType": {
         "enum": [
@@ -6368,8 +6364,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "WellBoreArchitectureFluid": {
         "type": "object",
@@ -6380,8 +6375,7 @@
           "Depth": {
             "$ref": "#/components/schemas/GaussianDrillingProperty"
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "WellBoreArchitectureLight": {
         "type": "object",
@@ -6427,8 +6421,7 @@
           "TubingHangerDepth": {
             "$ref": "#/components/schemas/ScalarDrillingProperty"
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "DrillStringComponentTypes": {
         "enum": [
@@ -7102,6 +7095,12 @@
           },
           "FluidPVTParameters": {
             "$ref": "#/components/schemas/FluidPVTParameters"
+          },
+          "FluidMassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ReferenceTemperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
           },
           "GellingProperties": {
             "$ref": "#/components/schemas/GellingProperties"
@@ -8355,13 +8354,6 @@
             "type": "number",
             "format": "double"
           },
-          "BoreHoleSizeList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BoreHoleSize"
-            },
-            "nullable": true
-          },
           "BitRadius": {
             "type": "number",
             "format": "double"
@@ -8372,16 +8364,12 @@
           "DrillingFluidDescription": {
             "$ref": "#/components/schemas/DrillingFluidDescription"
           },
-          "WellBoreArchitecture": {
-            "$ref": "#/components/schemas/WellBoreArchitecture"
+          "CasingSection": {
+            "$ref": "#/components/schemas/CasingSection"
           },
-          "AnnulusPressureFile": {
-            "type": "string",
-            "nullable": true
-          },
-          "DrillstringPressureFile": {
-            "type": "string",
-            "nullable": true
+          "Temperature": {
+            "type": "number",
+            "format": "double"
           },
           "SolverType": {
             "$ref": "#/components/schemas/SolverType"

@@ -14774,6 +14774,12 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("FluidPVTParameters")]
         public FluidPVTParameters FluidPVTParameters { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("FluidMassDensity")]
+        public GaussianDrillingProperty FluidMassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ReferenceTemperature")]
+        public GaussianDrillingProperty ReferenceTemperature { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("GellingProperties")]
         public GellingProperties GellingProperties { get; set; }
 
@@ -16245,9 +16251,6 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("FluidDensity")]
         public double FluidDensity { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("BoreHoleSizeList")]
-        public System.Collections.Generic.ICollection<BoreHoleSize> BoreHoleSizeList { get; set; }
-
         [System.Text.Json.Serialization.JsonPropertyName("BitRadius")]
         public double BitRadius { get; set; }
 
@@ -16257,14 +16260,11 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescription")]
         public DrillingFluidDescription DrillingFluidDescription { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreArchitecture")]
-        public WellBoreArchitecture WellBoreArchitecture { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("CasingSection")]
+        public CasingSection CasingSection { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("AnnulusPressureFile")]
-        public string AnnulusPressureFile { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillstringPressureFile")]
-        public string DrillstringPressureFile { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public double Temperature { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("SolverType")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]

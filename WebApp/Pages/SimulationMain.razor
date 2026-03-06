@@ -64,7 +64,16 @@
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.NewSimulationVisible)
         {
-            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Simulation="@newSimulation" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" DrillStrings="@drillStringList" Trajectories="@trajectoryList"/>
+            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" 
+                Simulation="@newSimulation" 
+                Fields="@fieldList" 
+                Clusters="@clusterList" 
+                Wells="@wellList" 
+                WellBores="@wellBoreList" 
+                DrillStrings="@drillStringList" 
+                Trajectories="@trajectoryList"
+                WellBoreArchitectures="@wellBoreArchitecureList"
+                FluidDescriptions="@drillingFluidDescriptionList"/>
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.EditSimulationVisible)
         {
@@ -94,6 +103,11 @@
     private List<WellBore>? wellBoreList { get; set; } = null;
     private List<DrillStringLight>? drillStringList { get; set; } = null;
     private List<Trajectory>? trajectoryList { get; set; } = null;
+
+    private List<WellBoreArchitecture>? wellBoreArchitecureList { get; set; } = null;
+    private List<DrillingFluidDescription>? drillingFluidDescriptionList { get; set; } = null;
+    
+
 
     private Color GetProgressColor(double? progress)
     {
@@ -191,9 +205,24 @@
             var drillStringTask = APIUtils.ClientDrillString.GetAllDrillStringLightAsync();
             logger.LogInformation("Trying to load list of Trajectory from client: " + APIUtils.HostNameTrajectory);
             var trajectoryTask = APIUtils.ClientTrajectory.GetAllTrajectoryAsync();
+            logger.LogInformation("Trying to load list of Architectures from client: " + APIUtils.HostNameWellBoreArchitecture);
+            var architectureTask = APIUtils.ClientWellBoreArchitecture.GetAllWellBoreArchitectureAsync();
+            logger.LogInformation("Trying to load list of Drilling Fluids from client: " + APIUtils.HostNameDrillingFluid);
+            var drillingFluidTask = APIUtils.ClientDrillingFluid.GetAllDrillingFluidDescriptionAsync();
 
 
-            List<Task> loadingTaskList = new List<Task> { SimulationTask, wellBoreTask, wellTask, clusterTask, fieldTask, drillStringTask, trajectoryTask };
+            List<Task> loadingTaskList = new List<Task> 
+            { 
+                SimulationTask, 
+                wellBoreTask, 
+                wellTask, 
+                clusterTask, 
+                fieldTask, 
+                drillStringTask, 
+                trajectoryTask, 
+                architectureTask, 
+                drillingFluidTask
+            };
 
             // Awaiting tasks and retrieve results as they become available
             while (loadingTaskList.Count > 0)
@@ -365,7 +394,46 @@
                         logger.LogError(ex, "Impossible to load Trajectory from client");
                     }
                 }
-
+                else if (finishedTask == architectureTask)
+                {
+                    try
+                    {
+                        wellBoreArchitecureList = (List<WellBoreArchitecture>)await architectureTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (trajectoryList != null)
+                        {
+                            wellBoreArchitecureList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Architectures was null on initialization");
+                            Snackbar.Add("Returned list of Architectures was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Architectures from client");
+                    }
+                }
+                else if (finishedTask == drillingFluidTask)
+                {
+                    try
+                    {
+                        drillingFluidDescriptionList = (List<DrillingFluidDescription>)await drillingFluidTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (trajectoryList != null)
+                        {
+                            drillingFluidDescriptionList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Fluid descriptions was null on initialization");
+                            Snackbar.Add("Returned list of Fluid descriptions was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Fluid descriptions from client");
+                    }
+                }
                 loadingTaskList.Remove(finishedTask);
             }
         }
@@ -380,12 +448,6 @@
     {
         MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
         DateTimeOffset creationDate = DateTimeOffset.UtcNow;
-        double extraVerticalForceAbnormal = 50000; //100000.0;
-        double extraVerticalForceNormal = 0.0;
-        double stribeckCriticalVelocityNormal = 0.15; // 0.2
-        double stribeckCriticalVelocityAbnormal = 0.40; // yes 0.40 // no 0.45 // no 0.43 // no 0.42 // no 0.41
-        double differenceStaticKineticFrictionNormal = 0.1; // 0.1
-        double differenceStaticKineticFrictionAbnormal = 0.13;
         return new()
         {
             MetaInfo = metaInfo,
@@ -425,8 +487,8 @@
             {
                 Trajectory = new Trajectory(),
                 DrillString = new DrillString(),
-                AnnulusPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/AnnulusHydraulicProfiles.txt",
-                DrillstringPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/DrillstringHydraulicProfiles.txt",
+                //AnnulusPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/AnnulusHydraulicProfiles.txt",
+                //DrillstringPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/DrillstringHydraulicProfiles.txt",
                 //BoreHoleSizeList = new List<BoreHoleSize>() { new BoreHoleSize() { Depth = 336.0, ID = 19.188 * 0.0254 }, new BoreHoleSize() { Depth = 4160.0, ID = 8.553 * 0.0254 }, new BoreHoleSize() { Depth = 4170.0, ID = 12.25 * 0.0254 } },
                 BitRadius = 8.5 * 0.0254 / 2.0,
                 FluidDensity = 1260,

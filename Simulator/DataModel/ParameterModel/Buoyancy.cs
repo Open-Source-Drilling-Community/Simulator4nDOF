@@ -1,7 +1,6 @@
-﻿using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
-using MathNet.Numerics.LinearAlgebra;
+﻿using MathNet.Numerics.LinearAlgebra;
+using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
-using NORCE.Drilling.Simulator4nDOF.Simulator;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
@@ -16,21 +15,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> AnnularDensityProfile;
         public Vector<double> StringPressure;
         public Vector<double> StringDensity;
-        public Vector<double> AnnularPressure;
-        public Vector<double> AnnularDensity;
         public Vector<double> HydrostaticStringPressure;
         public Vector<double> HydrostaticAnnularPressure;
         public Vector<double> BuoyantWeightPerLength;                                   // [N/m] Buoyant drill string weight per length
         public Vector<double> dSigmaDx;                            // [N/m] Tension per length
         public Vector<double> AxialBuoyancyForceChangeOfDiameters;
         public Vector<double> NormalBuoyancyForceChangeOfDiameters;
+        public Vector<double> AnnulusDensity;
+        public Vector<double> AnnulusPressure;
+        
+        private Vector<double> temperatureVector;
         private double APvtCoeff;
         private double BPvtCoeff;
         private double CPvtCoeff;
         private double DPvtCoeff;
         private double EPvtCoeff;
         private double FPvtCoeff;
-        private Vector<double> DensityTemperaturePressureVector;
+        private Vector<double> XVector;
         
         public Buoyancy(in LumpedCells lumpedCells, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString,
              DrillingFluidDescription drillingFluidDescription, bool useBuoyancyFactor)
@@ -46,23 +47,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             //AnnulusMDProfile = GetColumn(annulusData, 0);
             //AnnularPressureProfile = 1E5 * GetColumn(annulusData, 1);
             //AnnularDensityProfile = GetColumn(annulusData, 2);
+            AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count + 1);
+            temperatureVector = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count + 1);
+            AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count + 1);
+            XVector = Vector<double>.Build.Dense(3);
             if (drillingFluidDescription.FluidPVTParameters == null)
             {
                 return;
             }
             else
             {
-                
+                IntegratePressureProfile(drillingFluidDescription.FluidPVTParameters, 
+                    drillingFluidDescription.FluidMassDensity.GaussianValue.Mean, 
+                    drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
+                    lumpedCells);   
             }
-
-
-
-
-
-
             UpdateBuoyancy(lumpedCells, trajectory, drillString, useBuoyancyFactor);
         }
-        private void IntegratePressureProfile(ModelShared.FluidPVTParameters fluidPVTParameters, double? densityNullable, double? temperatureNullable)
+        private void IntegratePressureProfile(FluidPVTParameters fluidPVTParameters, double? densityNullable, double? temperatureNullable, LumpedCells lumpedCells)
         {
             if (
                 fluidPVTParameters.A0.GaussianValue.Mean == null ||
@@ -79,6 +81,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             }
             else
             {
+                // Check what this is
+                double dX = lumpedCells.ElementLength[0];
+                double currentDepth = lumpedCells.ElementLength[0];
+                RKF45 odeSolver = new RKF45(dX);
                 APvtCoeff = (double) fluidPVTParameters.A0.GaussianValue.Mean;
                 BPvtCoeff = (double) fluidPVTParameters.B0.GaussianValue.Mean;
                 CPvtCoeff = (double) fluidPVTParameters.C0.GaussianValue.Mean;
@@ -99,10 +105,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     throw new ArgumentException("Initial pressure could not be computed!");
                 }
                 double pressure = (-b + Math.Sqrt(Delta)) / (2.0 * a); 
-                DensityTemperaturePressureVector = Vector<double>.Build.Dense(3);
-                DensityTemperaturePressureVector[0] = density;
-                DensityTemperaturePressureVector[1] = temperature;
-                DensityTemperaturePressureVector[2] = pressure;                
+                //XVector is the solver-ready format of the variables
+                
+                XVector[0] = density;
+                XVector[1] = temperature;
+                XVector[2] = pressure;
+
+                AnnulusDensity[0] = density;
+                temperatureVector[0] = temperature;
+                AnnulusPressure[0] = pressure;
+                
+                for (int i = 1; i < lumpedCells.ElementLength.Count + 1; i++)
+                {
+                    dX = lumpedCells.ElementLength[i] - lumpedCells.ElementLength[i - 1]; 
+                    currentDepth = lumpedCells.ElementLength[i];
+                    //Get the next step
+                    XVector = odeSolver.Solve(XVector, PVTOrdinaryDifferentialEquation, currentDepth, dX);
+                    AnnulusDensity[i] = XVector[0];
+                    temperatureVector[i] = XVector[1];
+                    AnnulusPressure[i] = XVector[2];
+                }                
             }
         }
         private Vector<double> PVTOrdinaryDifferentialEquation(double xStep, Vector<double> Xinputs)
@@ -138,12 +160,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             // Interpolate pressures and densities at positions xL
             StringPressure = LinearInterpolate(StringMDProfile, StringPressureProf, lumpedCell.ElementLength);
             StringDensity = LinearInterpolate(StringMDProfile, StringDensityProfile, lumpedCell.ElementLength);
-            AnnularPressure = LinearInterpolate(AnnulusMDProfile, AnnularPressureProfile, lumpedCell.ElementLength);
-            AnnularDensity = LinearInterpolate(AnnulusMDProfile, AnnularDensityProfile, lumpedCell.ElementLength);
+            //AnnularPressure = LinearInterpolate(AnnulusMDProfile, AnnularPressureProfile, lumpedCell.ElementLength);
+            //AnnularDensity = LinearInterpolate(AnnulusMDProfile, AnnularDensityProfile, lumpedCell.ElementLength);
 
             // Compute hydrostatic pressures
             HydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * StringDensity);
-            HydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * AnnularDensity);
+            HydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * AnnulusDensity);
 
             // Calculate buoyant weight using the appropriate method
             double[] elementInnerArea = new double[drillString.InnerArea.Count() + 1];
@@ -171,7 +193,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 double[] buoyancyFactor = new double[elementOuterArea.Length];
                 for (int i = 0; i < elementOuterArea.Length; i++)
                 {
-                    buoyancyFactor[i] = (elementOuterArea[i] * (1 - AnnularDensity[i] / drillString.SteelDensity) -
+                    buoyancyFactor[i] = (elementOuterArea[i] * (1 - AnnulusDensity[i] / drillString.SteelDensity) -
                                          elementInnerArea[i] * (1 - StringDensity[i] / drillString.SteelDensity)) /
                                          (elementOuterArea[i] - elementInnerArea[i]);
                 }
@@ -196,8 +218,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     BuoyantWeightPerLength[i] = (mass_per_length[i] +
                              (toolJointElementInnerArea[i] * drillString.ToolJointLength * StringDensity[i] +
                                elementInnerArea[i] * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * StringDensity[i] -
-                               toolJointElementOuterArea[i] * drillString.ToolJointLength * AnnularDensity[i] -
-                               elementOuterArea[i] * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * AnnularDensity[i]) /
+                               toolJointElementOuterArea[i] * drillString.ToolJointLength * AnnulusDensity[i] -
+                               elementOuterArea[i] * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * AnnulusDensity[i]) /
                                lumpedCell.DistanceBetweenElements) * Constants.GravitationalAcceleration;
                 }
             }

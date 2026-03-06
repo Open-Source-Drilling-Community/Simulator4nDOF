@@ -104,11 +104,49 @@
             </MudSelect>
         </MudItem>
         <MudItem xs="12">
+            <MudSelect T="WellBoreArchitecture" Label="Architecture source" Value="selectedArchitcture" Variant="Variant.Text" ValueChanged="@UpdateAvailableCasings">
+                @if(WellBoreArchitectures != null)
+                {
+                    @foreach (WellBoreArchitecture architecture in WellBoreArchitectures)
+                    {
+                        <MudSelectItem Value="@architecture">@architecture.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        @if (casingSections.Count > 0){
+            <MudItem xs="12">
+                <MudSelect T="CasingSection" Label="Casing Section source" Value="Simulation.ContextualData.CasingSection" Variant="Variant.Text">
+                    @if(WellBoreArchitectures != null)
+                    {
+                        @foreach (CasingSection casing in casingSections)
+                        {
+                            <MudSelectItem Value="@casing">
+                                @casing.CasingSectionElements
+                            </MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </MudItem>
+        }
+        <MudItem xs="12">
+            <MudSelect T="DrillingFluidDescription" Label="Fluid" Value="Simulation.ContextualData.DrillingFluidDescription" Variant="Variant.Text">
+                @if(FluidDescriptions != null)
+                {
+                    @foreach (DrillingFluidDescription fluidDescription in FluidDescriptions)
+                    {
+                        <MudSelectItem Value="@fluidDescription">@fluidDescription.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        @*
+        <MudItem xs="12">
             <MudTextField @bind-Value="Simulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>
         </MudItem>
         <MudItem xs="12">
             <MudTextField @bind-Value="Simulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
-        </MudItem>
+        </MudItem>*@
     </MudGrid>
     <MudGrid RowSpacing="0" Style="margin-top:-0px;">
         <MudItem Style="width:250px;">
@@ -152,7 +190,11 @@
     public List<DrillStringLight>? DrillStrings { get; set; } = null;
 
     [Parameter]
-    public List<Trajectory>? Trajectories { get; set; } = null;
+    public List<Trajectory>? Trajectories { get; set; } = null;    
+    [Parameter]
+    public List<WellBoreArchitecture>? WellBoreArchitectures { get; set; } = null;
+    [Parameter]
+    public List<DrillingFluidDescription>? FluidDescriptions { get; set; } = null;
 
     [Parameter]
     public GroundMudLineDepthReferenceSource? GroundMudLineDepthSource { get; set; }
@@ -169,6 +211,8 @@
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
     
+    private WellBoreArchitecture? selectedArchitcture;
+    private List<CasingSection> casingSections = new();
     private Guid drillStringGuid = Guid.Empty;
     // UI related variables
     private bool _loadTrajectoryFromFile = true;
@@ -316,6 +360,11 @@
         }
         await InvokeAsync(() => { StateHasChanged(); });
 
+    }
+    private void UpdateAvailableCasings(WellBoreArchitecture architecture)
+    {
+        selectedArchitcture = architecture;
+        casingSections = architecture.CasingSections.ToList();
     }
 
     public void ManageUnits()

@@ -2508,6 +2508,418 @@
         }
       }
     },
+    "/DrillString": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillStringId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "PostDrillString",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillString/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillStringMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillString/{id}": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetDrillStringById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillString"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "PutDrillStringById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillString"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "DeleteDrillStringById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillString/LightData": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillStringLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillStringLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillString/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillString"
+        ],
+        "operationId": "GetAllDrillString",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillString"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringComponent": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetAllDrillStringComponentId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "PostDrillStringComponent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringComponent/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetAllDrillStringComponentMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillStringComponent/{id}": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetDrillStringComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillStringComponent"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "PutDrillStringComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillStringComponent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "DeleteDrillStringComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillStringComponent/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillStringComponent"
+        ],
+        "operationId": "GetAllDrillStringComponent",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillStringComponent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/BaseOil": {
       "get": {
         "tags": [
@@ -3745,418 +4157,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Trajectory"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillString": {
-      "get": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "GetAllDrillStringId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "PostDrillString",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillString"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillString"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillString"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillString/MetaInfo": {
-      "get": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "GetAllDrillStringMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillString/{id}": {
-      "get": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "GetDrillStringById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DrillString"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "PutDrillStringById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillString"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillString"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillString"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "DeleteDrillStringById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillString/LightData": {
-      "get": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "GetAllDrillStringLight",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillStringLight"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillString/HeavyData": {
-      "get": {
-        "tags": [
-          "DrillString"
-        ],
-        "operationId": "GetAllDrillString",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillString"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillStringComponent": {
-      "get": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "GetAllDrillStringComponentId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "PostDrillStringComponent",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillStringComponent"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillStringComponent"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillStringComponent"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillStringComponent/MetaInfo": {
-      "get": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "GetAllDrillStringComponentMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillStringComponent/{id}": {
-      "get": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "GetDrillStringComponentById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DrillStringComponent"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "PutDrillStringComponentById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillStringComponent"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillStringComponent"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillStringComponent"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "DeleteDrillStringComponentById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillStringComponent/HeavyData": {
-      "get": {
-        "tags": [
-          "DrillStringComponent"
-        ],
-        "operationId": "GetAllDrillStringComponent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillStringComponent"
-                  }
                 }
               }
             }
@@ -6517,6 +6517,387 @@
           }
         }
       },
+      "DrillStringComponentTypes": {
+        "enum": [
+          "DrillPipe",
+          "DrillCollar",
+          "HeavyWeightDrillPipe",
+          "Jar",
+          "Mwd",
+          "Stabilizer",
+          "SteerableRotaryTool",
+          "Bit"
+        ],
+        "type": "string"
+      },
+      "DrillStringSensorTypes": {
+        "enum": [
+          "Acoustic",
+          "AccelerometerX",
+          "AccelerometerY",
+          "AccelerometerZ",
+          "ResistivitySource",
+          "ResistivityReceiver",
+          "NeutronDensity",
+          "NeutronPorosity",
+          "MagnetometerX",
+          "MagnetometerY",
+          "RotationalPitch",
+          "RotationalRoll",
+          "RotationalYaw",
+          "BendingMomentX",
+          "BendingMomentY",
+          "StringPressure",
+          "AnnulusPressure",
+          "StringTemperature",
+          "ElectronicTemperature",
+          "AnnulusTemperature",
+          "GammaRay",
+          "Other",
+          "Tension",
+          "Torque"
+        ],
+        "type": "string"
+      },
+      "DrillString": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "DrillStringSectionList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringSection"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringComponent": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "FieldID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/DrillStringComponentTypes"
+          },
+          "PartList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponentPart"
+            },
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        }
+      },
+      "DrillStringComponentPart": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "InnerDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameterState2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterDiameterStateBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FrictionFactorRotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FrictionFactorAxialDisplacement": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantLowFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantHighFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityDistance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityAngle": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition1": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaConditionBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FlowrateThresholdValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "YieldStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UltimateStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SecondCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FirstCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double"
+          },
+          "CrossSectionArea": {
+            "type": "number",
+            "format": "double"
+          },
+          "YoungModulus": {
+            "type": "number",
+            "format": "double"
+          },
+          "PoissonRatio": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaterialDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "AveragePartDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mass": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeatCapacity": {
+            "type": "number",
+            "format": "double"
+          },
+          "ThermalCondutivity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "DrillStringLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringSection": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SectionComponentList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponent"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringSensor": {
+        "type": "object",
+        "properties": {
+          "DistanceFromBit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MeasurementRange": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SensorAngles": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTypeInt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SensorType": {
+            "$ref": "#/components/schemas/DrillStringSensorTypes"
+          }
+        }
+      },
       "BaseCompositionProperties": {
         "type": "object",
         "properties": {
@@ -7943,328 +8324,6 @@
             "type": "integer",
             "format": "int32",
             "readOnly": true
-          }
-        }
-      },
-      "DrillStringComponentTypes": {
-        "enum": [
-          "DrillPipe",
-          "DrillCollar",
-          "HeavyWeightDrillPipe",
-          "Jar",
-          "Mwd",
-          "Stabilizer",
-          "SteerableRotaryTool",
-          "Bit"
-        ],
-        "type": "string"
-      },
-      "DrillString": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "DrillStringSectionList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringSection"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillStringComponent": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "FieldID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "Type": {
-            "$ref": "#/components/schemas/DrillStringComponentTypes"
-          },
-          "PartList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringComponentPart"
-            },
-            "nullable": true
-          },
-          "Length": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          }
-        }
-      },
-      "DrillStringComponentPart": {
-        "type": "object",
-        "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "TotalLength": {
-            "type": "number",
-            "format": "double"
-          },
-          "OuterDiameter": {
-            "type": "number",
-            "format": "double"
-          },
-          "InnerDiameter": {
-            "type": "number",
-            "format": "double"
-          },
-          "OuterDiameterState2": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterDiameterStateBoolean": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "FrictionFactorRotation": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "FrictionFactorAxialDisplacement": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "PressureLossConstantLowFlowRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "PressureLossConstantHighFlowRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "EccentricityDistance": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "EccentricityAngle": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TotalFlowAreaCondition1": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TotalFlowAreaCondition2": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TotalFlowAreaConditionBoolean": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "FlowrateThresholdValue": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingThickness": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingDensity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingThermalCondutivity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingHeatCapacity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingThickness": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingDensity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingThermalCondutivity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingHeatCapacity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "YieldStrength": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UltimateStrength": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "SecondCrossSectionTorsionalInertia": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "FirstCrossSectionTorsionalInertia": {
-            "type": "number",
-            "format": "double"
-          },
-          "CrossSectionArea": {
-            "type": "number",
-            "format": "double"
-          },
-          "YoungModulus": {
-            "type": "number",
-            "format": "double"
-          },
-          "PoissonRatio": {
-            "type": "number",
-            "format": "double"
-          },
-          "MaterialDensity": {
-            "type": "number",
-            "format": "double"
-          },
-          "AveragePartDensity": {
-            "type": "number",
-            "format": "double"
-          },
-          "Mass": {
-            "type": "number",
-            "format": "double"
-          },
-          "HeatCapacity": {
-            "type": "number",
-            "format": "double"
-          },
-          "ThermalCondutivity": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "DrillStringLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          }
-        }
-      },
-      "DrillStringSection": {
-        "type": "object",
-        "properties": {
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Count": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "SectionComponentList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringComponent"
-            },
-            "nullable": true
           }
         }
       },

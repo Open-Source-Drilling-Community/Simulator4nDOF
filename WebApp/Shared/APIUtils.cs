@@ -40,11 +40,11 @@ public static class APIUtils
 
     public static readonly string HostNameDrillingFluid = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.DrillingFluidHostURL!;
     public static readonly string HostBasePathDrillingFluid = "DrillingFluid/api/";
-    public static readonly HttpClient HttpClientDrillingFluid = APIUtils.SetHttpClient(HostNameDrillString, HostBasePathDrillString);
+    public static readonly HttpClient HttpClientDrillingFluid = APIUtils.SetHttpClient(HostNameDrillingFluid, HostBasePathDrillingFluid);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientDrillingFluid = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientDrillingFluid.BaseAddress!.ToString(), APIUtils.HttpClientDrillingFluid);
 
     public static readonly string HostNameWellBoreArchitecture = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellBoreArchitectureHostURL!;
-    public static readonly string HostBasePathWellBoreArchitecture = "Trajectory/api/";
+    public static readonly string HostBasePathWellBoreArchitecture = "WellBoreArchitecture/api/";
     public static readonly HttpClient HttpClientWellBoreArchitecture = APIUtils.SetHttpClient(HostNameWellBoreArchitecture, HostBasePathWellBoreArchitecture);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientWellBoreArchitecture = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientWellBoreArchitecture.BaseAddress!.ToString(), APIUtils.HttpClientWellBoreArchitecture);
 

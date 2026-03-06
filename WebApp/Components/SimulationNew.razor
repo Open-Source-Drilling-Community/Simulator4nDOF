@@ -25,7 +25,16 @@
                 {
                     <br>
                     <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Contextual data </MudText>
-                    <SimulationContextualData Simulation="@Simulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" DrillStrings="@DrillStrings" Trajectories="@Trajectories"/>
+                    <SimulationContextualData 
+                        Simulation="@Simulation" 
+                        Fields="@Fields" 
+                        Clusters="@Clusters" 
+                        Wells="@Wells" 
+                        WellBores="@WellBores" 
+                        DrillStrings="@DrillStrings" 
+                        Trajectories="@Trajectories" 
+                        WellBoreArchitectures="@WellBoreArchitectures"
+                        FluidDescriptions="@FluidDescriptions"/>
                 }
                 @if (Simulation?.Config != null)
                 {
@@ -73,6 +82,11 @@
     public List<DrillStringLight>? DrillStrings { get; set; } = null;
     [Parameter]
     public List<Trajectory>? Trajectories { get; set; } = null;
+    [Parameter]
+    public List<WellBoreArchitecture>? WellBoreArchitectures { get; set; } = null;
+    [Parameter]
+    public List<DrillingFluidDescription>? FluidDescriptions { get; set; } = null;
+
 
     [Parameter]
     public MainPanelLogic? MainPanelLogic { get; set; } = null;

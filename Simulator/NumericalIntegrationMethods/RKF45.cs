@@ -80,24 +80,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         K6 = Vector<double>.Build.Dense(size); 
         maxIteration = itMax;        
     }
-    public Vector<double> Solve(Vector<double> xStep, Func<double, Vector<double>, Vector<double>> ordinaryDifferentialEquation1stOrder,  double initialX, double Δx, double finalX)
+    public Vector<double> Solve(Vector<double> stateStep, Func<double, Vector<double>, Vector<double>> ordinaryDifferentialEquation1stOrder,  double initialX, double Δx)
     {
         double currentStep = initialX;
         while (δxAux < Δx || currentIteration < maxIteration)
         {
             double localStep = currentStep + δxAux;
-            K1 = δx * ordinaryDifferentialEquation1stOrder(localStep, xStep);
-            K2 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck21 * δx, xStep + ck22 * K1);
-            K3 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck31 * δx, xStep + ck32 * K1 + ck33 * K2);
-            K4 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck41 * δx, xStep + ck42 * K1 + ck43 * K2 + ck44 * K3);
-            K5 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck51 * δx, xStep + ck52 * K1 + ck53 * K2 + ck54 * K3 + ck55 * K4);
-            K6 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck61 * δx, xStep + ck62 * K1 + ck63 * K2 + ck64 * K3 + ck65 * K4 + ck66 * K5);
+            K1 = δx * ordinaryDifferentialEquation1stOrder(localStep, stateStep);
+            K2 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck21 * δx, stateStep + ck22 * K1);
+            K3 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck31 * δx, stateStep + ck32 * K1 + ck33 * K2);
+            K4 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck41 * δx, stateStep + ck42 * K1 + ck43 * K2 + ck44 * K3);
+            K5 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck51 * δx, stateStep + ck52 * K1 + ck53 * K2 + ck54 * K3 + ck55 * K4);
+            K6 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck61 * δx, stateStep + ck62 * K1 + ck63 * K2 + ck64 * K3 + ck65 * K4 + ck66 * K5);
             //Get the norm of the difference betwewn Runge-Kutta 4 and 5.
             double error = (ce1 * K1 + ce3 * K3 + ce4 * K4 + ce5 * K5 + ce6 * K6).Norm(2);
-            double tolstep = tolerance * xStep.Norm(2) + auxiliarTolerance;
+            double tolstep = tolerance * stateStep.Norm(2) + auxiliarTolerance;
             if (error <= tolerance)
             {
-                xStep += c51 * K1 + c52 * K3 + c53 * K4 + c54 * K5 + c55 * K6;
+                stateStep += c51 * K1 + c52 * K3 + c53 * K4 + c54 * K5 + c55 * K6;
                 δxAux += δx;       
             }
             δx = 0.9 * δx * Math.Pow(tolerance / error, 0.2);            
@@ -116,7 +116,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         {
             Console.WriteLine("Integration did not converge!");        
         }
-        return xStep;        
+        return stateStep;        
     }
 
 

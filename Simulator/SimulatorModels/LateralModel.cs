@@ -140,7 +140,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             
             state.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                 (  
-                    AoExtended.PointwiseMultiply(parameters.Buoyancy.AnnularPressure - parameters.Buoyancy.HydrostaticAnnularPressure) 
+                    AoExtended.PointwiseMultiply(parameters.Buoyancy.AnnulusPressure - parameters.Buoyancy.HydrostaticAnnularPressure) 
                     - AiExtended.PointwiseMultiply(parameters.Buoyancy.StringPressure - parameters.Buoyancy.HydrostaticStringPressure)
                 );   
 
