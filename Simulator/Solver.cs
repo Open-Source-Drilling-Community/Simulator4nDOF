@@ -368,15 +368,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.NormalForceProfileStiffString = state.NormalCollisionForce; // Pipe shear strain 
             output.NormalForceProfileSoftString = state.SoftStringNormalForce;
             output.TensionProfile = state.Tension; // Tension profile
-
+           
             output.Torque = state.Torque; // Torque profile vs. depth
             output.BendingMomentX = state.BendingMomentX;// Bending moment x-component profile
             output.BendingMomentY = state.BendingMomentY;// Bending moment y-component profile
             //output.TangentialForceProfile = TangentialCoulombFrictionForce;// Bending moment y-component profile Tangential force profile
-            output.WeightOnBit = state.WeightOnBit;  // Weight on bit
+            output.WeightOnBit = state.WeightOnBit;  // Weight on bit 
             output.TorqueOnBit = state.TorqueOnBit;  // Torque on bit
             
-            output.Depth = simulationParameters.DistributedCells.x;
+            output.Depth = simulationParameters.LumpedCells.ElementLength;
             output.SensorMb_x = state.BendingMomentX[simulationParameters.Drillstring.IndexSensor];
             output.SensorMb_y = state.BendingMomentY[simulationParameters.Drillstring.IndexSensor];
             output.RadialDisplacement = state.RadialDisplacement;

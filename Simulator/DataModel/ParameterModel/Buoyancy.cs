@@ -8,9 +8,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
     public class Buoyancy
     {
         // Several of the calculation in here can be found in: ../AuxiliarDevFiles/PVT_Pressure_Equation.wxmx
-        private Vector<double> StringMDProfile;
-        private Vector<double> StringPressureProf;
-        private Vector<double> StringDensityProfile;
         public Vector<double> StringPressure;
         public Vector<double> StringDensity;
         public Vector<double> StringTemperature;
@@ -23,7 +20,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Vector<double> AnnulusDensity;
         public Vector<double> AnnulusPressure;
         public Vector<double> AnnulusTemperature;
-    
         private double APvtCoeff;
         private double BPvtCoeff;
         private double CPvtCoeff;
@@ -32,10 +28,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private double FPvtCoeff;
         private Vector<double> XVectorAnnulusVariables;
         private Vector<double> XVectorStringVariables;
-        
-        
+                
         public Buoyancy(in LumpedCells lumpedCells, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString,
-            DrillingFluidDescription drillingFluidDescription, bool useBuoyancyFactor, double surfacePressure)
+            DrillingFluidDescription drillingFluidDescription, double fluidDensity, bool useBuoyancyFactor, double surfacePressure)
         {
             AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
             AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
@@ -55,31 +50,44 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
 
             dSigmaDx = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            FluidPVTParameters? fluidPVTParameters;
             if (drillingFluidDescription.FluidPVTParameters == null)
             {   
-                FluidPVTParameters fluidPVTParameters = new FluidPVTParameters
+                fluidPVTParameters = CalculateFluidPVTParameters(
+                    drillingFluidDescription.DrillingFluidComposition.BrineProperies.PVTParameters, 
+                    drillingFluidDescription.DrillingFluidComposition.BaseOilProperies.PVTParameters, 
+                    drillingFluidDescription.DrillingFluidComposition.BrineProperies.MassFraction.GaussianValue.Mean, 
+                    drillingFluidDescription.DrillingFluidComposition.BrineProperies.MassDensity.GaussianValue.Mean, 
+                    drillingFluidDescription.DrillingFluidComposition.BaseOilProperies.MassFraction.GaussianValue.Mean,
+                    drillingFluidDescription.DrillingFluidComposition.BaseOilProperies.MassDensity.GaussianValue.Mean
+                );
+                //      If it is still null, use standard values calibrated from Fig. 1.b)
+                // Cayeux, Eric "Automatic Measurement of the Dependence on Pressure and Temperature of the Mass Density of Drilling Fluids." 
+                // Paper presented at the SPE/IADC International Drilling Conference and Exhibition,
+                // Virtual, March 2021. doi: https://doi.org/10.2118/204084-MS                
+                if (fluidPVTParameters == null)
                 {
-                    A0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 1981.9832345443956}},
-                    B0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -0.8671702042673033}},
-                    C0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -1.8110549001629749e-6}},
-                    D0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 7.341326730109053e-9}},
-                    E0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 2.3352470230170143e-14}},
-                    F0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -6.361566331825902e-17}}                    
-                };
-                IntegratePressureProfile(fluidPVTParameters, 
-                    drillingFluidDescription.FluidMassDensity.GaussianValue.Mean, 
-                    drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
-                    surfacePressure,
-                    lumpedCells.ElementLength);               
+                    fluidPVTParameters = new FluidPVTParameters
+                    {
+                        A0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 1981.9832345443956}},
+                        B0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -0.8671702042673033}},
+                        C0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -1.8110549001629749e-6}},
+                        D0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 7.341326730109053e-9}},
+                        E0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 2.3352470230170143e-14}},
+                        F0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -6.361566331825902e-17}}                    
+                    };
+                }
             }
             else
             {
-                IntegratePressureProfile(drillingFluidDescription.FluidPVTParameters, 
-                    drillingFluidDescription.FluidMassDensity.GaussianValue.Mean, 
-                    drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
-                    surfacePressure,
-                    lumpedCells.ElementLength);   
-            }            
+                fluidPVTParameters = drillingFluidDescription.FluidPVTParameters;
+            }
+            IntegratePressureProfile(
+                fluidPVTParameters, 
+                fluidDensity, 
+                drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
+                surfacePressure,
+                lumpedCells.ElementLength);   
             UpdateBuoyancy(lumpedCells, trajectory, drillString, useBuoyancyFactor);
         }
         private void IntegratePressureProfile(
@@ -132,7 +140,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     density - EPvtCoeff * surfacePressure * surfacePressure - CPvtCoeff * surfacePressure - APvtCoeff)/
                     (FPvtCoeff * surfacePressure * surfacePressure + DPvtCoeff * surfacePressure + BPvtCoeff);
 
-
                 //XVector is the solver-ready format of the variables
                 XVectorAnnulusVariables[0] = density;
                 XVectorAnnulusVariables[1] = annulusPressure;
@@ -167,6 +174,76 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     StringTemperature[i] = XVectorStringVariables[2];
                 }      
             }
+        }
+        private FluidPVTParameters? CalculateFluidPVTParameters(
+            BrinePVTParameters brinePVTParameters, 
+                BaseOilPVTParameters baseOilPVTParameters,             
+                double? brineMassFraction,
+                double? brineMass,
+                double? baseOilMassFraction,
+                double? baseOilMass
+            )
+        {
+            if (
+                baseOilPVTParameters.A0.GaussianValue.Mean == null ||
+                baseOilPVTParameters.B0.GaussianValue.Mean == null ||
+                baseOilPVTParameters.C0.GaussianValue.Mean == null ||
+                baseOilPVTParameters.D0.GaussianValue.Mean == null ||
+                baseOilPVTParameters.E0.GaussianValue.Mean == null ||
+                baseOilPVTParameters.F0.GaussianValue.Mean == null ||
+                brinePVTParameters.S0.GaussianValue.Mean == null ||
+                brinePVTParameters.S1.GaussianValue.Mean == null ||
+                brinePVTParameters.S2.GaussianValue.Mean == null ||
+                brinePVTParameters.S3.GaussianValue.Mean == null ||                
+                brinePVTParameters.Bw.GaussianValue.Mean == null ||
+                brinePVTParameters.Cw.GaussianValue.Mean == null ||
+                brinePVTParameters.Dw.GaussianValue.Mean == null ||
+                brinePVTParameters.Ew.GaussianValue.Mean == null ||
+                brinePVTParameters.Fw.GaussianValue.Mean == null ||
+                brineMassFraction == null ||
+                brineMass == null ||
+                baseOilMassFraction == null ||
+                baseOilMass == null 
+            )
+            {
+                return null;
+            }
+            else
+            {
+                double baseOilVolume = (double) baseOilMass / (double) baseOilMassFraction;
+
+                double ABaseOil = (double) baseOilPVTParameters.A0.GaussianValue.Mean;
+                double BBaseOil = (double) baseOilPVTParameters.B0.GaussianValue.Mean;
+                double CBaseOil = (double) baseOilPVTParameters.C0.GaussianValue.Mean;
+                double DBaseOil = (double) baseOilPVTParameters.D0.GaussianValue.Mean;
+                double EBaseOil = (double) baseOilPVTParameters.E0.GaussianValue.Mean;
+                double FBaseOil = (double) baseOilPVTParameters.F0.GaussianValue.Mean;
+
+                double brineVolume = (double) brineMass / (double) brineMassFraction;
+                double ABrine = (double) (
+                    brinePVTParameters.S0.GaussianValue.Mean
+                    + brinePVTParameters.S1.GaussianValue.Mean * brineMassFraction
+                    + brinePVTParameters.S2.GaussianValue.Mean * brineMassFraction * brineMassFraction
+                    + brinePVTParameters.S3.GaussianValue.Mean * brineMassFraction * brineMassFraction * brineMassFraction
+                    );
+                double BBrine = (double) brinePVTParameters.Bw.GaussianValue.Mean;
+                double CBrine = (double) brinePVTParameters.Cw.GaussianValue.Mean;
+                double DBrine = (double) brinePVTParameters.Dw.GaussianValue.Mean;
+                double EBrine = (double) brinePVTParameters.Ew.GaussianValue.Mean;
+                double FBrine = (double) brinePVTParameters.Fw.GaussianValue.Mean;                
+                double ratioOil = baseOilVolume / ( baseOilVolume + brineVolume );
+                double ratioBrine = 1 - ratioOil;
+            
+                return new FluidPVTParameters
+                {
+                    A0 = new GaussianDrillingProperty{ GaussianValue = new GaussianDistribution { Mean = ratioOil * ABaseOil + ratioBrine * ABrine} },
+                    B0 = new GaussianDrillingProperty{ GaussianValue = new GaussianDistribution { Mean = ratioOil * BBaseOil + ratioBrine * BBrine} },
+                    C0 = new GaussianDrillingProperty{ GaussianValue = new GaussianDistribution { Mean = ratioOil * CBaseOil + ratioBrine * CBrine} },
+                    D0 = new GaussianDrillingProperty{ GaussianValue = new GaussianDistribution { Mean = ratioOil * DBaseOil + ratioBrine * DBrine} },
+                    E0 = new GaussianDrillingProperty{ GaussianValue = new GaussianDistribution { Mean = ratioOil * EBaseOil + ratioBrine * EBrine} },
+                    F0 = new GaussianDrillingProperty{ GaussianValue = new GaussianDistribution { Mean = ratioOil * FBaseOil + ratioBrine * FBrine} }
+                };
+            }            
         }
         private Vector<double> PVTOrdinaryDifferentialEquation(double xStep, Vector<double> Xinputs)
         {

@@ -13,31 +13,52 @@
     {
         <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
             <div class="d-flex align-center gap-4 flex-wrap">
-
-                <!-- Start Index -->
-                <MudSlider T="double"
-                           Value="@startIndex"
-                           ValueChanged="OnStartIndexChanged"
-                           Min="0"
-                           Max="@maxIndex"
-                           Step="1"
-                           Immediate="true"
-                           Color="Color.Primary"
-                           Style="width: 200px;" />
-                <MudText Typo="Typo.body2">Start: @timeStart.ToString("F2") s</MudText>
-
+                <MudGrid Class="d-flex align-center gap-4 flex-wrap">
+                    <!-- Start Index -->
+                    <MudItem xs = "3">
+                        <MudText Typo="Typo.body1">Start time:</MudText>                           
+                        <MudNumericField 
+                            T="double"
+                            Value="@timeStart"
+                            ValueChanged="UpdateStartTimeIndex" 
+                            HideSpinButtons="true"
+                            />  
+                    </MudItem>
+                    <MudItem xs = "3">
+                        <MudText Typo="Typo.body1">Start: @timeStart.ToString("F2") s</MudText>                    
+                        <MudSlider T="double"
+                               Value="@startIndex"
+                               ValueChanged="OnStartIndexChanged"
+                               Min="0"
+                               Max="@maxIndex"
+                               Step="1"
+                               Immediate="true"
+                               Color="Color.Primary"
+                               />      
+                    </MudItem>                                                 
+                </MudGrid>
                 <!-- End Index -->
-                <MudSlider T="double"
-                           Value="@endIndex"
-                           ValueChanged="OnEndIndexChanged"
-                           Min="0"
-                           Max="@maxIndex"
-                           Step="1"
-                           Immediate="true"
-                           Color="Color.Secondary"
-                           Style="width: 200px;" />
-                <MudText Typo="Typo.body2">End: @timeEnd.ToString("F2") s</MudText>
-
+                <MudGrid Class="d-flex align-center gap-4 flex-wrap">
+                        <MudItem xs = "3">
+                            <MudText Typo="Typo.body1">End time:</MudText>
+                            <MudNumericField
+                                T="double" 
+                                Value="@timeEnd"
+                                ValueChanged="UpdateFinalTimeIndex" 
+                                HideSpinButtons="true"/>  
+                        </MudItem>
+                        <MudItem xs = "3">
+                            <MudText Typo="Typo.body1">End: @timeEnd.ToString("F2") s</MudText>                            
+                             <MudSlider T="double"
+                                   Value="@endIndex"
+                                   ValueChanged="OnEndIndexChanged"
+                                   Min="@startIndex"
+                                   Max="@maxIndex"
+                                   Step="1"
+                                   Immediate="true"
+                                   Color="Color.Secondary"/>
+                        </MudItem>
+                </MudGrid>
             </div>
         </MudPaper>
     }
@@ -304,11 +325,34 @@
 
     private int startIndex = 0;
     private int endIndex;
-
-    private double timeStart => Results?.Scalars?.Time?.ElementAtOrDefault(startIndex) ?? 0;
-    private double timeEnd => Results?.Scalars?.Time?.ElementAtOrDefault(endIndex) ?? 0;
+    private  List<double>  timeList => Results?.Scalars?.Time?.ToList();    
+    private double timeStart = 0;
+    private double timeEnd = 0;
 
     private int maxIndex => (Results?.Scalars?.Time?.Count ?? 1) - 1;
+    private async Task UpdateStartTimeIndex(double val)
+    {
+        List<double> timeVectorDiff = new();
+        foreach (double time in timeList)
+        {
+            timeVectorDiff.Add(Math.Abs(time-val));
+        }
+        startIndex = timeVectorDiff.IndexOf(timeVectorDiff.Min());
+        timeStart = (double) timeList[startIndex];        
+        await OnStartIndexChanged(startIndex);
+    }
+
+    private async Task UpdateFinalTimeIndex(double val)
+    {
+        List<double> timeVectorDiff = new();
+        foreach (double time in timeList)
+        {
+            timeVectorDiff.Add(Math.Abs(time-val));
+        }
+        endIndex = timeVectorDiff.IndexOf(timeVectorDiff.Min());
+        timeEnd = (double) timeList[endIndex];        
+        await OnEndIndexChanged(endIndex);
+    }
 
     private async Task StartVideo()
     {
@@ -677,6 +721,10 @@
     {
         if (Results != null)
         {
+            if (endIndex == 0.0)
+            {
+                endIndex = maxIndex;
+            }
             CreateLayouts();
             _ = Run();
             await AfterSetValueAsync();
@@ -1741,9 +1789,10 @@
                         }
                         var Torques = new List<object>();
                         var depthAll = new List<object>();
-                        for (int i = 0; i < profile.DepthAll.Count; i++)
+                        for (int i = 0; i < profile.Depth.Count; i++)
                         {
-                            double depth = profile.DepthAll.ElementAt(i);
+                            //double depth = profile.DepthAll.ElementAt(i);                            
+                            double depth = profile.Depth.ElementAt(i);
                             if (depth >= selectedStartDepth && depth <= selectedEndDepth)
                             {
                                 depthAll.Add(Parent.FromSI(depth, DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
