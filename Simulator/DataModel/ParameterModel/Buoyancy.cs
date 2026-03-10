@@ -7,64 +7,87 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     public class Buoyancy
     {
+        // Several of the calculation in here can be found in: ../AuxiliarDevFiles/PVT_Pressure_Equation.wxmx
         private Vector<double> StringMDProfile;
         private Vector<double> StringPressureProf;
         private Vector<double> StringDensityProfile;
-        private Vector<double> AnnulusMDProfile;
-        private Vector<double> AnnularPressureProfile;
-        private Vector<double> AnnularDensityProfile;
         public Vector<double> StringPressure;
         public Vector<double> StringDensity;
+        public Vector<double> StringTemperature;
         public Vector<double> HydrostaticStringPressure;
-        public Vector<double> HydrostaticAnnularPressure;
+        public Vector<double> HydrostaticAnnulusPressure;
         public Vector<double> BuoyantWeightPerLength;                                   // [N/m] Buoyant drill string weight per length
         public Vector<double> dSigmaDx;                            // [N/m] Tension per length
         public Vector<double> AxialBuoyancyForceChangeOfDiameters;
         public Vector<double> NormalBuoyancyForceChangeOfDiameters;
         public Vector<double> AnnulusDensity;
         public Vector<double> AnnulusPressure;
-        
-        private Vector<double> temperatureVector;
+        public Vector<double> AnnulusTemperature;
+    
         private double APvtCoeff;
         private double BPvtCoeff;
         private double CPvtCoeff;
         private double DPvtCoeff;
         private double EPvtCoeff;
         private double FPvtCoeff;
-        private Vector<double> XVector;
+        private Vector<double> XVectorAnnulusVariables;
+        private Vector<double> XVectorStringVariables;
+        
         
         public Buoyancy(in LumpedCells lumpedCells, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString,
-             DrillingFluidDescription drillingFluidDescription, bool useBuoyancyFactor)
+            DrillingFluidDescription drillingFluidDescription, bool useBuoyancyFactor, double surfacePressure)
         {
-            // Read the string and annulus data files
-            //var stringData = ReadTextFile(stringPressureFilename);
-            //int rowsStringData = stringData.GetLength(0);
-            //StringMDProfile = Reverse(GetColumn(stringData, 0));
-            //StringPressureProf = Reverse(1E5 * GetColumn(stringData, 1));
-            //StringDensityProfile = Reverse(GetColumn(stringData, 2)); ;
-            //var annulusData = ReadTextFile(annulusPressureFilename);
-            //int rowsAnnulusData = annulusData.GetLength(0);
-            //AnnulusMDProfile = GetColumn(annulusData, 0);
-            //AnnularPressureProfile = 1E5 * GetColumn(annulusData, 1);
-            //AnnularDensityProfile = GetColumn(annulusData, 2);
-            AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count + 1);
-            temperatureVector = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count + 1);
-            AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count + 1);
-            XVector = Vector<double>.Build.Dense(3);
+            AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            AnnulusTemperature = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            StringDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            StringPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            StringTemperature = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+
+            HydrostaticStringPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            HydrostaticAnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+
+            XVectorAnnulusVariables = Vector<double>.Build.Dense(3);
+            XVectorStringVariables = Vector<double>.Build.Dense(3);
+            
+            BuoyantWeightPerLength = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);  
+            AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+            NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
+
+            dSigmaDx = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
             if (drillingFluidDescription.FluidPVTParameters == null)
-            {
-                return;
+            {   
+                FluidPVTParameters fluidPVTParameters = new FluidPVTParameters
+                {
+                    A0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 1981.9832345443956}},
+                    B0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -0.8671702042673033}},
+                    C0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -1.8110549001629749e-6}},
+                    D0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 7.341326730109053e-9}},
+                    E0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = 2.3352470230170143e-14}},
+                    F0 = new GaussianDrillingProperty {GaussianValue = new GaussianDistribution {Mean = -6.361566331825902e-17}}                    
+                };
+                IntegratePressureProfile(fluidPVTParameters, 
+                    drillingFluidDescription.FluidMassDensity.GaussianValue.Mean, 
+                    drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
+                    surfacePressure,
+                    lumpedCells.ElementLength);               
             }
             else
             {
                 IntegratePressureProfile(drillingFluidDescription.FluidPVTParameters, 
                     drillingFluidDescription.FluidMassDensity.GaussianValue.Mean, 
                     drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
-                    lumpedCells);   
-            }
+                    surfacePressure,
+                    lumpedCells.ElementLength);   
+            }            
             UpdateBuoyancy(lumpedCells, trajectory, drillString, useBuoyancyFactor);
         }
-        private void IntegratePressureProfile(FluidPVTParameters fluidPVTParameters, double? densityNullable, double? temperatureNullable, LumpedCells lumpedCells)
+        private void IntegratePressureProfile(
+            FluidPVTParameters fluidPVTParameters, 
+            double? densityNullable, 
+            double? temperatureNullable, 
+            double surfacePressure,
+            Vector<double> depthIntegrationProfile)
         {
             if (
                 fluidPVTParameters.A0.GaussianValue.Mean == null ||
@@ -82,9 +105,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             else
             {
                 // Check what this is
-                double dX = lumpedCells.ElementLength[0];
-                double currentDepth = lumpedCells.ElementLength[0];
-                RKF45 odeSolver = new RKF45(dX);
+                double currentDepth = 0;
+                RKF45 odeSolver = new RKF45(ΔxRef: 10);
                 APvtCoeff = (double) fluidPVTParameters.A0.GaussianValue.Mean;
                 BPvtCoeff = (double) fluidPVTParameters.B0.GaussianValue.Mean;
                 CPvtCoeff = (double) fluidPVTParameters.C0.GaussianValue.Mean;
@@ -92,39 +114,58 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 EPvtCoeff = (double) fluidPVTParameters.E0.GaussianValue.Mean;
                 FPvtCoeff = (double) fluidPVTParameters.F0.GaussianValue.Mean;
                 double density = (double)densityNullable;
-                double temperature = (double)temperatureNullable;
-                //  Initial pressure can be calculated with Bhaskara. One answer will always be negative
-                // as b > 0 and Delta > 0. We calculate only the one 
-                //that will be positive
-                double a = EPvtCoeff + FPvtCoeff * temperature;
-                double b = DPvtCoeff * temperature + CPvtCoeff;
-                double c = APvtCoeff + BPvtCoeff * temperature - density;
+                double annulusTemperature = (double)temperatureNullable;
+                //  Initial pressure in the annulus can be calculated with Bhaskara. 
+                // One answer will always be negative as b > 0 and Delta > 0. 
+                // We calculate only the one that will be positive
+                double a = EPvtCoeff + FPvtCoeff * annulusTemperature;
+                double b = DPvtCoeff * annulusTemperature + CPvtCoeff;
+                double c = APvtCoeff + BPvtCoeff * annulusTemperature - density;
                 double Delta = b * b - 4 * a * c;
                 if (Delta < 0)
                 {
                     throw new ArgumentException("Initial pressure could not be computed!");
                 }
-                double pressure = (-b + Math.Sqrt(Delta)) / (2.0 * a); 
-                //XVector is the solver-ready format of the variables
-                
-                XVector[0] = density;
-                XVector[1] = temperature;
-                XVector[2] = pressure;
+                double annulusPressure = (-b + Math.Sqrt(Delta)) / (2.0 * a); 
+                //The Drill-string initial temperature is calculated as:
+                double drillStringTemperature = (
+                    density - EPvtCoeff * surfacePressure * surfacePressure - CPvtCoeff * surfacePressure - APvtCoeff)/
+                    (FPvtCoeff * surfacePressure * surfacePressure + DPvtCoeff * surfacePressure + BPvtCoeff);
 
-                AnnulusDensity[0] = density;
-                temperatureVector[0] = temperature;
-                AnnulusPressure[0] = pressure;
+
+                //XVector is the solver-ready format of the variables
+                XVectorAnnulusVariables[0] = density;
+                XVectorAnnulusVariables[1] = annulusPressure;
+                XVectorAnnulusVariables[2] = annulusTemperature;
                 
-                for (int i = 1; i < lumpedCells.ElementLength.Count + 1; i++)
+                XVectorStringVariables[0] = density;
+                XVectorStringVariables[1] = surfacePressure;
+                XVectorStringVariables[2] = drillStringTemperature;
+                
+                AnnulusDensity[0] = density;
+                AnnulusTemperature[0] = annulusTemperature;
+                AnnulusPressure[0] = annulusPressure;
+
+                StringDensity[0] = density;
+                StringTemperature[0] = drillStringTemperature;
+                StringPressure[0] = surfacePressure;
+
+                double dX;                
+                for (int i = 1; i < depthIntegrationProfile.Count; i++)
                 {
-                    dX = lumpedCells.ElementLength[i] - lumpedCells.ElementLength[i - 1]; 
-                    currentDepth = lumpedCells.ElementLength[i];
+                    dX = i > 1 ? depthIntegrationProfile[i - 1] - depthIntegrationProfile[i - 2] : depthIntegrationProfile[0]; 
+                    currentDepth = depthIntegrationProfile[i - 1];
                     //Get the next step
-                    XVector = odeSolver.Solve(XVector, PVTOrdinaryDifferentialEquation, currentDepth, dX);
-                    AnnulusDensity[i] = XVector[0];
-                    temperatureVector[i] = XVector[1];
-                    AnnulusPressure[i] = XVector[2];
-                }                
+                    XVectorAnnulusVariables = odeSolver.Solve(XVectorAnnulusVariables, PVTOrdinaryDifferentialEquation, currentDepth, dX);
+                    AnnulusDensity[i] = XVectorAnnulusVariables[0];
+                    AnnulusPressure[i] = XVectorAnnulusVariables[1];                
+                    AnnulusTemperature[i] = XVectorAnnulusVariables[2];
+                    //Get the next step
+                    XVectorStringVariables = odeSolver.Solve(XVectorStringVariables, PVTOrdinaryDifferentialEquation, currentDepth, dX);
+                    StringDensity[i] = XVectorStringVariables[0];
+                    StringPressure[i] = XVectorStringVariables[1];                
+                    StringTemperature[i] = XVectorStringVariables[2];
+                }      
             }
         }
         private Vector<double> PVTOrdinaryDifferentialEquation(double xStep, Vector<double> Xinputs)
@@ -136,7 +177,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             //                     |  0.03   | degree Celsius/m
             //
             RightSideOfTheODE[0] = 0.0;
-            RightSideOfTheODE[1] = Xinputs[0];
+            RightSideOfTheODE[1] = Constants.GravitationalAcceleration * Xinputs[0];
             RightSideOfTheODE[2] = 0.03;            
             Matrix<double> CoefficientMatrix = Matrix<double>.Build.Dense(3 , 3);
             // 1st column
@@ -144,133 +185,95 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             CoefficientMatrix[1, 0] =  0;
             CoefficientMatrix[2, 0] =  0;
             // 2nd Column
-            CoefficientMatrix[0, 0] = 2*Xinputs[1] * (FPvtCoeff * Xinputs[2] + EPvtCoeff) + DPvtCoeff * Xinputs[2] + CPvtCoeff;
-            CoefficientMatrix[1, 0] =  1;
-            CoefficientMatrix[2, 0] =  0;
+            CoefficientMatrix[0, 1] = 2*Xinputs[1] * (FPvtCoeff * Xinputs[2] + EPvtCoeff) + DPvtCoeff * Xinputs[2] + CPvtCoeff;
+            CoefficientMatrix[1, 1] =  1;
+            CoefficientMatrix[2, 1] =  0;
             // 3rd Column
-            CoefficientMatrix[0, 0] = FPvtCoeff * Xinputs[1] * Xinputs[1] + DPvtCoeff * Xinputs[1] + BPvtCoeff;
-            CoefficientMatrix[1, 0] =  0;
-            CoefficientMatrix[2, 0] =  1;
+            CoefficientMatrix[0, 2] = FPvtCoeff * Xinputs[1] * Xinputs[1] + DPvtCoeff * Xinputs[1] + BPvtCoeff;
+            CoefficientMatrix[1, 2] =  0;
+            CoefficientMatrix[2, 2] =  1;
             // The determinant of CoefficientMatrix should always be -1, and it should always be inversible!
             Matrix<double> InvCoefficientMatrix = CoefficientMatrix.Inverse();
             return InvCoefficientMatrix * RightSideOfTheODE;
         }
         public void UpdateBuoyancy(in LumpedCells lumpedCell, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString, bool useBuoyancyFactor)
         {
-            // Interpolate pressures and densities at positions xL
-            StringPressure = LinearInterpolate(StringMDProfile, StringPressureProf, lumpedCell.ElementLength);
-            StringDensity = LinearInterpolate(StringMDProfile, StringDensityProfile, lumpedCell.ElementLength);
-            //AnnularPressure = LinearInterpolate(AnnulusMDProfile, AnnularPressureProfile, lumpedCell.ElementLength);
-            //AnnularDensity = LinearInterpolate(AnnulusMDProfile, AnnularDensityProfile, lumpedCell.ElementLength);
-
+         
             // Compute hydrostatic pressures
-            HydrostaticStringPressure = CummulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * StringDensity);
-            HydrostaticAnnularPressure = CummulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * AnnulusDensity);
+            //HydrostaticStringPressure = CumulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * StringDensity);
+            //HydrostaticAnnulusPressure = CumulativeTrapezoidal(ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth), Constants.GravitationalAcceleration * AnnulusDensity);
+            double tempStringPressure = 0;
+            double tempAnnulusPressure = 0;
+            double buoyancyFactor;
+            double elementInnerArea;
+            double elementOuterArea;
+            double pipeElementArea;
+            double toolJointElementOuterArea;
+            double toolJointElementInnerArea;
+            double depth;
+            double MassPerLength;          
+            double interpolatedTheta;
+            Vector<double> extendedDepth = ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth);
 
-            // Calculate buoyant weight using the appropriate method
-            double[] elementInnerArea = new double[drillString.InnerArea.Count() + 1];
-            elementInnerArea[0] = drillString.InnerArea[0];
-            Array.Copy(drillString.InnerArea.ToArray(), 0, elementInnerArea, 1, drillString.InnerArea.Count());
-
-            double[] elementOuterArea = new double[drillString.OuterArea.Count() + 1];
-            elementOuterArea[0] = drillString.OuterArea[0];
-            Array.Copy(drillString.OuterArea.ToArray(), 0, elementOuterArea, 1, drillString.OuterArea.Count());
-
-            double[] toolJointElementInnerArea = new double[drillString.ToolJointInnerArea.Count() + 1];
-            toolJointElementInnerArea[0] = drillString.ToolJointInnerArea[0];
-            Array.Copy(drillString.ToolJointInnerArea.ToArray(), 0, toolJointElementInnerArea, 1, drillString.ToolJointInnerArea.Count());
-
-            double[] toolJointElementOuterArea = new double[drillString.ToolJointOuterArea.Count() + 1];
-            toolJointElementOuterArea[0] = drillString.ToolJointOuterArea[0];
-            Array.Copy(drillString.ToolJointOuterArea.ToArray(), 0, toolJointElementOuterArea, 1, drillString.ToolJointOuterArea.Count());
-
-            double[] pipeElementArea = new double[drillString.PipeArea.Count() + 1];
-            pipeElementArea[0] = drillString.PipeArea[0];
-            Array.Copy(drillString.PipeArea.ToArray(), 0, pipeElementArea, 1, drillString.PipeArea.Count());
-
-            if (useBuoyancyFactor)
+            for (int i = 1; i < lumpedCell.ElementLength.Count; i++)
             {
-                double[] buoyancyFactor = new double[elementOuterArea.Length];
-                for (int i = 0; i < elementOuterArea.Length; i++)
-                {
-                    buoyancyFactor[i] = (elementOuterArea[i] * (1 - AnnulusDensity[i] / drillString.SteelDensity) -
-                                         elementInnerArea[i] * (1 - StringDensity[i] / drillString.SteelDensity)) /
-                                         (elementOuterArea[i] - elementInnerArea[i]);
-                }
-
-                BuoyantWeightPerLength = Vector<double>.Build.Dense(elementInnerArea.Length);
-                for (int i = 0; i < elementInnerArea.Length; i++)
-                {
-                    BuoyantWeightPerLength[i] = Constants.GravitationalAcceleration * buoyancyFactor[i] * drillString.SteelDensity * pipeElementArea[i] * drillString.WeightCorrectionFactor[i];
-                }
-            }
-            else
-            {
-                double[] mass_per_length = new double[pipeElementArea.Length];
-                for (int i = 0; i < pipeElementArea.Length; i++)
-                {
-                    mass_per_length[i] = drillString.SteelDensity * pipeElementArea[i] * drillString.WeightCorrectionFactor[i];
-                }
-
-                BuoyantWeightPerLength = Vector<double>.Build.Dense(mass_per_length.Length);
-                for (int i = 0; i < mass_per_length.Length; i++)
-                {
-                    BuoyantWeightPerLength[i] = (mass_per_length[i] +
-                             (toolJointElementInnerArea[i] * drillString.ToolJointLength * StringDensity[i] +
-                               elementInnerArea[i] * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * StringDensity[i] -
-                               toolJointElementOuterArea[i] * drillString.ToolJointLength * AnnulusDensity[i] -
-                               elementOuterArea[i] * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * AnnulusDensity[i]) /
-                               lumpedCell.DistanceBetweenElements) * Constants.GravitationalAcceleration;
-                }
+                depth = i == 0 ? 0 : trajectory.InterpolatedVerticalDepth[i - 1];
+                //Integrate the density to get the current pressure 
+                tempStringPressure += 0.5 * Constants.GravitationalAcceleration * (StringDensity[i] + StringDensity[i - 1]) * (extendedDepth[i] - extendedDepth[i-1]);
+                tempAnnulusPressure += 0.5 * Constants.GravitationalAcceleration * (AnnulusDensity[i] + AnnulusDensity[i - 1]) * (extendedDepth[i] - extendedDepth[i-1]);
+                HydrostaticStringPressure[i] = tempStringPressure;
+                HydrostaticAnnulusPressure[i] = tempAnnulusPressure;    
             }
 
-            double[] thetaVece = new double[trajectory.InterpolatedTheta.Count() + 1];
-            thetaVece[0] = 0;
-            Array.Copy(trajectory.InterpolatedTheta.ToArray(), 0, thetaVece, 1, trajectory.InterpolatedTheta.Count());
-
-            // Compute the tension per length
-            dSigmaDx = Vector<double>.Build.Dense(BuoyantWeightPerLength.Count);
-            for (int i = 0; i < BuoyantWeightPerLength.Count; i++)
-            {
-                dSigmaDx[i] = BuoyantWeightPerLength[i] * Math.Cos(thetaVece[i]);
-            }
-
-            // Axial and normal buoyancy force changes if buoyancy factor is not used
-            if (!useBuoyancyFactor)
-            {
-                Vector<double> hydrostaticAnnularPressureShifted = ExtendVectorStart(0, HydrostaticAnnularPressure);
-                Vector<double> hydrostaticStringPressureShifted = ExtendVectorStart(0, HydrostaticStringPressure);
-
-                // Compute axial buoyancy force change of diameters
-                AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
-                NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
-
-                for (int i = 0; i < HydrostaticAnnularPressure.Count; i++)
+            for (int i = 0; i < lumpedCell.ElementLength.Count; i++)
+            {   
+                //Extract variables for computations assuming the first element used the same as the first one available 
+                elementInnerArea = i == 0 ? drillString.InnerArea[0] : drillString.InnerArea[i - 1];
+                elementOuterArea = i == 0 ? drillString.OuterArea[0] : drillString.OuterArea[i - 1];
+                pipeElementArea = i == 0 ? drillString.PipeArea[0] : drillString.PipeArea[i - 1];
+                toolJointElementInnerArea = i == 0 ? drillString.ToolJointInnerArea[0] : drillString.ToolJointInnerArea[i - 1];
+                toolJointElementOuterArea = i == 0 ? drillString.ToolJointOuterArea[0] : drillString.ToolJointOuterArea[i - 1];                    
+                // Stress variation
+                interpolatedTheta = (i == 0) ? 0 : trajectory.InterpolatedTheta[i - 1];
+                dSigmaDx[i] = BuoyantWeightPerLength[i] * Math.Cos(interpolatedTheta);            
+                if (useBuoyancyFactor)
                 {
-                    double AoCurrent = i == 0 ? drillString.OuterArea[0] : drillString.OuterArea[i - 1];
-                    double AiCurrent = i == 0 ? drillString.InnerArea[0] : drillString.InnerArea[i - 1];
-                    double hydrostaticAnnularCurrent = HydrostaticAnnularPressure[i];
+                    buoyancyFactor = (elementOuterArea * (1 - AnnulusDensity[i] / drillString.SteelDensity) -
+                                         elementInnerArea * (1 - StringDensity[i] / drillString.SteelDensity)) /
+                                         (elementOuterArea - elementInnerArea);
+                    BuoyantWeightPerLength[i] = Constants.GravitationalAcceleration * buoyancyFactor * drillString.SteelDensity * pipeElementArea * drillString.WeightCorrectionFactor[i];            
+
+                    //Calculate the variation of pressure due to change in diameters
+                    double hydrostaticAnnularCurrent = HydrostaticAnnulusPressure[i];
                     double hydrostaticStringCurrent = HydrostaticStringPressure[i];
-
+                    double hydrostaticAnnularPrev = i == 0 ? 0 : HydrostaticAnnulusPressure[i - 1];
+                    double hydrostaticStringPrev = i == 0 ? 0 : HydrostaticStringPressure[i - 1];
+                    // out-of-phase tool-joint areas
                     double AtjoPrev = i == 0 ? 0 : drillString.ToolJointOuterArea[i - 1];
                     double AtjiPrev = i == 0 ? 0 : drillString.ToolJointInnerArea[i - 1];
-                    double hydrostaticAnnularPrev = i == 0 ? 0 : HydrostaticAnnularPressure[i - 1];
-                    double hydrostaticStringPrev = i == 0 ? 0 : HydrostaticStringPressure[i - 1];
-
-                    AxialBuoyancyForceChangeOfDiameters[i] = AoCurrent * hydrostaticAnnularCurrent
+                    //populate matrices
+                    AxialBuoyancyForceChangeOfDiameters[i] = elementOuterArea * hydrostaticAnnularCurrent
                                                              - AtjoPrev * hydrostaticAnnularPrev
-                                                             - AiCurrent * hydrostaticStringCurrent
+                                                             - elementInnerArea * hydrostaticStringCurrent
                                                              + AtjiPrev * hydrostaticStringPrev;
 
                     NormalBuoyancyForceChangeOfDiameters[i] = AtjoPrev * hydrostaticAnnularPrev - AtjiPrev * hydrostaticStringPrev;
+
+                }
+                else
+                {
+                    MassPerLength = drillString.SteelDensity * pipeElementArea * drillString.WeightCorrectionFactor[i];
+                    BuoyantWeightPerLength[i] = (MassPerLength +
+                             (toolJointElementInnerArea * drillString.ToolJointLength * StringDensity[i] +
+                               elementInnerArea * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * StringDensity[i] -
+                               toolJointElementOuterArea * drillString.ToolJointLength * AnnulusDensity[i] -
+                               elementOuterArea * (lumpedCell.DistanceBetweenElements - drillString.ToolJointLength) * AnnulusDensity[i]) /
+                               lumpedCell.DistanceBetweenElements) * Constants.GravitationalAcceleration;
+                    AxialBuoyancyForceChangeOfDiameters[i] = 0;
+                    NormalBuoyancyForceChangeOfDiameters[i] = 0;
                 }
             }
-            else
-            {
-                // If buoyancy factor is used, axial and normal components are set to zero
-                AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
-                NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(HydrostaticAnnularPressure.Count);
-            }
+
         }
     }
 }

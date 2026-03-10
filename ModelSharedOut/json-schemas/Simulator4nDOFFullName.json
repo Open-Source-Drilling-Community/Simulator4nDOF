@@ -422,6 +422,10 @@
             "type": "number",
             "format": "double"
           },
+          "SurfacePipePressure": {
+            "type": "number",
+            "format": "double"
+          },
           "SolverType": {
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.SolverType"
           }

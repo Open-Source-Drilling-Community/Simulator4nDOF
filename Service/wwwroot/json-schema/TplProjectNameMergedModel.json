@@ -8371,10 +8371,6 @@
             "type": "number",
             "format": "double"
           },
-          "SurfacePipePressure": {
-            "type": "number",
-            "format": "double"
-          },
           "SolverType": {
             "$ref": "#/components/schemas/SolverType"
           }

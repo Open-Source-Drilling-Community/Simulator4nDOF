@@ -39,12 +39,12 @@ class Program
     private static bool finished_ = false;
     private static readonly object lock_ = new object();
 
-    private static readonly string JSON_BUNDLE = "TplProjectNameMergedModel.json";
-    private static readonly string CSHARP_MODEL = "TplProjectNameMergedModel.cs";
+    private static readonly string JSON_BUNDLE = "Simulator4nDOFMergedModel.json";
+    private static readonly string CSHARP_MODEL = "Simulator4nDOFMergedModel.cs";
     private static readonly string PSEUDO_CTOR = "PseudoConstructors.cs";
 
     // ### BEGIN CODE SPECIFIC TO ModelSharedOut 3/3 ###
-    private static readonly string NAMESPACE = "TplNamespace.ModelShared"; // should be the same as for ModelSharedIn to avoid type name collision
+    private static readonly string NAMESPACE = "NORCE.Drilling.Simulator4nDOF.ModelShared"; // should be the same as for ModelSharedIn to avoid type name collision
     private static readonly string MODELSHARED_FOLDER = "ModelSharedOut";
     private static readonly string JSON_OUTPUT_FOLDER = "Service" + Path.DirectorySeparatorChar + "wwwroot" + Path.DirectorySeparatorChar + "json-schema";
     // ### END CODE SPECIFIC TO ModelSharedOut 3/3 ###
@@ -265,7 +265,7 @@ class Program
                 Console.WriteLine("Creating constructor methods from schemas...");
                 //Extract relevant paths
                 string codePath = directory.FullName + Path.DirectorySeparatorChar + MODELSHARED_FOLDER + Path.DirectorySeparatorChar + "PseudoConstructorsWriter.cs";
-                string namespacePath = directory.FullName + Path.DirectorySeparatorChar + MODELSHARED_FOLDER + Path.DirectorySeparatorChar + "TplProjectNameMergedModel.cs";
+                string namespacePath = directory.FullName + Path.DirectorySeparatorChar + MODELSHARED_FOLDER + Path.DirectorySeparatorChar + "Simulator4nDOFMergedModel.cs";
                 string namespaceCode = File.ReadAllText(namespacePath);
                 string code = File.ReadAllText(codePath);
                 //Create sintax trees
@@ -300,7 +300,7 @@ class Program
                 memorysStream.Seek(0, SeekOrigin.Begin);
                 Assembly assembly = Assembly.Load(memorysStream.ToArray());
                 //Find the used class
-                var type = assembly.GetType("TplNamespace.PseudoConstructorsWriter.Writer");
+                var type = assembly.GetType("NORCE.Drilling.Simulator4nDOF.PseudoConstructorsWriter.Writer");
                 var obj = Activator.CreateInstance(type);
                 //Execute desired method
                 var method = type.GetMethod("CreatePseudoConstructors");

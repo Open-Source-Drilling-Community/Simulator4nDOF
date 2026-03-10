@@ -8,53 +8,55 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
     public class RKF45
     {
     // Rk5 //
-    private double c51 = 16 / 135;
-    private double c52 = 6656 / 12825;
-    private double c53 = 28561 / 56430;
-    private double c54 = -9 / 50;
-    private double c55 = 2 / 55;
+    private double c51 = 16.0 / 135.0;
+    private double c52 = 6656.0 / 12825.0;
+    private double c53 = 28561.0 / 56430.0;
+    private double c54 = -9.0 / 50.0;
+    private double c55 = 2.0 / 55.0;
     // Rk4 //
-    private double c41 = 25 / 216;
-    private double c42 = 1408 / 2656;
-    private double c43 = 2197 / 4104;
-    private double c44 = -1 / 5;
+    //private double c41 = 25.0 / 216.0;
+    //private double c42 = 1408.0 / 2656.0;
+    //private double c43 = 2197.0 / 4104.0;
+    //private double c44 = -1.0 / 5.0;
     // Error constants //
-    private double ce1 = 1 / 360;
-    private double ce3 = -128 / 4275;
-    private double ce4 = -2197 / 75240;
-    private double ce5 = 1 / 50;
-    private double ce6 = 2 / 55;
+    private double ce1 = 1.0 / 360.0;
+    private double ce3 = -128.0 / 4275.0;
+    private double ce4 = -2197.0 / 75240.0;
+    private double ce5 = 1.0 / 50.0;
+    private double ce6 = 2.0 / 55.0;
 
     //  Ks //
     // K2 //
-    private double ck21 = 1 / 4;
-    private double ck22 = 1 / 4;
+    private double ck21 = 1.0 / 4.0;
+    private double ck22 = 1.0 / 4.0;
 
     // K3 //
-    private double ck31 = 3 / 8;
-    private double ck32 = 3 / 32;
-    private double ck33 = 9 / 32;
+    private double ck31 = 3.0 / 8.0;
+    private double ck32 = 3.0 / 32.0;
+    private double ck33 = 9.0 / 32.0;
     // K4 //
-    private double ck41 = 12 / 13;
-    private double ck42 = 1932 / 2197;
-    private double ck43 = -7200 / 2197;
-    private double ck44 = 7296 / 2197;
+    private double ck41 = 12.0 / 13.0;
+    private double ck42 = 1932.0 / 2197.0;
+    private double ck43 = -7200.0 / 2197.0;
+    private double ck44 = 7296.0 / 2197.0;
     // K5 //
-    private double ck51 = 1;
-    private double ck52 = 439 / 216;
-    private double ck53 = -8;
-    private double ck54 = 3680 / 513;
-    private double ck55 = -845 / 4104;
+    private double ck51 = 1.0;
+    private double ck52 = 439.0 / 216.0;
+    private double ck53 = -8.0;
+    private double ck54 = 3680.0 / 513.0;
+    private double ck55 = -845.0 / 4104.0;
     // K6 //
-    private double ck61 = 1 / 2;
-    private double ck62 = -8 / 27;
-    private double ck63 = 2;
-    private double ck64 = -3544 / 2565;
-    private double ck65 = 1859 / 4104;
-    private double ck66 = -11 / 40;
+    private double ck61 = 1.0 / 2.0;
+    private double ck62 = -8.0 / 27.0;
+    private double ck63 = 2.0;
+    private double ck64 = -3544.0 / 2565.0;
+    private double ck65 = 1859.0 / 4104.0;
+    private double ck66 = -11.0 / 40.0;
     // Smaller time-step
-    private double δx;
+    //private double δx;
     private double δxAux = 0.0;
+    private double ΔxRef {get; set;}
+    
     private double tolerance;
     private double auxiliarTolerance;
     private int currentIteration = 0;
@@ -67,9 +69,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
     private Vector<double> K5;
     private Vector<double> K6;
     
-    public RKF45(double Δx, double tolerance = 1E-6, int size = 3, int itMax = 10000)
+    public RKF45(double ΔxRef = 1e-3, double tolerance = 1E-3, int size = 3, int itMax = 10000)
     {
-        δx = Δx;
+        this.δxAux = ΔxRef;
+        this.ΔxRef = ΔxRef;
         this.tolerance = tolerance;
         auxiliarTolerance = tolerance;
         K1 = Vector<double>.Build.Dense(size);
@@ -83,7 +86,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
     public Vector<double> Solve(Vector<double> stateStep, Func<double, Vector<double>, Vector<double>> ordinaryDifferentialEquation1stOrder,  double initialX, double Δx)
     {
         double currentStep = initialX;
-        while (δxAux < Δx || currentIteration < maxIteration)
+        currentIteration = 0;
+        double δx = ΔxRef;
+        δxAux = 0;
+        while (δxAux < Δx && currentIteration < maxIteration)
         {
             double localStep = currentStep + δxAux;
             K1 = δx * ordinaryDifferentialEquation1stOrder(localStep, stateStep);
@@ -112,7 +118,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             }    
             currentIteration += 1;        
         }
-        if (currentIteration < maxIteration)
+        if (currentIteration > maxIteration)
         {
             Console.WriteLine("Integration did not converge!");        
         }

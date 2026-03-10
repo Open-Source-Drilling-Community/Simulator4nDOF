@@ -69,7 +69,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                              configuration.TopDriveMomentOfInertia,
                              configuration.FluidDamping);
             Trajectory = new SimulatorTrajectory(LumpedCells, configuration.Trajectory);
-            Buoyancy = new Buoyancy(LumpedCells, Trajectory, Drillstring, configuration.DrillingFluidDescription, configuration.UseBuoyancyFactor);
+            Buoyancy = new Buoyancy(LumpedCells, Trajectory, Drillstring, configuration.DrillingFluidDescription, configuration.UseBuoyancyFactor, configuration.SurfacePressure);
 
 
             MudMotor = new MudMotor();

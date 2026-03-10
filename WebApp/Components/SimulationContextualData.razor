@@ -103,7 +103,7 @@
                 }
             </MudSelect>
         </MudItem>
-        <MudItem xs="12">
+        <MudItem xs="6">
             <MudSelect T="WellBoreArchitecture" Label="Architecture source" Value="selectedArchitcture" Variant="Variant.Text" ValueChanged="@UpdateAvailableCasings">
                 @if(WellBoreArchitectures != null)
                 {
@@ -114,9 +114,9 @@
                 }
             </MudSelect>
         </MudItem>
-        @if (casingSections.Count > 0){
-            <MudItem xs="12">
-                <MudSelect T="CasingSection" Label="Casing Section source" Value="Simulation.ContextualData.CasingSection" Variant="Variant.Text">
+        <MudItem xs="6">            
+            @if (casingSections.Count > 0){
+                <MudSelect T="CasingSection" Label="Casing Section source" @bind-Value="Simulation.ContextualData.CasingSection" Variant="Variant.Text">
                     @if(WellBoreArchitectures != null)
                     {
                         @foreach (CasingSection casing in casingSections)
@@ -127,10 +127,11 @@
                         }
                     }
                 </MudSelect>
-            </MudItem>
-        }
-        <MudItem xs="12">
-            <MudSelect T="DrillingFluidDescription" Label="Fluid" Value="Simulation.ContextualData.DrillingFluidDescription" Variant="Variant.Text">
+            }
+        </MudItem>
+        
+        <MudItem xs="6">
+            <MudSelect T="DrillingFluidDescription" Label="Fluid" Value="Simulation.ContextualData.DrillingFluidDescription" Variant="Variant.Text" ValueChanged="UpdateFluidDescription">
                 @if(FluidDescriptions != null)
                 {
                     @foreach (DrillingFluidDescription fluidDescription in FluidDescriptions)
@@ -140,13 +141,13 @@
                 }
             </MudSelect>
         </MudItem>
-        @*
-        <MudItem xs="12">
-            <MudTextField @bind-Value="Simulation.ContextualData.AnnulusPressureFile" Label="Annulus pressure profile file name" Variant="Variant.Text"></MudTextField>
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField @bind-Value="Simulation.ContextualData.DrillstringPressureFile" Label="Drillstring pressure profile file name" Variant="Variant.Text"></MudTextField>
-        </MudItem>*@
+        <MudItem xs="6">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Drill-string surface pressure"
+                              QuantityName="PressureDrilling"
+                              SIValue="Simulation.ContextualData.SurfacePipePressure"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.SurfacePipePressure = val.Value; }" />
+        </MudItem>       
     </MudGrid>
     <MudGrid RowSpacing="0" Style="margin-top:-0px;">
         <MudItem Style="width:250px;">
@@ -258,6 +259,12 @@
         {
             Simulation.ContextualData.DrillString = await APIUtils.ClientDrillString.GetDrillStringByIdAsync((Guid) val);
         }
+    }
+    private void UpdateFluidDescription(DrillingFluidDescription val)
+    {
+        Simulation!.ContextualData.DrillingFluidDescription = val;
+        if (val.FluidMassDensity.GaussianValue.Mean !=null) 
+            Simulation.ContextualData.FluidDensity = (double) val.FluidMassDensity.GaussianValue.Mean;
     }
     private void ProcessSelectedCluster()
     {

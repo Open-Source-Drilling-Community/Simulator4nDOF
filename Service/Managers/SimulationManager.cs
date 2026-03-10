@@ -1082,6 +1082,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 DrillingFluidDescription = simulation.ContextualData.DrillingFluidDescription, 
                 Trajectory = simulation.ContextualData.Trajectory!,
                 DrillString = simulation.ContextualData.DrillString,
+                SurfacePressure = simulation.ContextualData.SurfacePipePressure,
                 BitDepth = simulation.InitialValues.BitDepth,                             // [m]
                 FluidTemperature = simulation.ContextualData.Temperature,                 // [K]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]

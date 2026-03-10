@@ -15,7 +15,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public ModelShared.DrillString DrillString { get; set; }
         public ModelShared.DrillingFluidDescription DrillingFluidDescription {get; set;}
         public ModelShared.CasingSection CasingSection {get; set;}
-        public double Temperature {get; set;} = 323;
+        public double Temperature {get; set;} = 293;
+        public double SurfacePipePressure {get; set;} = 100_000;
         public SolverType SolverType { get; set; } = SolverType.VerletMethod;
         
 

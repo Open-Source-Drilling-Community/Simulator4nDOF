@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using ModelContextProtocol.Protocol;
 using NORCE.Drilling.Simulator4nDOF.Service;
 using NORCE.Drilling.Simulator4nDOF.Service.Managers;

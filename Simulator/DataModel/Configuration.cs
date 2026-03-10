@@ -44,6 +44,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 
 
         public required double FluidDensity  = 1200;        // [kg/m3] Density of drilling mud, f.rhoMud
+        public double SurfacePressure;
 
         // Top drive ZTorque controller parameters
         public double VFDFilterTimeconstantZTorque = 0.005;         // [s] VFD filter time constant

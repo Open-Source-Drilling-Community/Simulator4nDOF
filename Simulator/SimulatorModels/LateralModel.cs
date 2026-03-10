@@ -129,18 +129,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffPhiInterpolated);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffThetaInterpolated);
             Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.InterpolatedTheta);
-            Vector<double> trapezoidalsIntegration = CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDx));
+            Vector<double> trapezoidalsIntegration = CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDx));
             state.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.AxialBuoyancyForceChangeOfDiameters - drag;
             Vector<double> fN_softstring = (Square((state.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.BuoyantWeightPerLength.PointwiseMultiply(thetaVece.PointwiseSin())) +
                                             Square((state.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
-            Vector<double> I_fN_softstring = Utilities.CummulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
+            Vector<double> I_fN_softstring = Utilities.CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
             state.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
             Vector<double> AiExtended = ExtendVectorStart(parameters.Drillstring.InnerArea[0], parameters.Drillstring.InnerArea);
             Vector<double> AoExtended = ExtendVectorStart(parameters.Drillstring.OuterArea[0], parameters.Drillstring.OuterArea);
             
             state.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                 (  
-                    AoExtended.PointwiseMultiply(parameters.Buoyancy.AnnulusPressure - parameters.Buoyancy.HydrostaticAnnularPressure) 
+                    AoExtended.PointwiseMultiply(parameters.Buoyancy.AnnulusPressure - parameters.Buoyancy.HydrostaticAnnulusPressure) 
                     - AiExtended.PointwiseMultiply(parameters.Buoyancy.StringPressure - parameters.Buoyancy.HydrostaticStringPressure)
                 );   
 

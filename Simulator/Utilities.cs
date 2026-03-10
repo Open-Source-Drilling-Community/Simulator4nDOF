@@ -263,7 +263,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             return result;
         }
 
-            public static Vector<double> CummulativeTrapezoidal(Vector<double> x, Vector<double> y)
+            public static Vector<double> CumulativeTrapezoidal(Vector<double> x, Vector<double> y)
         {
             return ToVector(CummulativeTrapezoidal( x.ToArray(), y.ToArray()));
         }
