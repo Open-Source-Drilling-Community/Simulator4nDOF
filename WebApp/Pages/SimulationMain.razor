@@ -64,20 +64,30 @@
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.NewSimulationVisible)
         {
-            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" 
-                Simulation="@newSimulation" 
-                Fields="@fieldList" 
-                Clusters="@clusterList" 
-                Wells="@wellList" 
-                WellBores="@wellBoreList" 
-                DrillStrings="@drillStringList" 
-                Trajectories="@trajectoryList"
-                WellBoreArchitectures="@wellBoreArchitecureList"
-                FluidDescriptions="@drillingFluidDescriptionList"/>
+            <SimulationNew MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync"
+                           Simulation="@newSimulation"
+                           Fields="@fieldList"
+                           Clusters="@clusterList"
+                           Wells="@wellList"
+                           WellBores="@wellBoreList"
+                           DrillStrings="@drillStringList"
+                           Rigs="@rigList"
+                           Trajectories="@trajectoryList"
+                           WellBoreArchitectures="@wellBoreArchitecureList"
+                           FluidDescriptions="@drillingFluidDescriptionList" />
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.EditSimulationVisible)
         {
-            <SimulationEdit MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync" Fields="@fieldList" Clusters="@clusterList" Wells="@wellList" WellBores="@wellBoreList" DrillStrings="@drillStringList" Trajectories="@trajectoryList" />
+            <SimulationEdit MainPanelLogic="@_mainPanelLogic" OnRefresh="ReloadAsync"
+                            Fields="@fieldList"
+                            Clusters="@clusterList"
+                            Wells="@wellList"
+                            WellBores="@wellBoreList"
+                            DrillStrings="@drillStringList"
+                            Rigs="@rigList"
+                            Trajectories="@trajectoryList"
+                            WellBoreArchitectures="@wellBoreArchitecureList"
+                            FluidDescriptions="@drillingFluidDescriptionList" />
         }
     }
 </MudUnitAndReferenceChoiceTag>
@@ -102,11 +112,12 @@
 
     private List<WellBore>? wellBoreList { get; set; } = null;
     private List<DrillStringLight>? drillStringList { get; set; } = null;
+    private List<RigLight>? rigList { get; set; } = null;
     private List<Trajectory>? trajectoryList { get; set; } = null;
 
     private List<WellBoreArchitecture>? wellBoreArchitecureList { get; set; } = null;
     private List<DrillingFluidDescription>? drillingFluidDescriptionList { get; set; } = null;
-    
+
 
 
     private Color GetProgressColor(double? progress)
@@ -203,6 +214,8 @@
             var fieldTask = APIUtils.ClientField.GetAllFieldAsync();
             logger.LogInformation("Trying to load list of DrillString from client: " + APIUtils.HostNameDrillString);
             var drillStringTask = APIUtils.ClientDrillString.GetAllDrillStringLightAsync();
+            logger.LogInformation("Trying to load list of Rig from client: " + APIUtils.HostNameRig);
+            var rigTask = APIUtils.ClientRig.GetAllRigLightAsync();
             logger.LogInformation("Trying to load list of Trajectory from client: " + APIUtils.HostNameTrajectory);
             var trajectoryTask = APIUtils.ClientTrajectory.GetAllTrajectoryAsync();
             logger.LogInformation("Trying to load list of Architectures from client: " + APIUtils.HostNameWellBoreArchitecture);
@@ -211,16 +224,17 @@
             var drillingFluidTask = APIUtils.ClientDrillingFluid.GetAllDrillingFluidDescriptionAsync();
 
 
-            List<Task> loadingTaskList = new List<Task> 
-            { 
-                SimulationTask, 
-                wellBoreTask, 
-                wellTask, 
-                clusterTask, 
-                fieldTask, 
-                drillStringTask, 
-                trajectoryTask, 
-                architectureTask, 
+            List<Task> loadingTaskList = new List<Task>
+            {
+                SimulationTask,
+                wellBoreTask,
+                wellTask,
+                clusterTask,
+                fieldTask,
+                drillStringTask,
+                rigTask,
+                trajectoryTask,
+                architectureTask,
                 drillingFluidTask
             };
 
@@ -374,6 +388,28 @@
                         logger.LogError(ex, "Impossible to load DrillString from client");
                     }
                 }
+                else if (finishedTask == rigTask)
+                {
+                    try
+                    {
+                        rigList = ((List<RigLight>)await rigTask)
+                            .Where(rig => rig != null && !rig.IsFixedPlatform)
+                            .ToList();
+                        if (rigList != null)
+                        {
+                            rigList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Rigs was null on initialization");
+                            Snackbar.Add("Returned list of Rigs was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Rig from client");
+                    }
+                }
                 else if (finishedTask == trajectoryTask)
                 {
                     try
@@ -465,33 +501,14 @@
                 UseHeave = false,
                 HeaveAmplitude = 0.00,
                 HeavePeriod = 11,
-                TopDriveController = 1,
-                // ZTorque filter and tuning defaults
-                VFDFilterTimeconstantZTorque = 0.005,
-                EncoderTimeConstantZTorque = 0.002,
-                AccelerationFilterTimeConstantZTorque = 0.005,
-                TorqueHighPassFilterTimeConstantZTorque = 20,
-                TorqueLowPassFilterTimeConstantZTorque = 0.005,
-                AdditionalTuningFactorZTorque = 0.25,
-                InertiaCorrectionFactorZTorque = 1.00,
                 LengthBetweenLumpedElements = 10.0,
                 TopDriveStartupTime = 0,
-                // Top drive controller gains
-                KpSoftTorqueSpeed = 4,
-                KiSoftTorqueSpeed = 0,
-                TuningFrequenceySoftTorqueSpeed = 0.2,
-                KpStiffAndZTorque = 50,
-                KiStiffAndZTorque = 5,
             },
             ContextualData = new ContextualData()
             {
-                Trajectory = new Trajectory(),
-                DrillString = new DrillString(),
                 //AnnulusPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/AnnulusHydraulicProfiles.txt",
                 //DrillstringPressureFile = "/home/AD.NORCERESEARCH.NO/lvol/Documents/Codes/Microservices/Refactories/Simulator4nDOF/Example/DrillstringHydraulicProfiles.txt",
                 //BoreHoleSizeList = new List<BoreHoleSize>() { new BoreHoleSize() { Depth = 336.0, ID = 19.188 * 0.0254 }, new BoreHoleSize() { Depth = 4160.0, ID = 8.553 * 0.0254 }, new BoreHoleSize() { Depth = 4170.0, ID = 12.25 * 0.0254 } },
-                BitRadius = 8.5 * 0.0254 / 2.0,
-                FluidDensity = 1260,
             },
             InitialValues = new InitialValues()
             {
@@ -503,8 +520,14 @@
             {
                 new SetPoints
                 {
-                    TimeDuration = 30, // seconds
-                    SurfaceRPM = 2 * Math.PI / 30, // rpm
+                    TimeDuration = 10, // seconds
+                    SurfaceRPM = 0, // rpm
+                    TopOfStringVelocity = 0 // m/s
+                },
+                new SetPoints
+                {
+                    TimeDuration = 10, // seconds
+                    SurfaceRPM = 2.0*Math.PI*40.0/60.0, // rad/s
                     TopOfStringVelocity = 0 // m/s
                 },
             },

@@ -12,7 +12,6 @@
                 <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.ArrowBackIosNew">Back</MudButton>
             </MudToolBar>
             <MudPaper Class="pa-4">
-
                 <MudGrid RowSpacing="0" Style="margin-top:-0px;">
                     <MudItem xs="2">
                         <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Text"></MudTextField>
@@ -32,6 +31,7 @@
                         Wells="@Wells" 
                         WellBores="@WellBores" 
                         DrillStrings="@DrillStrings" 
+                        Rigs="@Rigs"
                         Trajectories="@Trajectories" 
                         WellBoreArchitectures="@WellBoreArchitectures"
                         FluidDescriptions="@FluidDescriptions"/>
@@ -56,7 +56,7 @@
                     <SetPointsEditor Simulation="@Simulation" />
 
                     <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
-                }
+                } 
             </MudPaper>
         </MudCollapse>
     </MudPaper>
@@ -80,6 +80,8 @@
     public List<WellBore>? WellBores { get; set; } = null;
     [Parameter]
     public List<DrillStringLight>? DrillStrings { get; set; } = null;
+    [Parameter]
+    public List<RigLight>? Rigs { get; set; } = null;
     [Parameter]
     public List<Trajectory>? Trajectories { get; set; } = null;
     [Parameter]
@@ -109,14 +111,19 @@
     {
         if (Simulation != null)
         {
-            if (Simulation.ContextualData.DrillString == null)
+            if (Simulation.ContextualData.DrillStringID == null || Simulation.ContextualData.DrillStringID == Guid.Empty)
             {
                 Snackbar.Add("Please select a Drill String", Severity.Warning);
                 return;
             }
-            if (Simulation.ContextualData.Trajectory == null)
+            if (Simulation.ContextualData.TrajectoryID == null || Simulation.ContextualData.TrajectoryID == Guid.Empty)
             {
                 Snackbar.Add("Please select a Trajectory", Severity.Warning);
+                return;
+            }
+            if (RequiresRigSelection() && (Simulation.ContextualData.RigID == null || Simulation.ContextualData.RigID == Guid.Empty))
+            {
+                Snackbar.Add("Please select a Rig for a non-fixed platform cluster", Severity.Warning);
                 return;
             }
             try
@@ -161,6 +168,29 @@
         {
             Simulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
         }
+    }
+
+    private bool RequiresRigSelection()
+    {
+        if (Simulation?.WellBoreID == null || Simulation.WellBoreID == Guid.Empty || WellBores == null || Wells == null || Clusters == null)
+        {
+            return false;
+        }
+
+        var wellBore = WellBores.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.WellBoreID);
+        if (wellBore?.WellID == null || wellBore.WellID == Guid.Empty)
+        {
+            return false;
+        }
+
+        var well = Wells.FirstOrDefault(x => x.MetaInfo?.ID == wellBore.WellID);
+        if (well?.ClusterID == null || well.ClusterID == Guid.Empty)
+        {
+            return false;
+        }
+
+        var cluster = Clusters.FirstOrDefault(x => x.MetaInfo?.ID == well.ClusterID);
+        return cluster != null && !cluster.IsFixedPlatform;
     }
 
 }

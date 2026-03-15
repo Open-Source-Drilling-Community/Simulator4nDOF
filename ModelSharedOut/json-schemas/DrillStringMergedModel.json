@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.4",
+  "openapi": "3.0.3",
   "info": {
     "title": "ModelShared (Service)",
     "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
@@ -4142,7 +4142,37 @@
           "Mwd",
           "Stabilizer",
           "SteerableRotaryTool",
-          "Bit"
+          "Bit",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "DrillStringSensorTypes": {
+        "enum": [
+          "Acoustic",
+          "AccelerometerX",
+          "AccelerometerY",
+          "AccelerometerZ",
+          "ResistivitySource",
+          "ResistivityReceiver",
+          "NeutronDensity",
+          "NeutronPorosity",
+          "MagnetometerX",
+          "MagnetometerY",
+          "RotationalPitch",
+          "RotationalRoll",
+          "RotationalYaw",
+          "BendingMomentX",
+          "BendingMomentY",
+          "StringPressure",
+          "AnnulusPressure",
+          "StringTemperature",
+          "ElectronicTemperature",
+          "AnnulusTemperature",
+          "GammaRay",
+          "Other",
+          "Tension",
+          "Torque"
         ],
         "type": "string"
       },
@@ -4179,6 +4209,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DrillStringSection"
+            },
+            "nullable": true
+          },
+          "SensorsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringSensor"
             },
             "nullable": true
           }
@@ -4452,6 +4489,36 @@
               "$ref": "#/components/schemas/DrillStringComponent"
             },
             "nullable": true
+          }
+        }
+      },
+      "DrillStringSensor": {
+        "type": "object",
+        "properties": {
+          "DistanceFromBit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MeasurementRange": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SensorAngles": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTypeInt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SensorType": {
+            "$ref": "#/components/schemas/DrillStringSensorTypes"
           }
         }
       },

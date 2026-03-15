@@ -18,6 +18,11 @@ public static class APIUtils
     public static readonly HttpClient HttpClientWell = APIUtils.SetHttpClient(HostNameWell, HostBasePathWell);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientWell = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientWell.BaseAddress!.ToString(), APIUtils.HttpClientWell);
 
+    public static readonly string HostNameRig = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.RigHostURL!;
+    public static readonly string HostBasePathRig = "Rig/api/";
+    public static readonly HttpClient HttpClientRig = APIUtils.SetHttpClient(HostNameRig, HostBasePathRig);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientRig = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientRig.BaseAddress!.ToString(), APIUtils.HttpClientRig);
+
     public static readonly string HostNameCluster = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.ClusterHostURL!;
     public static readonly string HostBasePathCluster = "Cluster/api/";
     public static readonly HttpClient HttpClientCluster = APIUtils.SetHttpClient(HostNameCluster, HostBasePathCluster);

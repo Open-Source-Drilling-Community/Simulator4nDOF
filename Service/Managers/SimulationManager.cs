@@ -592,7 +592,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 //initialize simulation
                 try
                 {
-                    config = Initialize(simulation);
+                    config = await InitializeAsync(simulation);
                 }
                 catch (Exception ex)
                 {
@@ -862,16 +862,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                                 uint sequenceNumber = 0;
                                 foreach (Results r in resultsList)
                                 {
-                                    command.CommandText = "INSERT INTO SimulationResultsTable (" +
-                                        "SimulationID, " +
-                                        "SequenceNumber, " +
-                                        "Result" +
-                                        ") VALUES (" +
-                                        $"'{guid}', " +
-                                        $"'{sequenceNumber}', " +
-                                        $"'{JsonSerializer.Serialize(r, JsonSettings.Options)}'" +
-                                        ")";
-                                    count = command.ExecuteNonQuery();
+                                    count = 0;
+                                    try
+                                    {
+                                        string json = JsonSerializer.Serialize(r, JsonSettings.Options);
+                                        command.CommandText = "INSERT INTO SimulationResultsTable (" +
+                                            "SimulationID, " +
+                                            "SequenceNumber, " +
+                                            "Result" +
+                                            ") VALUES (" +
+                                            $"'{guid}', " +
+                                            $"'{sequenceNumber}', " +
+                                            $"'{json}'" +
+                                            ")";
+                                        count = command.ExecuteNonQuery();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        _logger.LogError(e.ToString());
+                                    }
                                     if (count != 1)
                                     {
                                         _logger.LogWarning("Impossible to insert the given Simulation Result into the SimulationResultsTable");
@@ -1066,35 +1075,46 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             }
             return output;
         }
-        public Configuration Initialize(Simulation simulation)
+        public async Task<Configuration> InitializeAsync(Simulation simulation)
         {
-            if (simulation.ContextualData!.Trajectory == null)
+            var contextualData = simulation.ContextualData ?? throw new Exception("Contextual data is required for the simulation.");
+            var resolvedContext = await ContextualDataResolver.ResolveAsync(simulation);
+            if (resolvedContext.Rig.MainRigMast?.TopDrive == null)
             {
-                throw new Exception("Trajectory data is required for the simulation.");
+                resolvedContext.Rig.MainRigMast ??= new RigMast();
+                resolvedContext.Rig.MainRigMast.TopDrive ??= new TopDrive();
+                resolvedContext.Rig.MainRigMast.TopDrive.TopDriveControllerType = TopDriveControllerType.StiffPIController;
+                resolvedContext.Rig.MainRigMast.TopDrive.ProportionalGain = 50;
+                resolvedContext.Rig.MainRigMast.TopDrive.IntegralGain = 5;
             }
-            if (simulation.ContextualData!.DrillString == null)
+            if (resolvedContext.BitRadius <= 0)
             {
-                throw new Exception("DrillString data is required for the simulation.");
+                throw new Exception("Bit radius could not be derived from the drill string.");
             }
+            if (resolvedContext.FluidDensity <= 0)
+            {
+                throw new Exception("Fluid density could not be derived from the drilling fluid description.");
+            }
+            var topDrive = resolvedContext.Rig.MainRigMast.TopDrive;
             
             var config = new Configuration()
             {
-                DrillingFluidDescription = simulation.ContextualData.DrillingFluidDescription, 
-                Trajectory = simulation.ContextualData.Trajectory!,
-                DrillString = simulation.ContextualData.DrillString,
-                SurfacePressure = simulation.ContextualData.SurfacePipePressure,
+                DrillingFluidDescription = resolvedContext.DrillingFluidDescription,
+                Trajectory = resolvedContext.Trajectory,
+                DrillString = resolvedContext.DrillString,
+                SurfacePressure = contextualData.SurfacePipePressure,
                 BitDepth = simulation.InitialValues.BitDepth,                             // [m]
-                FluidTemperature = simulation.ContextualData.Temperature,                 // [K]
+                FluidTemperature = contextualData.Temperature,                 // [K]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]
                 TopOfStringPosition = simulation.InitialValues.TopOfStringPosition,                   // [m]
                 SurfaceRPM = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].SurfaceRPM : 0,            // [rad/s]
                 TopOfStringVelocity = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].TopOfStringVelocity : 0,         // [m/s] 
-                CasingSection = simulation.ContextualData.CasingSection,
-                BitRadius = simulation.ContextualData.BitRadius,                     // [m]
+                CasingSection = resolvedContext.CasingSection,
+                BitRadius = resolvedContext.BitRadius,                     // [m]
                 //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
                 SensorDistanceFromBit = simulation.Config.VirtualSensorPositionFromBit,
-                FluidDensity = simulation.ContextualData.FluidDensity,                       // [kg/m3] Density of drilling mud
+                FluidDensity = resolvedContext.FluidDensity,                       // [kg/m3] Density of drilling mud
                 LengthBetweenLumpedElements = simulation.Config.LengthBetweenLumpedElements,
                 CoulombKineticFriction = simulation.Config.CoulombKineticFriction,
                 CoulombStaticFriction = simulation.Config.CoulombStaticFriction,
@@ -1102,20 +1122,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 HeaveAmplitude = simulation.Config.HeaveAmplitude,
                 HeavePeriod = simulation.Config.HeavePeriod,
                 TopdriveStartupTime = simulation.Config.TopDriveStartupTime,
-                TopDriveController = simulation.Config.TopDriveController,
-                VFDFilterTimeconstantZTorque = simulation.Config.VFDFilterTimeconstantZTorque,
-                EncoderTimeConstantZTorque = simulation.Config.EncoderTimeConstantZTorque,
-                AccelerationFilterTimeConstantZTorque = simulation.Config.AccelerationFilterTimeConstantZTorque,
-                TorqueHighPassFilterTimeConstantZTorque = simulation.Config.TorqueHighPassFilterTimeConstantZTorque,
-                TorqueLowPassFilterTimeConstantZTorque = simulation.Config.TorqueLowPassFilterTimeConstantZTorque,
-                AdditionalTuningFactorZTorque = simulation.Config.AdditionalTuningFactorZTorque,
-                InertiaCorrectionFactorZTorque = simulation.Config.InertiaCorrectionFactorZTorque,
-                KpSoftTorqueSpeed = simulation.Config.KpSoftTorqueSpeed,
-                KiSoftTorqueSpeed = simulation.Config.KiSoftTorqueSpeed,
-                TuningFrequenceySoftTorqueSpeed = simulation.Config.TuningFrequenceySoftTorqueSpeed,
-                KpStiffAndZTorque = simulation.Config.KpStiffAndZTorque,
-                KiStiffAndZTorque = simulation.Config.KiStiffAndZTorque,
-                SolverType = simulation.ContextualData.SolverType
+                TopDriveController = (int)topDrive.TopDriveControllerType,
+                VFDFilterTimeconstantZTorque = topDrive.VFDFilterTimeConstant ?? 0.005,
+                EncoderTimeConstantZTorque = topDrive.EncoderTimeConstant ?? 0.002,
+                AccelerationFilterTimeConstantZTorque = topDrive.AccelerationFilterTimeConstant ?? 0.005,
+                TorqueHighPassFilterTimeConstantZTorque = topDrive.TorqueHighPassFilterTimeConstant ?? 20,
+                TorqueLowPassFilterTimeConstantZTorque = topDrive.TorqueLowPassFilterTimeConstant ?? 0.005,
+                AdditionalTuningFactorZTorque = topDrive.TuningFactor ?? 0.25,
+                InertiaCorrectionFactorZTorque = topDrive.InertiaCorrectionFactor ?? 1.00,
+                KpSoftTorqueSpeed = topDrive.ProportionalGain ?? 50,
+                KiSoftTorqueSpeed = topDrive.IntegralGain ?? 5,
+                TuningFrequenceySoftTorqueSpeed = topDrive.TuningFrequency ?? 0.2,
+                KpStiffAndZTorque = topDrive.ProportionalGain ?? 50,
+                KiStiffAndZTorque = topDrive.IntegralGain ?? 5,
+                SolverType = contextualData.SolverType
 
 
             };
@@ -1143,7 +1163,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.AngularVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.AxialVelocity).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
                 Inclination = parameters.Trajectory.InterpolatedTheta.Append(parameters.Trajectory.InterpolatedTheta.LastOrDefault<double>()).ToList(),
                 Azimuth = parameters.Trajectory.InterpolatedPhi.Append(parameters.Trajectory.InterpolatedPhi.LastOrDefault<double>()).ToList(),

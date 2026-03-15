@@ -34,6 +34,8 @@ if (!String.IsNullOrEmpty(builder.Configuration["ClusterHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.ClusterHostURL = builder.Configuration["ClusterHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["WellHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellHostURL = builder.Configuration["WellHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["RigHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.RigHostURL = builder.Configuration["RigHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["UnitConversionHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.UnitConversionHostURL = builder.Configuration["UnitConversionHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["DrillStringHostURL"]))

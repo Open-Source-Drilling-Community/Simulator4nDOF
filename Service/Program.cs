@@ -65,10 +65,22 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedProto
 });
 
+if (!String.IsNullOrEmpty(builder.Configuration["ClusterHostURL"]))
+    ServiceConfiguration.ClusterHostURL = builder.Configuration["ClusterHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["WellBoreHostURL"]))
+    ServiceConfiguration.WellBoreHostURL = builder.Configuration["WellBoreHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["WellHostURL"]))
+    ServiceConfiguration.WellHostURL = builder.Configuration["WellHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["DrillStringHostURL"]))
     ServiceConfiguration.DrillStringHostURL = builder.Configuration["DrillStringHostURL"];
-if (!String.IsNullOrEmpty(builder.Configuration["DrillStringOpenLabHostURL"]))
-    ServiceConfiguration.DrillStringOpenLabHostURL = builder.Configuration["DrillStringOpenLabHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["TrajectoryHostURL"]))
+    ServiceConfiguration.TrajectoryHostURL = builder.Configuration["TrajectoryHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["DrillingFluidHostURL"]))
+    ServiceConfiguration.DrillingFluidHostURL = builder.Configuration["DrillingFluidHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["WellBoreArchitectureHostURL"]))
+    ServiceConfiguration.WellBoreArchitectureHostURL = builder.Configuration["WellBoreArchitectureHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["RigHostURL"]))
+    ServiceConfiguration.RigHostURL = builder.Configuration["RigHostURL"];
 
 
 if (builder.Environment.IsDevelopment())

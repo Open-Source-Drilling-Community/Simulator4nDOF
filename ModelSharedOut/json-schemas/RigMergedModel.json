@@ -1,0 +1,5612 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ModelShared (Service)",
+    "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
+    "version": "1.0"
+  },
+  "paths": {
+    "/Cluster": {
+      "get": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "GetAllClusterId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "PostCluster",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cluster"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cluster"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cluster"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Cluster/MetaInfo": {
+      "get": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "GetAllClusterMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Cluster/{id}": {
+      "get": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "GetClusterById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cluster"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "PutClusterById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cluster"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cluster"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cluster"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "DeleteClusterById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Cluster/HeavyData": {
+      "get": {
+        "tags": [
+          "Cluster"
+        ],
+        "operationId": "GetAllCluster",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Cluster"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ClusterUsageStatistics": {
+      "get": {
+        "tags": [
+          "ClusterUsageStatistics"
+        ],
+        "operationId": "GetClusterUsageStatistics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageStatisticsCluster"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Field": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "GetAllFieldId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "PostField",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Field"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Field"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Field"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Field/MetaInfo": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "GetAllFieldMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Field/{id}": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "GetFieldById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Field"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "PutFieldById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Field"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Field"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Field"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "DeleteFieldById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Field/HeavyData": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "operationId": "GetAllField",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Field"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/FieldCartographicConversionSet": {
+      "get": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "GetAllFieldCartographicConversionSetId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "PostFieldCartographicConversionSet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldCartographicConversionSet"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldCartographicConversionSet"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldCartographicConversionSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/FieldCartographicConversionSet/MetaInfo": {
+      "get": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "GetAllFieldCartographicConversionSetMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/FieldCartographicConversionSet/{id}": {
+      "get": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "GetFieldCartographicConversionSetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FieldCartographicConversionSet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "PutFieldCartographicConversionSetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldCartographicConversionSet"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldCartographicConversionSet"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldCartographicConversionSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "DeleteFieldCartographicConversionSetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/FieldCartographicConversionSet/LightData": {
+      "get": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "GetAllFieldCartographicConversionSetLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FieldCartographicConversionSetLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/FieldCartographicConversionSet/HeavyData": {
+      "get": {
+        "tags": [
+          "FieldCartographicConversionSet"
+        ],
+        "operationId": "GetAllFieldCartographicConversionSet",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FieldCartographicConversionSet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/FieldUsageStatistics": {
+      "get": {
+        "tags": [
+          "FieldUsageStatistics"
+        ],
+        "operationId": "GetFieldUsageStatistics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageStatisticsField"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Rig": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRigId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "PostRig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Rig/MetaInfo": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRigMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Rig/{id}": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetRigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "PutRigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "DeleteRigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Rig/LightData": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRigLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RigLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Rig/HeavyData": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRig",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rig"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/RigUsageStatistics": {
+      "get": {
+        "tags": [
+          "RigUsageStatistics"
+        ],
+        "operationId": "GetRigUsageStatistics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageStatisticsRig"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cluster": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "FieldID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "IsSingleWell": {
+            "type": "boolean"
+          },
+          "RigID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "IsFixedPlatform": {
+            "type": "boolean"
+          },
+          "ReferenceLatitude": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ReferenceLongitude": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ReferenceDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "GroundMudLineDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TopWaterDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Slots": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Slot"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "CountPerDay": {
+        "type": "object",
+        "properties": {
+          "Date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Count": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CountPerDay"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Slot": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Latitude": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Longitude": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "UsageStatisticsCluster": {
+        "type": "object",
+        "properties": {
+          "LastSaved": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "BackUpInterval": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "GetAllClusterIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllClusterMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetClusterByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllClusterPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostClusterPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutClusterByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteClusterByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          }
+        }
+      },
+      "GaussianDrillingProperty": {
+        "type": "object",
+        "properties": {
+          "GaussianValue": {
+            "$ref": "#/components/schemas/GaussianDistribution"
+          }
+        }
+      },
+      "MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GaussianDistribution": {
+        "type": "object",
+        "properties": {
+          "MinValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaxValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mean": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StandardDeviation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "CartographicProjectionID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "FieldCartographicConversionSet": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "FieldID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "CartographicCoordinateList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartographicCoordinate"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "FieldCartographicConversionSetLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "FieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "FieldDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UsageStatisticsField": {
+        "type": "object",
+        "properties": {
+          "LastSaved": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "BackUpInterval": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "GetAllFieldIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetFieldByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldLightPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostFieldPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutFieldByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteFieldByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldCartographicConversionSetIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldCartographicConversionSetMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetFieldCartographicConversionSetByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldCartographicConversionSetLightPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllFieldCartographicConversionSetPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostFieldCartographicConversionSetPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutFieldCartographicConversionSetByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteFieldCartographicConversionSetByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          }
+        }
+      },
+      "CartographicCoordinate": {
+        "type": "object",
+        "properties": {
+          "Northing": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Easting": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VerticalDepth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GeodeticCoordinate": {
+            "$ref": "#/components/schemas/GeodeticCoordinate"
+          },
+          "GridConvergenceDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "GeodeticCoordinate": {
+        "type": "object",
+        "properties": {
+          "LatitudeWGS84": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LongitudeWGS84": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VerticalDepthWGS84": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LatitudeDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LongitudeDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VerticalDepthDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OctreeDepth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "OctreeCode": {
+            "$ref": "#/components/schemas/OctreeCodeLong"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "OctreeCodeLong": {
+        "type": "object",
+        "properties": {
+          "Depth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CodeHigh": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "CodeLow": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "Accumulator": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "AccumulatorClass": {
+            "$ref": "#/components/schemas/AccumulatorClass"
+          },
+          "Capacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "AccumulatorClass": {
+        "enum": [
+          "Bladder",
+          "Diaphragm",
+          "Piston",
+          "MetalBellow",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "AutoDriller": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ControlMode": {
+            "$ref": "#/components/schemas/AutodrillerControlMode"
+          },
+          "MaxLimitRop": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitRop": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitWob": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitWob": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDifferentialPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitDifferentialPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTrq": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitTrq": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SetpointWob": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SetpointRop": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SetpointDiffp": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SetpointTrq": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "AutodrillerControlMode": {
+        "enum": [
+          "Rop",
+          "Diffp",
+          "Trq",
+          "Limit",
+          "Wob"
+        ],
+        "type": "string"
+      },
+      "AuxSolidsControl": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "SolidsControlClass": {
+            "$ref": "#/components/schemas/SolidsControlClass"
+          },
+          "DesanderOn": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "DesilterOn": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "DegasserOn": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "CentrifugeOn": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "BopComponentClass": {
+        "enum": [
+          "AnnularPreventer",
+          "BlindRam",
+          "BlindShearRam",
+          "Diverter",
+          "DrillingSpool",
+          "PipeRam",
+          "ShearRam",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "BopLineClass": {
+        "enum": [
+          "ChokeLine",
+          "KillLine",
+          "BoosterLine",
+          "SurfaceLine",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "BopLineDefinition": {
+        "type": "object",
+        "properties": {
+          "BopLinesClass": {
+            "$ref": "#/components/schemas/BopLineClass"
+          },
+          "LineOd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LineId": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "BopStack": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "BopStackClass": {
+            "$ref": "#/components/schemas/BopStackClass"
+          },
+          "UnitReferenceList": {
+            "type": "string",
+            "nullable": true
+          },
+          "BopControlType": {
+            "$ref": "#/components/schemas/ControllerType"
+          },
+          "BoreDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Height": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Weight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BopComponents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BopStackComponentDefinition"
+            },
+            "nullable": true
+          },
+          "BopLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BopLineDefinition"
+            },
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BopLineMaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BopLineMaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CasingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "KillLinePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ChokeLinePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ShutInDrillpipePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "BopStackClass": {
+        "enum": [
+          "LandBop",
+          "MarineSurfaceBop",
+          "MarineSubSeaBop",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "BopStackComponentDefinition": {
+        "type": "object",
+        "properties": {
+          "BopStackComponentClass": {
+            "$ref": "#/components/schemas/BopComponentClass"
+          },
+          "BoreDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Height": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "CasingDriveClass": {
+        "enum": [
+          "Internal",
+          "External",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "CasingDriveSystem": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "CsgDrvClass": {
+            "$ref": "#/components/schemas/CasingDriveClass"
+          },
+          "HoistingCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignRotationSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitRotationSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPushDown": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "CasingRunningTool": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CasingTongs": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CatWalk": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CementPump": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "PumpClass": {
+            "$ref": "#/components/schemas/PumpClass"
+          },
+          "PlungerDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StrokeLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CementPumpDisplacement": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CementPumpDisplacementPoint"
+            },
+            "nullable": true
+          },
+          "MaxLimitPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "CementPumpDisplacementPoint": {
+        "type": "object",
+        "properties": {
+          "StrokeRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Pressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "CementUnit": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Mounting": {
+            "$ref": "#/components/schemas/MountingType"
+          },
+          "Features": {
+            "type": "string",
+            "nullable": true
+          },
+          "NumberOfPumps": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "Centrifuge": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ChokeCvCurvePoint": {
+        "type": "object",
+        "properties": {
+          "Pressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Flow": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "ChokeFunction": {
+        "enum": [
+          "PressureControl",
+          "Safety"
+        ],
+        "type": "string"
+      },
+      "ChokeManifold": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ChokeControlClass": {
+            "$ref": "#/components/schemas/ControlClass"
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTestPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "ChokeNumber": {
+        "enum": [
+          "Single",
+          "Dual",
+          "Triple"
+        ],
+        "type": "string"
+      },
+      "CoilDriveSystem": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "CoilDrvClass": {
+            "$ref": "#/components/schemas/MountingType"
+          },
+          "ReelPayloadCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ReelPayloadLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ReelRemainingLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjectorHeadRadius": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjectorHeadMinTubingOd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjHeadDesignPullCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjHeadDesignSnubCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjHeadPullCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjHeadSnubCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InjHeadMaxSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtWeightOnBit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtCoilSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtCircPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtWellheadPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtEngineSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtInjHeadDrivePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtInjTubingReelDrivePress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CtChainTension": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "CompensatorStatus": {
+        "enum": [
+          "Active",
+          "Inactive"
+        ],
+        "type": "string"
+      },
+      "ContinuousCirculationDevice": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "CcdControlClass": {
+            "$ref": "#/components/schemas/ControlClass"
+          },
+          "WorkingPumpPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitBackflow": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFluidTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitFluidTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitMudWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitRotationRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "ControlClass": {
+        "enum": [
+          "Manual",
+          "Automatic",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "ControllerType": {
+        "enum": [
+          "Hydraulic",
+          "Electrical",
+          "Acoustic",
+          "Pneumatic",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "CrownBlock": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "SheaveDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GrooveDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "NumberOfSheaves": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "MaxLimitDesignLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitCompensatorStroke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Hookload": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "CuttingsDryer": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CuttingsTransportSystem": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Degasser": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Derrick": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "DerrickClass": {
+            "$ref": "#/components/schemas/DerrickClass"
+          },
+          "Height": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitJointsPerStand": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "MaxLimitDesignLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitWindSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DerrickClass": {
+        "enum": [
+          "Conventional",
+          "Slant",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "Desander": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Desilter": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Drawworks": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrawworksClass": {
+            "$ref": "#/components/schemas/DrawworksClass"
+          },
+          "MaxLimitDesignLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitContinuousDrumPower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitContinuousDrumTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrawworksClass": {
+        "enum": [
+          "DirectDrive",
+          "SingleSpeedGearDriven",
+          "DualSpeedGearDriven",
+          "ActiveHeave",
+          "ActiveHeaveDualDrum",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "DrillLine": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Number": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Diameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LinearWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignBreakingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingBreakingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Hookload": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrillingChokeManifold": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ManifoldType": {
+            "$ref": "#/components/schemas/ManifoldClass"
+          },
+          "TrimSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FlowMeter": {
+            "type": "string",
+            "nullable": true
+          },
+          "FlowMeterSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FlowMeterPressureRating": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "JunkBasket": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ChokeCount": {
+            "type": "string",
+            "nullable": true
+          },
+          "FlowMeterCount": {
+            "type": "string",
+            "nullable": true
+          },
+          "PressureSensorVotingNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ChokeNumber": {
+            "$ref": "#/components/schemas/ChokeNumber"
+          },
+          "ChokeFunction": {
+            "$ref": "#/components/schemas/ChokeFunction"
+          },
+          "ChokeCvCurves": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChokeCvCurvePoint"
+            },
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOpeningSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitBackPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureBeforeChoke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureAfterChoke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CvValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CloggingOccuring": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureBeforeChoke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureAfterChoke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FlowThroughChoke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MudDensityOut": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MudDensityIn": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ReliefValvePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureBeforeFlowMeter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureAfterFlowMeter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InletPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OutletPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VotingSensorsFailed": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidClass": {
+        "enum": [
+          "OilBased",
+          "WaterBased",
+          "GasBased"
+        ],
+        "type": "string"
+      },
+      "DrillingFluidType": {
+        "enum": [
+          "AeratedMud",
+          "Air",
+          "BrackishWater",
+          "Brine",
+          "CaesiumFormate",
+          "DieselOilBased",
+          "EsterSyntheticBased",
+          "Freshwater",
+          "GlycolMud",
+          "GypMud",
+          "InternalOlefinSyntheticBased",
+          "LightlyTreatedNonDispersed",
+          "LigniteLignosulfonateMud",
+          "LimeMud",
+          "LinearParaffinSyntheticBased",
+          "LinearAlphaOlefinSyntheticBased",
+          "LowSolids",
+          "LowToxicityMineralOilBased",
+          "MineralOilBased",
+          "Mist",
+          "MixedMetalOxideMud",
+          "NativeNaturalMud",
+          "NaturalGas",
+          "NitrogenAeratedMud",
+          "NonAqueousInvertEmulsionDrillingFluids",
+          "NonDispersed",
+          "PneumaticGaseousDrillingFluids",
+          "PolymerMud",
+          "PotassiumFormate",
+          "PotassiumTreatedMud",
+          "SaltwaterMud",
+          "SaturatedSaltMud",
+          "SeaWater",
+          "SeawaterMud",
+          "SilicateMud",
+          "SodiumFormate",
+          "SpudMud",
+          "StableFoam",
+          "StiffFoam",
+          "WaterBasedDrillingFluids"
+        ],
+        "type": "string"
+      },
+      "DrillingFluidTypeDescriptor": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "DrillingFluidClass": {
+            "$ref": "#/components/schemas/DrillingFluidClass"
+          },
+          "DrillingFluidType": {
+            "$ref": "#/components/schemas/DrillingFluidType"
+          }
+        }
+      },
+      "DrillingMarineRiser": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "RiserClass": {
+            "$ref": "#/components/schemas/RiserClass"
+          },
+          "JointWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiserInsideDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiserOuterDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiserJointLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiserTotalLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTensionLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOpTensionLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignKillPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOpKillPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignBoosterPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitBoosterPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOpTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOpTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitAngleRiser": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrillstringHeaveCompensator": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "HeaveCompClass": {
+            "$ref": "#/components/schemas/HeaveCompensatorClass"
+          },
+          "CompensatorCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CompensatorStatus": {
+            "$ref": "#/components/schemas/CompensatorStatus"
+          },
+          "MaxLimitCompensatorStroke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DriveMode": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "DriveModeClass": {
+            "$ref": "#/components/schemas/DriveModeClass"
+          }
+        }
+      },
+      "DriveModeClass": {
+        "enum": [
+          "Mechanical",
+          "ElectricalDcScr",
+          "ElectricalAcVfd",
+          "ElectroMechanical",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "EngineModelType": {
+        "enum": [
+          "Reciprocating",
+          "Turbine"
+        ],
+        "type": "string"
+      },
+      "FloatValve": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "FloatValveClass": {
+            "$ref": "#/components/schemas/FloatValveClass"
+          },
+          "Diameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "FloatValveClass": {
+        "enum": [
+          "PlungerFloatValve",
+          "PortedPlungerValve",
+          "FlapperFloatValve",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "FlowRoutingManifold": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ManifoldType": {
+            "$ref": "#/components/schemas/ManifoldClass"
+          },
+          "FlangeSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ReliefLineDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EqualizationLineDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureReliefValveTrim": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ManifoldFlowPath": {
+            "$ref": "#/components/schemas/ManifoldFlowPath"
+          },
+          "ManifoldFlowcurves": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoutingManifoldCurvePoint"
+            },
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InletPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OutletPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ReliefValvePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CloggingOccuring": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureInlet": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureOutlet": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "FlowSensor": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "FlowTransducer": {
+            "$ref": "#/components/schemas/FlowSensorType"
+          },
+          "FlowOutOfBorehole": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "MudFlowrateOut": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MudFlowrateIn": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "FlowSensorType": {
+        "enum": [
+          "Coriollis",
+          "Paddle",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "Generator": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "GeneratorClass": {
+            "$ref": "#/components/schemas/GeneratorClass"
+          },
+          "Speed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Power": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Voltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PowerFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SpeedMode": {
+            "$ref": "#/components/schemas/SpeedMode"
+          },
+          "EngineModel": {
+            "$ref": "#/components/schemas/EngineModelType"
+          },
+          "PowerplantGeneratorNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PowerplantTotalPower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StartupTimeCold": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StartupTimeWarm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CoolingMedium": {
+            "$ref": "#/components/schemas/GeneratorCooling"
+          },
+          "Phases": {
+            "$ref": "#/components/schemas/GeneratorPhases"
+          },
+          "MaxLimitPower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPowerIncrease": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitSpeedIncrease": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitVoltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitVoltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFrequency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitFrequency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EnginePower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GeneratorPower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EngineFuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EngineSpecificFuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RunningHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EngineSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GeneratorVoltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GridVoltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GridFrequency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GeneratorFrequency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EngineTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "GeneratorClass": {
+        "enum": [
+          "Diesel",
+          "Gas",
+          "Lng",
+          "ElectricGrid",
+          "Methanol",
+          "Hydrogen",
+          "Ammonia",
+          "Nuclear",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "GeneratorCooling": {
+        "enum": [
+          "Air",
+          "Water",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "GeneratorPhases": {
+        "enum": [
+          "SinglePhase",
+          "TwoPhase",
+          "ThreePhase"
+        ],
+        "type": "string"
+      },
+      "HeaveCompensatorClass": {
+        "enum": [
+          "PassiveCrownMounted",
+          "ActiveCrownMounted",
+          "DirectLineCompensator",
+          "ActiveHeaveDrawworks",
+          "RigFloorCompensator",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "HoistingSystem": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "HoistingSystemType": {
+            "$ref": "#/components/schemas/HoistingSystemType"
+          },
+          "Drawworks": {
+            "$ref": "#/components/schemas/Drawworks"
+          },
+          "CrownBlock": {
+            "$ref": "#/components/schemas/CrownBlock"
+          },
+          "TravellingBlock": {
+            "$ref": "#/components/schemas/TravellingBlock"
+          },
+          "DrillLine": {
+            "$ref": "#/components/schemas/DrillLine"
+          }
+        }
+      },
+      "HoistingSystemType": {
+        "enum": [
+          "Drawworks",
+          "RamRig",
+          "RackAndPinion"
+        ],
+        "type": "string"
+      },
+      "IronRoughneck": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Kelly": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "KellyClass": {
+            "$ref": "#/components/schemas/KellyClass"
+          },
+          "KellyJointLength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignRotationSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitIbopPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitRotationSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceRotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "KellyHeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "KellyClass": {
+        "enum": [
+          "Hexagonal",
+          "Square",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "ManifoldClass": {
+        "enum": [
+          "Standalone",
+          "Integrated"
+        ],
+        "type": "string"
+      },
+      "ManifoldFlowPath": {
+        "enum": [
+          "One",
+          "Two",
+          "Three"
+        ],
+        "type": "string"
+      },
+      "MarineMpdClass": {
+        "enum": [
+          "RiserGasHandlingSystem",
+          "IntegratedRiserJoint",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "MarineMpdEquipment": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "MarineMpdClass": {
+            "$ref": "#/components/schemas/MarineMpdClass"
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Weight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ThroughBoreDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ControlMeans": {
+            "$ref": "#/components/schemas/ControllerType"
+          },
+          "ContainsFlowSpool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ContainsNonRotatingDevice": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ContainsDrillstringIsolation": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDynamicPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitRotatingSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "MeasurementAfm": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "UpdateRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Active": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "AfmMudDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AfmMudTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AfmPv": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AfmYp": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AfmRheometerMeasurements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RheometerAfmMeasurement"
+            },
+            "nullable": true
+          },
+          "RtViscConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RtViscFlowBehaviorIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "MountingType": {
+        "enum": [
+          "TruckMounted",
+          "SkidMounted",
+          "MiniUnit",
+          "Permanent",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "MpdControlDevice": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "MpdControlDeviceClass": {
+            "$ref": "#/components/schemas/MpdControlDeviceClass"
+          },
+          "NominalSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ThroughBoreDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SealingElementMaterial": {
+            "type": "string",
+            "nullable": true
+          },
+          "ControlDeviceHeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitStaticPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDynamicPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitRotatingSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitActivationPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "MpdControlDeviceClass": {
+        "enum": [
+          "Rotating",
+          "NonRotating"
+        ],
+        "type": "string"
+      },
+      "MpdController": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "MpdGradientMode": {
+            "$ref": "#/components/schemas/MpdGradientMode"
+          },
+          "PrimaryChokeTrim": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SecondaryChokeTrim": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitMudPumpFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ManipulatedMpdChoke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ManipulatedLiftPumpRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ControlledDownholePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BackpressureFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AnnulusRefillFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "MpdGradientMode": {
+        "enum": [
+          "Single",
+          "Dual",
+          "Temperature",
+          "Flow"
+        ],
+        "type": "string"
+      },
+      "MudGasSeparator": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MudPump": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/MudPumpType"
+          },
+          "PumpClass": {
+            "$ref": "#/components/schemas/PumpClass"
+          },
+          "PumpAction": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PumpEfficiency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PumpDisplacement": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LinerId": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Stroke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PulsationDamperPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PulsationDamperVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MudPumpStrokeRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MudPumpFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "MudPumpType": {
+        "enum": [
+          "Variant1",
+          "Variant2"
+        ],
+        "type": "string"
+      },
+      "MudTank": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "TankClass": {
+            "$ref": "#/components/schemas/TankClass"
+          },
+          "TankFluidType": {
+            "$ref": "#/components/schemas/TankFluidType"
+          },
+          "MaxLimitOperatingVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "MultiPhaseSeparator": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "SeparatorClass": {
+            "$ref": "#/components/schemas/SeparatorPhaseClass"
+          },
+          "MaximumOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaximumOperatingFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SeparationEfficiency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SeparatorMedium": {
+            "$ref": "#/components/schemas/SeparatorMedium"
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureSeparator": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureSeparator": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "PipeDeck": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PipeRack": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PumpClass": {
+        "enum": [
+          "DuplexPump",
+          "TriplexPump",
+          "QuintuplexPump",
+          "HexPump",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "ReturnFlowLine": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RheometerAfmMeasurement": {
+        "type": "object",
+        "properties": {
+          "AfmViscShearRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AfmViscShearStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "Rig": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "MudPumpList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MudPump"
+            },
+            "nullable": true
+          },
+          "CementPumpList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CementPump"
+            },
+            "nullable": true
+          },
+          "CementUnit": {
+            "$ref": "#/components/schemas/CementUnit"
+          },
+          "DriveMode": {
+            "$ref": "#/components/schemas/DriveMode"
+          },
+          "MainRigMast": {
+            "$ref": "#/components/schemas/RigMast"
+          },
+          "AuxiliaryRigMast": {
+            "$ref": "#/components/schemas/RigMast"
+          },
+          "MudTankList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MudTank"
+            },
+            "nullable": true
+          },
+          "GeneratorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Generator"
+            },
+            "nullable": true
+          },
+          "ShaleShakerList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShaleShaker"
+            },
+            "nullable": true
+          },
+          "AuxSolidsControl": {
+            "$ref": "#/components/schemas/AuxSolidsControl"
+          },
+          "DrillingFluidType": {
+            "$ref": "#/components/schemas/DrillingFluidTypeDescriptor"
+          },
+          "FlowSensor": {
+            "$ref": "#/components/schemas/FlowSensor"
+          },
+          "MeasurementAfm": {
+            "$ref": "#/components/schemas/MeasurementAfm"
+          },
+          "ReturnFlowLine": {
+            "$ref": "#/components/schemas/ReturnFlowLine"
+          },
+          "MudGasSeparatorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MudGasSeparator"
+            },
+            "nullable": true
+          },
+          "DesanderList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Desander"
+            },
+            "nullable": true
+          },
+          "DesilterList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Desilter"
+            },
+            "nullable": true
+          },
+          "CentrifugeList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Centrifuge"
+            },
+            "nullable": true
+          },
+          "DegasserList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Degasser"
+            },
+            "nullable": true
+          },
+          "CuttingsTransportSystem": {
+            "$ref": "#/components/schemas/CuttingsTransportSystem"
+          },
+          "CuttingsDryerList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CuttingsDryer"
+            },
+            "nullable": true
+          },
+          "PipeDeck": {
+            "$ref": "#/components/schemas/PipeDeck"
+          },
+          "Accumulator": {
+            "$ref": "#/components/schemas/Accumulator"
+          },
+          "BopStack": {
+            "$ref": "#/components/schemas/BopStack"
+          },
+          "FloatValve": {
+            "$ref": "#/components/schemas/FloatValve"
+          },
+          "AutoDriller": {
+            "$ref": "#/components/schemas/AutoDriller"
+          },
+          "MpdController": {
+            "$ref": "#/components/schemas/MpdController"
+          },
+          "MpdControlDevice": {
+            "$ref": "#/components/schemas/MpdControlDevice"
+          },
+          "ContinuousCirculationDevice": {
+            "$ref": "#/components/schemas/ContinuousCirculationDevice"
+          },
+          "DrillingChokeManifold": {
+            "$ref": "#/components/schemas/DrillingChokeManifold"
+          },
+          "SurfaceMpdEquipment": {
+            "$ref": "#/components/schemas/SurfaceMpdEquipment"
+          },
+          "MarineMpdEquipment": {
+            "$ref": "#/components/schemas/MarineMpdEquipment"
+          },
+          "MultiPhaseSeparator": {
+            "$ref": "#/components/schemas/MultiPhaseSeparator"
+          },
+          "FlowRoutingManifold": {
+            "$ref": "#/components/schemas/FlowRoutingManifold"
+          },
+          "DrillstringHeaveCompensator": {
+            "$ref": "#/components/schemas/DrillstringHeaveCompensator"
+          },
+          "DrillingMarineRiser": {
+            "$ref": "#/components/schemas/DrillingMarineRiser"
+          },
+          "RiserHeaveCompensator": {
+            "$ref": "#/components/schemas/RiserHeaveCompensator"
+          },
+          "DrillFloorElevation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "IsFixedPlatform": {
+            "type": "boolean"
+          },
+          "ClusterID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "RigChoke": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RigLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "IsFixedPlatform": {
+            "type": "boolean"
+          },
+          "ClusterID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "RigMast": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "HoistingSystem": {
+            "$ref": "#/components/schemas/HoistingSystem"
+          },
+          "CatWalk": {
+            "$ref": "#/components/schemas/CatWalk"
+          },
+          "PipeRack": {
+            "$ref": "#/components/schemas/PipeRack"
+          },
+          "CasingDriveSystem": {
+            "$ref": "#/components/schemas/CasingDriveSystem"
+          },
+          "CoilDriveSystem": {
+            "$ref": "#/components/schemas/CoilDriveSystem"
+          },
+          "Derrick": {
+            "$ref": "#/components/schemas/Derrick"
+          },
+          "TorqueTurnSub": {
+            "$ref": "#/components/schemas/TorqueTurnSub"
+          },
+          "RotaryTable": {
+            "$ref": "#/components/schemas/RotaryTable"
+          },
+          "TopDrive": {
+            "$ref": "#/components/schemas/TopDrive"
+          },
+          "Kelly": {
+            "$ref": "#/components/schemas/Kelly"
+          },
+          "IronRoughneck": {
+            "$ref": "#/components/schemas/IronRoughneck"
+          },
+          "CasingTongs": {
+            "$ref": "#/components/schemas/CasingTongs"
+          },
+          "CasingRunningTool": {
+            "$ref": "#/components/schemas/CasingRunningTool"
+          },
+          "StandPipe": {
+            "$ref": "#/components/schemas/StandPipe"
+          },
+          "StandPipeManifold": {
+            "$ref": "#/components/schemas/StandPipeManifold"
+          },
+          "RotaryHose": {
+            "$ref": "#/components/schemas/RotaryHose"
+          },
+          "ChokeManifold": {
+            "$ref": "#/components/schemas/ChokeManifold"
+          },
+          "RigChokeList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RigChoke"
+            },
+            "nullable": true
+          },
+          "Slips": {
+            "$ref": "#/components/schemas/Slips"
+          }
+        }
+      },
+      "RiserClass": {
+        "enum": [
+          "MarineDrillingRiser",
+          "TieBackDrillingRiser",
+          "BoltedRiser",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "RiserCompensatorClass": {
+        "enum": [
+          "PassiveRiserTensioner",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "RiserHeaveCompensator": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "RiserCompensatorClass": {
+            "$ref": "#/components/schemas/RiserCompensatorClass"
+          },
+          "CompensatorCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "CompensatorStatus": {
+            "$ref": "#/components/schemas/CompensatorStatus"
+          },
+          "MaxLimitCompensatorStroke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "RotaryHose": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RotaryTable": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "RotaryTableType": {
+            "$ref": "#/components/schemas/RotaryTableType"
+          },
+          "TableOpeningDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BushingType": {
+            "$ref": "#/components/schemas/RotaryTableBushingType"
+          },
+          "BushingSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Height": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Mass": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingStringWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignStringWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPower": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "RotaryTableBushingType": {
+        "enum": [
+          "Master",
+          "Kelly",
+          "Unknown"
+        ],
+        "type": "string"
+      },
+      "RotaryTableType": {
+        "enum": [
+          "DcDrive",
+          "AcDrive",
+          "Hydraulic",
+          "Unknown"
+        ],
+        "type": "string"
+      },
+      "RoutingManifoldCurvePoint": {
+        "type": "object",
+        "properties": {
+          "Pressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Flow": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "SeparatorMedium": {
+        "enum": [
+          "Mud",
+          "WellboreFluid"
+        ],
+        "type": "string"
+      },
+      "SeparatorPhaseClass": {
+        "enum": [
+          "TwoPhases",
+          "ThreePhases",
+          "FourPhases"
+        ],
+        "type": "string"
+      },
+      "ShakerClass": {
+        "enum": [
+          "Linear",
+          "Elliptical",
+          "DoubleDeck",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "ShakerScreenDefinition": {
+        "type": "object",
+        "properties": {
+          "ScreenDeck": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "MeshSize": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ShaleShaker": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ShakerClass": {
+            "$ref": "#/components/schemas/ShakerClass"
+          },
+          "ActiveShakers": {
+            "type": "string",
+            "nullable": true
+          },
+          "ShakerScreens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShakerScreenDefinition"
+            },
+            "nullable": true
+          },
+          "MaxLimitOperatingCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "Slips": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SolidsControlClass": {
+        "enum": [
+          "Desander",
+          "Desilter",
+          "Degasser",
+          "Centrifuge",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "SpeedMode": {
+        "enum": [
+          "ConstantSpeed",
+          "VariableSpeed"
+        ],
+        "type": "string"
+      },
+      "StandPipe": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "PressureMeasurementElevation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MudHoseHangingPointElevation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "StandPipeManifold": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "PipeDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StandpipeSpecLevel": {
+            "$ref": "#/components/schemas/StandpipeSpecLevel"
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "StandpipeSpecLevel": {
+        "enum": [
+          "Psl1LowPressureRating",
+          "Psl2ModeratePressureRating",
+          "Psl3HighPressureRating"
+        ],
+        "type": "string"
+      },
+      "SurfaceMpdClass": {
+        "enum": [
+          "BackPressurePump",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "SurfaceMpdEquipment": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "SurfaceMpdClass": {
+            "$ref": "#/components/schemas/SurfaceMpdClass"
+          },
+          "MinimumBoreholeSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaximumBoreholeSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureAccuracy": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitOperatingPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitMudWeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitMudPumpFlowrate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StrokeRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureAtDischarge": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Power": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureAtInlet": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "TankClass": {
+        "enum": [
+          "Active",
+          "Reserve",
+          "Slug",
+          "Trip",
+          "Suction",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "TankFluidType": {
+        "enum": [
+          "DrillingMud",
+          "Brine",
+          "BaseOil",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "TopDrive": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "TopDriveClass": {
+            "$ref": "#/components/schemas/TopDriveClass"
+          },
+          "TopDriveControllerType": {
+            "$ref": "#/components/schemas/TopDriveControllerType"
+          },
+          "Orientable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "Weight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitIbopPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitRotationSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitMakeupTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitBreakoutTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TopDriveHeight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ProportionalGain": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "IntegralGain": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TuningFrequency": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VFDFilterTimeConstant": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EncoderTimeConstant": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AccelerationFilterTimeConstant": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TorqueHighPassFilterTimeConstant": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TorqueLowPassFilterTimeConstant": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TuningFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InertiaCorrectionFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "TopDriveClass": {
+        "enum": [
+          "AcTopDrive",
+          "HydraulicTopDrive",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "TopDriveControllerType": {
+        "enum": [
+          "Unknown",
+          "StiffPIController",
+          "TunedPIController",
+          "ImpedanceMatching"
+        ],
+        "type": "string"
+      },
+      "TorqueTurnSub": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OutsideDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InsideDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Weight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BatteryLife": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinLimitTemperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceTorque": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Hookload": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceTurnCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "SurfaceAcceleration": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceRotationRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceBorePressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceAxialVibration": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceTorsionalVibration": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SurfaceLateralVibration": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "TravellingBlock": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Manufacturer": {
+            "type": "string",
+            "nullable": true
+          },
+          "Model": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "SerialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Weight": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "NumberOfSheaves": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "GrooveDiameter": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitBlockTravel": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitDesignLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxLimitOperatingLoad": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HookVelocity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HookPosition": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "UsageStatisticsRig": {
+        "type": "object",
+        "properties": {
+          "LastSaved": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "BackUpInterval": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "GetAllRigIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllRigMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetRigByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllRigLightPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllRigPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostRigPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutRigByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteRigByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          }
+        }
+      }
+    }
+  }
+}

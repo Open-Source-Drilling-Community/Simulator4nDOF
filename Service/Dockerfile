@@ -5,10 +5,6 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Passing root CA to allow for https connection behind firewall
-ADD ./NORCE_CA.cer /usr/local/share/ca-certificates/foo.crt
-RUN chmod 644 /usr/local/share/ca-certificates/foo.crt && update-ca-certificates
-
 WORKDIR /src
 COPY ["Service/Service.csproj", "Service/"]
 RUN dotnet restore "Service/Service.csproj"
