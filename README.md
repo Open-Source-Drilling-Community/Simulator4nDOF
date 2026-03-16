@@ -1,6 +1,6 @@
 # Simulator4nDOF
 
-The Simulator4nDOF repository hosts a microservice and client webapp for Simulator4nDOF.
+The Simulator4nDOF repository hosts a microservice and client webapp for running near real-time 4n degree of freedom transient torque and drag simulations, as described in detail in SPE paper [https://doi.org/10.2118/230785-MS](https://doi.org/10.2118/230785-MS)
 
 # Simulator4nDOF - Model definition
 
