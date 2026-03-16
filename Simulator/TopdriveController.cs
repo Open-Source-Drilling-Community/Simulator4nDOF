@@ -54,14 +54,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 2)
             {
                 //Tuned PI controller simulationParameters
-                InertiaCompensation = KiSoftTorqueSpeed * simulationParameters.Wellbore.TopDriveInertia; // [kg.m ^ 2] inertia compensation
+                InertiaCompensation = KiSoftTorqueSpeed * simulationParameters.TopDriveDrawwork.TopDriveInertia; // [kg.m ^ 2] inertia compensation
                 KpFactor = KpSoftTorqueSpeed * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // top drive controller P gain
-                KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.Wellbore.TopDriveInertia - InertiaCompensation); // top drive controller I gain
+                KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.TopDriveDrawwork.TopDriveInertia - InertiaCompensation); // top drive controller I gain
             }
             else
             {    // Stiff PI controller simulationParameters
                 KpFactor = KpFactor * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance;
-                KiFactor = KiFactor * simulationParameters.Wellbore.TopDriveInertia;
+                KiFactor = KiFactor * simulationParameters.TopDriveDrawwork.TopDriveInertia;
             }
 
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 3)
@@ -99,7 +99,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                         deltaTopDriveSpeed / simulationParameters.OuterLoopTimeStep * (1 - Math.Exp(-2 * Math.PI * simulationParameters.OuterLoopTimeStep / AccelerationFilterTimeConstant));
 
                     double previous_tau_0_ZT = Torque0;
-                    Torque0 = TorqueVFD- IntertiaCorrectionFactor * simulationParameters.Wellbore.TopDriveInertia * TopDriveAcceleration;  // estimated pipe torque
+                    Torque0 = TorqueVFD- IntertiaCorrectionFactor * simulationParameters.TopDriveDrawwork.TopDriveInertia * TopDriveAcceleration;  // estimated pipe torque
 
                     Torque0HighPass = Torque0HighPass * (TorqueHighPassTimeConstant / 2.0 / Math.PI / (simulationParameters.OuterLoopTimeStep + TorqueHighPassTimeConstant / 2.0 / Math.PI)) + 
                         (Torque0 - previous_tau_0_ZT) * (TorqueHighPassTimeConstant / 2.0 / Math.PI / (simulationParameters.OuterLoopTimeStep + TorqueHighPassTimeConstant / 2.0 / Math.PI));

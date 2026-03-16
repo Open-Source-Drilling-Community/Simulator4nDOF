@@ -95,8 +95,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double SensorRadialDistance; // [m] radial distance from centerline of the tool to the accelerometer
 
         public SimulatorDrillString(LumpedCells lumpedCells, 
-                           Fluid fluid,
                            DrillString drillString,
+                           double fluidDensity,
                            double MD, 
                            double Rb, 
                            double sensorDistanceFromBit, 
@@ -614,7 +614,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             PipeLengthForBending = lumpedCells.DistanceBetweenElements; //[m] Length of pipe used in bending stiffness calculation 
             BendingStiffness = Math.Pow(Math.PI, 4) / (2 * Math.Pow(PipeLengthForBending, 3)) * YoungModuli.PointwiseMultiply(PipeInertia);// [N/m] Bending stiffness
-            FluidAddedMass = 0.5 * Math.PI * fluid.rhoMud * (InnerRadius.PointwisePower(2) + AddedFluidMassCoefficient * OuterRadius.PointwisePower(2)).PointwiseMultiply(LumpedElementMassMomentOfInertia); //[kg] Added fluid mass
+            FluidAddedMass = 0.5 * Math.PI * fluidDensity * (InnerRadius.PointwisePower(2) + AddedFluidMassCoefficient * OuterRadius.PointwisePower(2)).PointwiseMultiply(LumpedElementMassMomentOfInertia); //[kg] Added fluid mass
 
             EccentricMass = MassImbalancePercentage * LumpedElementMass; // [kg] Eccentric mass
 

@@ -5,7 +5,7 @@ using NORCE.Drilling.Simulator4nDOF.ModelShared;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
-    public class Buoyancy
+    public class SimulatorFlow
     {
         // Several of the calculation in here can be found in: ../AuxiliarDevFiles/PVT_Pressure_Equation.wxmx
         public Vector<double> StringPressure;
@@ -20,6 +20,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public Vector<double> AnnulusDensity;
         public Vector<double> AnnulusPressure;
         public Vector<double> AnnulusTemperature;
+        public double FluidDampingCoefficient = 3000.0; // [N.s/m] Fluid damping coefficient for lateral dynamics
+        
+        public double FluidDensity;
+
         private double APvtCoeff;
         private double BPvtCoeff;
         private double CPvtCoeff;
@@ -29,9 +33,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> XVectorAnnulusVariables;
         private Vector<double> XVectorStringVariables;
                 
-        public Buoyancy(in LumpedCells lumpedCells, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString,
+        public SimulatorFlow(in LumpedCells lumpedCells, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString,
             DrillingFluidDescription drillingFluidDescription, double fluidDensity, bool useBuoyancyFactor, double surfacePressure)
         {
+            FluidDensity = fluidDensity;
             AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
             AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
             AnnulusTemperature = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);

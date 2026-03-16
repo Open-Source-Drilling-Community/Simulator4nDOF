@@ -47,7 +47,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     - state.UpwardTorsionalWave[0, 0]
                 );
 
-            state.TopDrive.TopDriveAngularVelocity = state.TopDrive.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.Wellbore.TopDriveInertia;                
+            state.TopDrive.TopDriveAngularVelocity = state.TopDrive.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.TopDriveDrawwork.TopDriveInertia;                
         }
 
         public void PrepareModel(AxialTorsionalModel model, State state, SimulationParameters parameters)

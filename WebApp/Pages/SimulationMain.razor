@@ -435,7 +435,7 @@
                     try
                     {
                         wellBoreArchitecureList = (List<WellBoreArchitecture>)await architectureTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
-                        if (trajectoryList != null)
+                        if (wellBoreArchitecureList != null)
                         {
                             wellBoreArchitecureList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
                         }
@@ -455,7 +455,7 @@
                     try
                     {
                         drillingFluidDescriptionList = (List<DrillingFluidDescription>)await drillingFluidTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
-                        if (trajectoryList != null)
+                        if (drillingFluidDescriptionList != null)
                         {
                             drillingFluidDescriptionList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
                         }

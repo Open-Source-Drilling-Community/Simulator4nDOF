@@ -93,7 +93,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (Math.Abs(state.BitDepth - state.PreviousCalculatedBitDepth) > 1.0)
                 {
                     simulationParameters.Trajectory.UpdateTrajectory(simulationParameters.LumpedCells);
-                    simulationParameters.Buoyancy.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, simulationParameters.UseBuoyancyFactor);
+                    simulationParameters.Flow.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, simulationParameters.UseBuoyancyFactor);
                     simulationParameters.Wellbore.UpdateWellbore(simulationParameters.Drillstring, simulationParameters.LumpedCells);
                     state.PreviousCalculatedBitDepth = state.BitDepth;
                 }
@@ -105,7 +105,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 {
                     AddNewLumpedElement();
                     simulationParameters.Trajectory.UpdateTrajectory(simulationParameters.LumpedCells);
-                    simulationParameters.Buoyancy.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, simulationParameters.UseBuoyancyFactor);
+                    simulationParameters.Flow.UpdateBuoyancy(simulationParameters.LumpedCells, simulationParameters.Trajectory, simulationParameters.Drillstring, simulationParameters.UseBuoyancyFactor);
                     simulationParameters.Wellbore.UpdateWellbore(simulationParameters.Drillstring, simulationParameters.LumpedCells);
                     simulationParameters.Drillstring.IndexSensor = simulationParameters.Drillstring.IndexSensor + 1;
                 }

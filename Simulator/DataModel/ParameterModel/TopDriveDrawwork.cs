@@ -14,5 +14,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double TopDriveRPMSetPoint {get; set; } = 0.0;                       // [rad/s] top drive rpm setpoint (different from omega_surf)
         public double TopDriveStartupTime {get; set; } = 10.0; // [s] time for top drive to reach the surface rotation during startup 
         public double ConnectionTime {get; set; } = 60.0; // [s] time for making connection
+        public double TopDriveInertia = 2900;
     }
 }

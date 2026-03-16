@@ -16,15 +16,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public bool UseMudMotor;
         public bool MovingDrillstring {get; set;} = true;
         public Input Input;
-        public Fluid Fluid;
         public IBitRock BitRock;
         public MudMotor MudMotor;
         public SimulatorTrajectory Trajectory;
         public LumpedCells LumpedCells;
         public DistributedCells DistributedCells;
-        public Wellbore Wellbore;
+        public SimulatorWellbore Wellbore;
         public SimulatorDrillString Drillstring;
-        public Buoyancy Buoyancy;
+        public SimulatorFlow Flow;
         public Friction Friction;
         public BitRockModelEnum BitRockModelEnum;
         public TopDriveDrawwork TopDriveDrawwork;
@@ -49,11 +48,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 InitialTopOfStringPosition = configuration.TopOfStringPosition,
                 InitialTopOfStringVelocity = configuration.TopOfStringVelocity
             };
-            Fluid = new Fluid(configuration.FluidDensity);
             LumpedCells = new LumpedCells(configuration.BitDepth, configuration.LengthBetweenLumpedElements);
             Drillstring = new SimulatorDrillString(LumpedCells, 
-                                 Fluid, 
                                  configuration.DrillString,
+                                 configuration.FluidDensity,                                  
                                  configuration.BitDepth, 
                                  configuration.BitRadius, 
                                  configuration.SensorDistanceFromBit, 
@@ -63,13 +61,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                  configuration.TorsionalDamping,
                                  configuration.AxialDamping,
                                  configuration.LateralDamping);
-            Wellbore = new Wellbore(Drillstring,
+            Wellbore = new SimulatorWellbore(Drillstring,
                              LumpedCells,
-                             configuration.CasingSection,
-                             configuration.TopDriveMomentOfInertia,
-                             configuration.FluidDamping);
+                             configuration.CasingSection
+                             );
             Trajectory = new SimulatorTrajectory(LumpedCells, configuration.Trajectory);
-            Buoyancy = new Buoyancy(LumpedCells, Trajectory, Drillstring, configuration.DrillingFluidDescription, configuration.FluidDensity, configuration.UseBuoyancyFactor, configuration.SurfacePressure);
+            Flow = new SimulatorFlow(
+                LumpedCells, 
+                Trajectory, 
+                Drillstring, 
+                configuration.DrillingFluidDescription, 
+                configuration.FluidDensity, 
+                configuration.UseBuoyancyFactor, 
+                configuration.SurfacePressure
+            );
 
 
             MudMotor = new MudMotor();
@@ -156,7 +161,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient);
             Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient);
             Drillstring.BendingStiffness = ExtendVectorStart(Drillstring.BendingStiffness[0], Drillstring.BendingStiffness);
-            Drillstring.FluidAddedMass = ExtendVectorStart(Math.PI * Fluid.rhoMud * (Math.Pow(Drillstring.InnerRadius[0], 2) + Drillstring.AddedFluidMassCoefficient * Math.Pow(Drillstring.OuterRadius[0], 2)) * Drillstring.LumpedElementMassMomentOfInertia[0] / 2.0, Drillstring.FluidAddedMass);
+            Drillstring.FluidAddedMass = ExtendVectorStart(Math.PI * Flow.FluidDensity * (Math.Pow(Drillstring.InnerRadius[0], 2) + Drillstring.AddedFluidMassCoefficient * Math.Pow(Drillstring.OuterRadius[0], 2)) * Drillstring.LumpedElementMassMomentOfInertia[0] / 2.0, Drillstring.FluidAddedMass);
             Drillstring.EccentricMass = ExtendVectorStart(mass_imbalance_percent * Drillstring.LumpedElementMass[0], Drillstring.EccentricMass);
 
             // Update spatial variables

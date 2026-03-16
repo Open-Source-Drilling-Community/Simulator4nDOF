@@ -129,10 +129,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffPhiInterpolated);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffThetaInterpolated);
             Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.InterpolatedTheta);
-            Vector<double> trapezoidalsIntegration = CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Buoyancy.dSigmaDx));
-            state.Tension = Reverse(trapezoidalsIntegration) + parameters.Buoyancy.AxialBuoyancyForceChangeOfDiameters - drag;
-            Vector<double> fN_softstring = (Square((state.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Buoyancy.BuoyantWeightPerLength.PointwiseMultiply(thetaVece.PointwiseSin())) +
-                                            Square((state.Tension + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
+            Vector<double> trapezoidalsIntegration = CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Flow.dSigmaDx));
+            state.Tension = Reverse(trapezoidalsIntegration) + parameters.Flow.AxialBuoyancyForceChangeOfDiameters - drag;
+            Vector<double> fN_softstring = (Square((state.Tension + parameters.Flow.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Flow.BuoyantWeightPerLength.PointwiseMultiply(thetaVece.PointwiseSin())) +
+                                            Square((state.Tension + parameters.Flow.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
             Vector<double> I_fN_softstring = Utilities.CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
             state.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
             Vector<double> AiExtended = ExtendVectorStart(parameters.Drillstring.InnerArea[0], parameters.Drillstring.InnerArea);
@@ -140,8 +140,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             
             state.Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                 (  
-                    AoExtended.PointwiseMultiply(parameters.Buoyancy.AnnulusPressure - parameters.Buoyancy.HydrostaticAnnulusPressure) 
-                    - AiExtended.PointwiseMultiply(parameters.Buoyancy.StringPressure - parameters.Buoyancy.HydrostaticStringPressure)
+                    AoExtended.PointwiseMultiply(parameters.Flow.AnnulusPressure - parameters.Flow.HydrostaticAnnulusPressure) 
+                    - AiExtended.PointwiseMultiply(parameters.Flow.StringPressure - parameters.Flow.HydrostaticStringPressure)
                 );   
 
             Vector<double> bendingStiffness = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
@@ -166,13 +166,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Normal force components in Frenet-Serret coordinate system
                 differentialTorque = (i==0) ?  0 : (state.Torque[i+1] - state.Torque[i]) / parameters.LumpedCells.DistanceBetweenElements;
                 InertiaTimesYoungModulus = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeInertia[i];
-                binormalForce = parameters.Buoyancy.BuoyantWeightPerLength[i] * parameters.Trajectory.bz[i] 
+                binormalForce = parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.bz[i] 
                     + parameters.Trajectory.Curvature[i] * differentialTorque 
                     + parameters.Trajectory.CurvatureDerivative[i] * state.Torque[i+1] 
                     - 2 * InertiaTimesYoungModulus * parameters.Trajectory.CurvatureDerivative[i] * parameters.Trajectory.Torsion[i] 
                     - InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * parameters.Trajectory.TorsionDerivative[i];
-                normalForce = parameters.Trajectory.Curvature[i] * (state.Tension[i+1] + parameters.Buoyancy.NormalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * state.Torque[i+1]) 
-                    + parameters.Buoyancy.BuoyantWeightPerLength[i] * parameters.Trajectory.nz[i] 
+                normalForce = parameters.Trajectory.Curvature[i] * (state.Tension[i+1] + parameters.Flow.NormalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * state.Torque[i+1]) 
+                    + parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.nz[i] 
                     - InertiaTimesYoungModulus * parameters.Trajectory.CurvatureSecondDerivative[i] 
                     + InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * (parameters.Trajectory.Torsion[i] * parameters.Trajectory.Torsion[i]);
                 //At the first step, repeat the values
@@ -302,7 +302,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //Select between sleeve and non-sleeve nodes
                 rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocity[i];                            
                 rotationSpeedSquared = rotationSpeed * rotationSpeed;
-                fluidDampingCoefficient = parameters.Wellbore.FluidDampingCoefficient / parameters.Drillstring.FluidAddedMass[i];                    
+                fluidDampingCoefficient = parameters.Flow.FluidDampingCoefficient / parameters.Drillstring.FluidAddedMass[i];                    
                 fluidForceX = - parameters.Drillstring.FluidAddedMass[i] * 
                                     (
                                         fluidDampingCoefficient * state.XVelocity[i]
@@ -503,31 +503,30 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //===============================================================================================
                 //                                 UNCOMMENT FOR DEBUGGING PURPOSES
                 //===============================================================================================
-                //
-                //    if (Math.Abs(rotationSpeed) > 20)
-                //    {
-                //        int debug = 0;
-                //    }
-                //    if (Math.Abs(angularAcceleration) > 10000)
-                //    {
-                //        int debug = 0;
-                //    }
-                //    if (double.IsNaN(XAcceleration) || double.IsNaN(YAcceleration) || double.IsNaN(ZAcceleration) || double.IsNaN(state.AngularAcceleration[i]))
-                //    {
-                //        Console.WriteLine("NaN detected in lateral calculations at element " + i.ToString() +
-                //            " XAcc: " + XAcceleration.ToString() +
-                //            " YAcc: " + YAcceleration.ToString() +
-                //            " ZAcc: " + ZAcceleration.ToString() +
-                //            " AngularAcc: " + state.AngularAcceleration[i].ToString() +
-                //            " NormalForce: " + normalCollisionForce.ToString() +
-                //            " RadialDisp: " + radialDisplacement.ToString() +
-                //            " RadialVel: " + radialVelocity.ToString() +
-                //            " WhirlVel: " + whirlVelocity.ToString() +
-                //            " TangentialVel: " + tangentialVelocity.ToString() +
-                //            " AxialVel: " + axialVelocity.ToString() +
-                //            " SlipCondition: " + state.SlipCondition[i].ToString()
-                //            );
-                //    }                
+                
+                    if (Math.Abs(rotationSpeed) > 20)
+                    {
+                        int debug = 0;
+                    }
+                    if (Math.Abs(angularAcceleration) > 10000)
+                    {
+                        int debug = 0;
+                    }
+                    if (double.IsNaN(XAcceleration) || double.IsNaN(YAcceleration) || double.IsNaN(ZAcceleration) || double.IsNaN(state.AngularAcceleration[i]))
+                    {
+                        Console.WriteLine("NaN detected in lateral calculations at element " + i.ToString() +
+                            " XAcc: " + XAcceleration.ToString() +
+                            " YAcc: " + YAcceleration.ToString() +
+                            " ZAcc: " + ZAcceleration.ToString() +
+                            " AngularAcc: " + state.AngularAcceleration[i].ToString() +
+                            " NormalForce: " + normalCollisionForce.ToString() +
+                            " RadialDisp: " + radialDisplacement.ToString() +
+                            " RadialVel: " + radialVelocity.ToString() +
+                            " WhirlVel: " + whirlVelocity.ToString() +
+                            " AxialVel: " + axialVelocity.ToString() +
+                            " SlipCondition: " + state.SlipCondition[i].ToString()
+                            );
+                    }                
                 #endregion
 
             }             
