@@ -179,6 +179,14 @@
                 </MudSelect>
             </MudItem>
         }
+        <MudItem xs = "6">
+            <MudText Typo="Typo.body1"><b>Solver method</b></MudText>
+            <MudRadioGroup T = "SolverType" @bind-Value="@Simulation.ContextualData.SolverType">
+                    <MudRadio Value="@SolverType.EulerMethod" Dense="true" Color="Color.Primary">Euler Method</MudRadio>
+                    <MudRadio Value="@SolverType.VerletMethod" Dense="true" Color="Color.Primary">Verlet Method (Recommended)</MudRadio>
+            </MudRadioGroup>
+
+        </MudItem>
     </MudGrid>
 }
 

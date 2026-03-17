@@ -6,6 +6,8 @@ using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using NORCE.Drilling.Simulator4nDOF.Model;
+using NORCE.Drilling.Simulator4nDOF.ModelShared;
+using System.Numerics;
 
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
@@ -33,7 +35,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public int InnerLoopIterations;
         public double dxl;
         public double dtl;
-        public SolverType SolverType {get; set;} = SolverType.VerletMethod;
+        public SolverType SolverType {get; set;}
         //Buyoancy
         public bool UseBuoyancyFactor {get; set;} = true;
         //Output properties
@@ -76,7 +78,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 configuration.SurfacePressure
             );
 
-
             MudMotor = new MudMotor();
             DistributedCells = new DistributedCells(LumpedCells, Drillstring, configuration.SurfaceRPM);
             
@@ -86,6 +87,31 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 BitRockModelEnum.MSE => new MSE(),
                 _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
             };
+            
+            // Lateral Modal analysis 
+            /*
+            Matrix<double> StiffnessMatrix = Matrix<double>.Build.Dense(Drillstring.BendingStiffness.Count, Drillstring.BendingStiffness.Count);
+            Matrix<double> MassMatrix = Matrix<double>.Build.Dense(Drillstring.BendingStiffness.Count, Drillstring.BendingStiffness.Count);
+          
+          
+            for (int i = 0; i < Drillstring.BendingStiffness.Count; i++)
+            {
+                MassMatrix[i, i] = Drillstring.LumpedElementMass[i];
+                StiffnessMatrix[i, i] = - Drillstring.BendingStiffness[i];                
+                if (i >= 1)                    
+                    StiffnessMatrix[i, i - 1] = Drillstring.BendingStiffness[i];
+                if (i < Drillstring.BendingStiffness.Count - 1)
+                {
+                    StiffnessMatrix[i, i + 1] = Drillstring.BendingStiffness[i + 1];                                   
+                    StiffnessMatrix[i, i] -= Drillstring.BendingStiffness[i + 1]; 
+                }
+            }
+            var EigenProblem = (StiffnessMatrix.Inverse() * MassMatrix).Evd();
+            List<double> Omega = new List<double> ();
+            foreach (Complex eigenval in EigenProblem.EigenValues)
+            {
+                Omega.Add(eigenval.Real);
+            }*/
 
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
         
@@ -174,7 +200,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 range.Add(value);
             }
-            DistributedCells.x = Vector<double>.Build.Dense(range.Concat(DistributedCells.x).ToArray());
+            DistributedCells.x = MathNet.Numerics.LinearAlgebra.Vector<double>.Build.Dense(range.Concat(DistributedCells.x).ToArray());
             LumpedCells.ElementLength = ExtendVectorStart(0, LumpedCells.ElementLength); // lumped section
             LumpedCells.NumberOfLumpedElements = LumpedCells.NumberOfLumpedElements + 1;
             if (Drillstring.SleeveIndexPosition.Count > 0)

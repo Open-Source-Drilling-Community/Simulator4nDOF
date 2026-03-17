@@ -1276,6 +1276,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
                     bool logScalar = currentTime >= nextScalarLogTime;
                     bool logProfile = logProfilesAtFixedInterval && currentTime + 0.5 * outerTimeStep >= nextProfileLogTime;
+                    //Check if the simulation diverged. If so, interrupt calculation and flag as calculation failed.
+                    if (!output.SimulationHealthy)
+                    {
+                        return false;
+                    }
+
 
                     if (logScalar)
                     {

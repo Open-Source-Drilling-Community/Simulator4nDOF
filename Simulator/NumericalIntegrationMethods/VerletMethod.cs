@@ -115,7 +115,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 AxialVelocity[i] = state.AxialVelocity[i]; // Rollover axial velocity for next iteration
                 AxialAcceleration[i] = state.AxialAcceleration[i]; // Rollover axial acceleration for next iteration
                 //Check if the simulation diverged
-                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]));
+                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]))
                 {
                     return false;
                 }        

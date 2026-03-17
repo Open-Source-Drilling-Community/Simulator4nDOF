@@ -12,6 +12,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public int? CasingID { get; set; } = null;
         public double Temperature { get; set; } = 293;
         public double SurfacePipePressure { get; set; } = 100_000;
-        public SolverType SolverType { get; set; } = SolverType.VerletMethod;
+        public SolverType SolverType { get; set; }
     }
 }

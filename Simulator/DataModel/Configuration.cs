@@ -73,7 +73,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public ModelShared.CasingSection CasingSection;
         public required double BitRadius;
         public BitRockModelEnum BitRockModelEnum { get; set; } = BitRockModelEnum.Detournay;
-        public SolverType SolverType { get; set; } = SolverType.VerletMethod;
+        public SolverType SolverType { get; set; }
     }
 
 }

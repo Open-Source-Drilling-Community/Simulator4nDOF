@@ -75,6 +75,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         // Unbalance force-related variables
         private double unbalanceForceX;
         private double unbalanceForceY;   
+        // Friction related variables
+        double coulombFrictionX;
+        double coulombFrictionY;                    
+        double coulombFrictionZ;
+                   
         
         public LateralModel(SimulationParameters simulationParameters, State state)
         {
@@ -340,21 +345,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 #region Coulomb Friction
                 // Axial velocity
                 axialVelocity = state.AxialVelocity[i];
-
                 // "Masks" sleeve or non-sleeve variables if hasSleeve = true
                 outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : parameters.Drillstring.OuterRadius[i];
                 //double innerRadius = hasSleeve ? parameters.Drillstring.SleeveInnerRadius : parameters.Drillstring.OuterRadius[i];  
                 inertia = hasSleeve ? parameters.Drillstring.SleeveMassMomentOfInertia : parameters.Drillstring.LumpedElementMomentOfInertia[i];
-                  // The total normal force is the sum of elastic, pre-stress, fluid, unbalance forces, damping and colission forces                        
+                // The total normal force is the sum of elastic, pre-stress, fluid, unbalance forces, damping and colission forces                        
                 sumForcesX = ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - parameters.Drillstring.CalculateLateralDamping * state.XVelocity[i] - normalCollisionForce * cosWhirlAngle;
                 sumForcesY = ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - parameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - normalCollisionForce * sinWhirlAngle;
                 sumForcesZ = axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i]; 
-                    
+                coulombFrictionX = 0.0;
+                coulombFrictionY = 0.0;
+                coulombFrictionZ = 0.0;                   
                 // Skip the calculation if there is no collision 
                 if (heavesideStep == 1.0)
-                {
-                    // Several calculation can be seen in AuxiliarDevFiles/Symbolic_no_slip_condition
-                                        
+                {                                                        
                     // With this 4nDoF model, no slip condition is only possible if vz = 0.
                     double noSlipWhirlAcceleration = 0;
                     double noSlipThetaDotDot = 0;
@@ -375,19 +379,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     };
                     double coulombStaticForceMagnitude = parameters.Friction.StaticFrictionCoefficient[i] * normalCollisionForce;                                        
                     double coulombFrictionLateral = 0;  
-                    double coulombFrictionX;
-                    double coulombFrictionY;                    
-                    double coulombFrictionZ;
-                    double staticFriction;
-                    double stribeckFriction = Math.Abs(
-                        normalCollisionForce * 
-                            (
-                                parameters.Friction.KinematicFrictionCoefficient[i] + 
-                                (
-                                        parameters.Friction.StaticFrictionCoefficient[i] - parameters.Friction.KinematicFrictionCoefficient[i]
-                                ) * Math.Exp( - parameters.Friction.stribeck *  tangentialMagnitude)
-                            )
-                        );
                     double kinematicFriction = Math.Abs( normalCollisionForce * parameters.Friction.KinematicFrictionCoefficient[i]);
             
                     //Calculate the no slip conditions 

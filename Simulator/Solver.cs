@@ -259,6 +259,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters);
                 // Calculate lateral accelerations                    
                 output.SimulationHealthy = solverODELateral.IntegrationStep(state, lateralModel, in simulationParameters);
+                //Abort simulation in case of divergence
+                if (!output.SimulationHealthy)
+                {                    
+                    return;
+                }
                 // Mud motor
                 if (simulationParameters.UseMudMotor)
                 {
