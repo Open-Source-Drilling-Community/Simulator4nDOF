@@ -12,6 +12,7 @@
         public static string? TrajectoryHostURL { get; set; }
         public static string? DrillingFluidHostURL { get; set; }
         public static string? WellBoreArchitectureHostURL { get; set; }
+        public static string? GeothermalPropertiesHostURL { get; set; }
         
         public static string? UnitConversionHostURL { get; set; }
     }

@@ -34,7 +34,8 @@
                         Rigs="@Rigs"
                         Trajectories="@Trajectories" 
                         WellBoreArchitectures="@WellBoreArchitectures"
-                        FluidDescriptions="@FluidDescriptions"/>
+                        FluidDescriptions="@FluidDescriptions"
+                        GeothermalProperties="@GeothermalProperties"/>
                 }
                 @if (Simulation?.Config != null)
                 {
@@ -88,6 +89,9 @@
     public List<WellBoreArchitecture>? WellBoreArchitectures { get; set; } = null;
     [Parameter]
     public List<DrillingFluidDescription>? FluidDescriptions { get; set; } = null;
+    [Parameter]
+    public List<GeothermalProperties>? GeothermalProperties { get; set; } = null;
+
 
 
     [Parameter]

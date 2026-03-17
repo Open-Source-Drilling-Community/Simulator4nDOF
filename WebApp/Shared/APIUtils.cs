@@ -33,6 +33,11 @@ public static class APIUtils
     public static readonly HttpClient HttpClientField = APIUtils.SetHttpClient(HostNameField, HostBasePathField);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientField = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientField.BaseAddress!.ToString(), APIUtils.HttpClientField);
 
+    public static readonly string HostNameGeothermalProperties = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.GeothermalPropertiesHostURL!;
+    public static readonly string HostBasePathGeothermalProperties = "GeothermalProperties/api/";
+    public static readonly HttpClient HttpClientGeothermalProperties = APIUtils.SetHttpClient(HostNameGeothermalProperties, HostBasePathGeothermalProperties);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientGeothermalProperties = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientGeothermalProperties.BaseAddress!.ToString(), APIUtils.HttpClientGeothermalProperties);
+
     public static readonly string HostNameDrillString = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.DrillStringHostURL!;
     public static readonly string HostBasePathDrillString = "DrillString/api/";
     public static readonly HttpClient HttpClientDrillString = APIUtils.SetHttpClient(HostNameDrillString, HostBasePathDrillString);
@@ -52,6 +57,8 @@ public static class APIUtils
     public static readonly string HostBasePathWellBoreArchitecture = "WellBoreArchitecture/api/";
     public static readonly HttpClient HttpClientWellBoreArchitecture = APIUtils.SetHttpClient(HostNameWellBoreArchitecture, HostBasePathWellBoreArchitecture);
     public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientWellBoreArchitecture = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientWellBoreArchitecture.BaseAddress!.ToString(), APIUtils.HttpClientWellBoreArchitecture);
+
+   
 
     public static readonly string HostNameUnitConversion = NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.UnitConversionHostURL!;
     public static readonly string HostBasePathUnitConversion = "UnitConversion/api/";

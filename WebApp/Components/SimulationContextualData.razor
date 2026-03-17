@@ -179,6 +179,20 @@
                 </MudSelect>
             </MudItem>
         }
+        <MudItem xs="6">
+            <MudSelect T="GeothermalProperties" Label="Geothermal Properties Source" @bind-Value="SelectedGeothermal" Variant="Variant.Text">
+                @if (GeothermalProperties != null)
+                {
+                    @foreach (GeothermalProperties geothermalProperties in GeothermalProperties)
+                    {
+                        @if (geothermalProperties != null && !string.IsNullOrEmpty(geothermalProperties.Name))
+                        {
+                            <MudSelectItem Value="@geothermalProperties">@geothermalProperties.Name</MudSelectItem>
+                        }
+                    }
+                }
+            </MudSelect>
+        </MudItem>
         <MudItem xs = "6">
             <MudText Typo="Typo.body1"><b>Solver method</b></MudText>
             <MudRadioGroup T = "SolverType" @bind-Value="@Simulation.ContextualData.SolverType">
@@ -232,6 +246,8 @@
 
     [Parameter]
     public RotaryTableDepthReferenceSource? RotaryTableDepthSource { get; set; }
+    [Parameter]
+    public List<GeothermalProperties>? GeothermalProperties { get; set; }
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
@@ -240,6 +256,28 @@
     private List<CasingSection> casingSections = new();
     private int casingID = 0;
     
+    private GeothermalProperties? _selectedGeothermal = null;
+    private GeothermalProperties? SelectedGeothermal
+    {
+        get
+        {
+            return _selectedGeothermal;
+        }
+        set
+        {
+            _selectedGeothermal = value;
+            SyncSelectedGeothermalContext();
+        }
+    }
+
+    private void SyncSelectedGeothermalContext()
+    {
+        if (Simulation?.ContextualData != null)
+        {
+            Simulation.ContextualData.GeothermalPropertiesID = _selectedGeothermal?.MetaInfo?.ID;
+        }
+    }
+
     private Field? _selectedField = null;
     private Cluster? _selectedCluster = null;
     private Cluster? SelectedCluster { get { return _selectedCluster; } set { _selectedCluster = value; ProcessSelectedCluster(); } }
@@ -551,6 +589,10 @@
             if (Simulation?.ContextualData?.TrajectoryID != null && Trajectories != null)
             {
                 _selectedTrajectory = Trajectories.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.TrajectoryID);
+            }
+            if (Simulation?.ContextualData?.GeothermalPropertiesID != null && GeothermalProperties != null)
+            {
+                _selectedGeothermal = GeothermalProperties.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.GeothermalPropertiesID);
             }
             if (Simulation?.ContextualData?.DrillingFluidDescriptionID != null && FluidDescriptions != null)
             {

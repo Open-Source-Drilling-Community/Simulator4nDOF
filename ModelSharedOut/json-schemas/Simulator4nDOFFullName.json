@@ -371,6 +371,11 @@
             "format": "uuid",
             "nullable": true
           },
+          "GeothermalPropertiesID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "CasingID": {
             "type": "integer",
             "format": "int32",

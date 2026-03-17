@@ -74,7 +74,8 @@
                            Rigs="@rigList"
                            Trajectories="@trajectoryList"
                            WellBoreArchitectures="@wellBoreArchitecureList"
-                           FluidDescriptions="@drillingFluidDescriptionList" />
+                           FluidDescriptions="@drillingFluidDescriptionList"
+                           GeothermalProperties="@geothermalPropertiesList" />
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.EditSimulationVisible)
         {
@@ -87,7 +88,8 @@
                             Rigs="@rigList"
                             Trajectories="@trajectoryList"
                             WellBoreArchitectures="@wellBoreArchitecureList"
-                            FluidDescriptions="@drillingFluidDescriptionList" />
+                            FluidDescriptions="@drillingFluidDescriptionList"
+                            GeothermalProperties="@geothermalPropertiesList" />
         }
     }
 </MudUnitAndReferenceChoiceTag>
@@ -114,7 +116,7 @@
     private List<DrillStringLight>? drillStringList { get; set; } = null;
     private List<RigLight>? rigList { get; set; } = null;
     private List<Trajectory>? trajectoryList { get; set; } = null;
-
+    private List<GeothermalProperties>? geothermalPropertiesList { get; set; } = null;
     private List<WellBoreArchitecture>? wellBoreArchitecureList { get; set; } = null;
     private List<DrillingFluidDescription>? drillingFluidDescriptionList { get; set; } = null;
 
@@ -222,6 +224,8 @@
             var architectureTask = APIUtils.ClientWellBoreArchitecture.GetAllWellBoreArchitectureAsync();
             logger.LogInformation("Trying to load list of Drilling Fluids from client: " + APIUtils.HostNameDrillingFluid);
             var drillingFluidTask = APIUtils.ClientDrillingFluid.GetAllDrillingFluidDescriptionAsync();
+            logger.LogInformation("Trying to load list of Geothermal Properties from client: " + APIUtils.HostBasePathGeothermalProperties);
+            var geothermalTask = APIUtils.ClientGeothermalProperties.GetAllGeothermalPropertiesAsync();
 
 
             List<Task> loadingTaskList = new List<Task>
@@ -235,7 +239,8 @@
                 rigTask,
                 trajectoryTask,
                 architectureTask,
-                drillingFluidTask
+                drillingFluidTask,
+                geothermalTask
             };
 
             // Awaiting tasks and retrieve results as they become available
@@ -470,8 +475,29 @@
                         logger.LogError(ex, "Impossible to load Fluid descriptions from client");
                     }
                 }
+                else if (finishedTask == geothermalTask)
+                {
+                    try
+                    {
+                        geothermalPropertiesList = (List<GeothermalProperties>)await geothermalTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (geothermalPropertiesList != null)
+                        {
+                            geothermalPropertiesList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Geothermal Properties was null on initialization");
+                            Snackbar.Add("Returned list of Geothermal Properties was null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Geothermal Properties from client");
+                    }
+                }
                 loadingTaskList.Remove(finishedTask);
             }
+            
         }
         catch (Exception ex)
         {

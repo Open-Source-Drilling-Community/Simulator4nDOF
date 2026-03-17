@@ -22352,6 +22352,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("RigID")]
         public System.Guid? RigID { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("GeothermalPropertiesID")]
+        public System.Guid? GeothermalPropertiesID { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("CasingID")]
         public int? CasingID { get; set; }
 

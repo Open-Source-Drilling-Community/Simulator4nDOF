@@ -46,6 +46,8 @@ if (!String.IsNullOrEmpty(builder.Configuration["WellBoreArchitectureHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.WellBoreArchitectureHostURL = builder.Configuration["WellBoreArchitectureHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["DrillingFluidHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.DrillingFluidHostURL = builder.Configuration["DrillingFluidHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["GeothermalPropertiesHostURL"]))
+    NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.GeothermalPropertiesHostURL = builder.Configuration["GeothermalPropertiesHostURL"];
 
 
 

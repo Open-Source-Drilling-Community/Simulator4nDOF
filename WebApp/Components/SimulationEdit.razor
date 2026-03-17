@@ -82,7 +82,18 @@ else if (currentLightSimulation != null)
             @if (currentSimulation.ContextualData != null)
             {
                 <MudExpansionPanel Text="Contextual Data">
-                    <SimulationContextualData Simulation="@currentSimulation" Fields="@Fields" Clusters="@Clusters" Wells="@Wells" WellBores="@WellBores" DrillStrings="@DrillStrings" Rigs="@Rigs" Trajectories="@Trajectories" WellBoreArchitectures="@WellBoreArchitectures" FluidDescriptions="@FluidDescriptions"/>
+                    <SimulationContextualData 
+                        Simulation="@currentSimulation" 
+                        Fields="@Fields" 
+                        Clusters="@Clusters" 
+                        Wells="@Wells" 
+                        WellBores="@WellBores" 
+                        DrillStrings="@DrillStrings" 
+                        Rigs="@Rigs" 
+                        Trajectories="@Trajectories" 
+                        WellBoreArchitectures="@WellBoreArchitectures" 
+                        FluidDescriptions="@FluidDescriptions"
+                        GeothermalProperties="@GeothermalProperties"/>
                 </MudExpansionPanel>
             }
             @if (currentSimulation.Config != null)
@@ -137,6 +148,8 @@ else if (currentLightSimulation != null)
     public List<WellBoreArchitecture>? WellBoreArchitectures { get; set; } = null;
     [Parameter]
     public List<DrillingFluidDescription>? FluidDescriptions { get; set; } = null;
+    [Parameter]
+    public List<GeothermalProperties>? GeothermalProperties { get; set; } = null;
 
     [Parameter]
     public MainPanelLogic? MainPanelLogic { get; set; } = null;
