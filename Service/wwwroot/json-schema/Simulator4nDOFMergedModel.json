@@ -1829,6 +1829,243 @@
         }
       }
     },
+    "/Rig": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRigId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "PostRig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Rig/MetaInfo": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRigMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Rig/{id}": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetRigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "PutRigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "DeleteRigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Rig/LightData": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRigLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RigLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Rig/HeavyData": {
+      "get": {
+        "tags": [
+          "Rig"
+        ],
+        "operationId": "GetAllRig",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rig"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/RigUsageStatistics": {
+      "get": {
+        "tags": [
+          "RigUsageStatistics"
+        ],
+        "operationId": "GetRigUsageStatistics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageStatisticsRig"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Well": {
       "get": {
         "tags": [
@@ -4454,12 +4691,207 @@
         }
       }
     },
-    "/Rig": {
+    "/GeothermalProperties": {
       "get": {
         "tags": [
-          "Rig"
+          "GeothermalProperties"
         ],
-        "operationId": "GetAllRigId",
+        "operationId": "GetAllGeothermalPropertiesId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "PostGeothermalProperties",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeothermalProperties/MetaInfo": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetAllGeothermalPropertiesMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeothermalProperties/{id}": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetGeothermalPropertiesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeothermalProperties"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "PutGeothermalPropertiesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "DeleteGeothermalPropertiesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeothermalProperties/HeavyData": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetAllGeothermalProperties",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeothermalProperties"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeothermalPropertiesCompletionOrder": {
+      "get": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "GetAllGeothermalPropertiesCompletionOrderId",
         "responses": {
           "200": {
             "description": "OK",
@@ -4479,24 +4911,24 @@
       },
       "post": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "PostRig",
+        "operationId": "PostGeothermalPropertiesCompletionOrder",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Rig"
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Rig"
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Rig"
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
               }
             }
           }
@@ -4508,12 +4940,12 @@
         }
       }
     },
-    "/Rig/MetaInfo": {
+    "/GeothermalPropertiesCompletionOrder/MetaInfo": {
       "get": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "GetAllRigMetaInfo",
+        "operationId": "GetAllGeothermalPropertiesCompletionOrderMetaInfo",
         "responses": {
           "200": {
             "description": "OK",
@@ -4531,12 +4963,12 @@
         }
       }
     },
-    "/Rig/{id}": {
+    "/GeothermalPropertiesCompletionOrder/{id}": {
       "get": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "GetRigById",
+        "operationId": "GetGeothermalPropertiesCompletionOrderById",
         "parameters": [
           {
             "name": "id",
@@ -4554,7 +4986,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Rig"
+                  "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
                 }
               }
             }
@@ -4563,9 +4995,9 @@
       },
       "put": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "PutRigById",
+        "operationId": "PutGeothermalPropertiesCompletionOrderById",
         "parameters": [
           {
             "name": "id",
@@ -4581,17 +5013,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Rig"
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Rig"
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Rig"
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
               }
             }
           }
@@ -4604,9 +5036,9 @@
       },
       "delete": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "DeleteRigById",
+        "operationId": "DeleteGeothermalPropertiesCompletionOrderById",
         "parameters": [
           {
             "name": "id",
@@ -4625,12 +5057,12 @@
         }
       }
     },
-    "/Rig/LightData": {
+    "/GeothermalPropertiesCompletionOrder/LightData": {
       "get": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "GetAllRigLight",
+        "operationId": "GetAllGeothermalPropertiesCompletionOrderLight",
         "responses": {
           "200": {
             "description": "OK",
@@ -4639,7 +5071,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/RigLight"
+                    "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrderLight"
                   }
                 }
               }
@@ -4648,12 +5080,12 @@
         }
       }
     },
-    "/Rig/HeavyData": {
+    "/GeothermalPropertiesCompletionOrder/HeavyData": {
       "get": {
         "tags": [
-          "Rig"
+          "GeothermalPropertiesCompletionOrder"
         ],
-        "operationId": "GetAllRig",
+        "operationId": "GetAllGeothermalPropertiesCompletionOrder",
         "responses": {
           "200": {
             "description": "OK",
@@ -4662,28 +5094,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Rig"
+                    "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
                   }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/RigUsageStatistics": {
-      "get": {
-        "tags": [
-          "RigUsageStatistics"
-        ],
-        "operationId": "GetRigUsageStatistics",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsageStatisticsRig"
                 }
               }
             }
@@ -6120,2965 +6532,6 @@
             "$ref": "#/components/schemas/History"
           }
         }
-      },
-      "UsageStatisticsWell": {
-        "type": "object",
-        "properties": {
-          "LastSaved": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "BackUpInterval": {
-            "type": "string",
-            "format": "date-span"
-          },
-          "GetAllWellIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "GetAllWellMetaInfoPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "GetWellByIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "GetAllWellPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "PostWellPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "PutWellByIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "DeleteWellByIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          }
-        }
-      },
-      "Well": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "SlotID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "ClusterID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "IsSingleWell": {
-            "type": "boolean"
-          }
-        }
-      },
-      "SidetrackType": {
-        "enum": [
-          "Undefined",
-          "Technical",
-          "Production",
-          "Appraisal",
-          "Lateral"
-        ],
-        "type": "string"
-      },
-      "UsageStatisticsWellBore": {
-        "type": "object",
-        "properties": {
-          "LastSaved": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "BackUpInterval": {
-            "type": "string",
-            "format": "date-span"
-          },
-          "GetAllWellBoreIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "GetAllWellBoreMetaInfoPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "GetWellBoreByIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "GetAllWellBorePerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "PostWellBorePerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "PutWellBoreByIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          },
-          "DeleteWellBoreByIdPerDay": {
-            "$ref": "#/components/schemas/History"
-          }
-        }
-      },
-      "WellBore": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "RigID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "IsSidetrack": {
-            "type": "boolean"
-          },
-          "ParentWellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "TieInPointAlongHoleDepth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SidetrackType": {
-            "$ref": "#/components/schemas/SidetrackType"
-          }
-        }
-      },
-      "BoreHoleSize": {
-        "type": "object",
-        "properties": {
-          "HoleSize": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Length": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "CasingSection": {
-        "type": "object",
-        "properties": {
-          "TopDepth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Length": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TopCementDepth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "CasingSectionElements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CasingSectionElement"
-            },
-            "nullable": true
-          },
-          "CasingSectionSizeTable": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BoreHoleSize"
-            },
-            "nullable": true
-          },
-          "OpenHoleSection": {
-            "$ref": "#/components/schemas/OpenHoleSection"
-          }
-        }
-      },
-      "CasingSectionElement": {
-        "type": "object",
-        "properties": {
-          "BodyOD": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "BodyID": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "CollarOD": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "JointLength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SectionLength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MaxDLS": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          },
-          "ConnectionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "Grade": {
-            "type": "string",
-            "nullable": true
-          },
-          "MaterialDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "YoungModulus": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "LinearWeight": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TensileStrength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TorsionalStrength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "BurstPressure": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "CollapsePressure": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "YieldStress": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MakeUpTorqueRecommended": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          }
-        }
-      },
-      "ElementConnectivity": {
-        "type": "object",
-        "properties": {
-          "UpstreamElement": {
-            "$ref": "#/components/schemas/SideElement"
-          },
-          "DownstreamElement": {
-            "$ref": "#/components/schemas/SideElement"
-          }
-        }
-      },
-      "FluidType": {
-        "enum": [
-          "Air",
-          "Water"
-        ],
-        "type": "string"
-      },
-      "OpenHoleSection": {
-        "type": "object",
-        "properties": {
-          "HoleSizes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BoreHoleSize"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "SideConnector": {
-        "type": "object",
-        "properties": {
-          "Position": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "VerticalDepth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "FirstSideElement": {
-            "$ref": "#/components/schemas/SideElement"
-          },
-          "ElementConnectivities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ElementConnectivity"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "SideElement": {
-        "type": "object",
-        "properties": {
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Type": {
-            "$ref": "#/components/schemas/SideElementType"
-          },
-          "Length": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TopVerticalDepth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "OD": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "ID": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "SideElementType": {
-        "enum": [
-          "Unknown",
-          "Pipe",
-          "Hose",
-          "GateValve",
-          "Choke",
-          "Pump"
-        ],
-        "type": "string"
-      },
-      "SurfaceSection": {
-        "type": "object",
-        "properties": {
-          "Type": {
-            "$ref": "#/components/schemas/SurfaceSectionType"
-          },
-          "SectionLength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "BodyOD": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "BodyID": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "ConnectionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "Grade": {
-            "type": "string",
-            "nullable": true
-          },
-          "MaterialDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "YoungModulus": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "LinearWeight": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TensileStrength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "BurstPressure": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "CollapsePressure": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "YieldStress": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MakeUpTorqueRecommended": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          },
-          "SideConnectors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SideConnector"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "SurfaceSectionType": {
-        "enum": [
-          "Unknown",
-          "BOP",
-          "HighPressureRiser",
-          "LowPressureRiser",
-          "MarineRiser",
-          "ExpansionJoint",
-          "BellNipple",
-          "Diverter",
-          "RotatingControlDevice"
-        ],
-        "type": "string"
-      },
-      "WellBoreArchitecture": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "WellHead": {
-            "$ref": "#/components/schemas/WellHead"
-          },
-          "FluidsAboveGroundLevel": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/WellBoreArchitectureFluid"
-            },
-            "nullable": true
-          },
-          "SurfaceSections": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SurfaceSection"
-            },
-            "nullable": true
-          },
-          "CasingSections": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CasingSection"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "WellBoreArchitectureFluid": {
-        "type": "object",
-        "properties": {
-          "Fluid": {
-            "$ref": "#/components/schemas/FluidType"
-          },
-          "Depth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "WellBoreArchitectureLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        }
-      },
-      "WellHead": {
-        "type": "object",
-        "properties": {
-          "MaxOD": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          },
-          "MinOD": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          },
-          "Depth": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "CasingHangerDepth": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          },
-          "TubingHangerDepth": {
-            "$ref": "#/components/schemas/ScalarDrillingProperty"
-          }
-        }
-      },
-      "DrillStringComponentTypes": {
-        "enum": [
-          "DrillPipe",
-          "DrillCollar",
-          "HeavyWeightDrillPipe",
-          "Jar",
-          "Mwd",
-          "Stabilizer",
-          "SteerableRotaryTool",
-          "Bit",
-          "Other"
-        ],
-        "type": "string"
-      },
-      "DrillStringSensorTypes": {
-        "enum": [
-          "Acoustic",
-          "AccelerometerX",
-          "AccelerometerY",
-          "AccelerometerZ",
-          "ResistivitySource",
-          "ResistivityReceiver",
-          "NeutronDensity",
-          "NeutronPorosity",
-          "MagnetometerX",
-          "MagnetometerY",
-          "RotationalPitch",
-          "RotationalRoll",
-          "RotationalYaw",
-          "BendingMomentX",
-          "BendingMomentY",
-          "StringPressure",
-          "AnnulusPressure",
-          "StringTemperature",
-          "ElectronicTemperature",
-          "AnnulusTemperature",
-          "GammaRay",
-          "Other",
-          "Tension",
-          "Torque"
-        ],
-        "type": "string"
-      },
-      "DrillString": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "DrillStringSectionList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringSection"
-            },
-            "nullable": true
-          },
-          "SensorsList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringSensor"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillStringComponent": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "FieldID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "Type": {
-            "$ref": "#/components/schemas/DrillStringComponentTypes"
-          },
-          "PartList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringComponentPart"
-            },
-            "nullable": true
-          },
-          "Length": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          }
-        }
-      },
-      "DrillStringComponentPart": {
-        "type": "object",
-        "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "TotalLength": {
-            "type": "number",
-            "format": "double"
-          },
-          "OuterDiameter": {
-            "type": "number",
-            "format": "double"
-          },
-          "InnerDiameter": {
-            "type": "number",
-            "format": "double"
-          },
-          "OuterDiameterState2": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterDiameterStateBoolean": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "FrictionFactorRotation": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "FrictionFactorAxialDisplacement": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "PressureLossConstantLowFlowRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "PressureLossConstantHighFlowRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "EccentricityDistance": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "EccentricityAngle": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TotalFlowAreaCondition1": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TotalFlowAreaCondition2": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TotalFlowAreaConditionBoolean": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "FlowrateThresholdValue": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingThickness": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingDensity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingThermalCondutivity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InnerCoatingHeatCapacity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingThickness": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingDensity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingThermalCondutivity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "OuterCoatingHeatCapacity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "YieldStrength": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UltimateStrength": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "SecondCrossSectionTorsionalInertia": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "FirstCrossSectionTorsionalInertia": {
-            "type": "number",
-            "format": "double"
-          },
-          "CrossSectionArea": {
-            "type": "number",
-            "format": "double"
-          },
-          "YoungModulus": {
-            "type": "number",
-            "format": "double"
-          },
-          "PoissonRatio": {
-            "type": "number",
-            "format": "double"
-          },
-          "MaterialDensity": {
-            "type": "number",
-            "format": "double"
-          },
-          "AveragePartDensity": {
-            "type": "number",
-            "format": "double"
-          },
-          "Mass": {
-            "type": "number",
-            "format": "double"
-          },
-          "HeatCapacity": {
-            "type": "number",
-            "format": "double"
-          },
-          "ThermalCondutivity": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "DrillStringLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          }
-        }
-      },
-      "DrillStringSection": {
-        "type": "object",
-        "properties": {
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Count": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "SectionComponentList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DrillStringComponent"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillStringSensor": {
-        "type": "object",
-        "properties": {
-          "DistanceFromBit": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "MeasurementRange": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "SensorAngles": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTypeInt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "SensorType": {
-            "$ref": "#/components/schemas/DrillStringSensorTypes"
-          }
-        }
-      },
-      "BaseCompositionProperties": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          }
-        }
-      },
-      "BaseOil": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "PVTParameters": {
-            "$ref": "#/components/schemas/BaseOilPVTParameters"
-          }
-        }
-      },
-      "BaseOilPVTParameters": {
-        "type": "object",
-        "properties": {
-          "A0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "B0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "C0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "D0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "E0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "F0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "Brine": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "PVTParameters": {
-            "$ref": "#/components/schemas/BrinePVTParameters"
-          },
-          "SaltContent": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SaltContent"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "BrinePVTParameters": {
-        "type": "object",
-        "properties": {
-          "S0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "S1": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "S2": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "S3": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Bw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Cw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Dw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Ew": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Fw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "CompletedDrillingFluid": {
-        "type": "object",
-        "properties": {
-          "GellingProperties": {
-            "$ref": "#/components/schemas/GellingProperties"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "PostProcessedFlowCurve": {
-            "$ref": "#/components/schemas/FlowCurve"
-          },
-          "FluidPVTParameters": {
-            "$ref": "#/components/schemas/FluidPVTParameters"
-          },
-          "RheologicalModelProperties": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GenericRheologicalModel"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluid": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "DrillingFluidDescription": {
-            "$ref": "#/components/schemas/DrillingFluidDescription"
-          },
-          "DrillStringID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "OutputParam": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluidComposition": {
-        "type": "object",
-        "properties": {
-          "BrineProperies": {
-            "$ref": "#/components/schemas/Brine"
-          },
-          "BaseOilProperies": {
-            "$ref": "#/components/schemas/BaseOil"
-          },
-          "WaterOilRatio": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "HighGravitySolid": {
-            "$ref": "#/components/schemas/BaseCompositionProperties"
-          },
-          "LowGravitySolid": {
-            "$ref": "#/components/schemas/BaseCompositionProperties"
-          },
-          "LostCirculationMaterials": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LostCirculationMaterial"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluidDescription": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "DrillingFluidComposition": {
-            "$ref": "#/components/schemas/DrillingFluidComposition"
-          },
-          "FluidPVTParameters": {
-            "$ref": "#/components/schemas/FluidPVTParameters"
-          },
-          "FluidMassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "ReferenceTemperature": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "GellingProperties": {
-            "$ref": "#/components/schemas/GellingProperties"
-          },
-          "FlowCurve": {
-            "$ref": "#/components/schemas/FlowCurve"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          }
-        }
-      },
-      "DrillingFluidLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluidOrder": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "DrillingFluidDescriptionID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "DrillingFluidDescription": {
-            "$ref": "#/components/schemas/DrillingFluidDescription"
-          },
-          "Temperature": {
-            "type": "number",
-            "format": "double"
-          },
-          "PTModelExtrapolation": {
-            "$ref": "#/components/schemas/PTModelExtrapolation"
-          },
-          "RheologicalModelsEnum": {
-            "$ref": "#/components/schemas/RheologicalModelsEnum"
-          },
-          "Options": {
-            "$ref": "#/components/schemas/ParticleSwarmSolverOptions"
-          },
-          "CompletedDrillingFluid": {
-            "$ref": "#/components/schemas/CompletedDrillingFluid"
-          },
-          "OutputParam": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "FlowCurve": {
-        "type": "object",
-        "properties": {
-          "CouetteRheometer": {
-            "$ref": "#/components/schemas/CouetteRheometer"
-          },
-          "TableValues": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FlowCurveTable"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "FlowCurveTable": {
-        "type": "object",
-        "properties": {
-          "Temperature": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Pressure": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "RheometerMeasurements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RheometerMeasurement"
-            },
-            "nullable": true
-          },
-          "ShearRateReference": {
-            "$ref": "#/components/schemas/MeasurementTypesShearRate"
-          },
-          "ShearStressReference": {
-            "$ref": "#/components/schemas/MeasurementTypesShearStress"
-          }
-        }
-      },
-      "FluidPVTParameters": {
-        "type": "object",
-        "properties": {
-          "A0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "B0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "C0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "D0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "E0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "F0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "GelData": {
-        "type": "object",
-        "properties": {
-          "GelDuration": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "GelStrength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Temperature": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "GellingProperties": {
-        "type": "object",
-        "properties": {
-          "GelPropertiesTable": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GelData"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "GenericRheologicalModel": {
-        "type": "object",
-        "properties": {
-          "RheologicalModelUsed": {
-            "$ref": "#/components/schemas/RheologicalModelsEnum"
-          },
-          "Temperature": {
-            "type": "number",
-            "format": "double"
-          },
-          "Pressure": {
-            "type": "number",
-            "format": "double"
-          },
-          "PowerLawViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "PowerLawConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "BinghamViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "BinghamYieldStress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "HerschelBulkleyViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "HerschelBulkleyYieldStress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "HerschelBulkleyConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaCharacteristicShearRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaXi": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RobertsonStiffYieldStress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RobertsonStiffCharacteristicShearRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RobertsonStiffConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "LostCirculationMaterial": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "GrainSize": {
-            "$ref": "#/components/schemas/LostCiruclationMaterialGrainType"
-          }
-        }
-      },
-      "LostCiruclationMaterialGrainType": {
-        "enum": [
-          "UltraFine",
-          "Fine",
-          "Medium",
-          "Coarse"
-        ],
-        "type": "string"
-      },
-      "MeasurementTypesShearRate": {
-        "enum": [
-          "Rotation",
-          "IsoNewtonianShearRate",
-          "BobNewtonianShearRate"
-        ],
-        "type": "string"
-      },
-      "MeasurementTypesShearStress": {
-        "enum": [
-          "Torque",
-          "IsoNewtonianShearStress",
-          "BobNewtonianShearStress"
-        ],
-        "type": "string"
-      },
-      "PTModelExtrapolation": {
-        "enum": [
-          "Unkown",
-          "StandardWaterBasedMud",
-          "StandardOilBasedMud",
-          "MicronizedOilBasedMud"
-        ],
-        "type": "string"
-      },
-      "RheologicalModelsEnum": {
-        "enum": [
-          "Unkown",
-          "Bingham",
-          "PowerLaw",
-          "HerschelBulkley",
-          "Quemada",
-          "RobertsonStiff"
-        ],
-        "type": "string"
-      },
-      "SaltContent": {
-        "type": "object",
-        "properties": {
-          "Salt": {
-            "$ref": "#/components/schemas/SaltOptions"
-          },
-          "WeightPerCubicMeter": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "SaltOptions": {
-        "enum": [
-          "NaCl",
-          "NaBr",
-          "KCl",
-          "KBr",
-          "CaCl2",
-          "CaBr2",
-          "ZnCl2",
-          "ZnBr2"
-        ],
-        "type": "string"
-      },
-      "SpecificHeatCapacity": {
-        "type": "object",
-        "properties": {
-          "Slope": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "HeatCapacityAtZeroKelvin": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TemperatureRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          },
-          "CoefficientRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          }
-        }
-      },
-      "ThermalConductivity": {
-        "type": "object",
-        "properties": {
-          "Slope": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "ThermalConductivityAtZeroKelvin": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TemperatureRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          },
-          "CoefficientRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          }
-        }
-      },
-      "CouetteRheometer": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "rheometerType": {
-            "$ref": "#/components/schemas/RheometerTypeEnum"
-          },
-          "bobRadius": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap": {
-            "type": "number",
-            "format": "double"
-          },
-          "newtonianEndEffectCorrection": {
-            "type": "number",
-            "format": "double"
-          },
-          "bobLength": {
-            "type": "number",
-            "format": "double"
-          },
-          "conicalAngle": {
-            "type": "number",
-            "format": "double"
-          },
-          "measurementPrecision": {
-            "type": "number",
-            "format": "double"
-          },
-          "useISOConvention": {
-            "type": "boolean"
-          },
-          "fixedSpeedList": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": { }
-      },
-      "RheometerMeasurement": {
-        "type": "object",
-        "properties": {
-          "rotationalSpeed": {
-            "type": "number",
-            "format": "double"
-          },
-          "torque": {
-            "type": "number",
-            "format": "double"
-          },
-          "isoNewtonianShearRate": {
-            "type": "number",
-            "format": "double"
-          },
-          "isoNewtonianShearStress": {
-            "type": "number",
-            "format": "double"
-          },
-          "bobNewtonianShearRate": {
-            "type": "number",
-            "format": "double"
-          },
-          "bobNewtonianShearStress": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": { }
-      },
-      "RheometerTypeEnum": {
-        "enum": [
-          "_0",
-          "_1"
-        ],
-        "type": "string"
-      },
-      "ParticleSwarmSolverOptions": {
-        "type": "object"
-      },
-      "Trajectory": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "SurveyStationList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SurveyStation"
-            },
-            "nullable": true
-          },
-          "InterpolatedTrajectory": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SurveyPoint"
-            },
-            "nullable": true
-          },
-          "MDStep": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "TrajectoryLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      },
-      "ErrorCode": {
-        "enum": [
-          "XYM1",
-          "XYM2",
-          "XYM3",
-          "XYM4",
-          "SAG",
-          "DRFR",
-          "DRFS",
-          "DSFS",
-          "DSTG",
-          "XYM3E",
-          "XYM4E",
-          "SAGE",
-          "XCLH",
-          "XCLL",
-          "XCLA",
-          "ABXY_TI1S",
-          "ABXY_TI2S",
-          "ABIXY_TI1S",
-          "ABIXY_TI2S",
-          "ABZ",
-          "ASXY_TI1S",
-          "ASXY_TI2S",
-          "ASXY_TI3S",
-          "ASZ",
-          "MBXY_TI1",
-          "MBXY_TI2",
-          "MBZ",
-          "MSXY_TI1",
-          "MSXY_TI2",
-          "MSXY_TI3",
-          "MSZ",
-          "AMIL",
-          "DEC_U",
-          "DEC_OS",
-          "DEC_OH",
-          "DEC_OI",
-          "DECR",
-          "DBH_U",
-          "DBH_OS",
-          "DBH_OH",
-          "DBH_OI",
-          "DBHR",
-          "AXYZ_XYB",
-          "AXYZ_ZB",
-          "AXYZ_SF",
-          "AXYZ_MIS",
-          "AXY_B",
-          "AXY_SF",
-          "AXY_MS",
-          "AXY_GB",
-          "GXYZ_XYB1",
-          "GXYZ_XYB2",
-          "GXYZ_XYRN",
-          "GXYZ_XYG1",
-          "GXYZ_XYG2",
-          "GXYZ_XYG3",
-          "GXYZ_XYG4",
-          "GXYZ_ZB",
-          "GXYZ_ZRN",
-          "GXYZ_ZG1",
-          "GXYZ_ZG2",
-          "GXYZ_SF",
-          "GXYZ_MIS",
-          "GXY_B1",
-          "GXY_B2",
-          "GXY_RN",
-          "GXY_G1",
-          "GXY_G2",
-          "GXY_G3",
-          "GXY_G4",
-          "GXY_SF",
-          "GXY_MIS",
-          "EXT_REF",
-          "EXT_TIE",
-          "EXT_MIS",
-          "GXYZ_GD",
-          "GXYZ_RW",
-          "GXY_GD",
-          "GXY_RW",
-          "GZ_GD",
-          "GZ_RW"
-        ],
-        "type": "string"
-      },
-      "ErrorSource": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "ErrorCode": {
-            "$ref": "#/components/schemas/ErrorCode"
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "Index": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "IsSystematic": {
-            "type": "boolean"
-          },
-          "IsRandom": {
-            "type": "boolean"
-          },
-          "IsGlobal": {
-            "type": "boolean"
-          },
-          "SingularIssues": {
-            "type": "boolean"
-          },
-          "IsContinuous": {
-            "type": "boolean"
-          },
-          "IsStationary": {
-            "type": "boolean"
-          },
-          "KOperatorImposed": {
-            "type": "boolean"
-          },
-          "Magnitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "MagnitudeQuantity": {
-            "type": "string",
-            "nullable": true
-          },
-          "UseInclinationInterval": {
-            "type": "boolean"
-          },
-          "StartInclination": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "EndInclination": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "InitInclination": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "SurveyInstrument": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "ModelType": {
-            "$ref": "#/components/schemas/SurveyInstrumentModelType"
-          },
-          "ErrorSourceList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ErrorSource"
-            },
-            "nullable": true
-          },
-          "Dip": {
-            "type": "number",
-            "format": "double"
-          },
-          "Declination": {
-            "type": "number",
-            "format": "double"
-          },
-          "Gravity": {
-            "type": "number",
-            "format": "double"
-          },
-          "BField": {
-            "type": "number",
-            "format": "double"
-          },
-          "Convergence": {
-            "type": "number",
-            "format": "double"
-          },
-          "Latitude": {
-            "type": "number",
-            "format": "double"
-          },
-          "EarthRotRate": {
-            "type": "number",
-            "format": "double"
-          },
-          "CantAngle": {
-            "type": "number",
-            "format": "double"
-          },
-          "GyroRunningSpeed": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "ExtRefInitInc": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "GyroSwitching": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "GyroMinDist": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "GyroNoiseRed": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UseRelDepthError": {
-            "type": "boolean"
-          },
-          "RelDepthError": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UseMisalignment": {
-            "type": "boolean"
-          },
-          "Misalignment": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UseTrueInclination": {
-            "type": "boolean"
-          },
-          "TrueInclination": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UseReferenceError": {
-            "type": "boolean"
-          },
-          "ReferenceError": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UseDrillStringMag": {
-            "type": "boolean"
-          },
-          "DrillStringMag": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "UseGyroCompassError": {
-            "type": "boolean"
-          },
-          "GyroCompassError": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "SurveyInstrumentModelType": {
-        "enum": [
-          "MWD_WolffDeWardt",
-          "Gyro_WolffDeWardt",
-          "MWD_ISCWSA",
-          "Gyro_ISCWSA"
-        ],
-        "type": "string"
-      },
-      "SurveyPoint": {
-        "type": "object",
-        "properties": {
-          "Z": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Abscissa": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "MD": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Azimuth": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Inclination": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "X": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Y": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TVD": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RiemannianNorth": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RiemannianEast": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Latitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Longitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Curvature": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Toolface": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "BUR": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TUR": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "SurveyStation": {
-        "type": "object",
-        "properties": {
-          "Z": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Abscissa": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "MD": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Azimuth": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Inclination": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "X": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Y": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TVD": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RiemannianNorth": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RiemannianEast": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Latitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Longitude": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Curvature": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Toolface": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "BUR": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TUR": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Covariance": {
-            "$ref": "#/components/schemas/SymmetricMatrix3x3"
-          },
-          "EigenVectors": {
-            "$ref": "#/components/schemas/Matrix3x3"
-          },
-          "EigenValues": {
-            "$ref": "#/components/schemas/Vector3D"
-          },
-          "Bias": {
-            "$ref": "#/components/schemas/Vector3D"
-          },
-          "SurveyTool": {
-            "$ref": "#/components/schemas/SurveyInstrument"
-          },
-          "BoreholeRadius": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "Matrix3x3": {
-        "type": "object",
-        "properties": {
-          "RowCount": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "ColumnCount": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          }
-        }
-      },
-      "SymmetricMatrix3x3": {
-        "type": "object",
-        "properties": {
-          "ColumnCount": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "RowCount": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          }
-        }
-      },
-      "Vector3D": {
-        "type": "object",
-        "properties": {
-          "X": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Y": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Z": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "Dim": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          }
-        }
-      },
-      "Config": {
-        "type": "object",
-        "properties": {
-          "VirtualSensorPositionFromBit": {
-            "type": "number",
-            "format": "double"
-          },
-          "LoggingIntervalScalarValues": {
-            "type": "number",
-            "format": "double"
-          },
-          "LoggingIntervalProfiles": {
-            "type": "number",
-            "format": "double"
-          },
-          "CoulombStaticFriction": {
-            "type": "number",
-            "format": "double"
-          },
-          "CoulombKineticFriction": {
-            "type": "number",
-            "format": "double"
-          },
-          "UseHeave": {
-            "type": "boolean"
-          },
-          "HeaveAmplitude": {
-            "type": "number",
-            "format": "double"
-          },
-          "HeavePeriod": {
-            "type": "number",
-            "format": "double"
-          },
-          "TopDriveStartupTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "LengthBetweenLumpedElements": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "ContextualData": {
-        "type": "object",
-        "properties": {
-          "DrillStringID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "DrillingFluidDescriptionID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "WellBoreArchitectureID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "TrajectoryID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "RigID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "CasingID": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "Temperature": {
-            "type": "number",
-            "format": "double"
-          },
-          "SurfacePipePressure": {
-            "type": "number",
-            "format": "double"
-          },
-          "SolverType": {
-            "$ref": "#/components/schemas/SolverType"
-          }
-        }
-      },
-      "InitialValues": {
-        "type": "object",
-        "properties": {
-          "BitDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "HoleDepth": {
-            "type": "number",
-            "format": "double"
-          },
-          "TopOfStringPosition": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "Profiles": {
-        "type": "object",
-        "properties": {
-          "Time": {
-            "type": "number",
-            "format": "double"
-          },
-          "Depth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "DepthAll": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SleevesDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SideForce": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SideForceSoftString": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "PipeAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SleevesAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "RadialClearance": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "LateralDisplacement": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "LateralDisplacementAngle": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BendingMoment": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Torque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Tension": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "AxialVelocityD": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Inclination": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Azimuth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Curvature": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BuildUpRate": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "Results": {
-        "type": "object",
-        "properties": {
-          "AvgCumulativeSSI": {
-            "type": "number",
-            "format": "double"
-          },
-          "Scalars": {
-            "$ref": "#/components/schemas/Scalars"
-          },
-          "Profiles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Profiles"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "Scalars": {
-        "type": "object",
-        "properties": {
-          "AvgCumulativeSSI": {
-            "type": "number",
-            "format": "double"
-          },
-          "BitAxialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "TopOfStringAxialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "WOB": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BitRPM": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SurfaceRPM": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BitDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "HoleDepth": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SurfaceTorque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "BitTorque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorAngularVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorWhirlVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorAxialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorRadialVelocity": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorRadialAcc": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTangentialAcc": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorAxialAcc": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorBendingMomentX": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorBendingMomentY": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTension": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SensorTorque": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "Time": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          },
-          "SSI": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "SetPoints": {
-        "type": "object",
-        "properties": {
-          "TimeDuration": {
-            "type": "number",
-            "format": "double"
-          },
-          "SurfaceRPM": {
-            "type": "number",
-            "format": "double"
-          },
-          "TopOfStringVelocity": {
-            "type": "number",
-            "format": "double"
-          },
-          "BottomExtraSideForce": {
-            "type": "number",
-            "format": "double"
-          },
-          "StribeckCriticalVelocity": {
-            "type": "number",
-            "format": "double"
-          },
-          "DifferenceStaticKineticFriction": {
-            "type": "number",
-            "format": "double"
-          },
-          "Sticking": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Simulation": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "ContextualData": {
-            "$ref": "#/components/schemas/ContextualData"
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "Config": {
-            "$ref": "#/components/schemas/Config"
-          },
-          "InitialValues": {
-            "$ref": "#/components/schemas/InitialValues"
-          },
-          "SetPointsList": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SetPoints"
-            },
-            "nullable": true
-          },
-          "CurrentTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "Progress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "TerminationState": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "Results": {
-            "$ref": "#/components/schemas/Results"
-          }
-        }
-      },
-      "SimulationLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "Progress": {
-            "type": "number",
-            "format": "double"
-          },
-          "TerminationState": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "SolverType": {
-        "enum": [
-          "EulerMethod",
-          "VerletMethod"
-        ],
-        "type": "string"
       },
       "Accumulator": {
         "type": "object",
@@ -13333,6 +10786,3121 @@
             "$ref": "#/components/schemas/History"
           }
         }
+      },
+      "UsageStatisticsWell": {
+        "type": "object",
+        "properties": {
+          "LastSaved": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "BackUpInterval": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "GetAllWellIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllWellMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetWellByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllWellPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostWellPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutWellByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteWellByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          }
+        }
+      },
+      "Well": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "SlotID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "ClusterID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "IsSingleWell": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SidetrackType": {
+        "enum": [
+          "Undefined",
+          "Technical",
+          "Production",
+          "Appraisal",
+          "Lateral"
+        ],
+        "type": "string"
+      },
+      "UsageStatisticsWellBore": {
+        "type": "object",
+        "properties": {
+          "LastSaved": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "BackUpInterval": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "GetAllWellBoreIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllWellBoreMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetWellBoreByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllWellBorePerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostWellBorePerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutWellBoreByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteWellBoreByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          }
+        }
+      },
+      "WellBore": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "RigID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "IsSidetrack": {
+            "type": "boolean"
+          },
+          "ParentWellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TieInPointAlongHoleDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SidetrackType": {
+            "$ref": "#/components/schemas/SidetrackType"
+          }
+        }
+      },
+      "BoreHoleSize": {
+        "type": "object",
+        "properties": {
+          "HoleSize": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Length": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "CasingSection": {
+        "type": "object",
+        "properties": {
+          "TopDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Length": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TopCementDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "CasingSectionElements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CasingSectionElement"
+            },
+            "nullable": true
+          },
+          "CasingSectionSizeTable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoreHoleSize"
+            },
+            "nullable": true
+          },
+          "OpenHoleSection": {
+            "$ref": "#/components/schemas/OpenHoleSection"
+          }
+        }
+      },
+      "CasingSectionElement": {
+        "type": "object",
+        "properties": {
+          "BodyOD": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "BodyID": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "CollarOD": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "JointLength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SectionLength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MaxDLS": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "ConnectionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "Grade": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "YoungModulus": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "LinearWeight": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TensileStrength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TorsionalStrength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "BurstPressure": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "CollapsePressure": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "YieldStress": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MakeUpTorqueRecommended": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          }
+        }
+      },
+      "ElementConnectivity": {
+        "type": "object",
+        "properties": {
+          "UpstreamElement": {
+            "$ref": "#/components/schemas/SideElement"
+          },
+          "DownstreamElement": {
+            "$ref": "#/components/schemas/SideElement"
+          }
+        }
+      },
+      "FluidType": {
+        "enum": [
+          "Air",
+          "Water"
+        ],
+        "type": "string"
+      },
+      "OpenHoleSection": {
+        "type": "object",
+        "properties": {
+          "HoleSizes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoreHoleSize"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SideConnector": {
+        "type": "object",
+        "properties": {
+          "Position": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "VerticalDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "FirstSideElement": {
+            "$ref": "#/components/schemas/SideElement"
+          },
+          "ElementConnectivities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementConnectivity"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SideElement": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/SideElementType"
+          },
+          "Length": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TopVerticalDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "OD": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ID": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "SideElementType": {
+        "enum": [
+          "Unknown",
+          "Pipe",
+          "Hose",
+          "GateValve",
+          "Choke",
+          "Pump"
+        ],
+        "type": "string"
+      },
+      "SurfaceSection": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "$ref": "#/components/schemas/SurfaceSectionType"
+          },
+          "SectionLength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "BodyOD": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "BodyID": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ConnectionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "Grade": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "YoungModulus": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "LinearWeight": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TensileStrength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "BurstPressure": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "CollapsePressure": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "YieldStress": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MakeUpTorqueRecommended": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "SideConnectors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SideConnector"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SurfaceSectionType": {
+        "enum": [
+          "Unknown",
+          "BOP",
+          "HighPressureRiser",
+          "LowPressureRiser",
+          "MarineRiser",
+          "ExpansionJoint",
+          "BellNipple",
+          "Diverter",
+          "RotatingControlDevice"
+        ],
+        "type": "string"
+      },
+      "WellBoreArchitecture": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "WellHead": {
+            "$ref": "#/components/schemas/WellHead"
+          },
+          "FluidsAboveGroundLevel": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreArchitectureFluid"
+            },
+            "nullable": true
+          },
+          "SurfaceSections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurfaceSection"
+            },
+            "nullable": true
+          },
+          "CasingSections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CasingSection"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreArchitectureFluid": {
+        "type": "object",
+        "properties": {
+          "Fluid": {
+            "$ref": "#/components/schemas/FluidType"
+          },
+          "Depth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "WellBoreArchitectureLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "WellHead": {
+        "type": "object",
+        "properties": {
+          "MaxOD": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "MinOD": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "Depth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "CasingHangerDepth": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "TubingHangerDepth": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          }
+        }
+      },
+      "DrillStringComponentTypes": {
+        "enum": [
+          "DrillPipe",
+          "DrillCollar",
+          "HeavyWeightDrillPipe",
+          "Jar",
+          "Mwd",
+          "Stabilizer",
+          "SteerableRotaryTool",
+          "Bit",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "DrillStringSensorTypes": {
+        "enum": [
+          "Acoustic",
+          "AccelerometerX",
+          "AccelerometerY",
+          "AccelerometerZ",
+          "ResistivitySource",
+          "ResistivityReceiver",
+          "NeutronDensity",
+          "NeutronPorosity",
+          "MagnetometerX",
+          "MagnetometerY",
+          "RotationalPitch",
+          "RotationalRoll",
+          "RotationalYaw",
+          "BendingMomentX",
+          "BendingMomentY",
+          "StringPressure",
+          "AnnulusPressure",
+          "StringTemperature",
+          "ElectronicTemperature",
+          "AnnulusTemperature",
+          "GammaRay",
+          "Other",
+          "Tension",
+          "Torque"
+        ],
+        "type": "string"
+      },
+      "DrillString": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "DrillStringSectionList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringSection"
+            },
+            "nullable": true
+          },
+          "SensorsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringSensor"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringComponent": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "FieldID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/DrillStringComponentTypes"
+          },
+          "PartList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponentPart"
+            },
+            "nullable": true
+          },
+          "Length": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        }
+      },
+      "DrillStringComponentPart": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "InnerDiameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "OuterDiameterState2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterDiameterStateBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FrictionFactorRotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FrictionFactorAxialDisplacement": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantLowFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PressureLossConstantHighFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityDistance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EccentricityAngle": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition1": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaCondition2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TotalFlowAreaConditionBoolean": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "FlowrateThresholdValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InnerCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThickness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingThermalCondutivity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OuterCoatingHeatCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "YieldStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UltimateStrength": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SecondCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "FirstCrossSectionTorsionalInertia": {
+            "type": "number",
+            "format": "double"
+          },
+          "CrossSectionArea": {
+            "type": "number",
+            "format": "double"
+          },
+          "YoungModulus": {
+            "type": "number",
+            "format": "double"
+          },
+          "PoissonRatio": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaterialDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "AveragePartDensity": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mass": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeatCapacity": {
+            "type": "number",
+            "format": "double"
+          },
+          "ThermalCondutivity": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "DrillStringLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringSection": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SectionComponentList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillStringComponent"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillStringSensor": {
+        "type": "object",
+        "properties": {
+          "DistanceFromBit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MeasurementRange": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "SensorAngles": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTypeInt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SensorType": {
+            "$ref": "#/components/schemas/DrillStringSensorTypes"
+          }
+        }
+      },
+      "BaseCompositionProperties": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          }
+        }
+      },
+      "BaseOil": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "PVTParameters": {
+            "$ref": "#/components/schemas/BaseOilPVTParameters"
+          }
+        }
+      },
+      "BaseOilPVTParameters": {
+        "type": "object",
+        "properties": {
+          "A0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "B0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "C0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "D0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "E0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "F0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "Brine": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "PVTParameters": {
+            "$ref": "#/components/schemas/BrinePVTParameters"
+          },
+          "SaltContent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaltContent"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "BrinePVTParameters": {
+        "type": "object",
+        "properties": {
+          "S0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "S1": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "S2": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "S3": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Bw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Cw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Dw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Ew": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Fw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "CompletedDrillingFluid": {
+        "type": "object",
+        "properties": {
+          "GellingProperties": {
+            "$ref": "#/components/schemas/GellingProperties"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "PostProcessedFlowCurve": {
+            "$ref": "#/components/schemas/FlowCurve"
+          },
+          "FluidPVTParameters": {
+            "$ref": "#/components/schemas/FluidPVTParameters"
+          },
+          "RheologicalModelProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericRheologicalModel"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluid": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidDescription": {
+            "$ref": "#/components/schemas/DrillingFluidDescription"
+          },
+          "DrillStringID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "OutputParam": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidComposition": {
+        "type": "object",
+        "properties": {
+          "BrineProperies": {
+            "$ref": "#/components/schemas/Brine"
+          },
+          "BaseOilProperies": {
+            "$ref": "#/components/schemas/BaseOil"
+          },
+          "WaterOilRatio": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "HighGravitySolid": {
+            "$ref": "#/components/schemas/BaseCompositionProperties"
+          },
+          "LowGravitySolid": {
+            "$ref": "#/components/schemas/BaseCompositionProperties"
+          },
+          "LostCirculationMaterials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LostCirculationMaterial"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidDescription": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidComposition": {
+            "$ref": "#/components/schemas/DrillingFluidComposition"
+          },
+          "FluidPVTParameters": {
+            "$ref": "#/components/schemas/FluidPVTParameters"
+          },
+          "FluidMassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ReferenceTemperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "GellingProperties": {
+            "$ref": "#/components/schemas/GellingProperties"
+          },
+          "FlowCurve": {
+            "$ref": "#/components/schemas/FlowCurve"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          }
+        }
+      },
+      "DrillingFluidLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidOrder": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidDescriptionID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "DrillingFluidDescription": {
+            "$ref": "#/components/schemas/DrillingFluidDescription"
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "PTModelExtrapolation": {
+            "$ref": "#/components/schemas/PTModelExtrapolation"
+          },
+          "RheologicalModelsEnum": {
+            "$ref": "#/components/schemas/RheologicalModelsEnum"
+          },
+          "Options": {
+            "$ref": "#/components/schemas/ParticleSwarmSolverOptions"
+          },
+          "CompletedDrillingFluid": {
+            "$ref": "#/components/schemas/CompletedDrillingFluid"
+          },
+          "OutputParam": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "FlowCurve": {
+        "type": "object",
+        "properties": {
+          "CouetteRheometer": {
+            "$ref": "#/components/schemas/CouetteRheometer"
+          },
+          "TableValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowCurveTable"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "FlowCurveTable": {
+        "type": "object",
+        "properties": {
+          "Temperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Pressure": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "RheometerMeasurements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RheometerMeasurement"
+            },
+            "nullable": true
+          },
+          "ShearRateReference": {
+            "$ref": "#/components/schemas/MeasurementTypesShearRate"
+          },
+          "ShearStressReference": {
+            "$ref": "#/components/schemas/MeasurementTypesShearStress"
+          }
+        }
+      },
+      "FluidPVTParameters": {
+        "type": "object",
+        "properties": {
+          "A0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "B0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "C0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "D0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "E0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "F0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "GelData": {
+        "type": "object",
+        "properties": {
+          "GelDuration": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "GelStrength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Temperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "GellingProperties": {
+        "type": "object",
+        "properties": {
+          "GelPropertiesTable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GelData"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "GenericRheologicalModel": {
+        "type": "object",
+        "properties": {
+          "RheologicalModelUsed": {
+            "$ref": "#/components/schemas/RheologicalModelsEnum"
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "Pressure": {
+            "type": "number",
+            "format": "double"
+          },
+          "PowerLawViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PowerLawConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BinghamViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BinghamYieldStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HerschelBulkleyViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HerschelBulkleyYieldStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HerschelBulkleyConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaCharacteristicShearRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaXi": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RobertsonStiffYieldStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RobertsonStiffCharacteristicShearRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RobertsonStiffConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "LostCirculationMaterial": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "GrainSize": {
+            "$ref": "#/components/schemas/LostCiruclationMaterialGrainType"
+          }
+        }
+      },
+      "LostCiruclationMaterialGrainType": {
+        "enum": [
+          "UltraFine",
+          "Fine",
+          "Medium",
+          "Coarse"
+        ],
+        "type": "string"
+      },
+      "MeasurementTypesShearRate": {
+        "enum": [
+          "Rotation",
+          "IsoNewtonianShearRate",
+          "BobNewtonianShearRate"
+        ],
+        "type": "string"
+      },
+      "MeasurementTypesShearStress": {
+        "enum": [
+          "Torque",
+          "IsoNewtonianShearStress",
+          "BobNewtonianShearStress"
+        ],
+        "type": "string"
+      },
+      "PTModelExtrapolation": {
+        "enum": [
+          "Unkown",
+          "StandardWaterBasedMud",
+          "StandardOilBasedMud",
+          "MicronizedOilBasedMud"
+        ],
+        "type": "string"
+      },
+      "RheologicalModelsEnum": {
+        "enum": [
+          "Unkown",
+          "Bingham",
+          "PowerLaw",
+          "HerschelBulkley",
+          "Quemada",
+          "RobertsonStiff"
+        ],
+        "type": "string"
+      },
+      "SaltContent": {
+        "type": "object",
+        "properties": {
+          "Salt": {
+            "$ref": "#/components/schemas/SaltOptions"
+          },
+          "WeightPerCubicMeter": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "SaltOptions": {
+        "enum": [
+          "NaCl",
+          "NaBr",
+          "KCl",
+          "KBr",
+          "CaCl2",
+          "CaBr2",
+          "ZnCl2",
+          "ZnBr2"
+        ],
+        "type": "string"
+      },
+      "SpecificHeatCapacity": {
+        "type": "object",
+        "properties": {
+          "Slope": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "HeatCapacityAtZeroKelvin": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TemperatureRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "CoefficientRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          }
+        }
+      },
+      "ThermalConductivity": {
+        "type": "object",
+        "properties": {
+          "Slope": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ThermalConductivityAtZeroKelvin": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TemperatureRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "CoefficientRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          }
+        }
+      },
+      "CouetteRheometer": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rheometerType": {
+            "$ref": "#/components/schemas/RheometerTypeEnum"
+          },
+          "bobRadius": {
+            "type": "number",
+            "format": "double"
+          },
+          "gap": {
+            "type": "number",
+            "format": "double"
+          },
+          "newtonianEndEffectCorrection": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "conicalAngle": {
+            "type": "number",
+            "format": "double"
+          },
+          "measurementPrecision": {
+            "type": "number",
+            "format": "double"
+          },
+          "useISOConvention": {
+            "type": "boolean"
+          },
+          "fixedSpeedList": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "RheometerMeasurement": {
+        "type": "object",
+        "properties": {
+          "rotationalSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "torque": {
+            "type": "number",
+            "format": "double"
+          },
+          "isoNewtonianShearRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "isoNewtonianShearStress": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobNewtonianShearRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobNewtonianShearStress": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "RheometerTypeEnum": {
+        "enum": [
+          "_0",
+          "_1"
+        ],
+        "type": "string"
+      },
+      "ParticleSwarmSolverOptions": {
+        "type": "object"
+      },
+      "Trajectory": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "SurveyStationList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyStation"
+            },
+            "nullable": true
+          },
+          "InterpolatedTrajectory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyPoint"
+            },
+            "nullable": true
+          },
+          "MDStep": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "TrajectoryLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ErrorCode": {
+        "enum": [
+          "XYM1",
+          "XYM2",
+          "XYM3",
+          "XYM4",
+          "SAG",
+          "DRFR",
+          "DRFS",
+          "DSFS",
+          "DSTG",
+          "XYM3E",
+          "XYM4E",
+          "SAGE",
+          "XCLH",
+          "XCLL",
+          "XCLA",
+          "ABXY_TI1S",
+          "ABXY_TI2S",
+          "ABIXY_TI1S",
+          "ABIXY_TI2S",
+          "ABZ",
+          "ASXY_TI1S",
+          "ASXY_TI2S",
+          "ASXY_TI3S",
+          "ASZ",
+          "MBXY_TI1",
+          "MBXY_TI2",
+          "MBZ",
+          "MSXY_TI1",
+          "MSXY_TI2",
+          "MSXY_TI3",
+          "MSZ",
+          "AMIL",
+          "DEC_U",
+          "DEC_OS",
+          "DEC_OH",
+          "DEC_OI",
+          "DECR",
+          "DBH_U",
+          "DBH_OS",
+          "DBH_OH",
+          "DBH_OI",
+          "DBHR",
+          "AXYZ_XYB",
+          "AXYZ_ZB",
+          "AXYZ_SF",
+          "AXYZ_MIS",
+          "AXY_B",
+          "AXY_SF",
+          "AXY_MS",
+          "AXY_GB",
+          "GXYZ_XYB1",
+          "GXYZ_XYB2",
+          "GXYZ_XYRN",
+          "GXYZ_XYG1",
+          "GXYZ_XYG2",
+          "GXYZ_XYG3",
+          "GXYZ_XYG4",
+          "GXYZ_ZB",
+          "GXYZ_ZRN",
+          "GXYZ_ZG1",
+          "GXYZ_ZG2",
+          "GXYZ_SF",
+          "GXYZ_MIS",
+          "GXY_B1",
+          "GXY_B2",
+          "GXY_RN",
+          "GXY_G1",
+          "GXY_G2",
+          "GXY_G3",
+          "GXY_G4",
+          "GXY_SF",
+          "GXY_MIS",
+          "EXT_REF",
+          "EXT_TIE",
+          "EXT_MIS",
+          "GXYZ_GD",
+          "GXYZ_RW",
+          "GXY_GD",
+          "GXY_RW",
+          "GZ_GD",
+          "GZ_RW"
+        ],
+        "type": "string"
+      },
+      "ErrorSource": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "ErrorCode": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "IsSystematic": {
+            "type": "boolean"
+          },
+          "IsRandom": {
+            "type": "boolean"
+          },
+          "IsGlobal": {
+            "type": "boolean"
+          },
+          "SingularIssues": {
+            "type": "boolean"
+          },
+          "IsContinuous": {
+            "type": "boolean"
+          },
+          "IsStationary": {
+            "type": "boolean"
+          },
+          "KOperatorImposed": {
+            "type": "boolean"
+          },
+          "Magnitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MagnitudeQuantity": {
+            "type": "string",
+            "nullable": true
+          },
+          "UseInclinationInterval": {
+            "type": "boolean"
+          },
+          "StartInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "EndInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InitInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "SurveyInstrument": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ModelType": {
+            "$ref": "#/components/schemas/SurveyInstrumentModelType"
+          },
+          "ErrorSourceList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorSource"
+            },
+            "nullable": true
+          },
+          "Dip": {
+            "type": "number",
+            "format": "double"
+          },
+          "Declination": {
+            "type": "number",
+            "format": "double"
+          },
+          "Gravity": {
+            "type": "number",
+            "format": "double"
+          },
+          "BField": {
+            "type": "number",
+            "format": "double"
+          },
+          "Convergence": {
+            "type": "number",
+            "format": "double"
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "EarthRotRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "CantAngle": {
+            "type": "number",
+            "format": "double"
+          },
+          "GyroRunningSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ExtRefInitInc": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GyroSwitching": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GyroMinDist": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "GyroNoiseRed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseRelDepthError": {
+            "type": "boolean"
+          },
+          "RelDepthError": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseMisalignment": {
+            "type": "boolean"
+          },
+          "Misalignment": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseTrueInclination": {
+            "type": "boolean"
+          },
+          "TrueInclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseReferenceError": {
+            "type": "boolean"
+          },
+          "ReferenceError": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseDrillStringMag": {
+            "type": "boolean"
+          },
+          "DrillStringMag": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "UseGyroCompassError": {
+            "type": "boolean"
+          },
+          "GyroCompassError": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "SurveyInstrumentModelType": {
+        "enum": [
+          "MWD_WolffDeWardt",
+          "Gyro_WolffDeWardt",
+          "MWD_ISCWSA",
+          "Gyro_ISCWSA"
+        ],
+        "type": "string"
+      },
+      "SurveyPoint": {
+        "type": "object",
+        "properties": {
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Abscissa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TVD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianNorth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianEast": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Toolface": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "SurveyStation": {
+        "type": "object",
+        "properties": {
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Abscissa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TVD": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianNorth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RiemannianEast": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Toolface": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TUR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Covariance": {
+            "$ref": "#/components/schemas/SymmetricMatrix3x3"
+          },
+          "EigenVectors": {
+            "$ref": "#/components/schemas/Matrix3x3"
+          },
+          "EigenValues": {
+            "$ref": "#/components/schemas/Vector3D"
+          },
+          "Bias": {
+            "$ref": "#/components/schemas/Vector3D"
+          },
+          "SurveyTool": {
+            "$ref": "#/components/schemas/SurveyInstrument"
+          },
+          "BoreholeRadius": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "Matrix3x3": {
+        "type": "object",
+        "properties": {
+          "RowCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "ColumnCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        }
+      },
+      "SymmetricMatrix3x3": {
+        "type": "object",
+        "properties": {
+          "ColumnCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "RowCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        }
+      },
+      "Vector3D": {
+        "type": "object",
+        "properties": {
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Dim": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        }
+      },
+      "Config": {
+        "type": "object",
+        "properties": {
+          "VirtualSensorPositionFromBit": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalScalarValues": {
+            "type": "number",
+            "format": "double"
+          },
+          "LoggingIntervalProfiles": {
+            "type": "number",
+            "format": "double"
+          },
+          "CoulombStaticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "CoulombKineticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "UseHeave": {
+            "type": "boolean"
+          },
+          "HeaveAmplitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "HeavePeriod": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopDriveStartupTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "LengthBetweenLumpedElements": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "ContextualData": {
+        "type": "object",
+        "properties": {
+          "DrillStringID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "DrillingFluidDescriptionID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "WellBoreArchitectureID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TrajectoryID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "RigID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "CasingID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "SurfacePipePressure": {
+            "type": "number",
+            "format": "double"
+          },
+          "SolverType": {
+            "$ref": "#/components/schemas/SolverType"
+          }
+        }
+      },
+      "InitialValues": {
+        "type": "object",
+        "properties": {
+          "BitDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "HoleDepth": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringPosition": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Profiles": {
+        "type": "object",
+        "properties": {
+          "Time": {
+            "type": "number",
+            "format": "double"
+          },
+          "Depth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "DepthAll": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SleevesDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SideForce": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SideForceSoftString": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "PipeAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SleevesAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "RadialClearance": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "LateralDisplacement": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "LateralDisplacementAngle": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BendingMoment": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Torque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Tension": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "AxialVelocityD": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Inclination": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Azimuth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Curvature": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BuildUpRate": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Results": {
+        "type": "object",
+        "properties": {
+          "AvgCumulativeSSI": {
+            "type": "number",
+            "format": "double"
+          },
+          "Scalars": {
+            "$ref": "#/components/schemas/Scalars"
+          },
+          "Profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Profiles"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Scalars": {
+        "type": "object",
+        "properties": {
+          "AvgCumulativeSSI": {
+            "type": "number",
+            "format": "double"
+          },
+          "BitAxialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "TopOfStringAxialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "WOB": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BitRPM": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SurfaceRPM": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BitDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "HoleDepth": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SurfaceTorque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "BitTorque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorAngularVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorWhirlVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorAxialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorRadialVelocity": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorRadialAcc": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTangentialAcc": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorAxialAcc": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorBendingMomentX": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorBendingMomentY": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTension": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SensorTorque": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "Time": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "SSI": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "SetPoints": {
+        "type": "object",
+        "properties": {
+          "TimeDuration": {
+            "type": "number",
+            "format": "double"
+          },
+          "SurfaceRPM": {
+            "type": "number",
+            "format": "double"
+          },
+          "TopOfStringVelocity": {
+            "type": "number",
+            "format": "double"
+          },
+          "BottomExtraSideForce": {
+            "type": "number",
+            "format": "double"
+          },
+          "StribeckCriticalVelocity": {
+            "type": "number",
+            "format": "double"
+          },
+          "DifferenceStaticKineticFriction": {
+            "type": "number",
+            "format": "double"
+          },
+          "Sticking": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Simulation": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ContextualData": {
+            "$ref": "#/components/schemas/ContextualData"
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Config": {
+            "$ref": "#/components/schemas/Config"
+          },
+          "InitialValues": {
+            "$ref": "#/components/schemas/InitialValues"
+          },
+          "SetPointsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SetPoints"
+            },
+            "nullable": true
+          },
+          "CurrentTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "Progress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TerminationState": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Results": {
+            "$ref": "#/components/schemas/Results"
+          }
+        }
+      },
+      "SimulationLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "Progress": {
+            "type": "number",
+            "format": "double"
+          },
+          "TerminationState": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SolverType": {
+        "enum": [
+          "EulerMethod",
+          "VerletMethod"
+        ],
+        "type": "string"
+      },
+      "CompletionMethod": {
+        "enum": [
+          "LinearInterpolation",
+          "LinearExtrapolation"
+        ],
+        "type": "string"
+      },
+      "GeothermalData": {
+        "type": "object",
+        "properties": {
+          "RegionType": {
+            "$ref": "#/components/schemas/GeothermalPropertiesType"
+          },
+          "VerticalDepth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureGradient": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "GeothermalProperties": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TrajectoryID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "TableType": {
+            "$ref": "#/components/schemas/TableType"
+          },
+          "GeothermalDataList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeothermalData"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "GeothermalPropertiesCompletionOrder": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ReferenceGeothermalProperties": {
+            "$ref": "#/components/schemas/GeothermalProperties"
+          },
+          "CompletedGeothermalProperties": {
+            "$ref": "#/components/schemas/GeothermalProperties"
+          },
+          "InterpolationStep": {
+            "type": "number",
+            "format": "double"
+          },
+          "CompletionMethod": {
+            "$ref": "#/components/schemas/CompletionMethod"
+          }
+        }
+      },
+      "GeothermalPropertiesCompletionOrderLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "GeothermalPropertiesType": {
+        "enum": [
+          "Air",
+          "Water",
+          "RockFormation"
+        ],
+        "type": "string"
+      },
+      "TableType": {
+        "enum": [
+          "RawData",
+          "Interpolated"
+        ],
+        "type": "string"
       }
     }
   }

@@ -4923,6 +4923,647 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<System.Guid>> GetAllRigIdAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig"
+                    urlBuilder_.Append("Rig");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<System.Guid>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task PostRigAsync(Rig body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig"
+                    urlBuilder_.Append("Rig");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<MetaInfo>> GetAllRigMetaInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig/MetaInfo"
+                    urlBuilder_.Append("Rig/MetaInfo");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<MetaInfo>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<Rig> GetRigByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig/{id}"
+                    urlBuilder_.Append("Rig/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<Rig>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task PutRigByIdAsync(System.Guid id, Rig body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig/{id}"
+                    urlBuilder_.Append("Rig/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task DeleteRigByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig/{id}"
+                    urlBuilder_.Append("Rig/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RigLight>> GetAllRigLightAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig/LightData"
+                    urlBuilder_.Append("Rig/LightData");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<RigLight>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Rig>> GetAllRigAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "Rig/HeavyData"
+                    urlBuilder_.Append("Rig/HeavyData");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Rig>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<UsageStatisticsRig> GetRigUsageStatisticsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "RigUsageStatistics"
+                    urlBuilder_.Append("RigUsageStatistics");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<UsageStatisticsRig>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<System.Guid>> GetAllWellIdAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
@@ -11717,7 +12358,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<System.Guid>> GetAllRigIdAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<System.Guid?>> GetAllGeothermalPropertiesIdAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -11730,8 +12371,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig"
-                    urlBuilder_.Append("Rig");
+                    // Operation Path: "GeothermalProperties"
+                    urlBuilder_.Append("GeothermalProperties");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -11758,7 +12399,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<System.Guid>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<System.Guid?>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -11788,7 +12429,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PostRigAsync(Rig body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PostGeothermalPropertiesAsync(GeothermalProperties body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -11804,8 +12445,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig"
-                    urlBuilder_.Append("Rig");
+                    // Operation Path: "GeothermalProperties"
+                    urlBuilder_.Append("GeothermalProperties");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -11857,7 +12498,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<MetaInfo>> GetAllRigMetaInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<MetaInfo>> GetAllGeothermalPropertiesMetaInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -11870,8 +12511,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig/MetaInfo"
-                    urlBuilder_.Append("Rig/MetaInfo");
+                    // Operation Path: "GeothermalProperties/MetaInfo"
+                    urlBuilder_.Append("GeothermalProperties/MetaInfo");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -11928,7 +12569,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<Rig> GetRigByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<GeothermalProperties> GetGeothermalPropertiesByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -11944,8 +12585,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig/{id}"
-                    urlBuilder_.Append("Rig/");
+                    // Operation Path: "GeothermalProperties/{id}"
+                    urlBuilder_.Append("GeothermalProperties/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -11973,7 +12614,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<Rig>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<GeothermalProperties>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -12003,7 +12644,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutRigByIdAsync(System.Guid id, Rig body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutGeothermalPropertiesByIdAsync(System.Guid id, GeothermalProperties body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -12022,8 +12663,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig/{id}"
-                    urlBuilder_.Append("Rig/");
+                    // Operation Path: "GeothermalProperties/{id}"
+                    urlBuilder_.Append("GeothermalProperties/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -12076,7 +12717,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteRigByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteGeothermalPropertiesByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -12091,8 +12732,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig/{id}"
-                    urlBuilder_.Append("Rig/");
+                    // Operation Path: "GeothermalProperties/{id}"
+                    urlBuilder_.Append("GeothermalProperties/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -12145,7 +12786,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RigLight>> GetAllRigLightAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GeothermalProperties>> GetAllGeothermalPropertiesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -12158,8 +12799,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig/LightData"
-                    urlBuilder_.Append("Rig/LightData");
+                    // Operation Path: "GeothermalProperties/HeavyData"
+                    urlBuilder_.Append("GeothermalProperties/HeavyData");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -12186,7 +12827,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<RigLight>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<GeothermalProperties>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -12216,7 +12857,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Rig>> GetAllRigAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<System.Guid>> GetAllGeothermalPropertiesCompletionOrderIdAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -12229,8 +12870,8 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "Rig/HeavyData"
-                    urlBuilder_.Append("Rig/HeavyData");
+                    // Operation Path: "GeothermalPropertiesCompletionOrder"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -12257,7 +12898,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Rig>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<System.Guid>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -12287,7 +12928,7 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UsageStatisticsRig> GetRigUsageStatisticsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PostGeothermalPropertiesCompletionOrderAsync(GeothermalPropertiesCompletionOrder body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -12295,13 +12936,16 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "RigUsageStatistics"
-                    urlBuilder_.Append("RigUsageStatistics");
+                    // Operation Path: "GeothermalPropertiesCompletionOrder"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -12328,7 +12972,432 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<UsageStatisticsRig>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<MetaInfo>> GetAllGeothermalPropertiesCompletionOrderMetaInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "GeothermalPropertiesCompletionOrder/MetaInfo"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder/MetaInfo");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<MetaInfo>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<GeothermalPropertiesCompletionOrder> GetGeothermalPropertiesCompletionOrderByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "GeothermalPropertiesCompletionOrder/{id}"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<GeothermalPropertiesCompletionOrder>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task PutGeothermalPropertiesCompletionOrderByIdAsync(System.Guid id, GeothermalPropertiesCompletionOrder body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "GeothermalPropertiesCompletionOrder/{id}"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task DeleteGeothermalPropertiesCompletionOrderByIdAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "GeothermalPropertiesCompletionOrder/{id}"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GeothermalPropertiesCompletionOrderLight>> GetAllGeothermalPropertiesCompletionOrderLightAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "GeothermalPropertiesCompletionOrder/LightData"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder/LightData");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<GeothermalPropertiesCompletionOrderLight>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GeothermalPropertiesCompletionOrder>> GetAllGeothermalPropertiesCompletionOrderAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "GeothermalPropertiesCompletionOrder/HeavyData"
+                    urlBuilder_.Append("GeothermalPropertiesCompletionOrder/HeavyData");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<GeothermalPropertiesCompletionOrder>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -14042,3230 +15111,6 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
             set { _additionalProperties = value; }
         }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UsageStatisticsWell
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastSaved")]
-        public System.DateTimeOffset LastSaved { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BackUpInterval")]
-        public string BackUpInterval { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellIdPerDay")]
-        public History GetAllWellIdPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellMetaInfoPerDay")]
-        public History GetAllWellMetaInfoPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetWellByIdPerDay")]
-        public History GetWellByIdPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellPerDay")]
-        public History GetAllWellPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PostWellPerDay")]
-        public History PostWellPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PutWellByIdPerDay")]
-        public History PutWellByIdPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DeleteWellByIdPerDay")]
-        public History DeleteWellByIdPerDay { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Well
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SlotID")]
-        public System.Guid? SlotID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ClusterID")]
-        public System.Guid? ClusterID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsSingleWell")]
-        public bool IsSingleWell { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum SidetrackType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Undefined")]
-        Undefined = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Technical")]
-        Technical = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Production")]
-        Production = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Appraisal")]
-        Appraisal = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Lateral")]
-        Lateral = 4,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UsageStatisticsWellBore
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastSaved")]
-        public System.DateTimeOffset LastSaved { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BackUpInterval")]
-        public string BackUpInterval { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellBoreIdPerDay")]
-        public History GetAllWellBoreIdPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellBoreMetaInfoPerDay")]
-        public History GetAllWellBoreMetaInfoPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetWellBoreByIdPerDay")]
-        public History GetWellBoreByIdPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellBorePerDay")]
-        public History GetAllWellBorePerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PostWellBorePerDay")]
-        public History PostWellBorePerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PutWellBoreByIdPerDay")]
-        public History PutWellBoreByIdPerDay { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DeleteWellBoreByIdPerDay")]
-        public History DeleteWellBoreByIdPerDay { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WellBore
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellID")]
-        public System.Guid? WellID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RigID")]
-        public System.Guid? RigID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsSidetrack")]
-        public bool IsSidetrack { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ParentWellBoreID")]
-        public System.Guid? ParentWellBoreID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TieInPointAlongHoleDepth")]
-        public GaussianDrillingProperty TieInPointAlongHoleDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SidetrackType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SidetrackType>))]
-        public SidetrackType SidetrackType { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BoreHoleSize
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("HoleSize")]
-        public GaussianDrillingProperty HoleSize { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Length")]
-        public GaussianDrillingProperty Length { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CasingSection
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopDepth")]
-        public GaussianDrillingProperty TopDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Length")]
-        public GaussianDrillingProperty Length { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopCementDepth")]
-        public GaussianDrillingProperty TopCementDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CasingSectionElements")]
-        public System.Collections.Generic.ICollection<CasingSectionElement> CasingSectionElements { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CasingSectionSizeTable")]
-        public System.Collections.Generic.ICollection<BoreHoleSize> CasingSectionSizeTable { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OpenHoleSection")]
-        public OpenHoleSection OpenHoleSection { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CasingSectionElement
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("BodyOD")]
-        public GaussianDrillingProperty BodyOD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BodyID")]
-        public GaussianDrillingProperty BodyID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CollarOD")]
-        public GaussianDrillingProperty CollarOD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("JointLength")]
-        public GaussianDrillingProperty JointLength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SectionLength")]
-        public GaussianDrillingProperty SectionLength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MaxDLS")]
-        public ScalarDrillingProperty MaxDLS { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ConnectionType")]
-        public string ConnectionType { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Grade")]
-        public string Grade { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MaterialDensity")]
-        public GaussianDrillingProperty MaterialDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("YoungModulus")]
-        public GaussianDrillingProperty YoungModulus { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LinearWeight")]
-        public GaussianDrillingProperty LinearWeight { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TensileStrength")]
-        public GaussianDrillingProperty TensileStrength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TorsionalStrength")]
-        public GaussianDrillingProperty TorsionalStrength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BurstPressure")]
-        public GaussianDrillingProperty BurstPressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CollapsePressure")]
-        public GaussianDrillingProperty CollapsePressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("YieldStress")]
-        public GaussianDrillingProperty YieldStress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MakeUpTorqueRecommended")]
-        public ScalarDrillingProperty MakeUpTorqueRecommended { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ElementConnectivity
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("UpstreamElement")]
-        public SideElement UpstreamElement { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DownstreamElement")]
-        public SideElement DownstreamElement { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum FluidType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Air")]
-        Air = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Water")]
-        Water = 1,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class OpenHoleSection
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("HoleSizes")]
-        public System.Collections.Generic.ICollection<BoreHoleSize> HoleSizes { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SideConnector
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Position")]
-        public GaussianDrillingProperty Position { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("VerticalDepth")]
-        public GaussianDrillingProperty VerticalDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FirstSideElement")]
-        public SideElement FirstSideElement { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ElementConnectivities")]
-        public System.Collections.Generic.ICollection<ElementConnectivity> ElementConnectivities { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SideElement
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SideElementType>))]
-        public SideElementType Type { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Length")]
-        public GaussianDrillingProperty Length { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopVerticalDepth")]
-        public GaussianDrillingProperty TopVerticalDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OD")]
-        public GaussianDrillingProperty OD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ID")]
-        public GaussianDrillingProperty ID { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum SideElementType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
-        Unknown = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Pipe")]
-        Pipe = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Hose")]
-        Hose = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GateValve")]
-        GateValve = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Choke")]
-        Choke = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Pump")]
-        Pump = 5,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SurfaceSection
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SurfaceSectionType>))]
-        public SurfaceSectionType Type { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SectionLength")]
-        public GaussianDrillingProperty SectionLength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BodyOD")]
-        public GaussianDrillingProperty BodyOD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BodyID")]
-        public GaussianDrillingProperty BodyID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ConnectionType")]
-        public string ConnectionType { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Grade")]
-        public string Grade { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MaterialDensity")]
-        public GaussianDrillingProperty MaterialDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("YoungModulus")]
-        public GaussianDrillingProperty YoungModulus { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LinearWeight")]
-        public GaussianDrillingProperty LinearWeight { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TensileStrength")]
-        public GaussianDrillingProperty TensileStrength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BurstPressure")]
-        public GaussianDrillingProperty BurstPressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CollapsePressure")]
-        public GaussianDrillingProperty CollapsePressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("YieldStress")]
-        public GaussianDrillingProperty YieldStress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MakeUpTorqueRecommended")]
-        public ScalarDrillingProperty MakeUpTorqueRecommended { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SideConnectors")]
-        public System.Collections.Generic.ICollection<SideConnector> SideConnectors { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum SurfaceSectionType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
-        Unknown = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BOP")]
-        BOP = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"HighPressureRiser")]
-        HighPressureRiser = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"LowPressureRiser")]
-        LowPressureRiser = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MarineRiser")]
-        MarineRiser = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ExpansionJoint")]
-        ExpansionJoint = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BellNipple")]
-        BellNipple = 6,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Diverter")]
-        Diverter = 7,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"RotatingControlDevice")]
-        RotatingControlDevice = 8,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WellBoreArchitecture
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid? WellBoreID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellHead")]
-        public WellHead WellHead { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FluidsAboveGroundLevel")]
-        public System.Collections.Generic.ICollection<WellBoreArchitectureFluid> FluidsAboveGroundLevel { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurfaceSections")]
-        public System.Collections.Generic.ICollection<SurfaceSection> SurfaceSections { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CasingSections")]
-        public System.Collections.Generic.ICollection<CasingSection> CasingSections { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WellBoreArchitectureFluid
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Fluid")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<FluidType>))]
-        public FluidType Fluid { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
-        public GaussianDrillingProperty Depth { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WellBoreArchitectureLight
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WellHead
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MaxOD")]
-        public ScalarDrillingProperty MaxOD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MinOD")]
-        public ScalarDrillingProperty MinOD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
-        public GaussianDrillingProperty Depth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CasingHangerDepth")]
-        public ScalarDrillingProperty CasingHangerDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TubingHangerDepth")]
-        public ScalarDrillingProperty TubingHangerDepth { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum DrillStringComponentTypes
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DrillPipe")]
-        DrillPipe = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DrillCollar")]
-        DrillCollar = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"HeavyWeightDrillPipe")]
-        HeavyWeightDrillPipe = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Jar")]
-        Jar = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Mwd")]
-        Mwd = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Stabilizer")]
-        Stabilizer = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"SteerableRotaryTool")]
-        SteerableRotaryTool = 6,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Bit")]
-        Bit = 7,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
-        Other = 8,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum DrillStringSensorTypes
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Acoustic")]
-        Acoustic = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AccelerometerX")]
-        AccelerometerX = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AccelerometerY")]
-        AccelerometerY = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AccelerometerZ")]
-        AccelerometerZ = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ResistivitySource")]
-        ResistivitySource = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ResistivityReceiver")]
-        ResistivityReceiver = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"NeutronDensity")]
-        NeutronDensity = 6,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"NeutronPorosity")]
-        NeutronPorosity = 7,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MagnetometerX")]
-        MagnetometerX = 8,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MagnetometerY")]
-        MagnetometerY = 9,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"RotationalPitch")]
-        RotationalPitch = 10,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"RotationalRoll")]
-        RotationalRoll = 11,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"RotationalYaw")]
-        RotationalYaw = 12,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BendingMomentX")]
-        BendingMomentX = 13,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BendingMomentY")]
-        BendingMomentY = 14,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"StringPressure")]
-        StringPressure = 15,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AnnulusPressure")]
-        AnnulusPressure = 16,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"StringTemperature")]
-        StringTemperature = 17,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ElectronicTemperature")]
-        ElectronicTemperature = 18,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AnnulusTemperature")]
-        AnnulusTemperature = 19,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GammaRay")]
-        GammaRay = 20,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
-        Other = 21,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Tension")]
-        Tension = 22,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Torque")]
-        Torque = 23,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillString
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid? WellBoreID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillStringSectionList")]
-        public System.Collections.Generic.ICollection<DrillStringSection> DrillStringSectionList { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorsList")]
-        public System.Collections.Generic.ICollection<DrillStringSensor> SensorsList { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillStringComponent
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FieldID")]
-        public System.Guid? FieldID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<DrillStringComponentTypes>))]
-        public DrillStringComponentTypes Type { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PartList")]
-        public System.Collections.Generic.ICollection<DrillStringComponentPart> PartList { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Length")]
-        public double Length { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillStringComponentPart
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("ID")]
-        public System.Guid ID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TotalLength")]
-        public double TotalLength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterDiameter")]
-        public double OuterDiameter { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InnerDiameter")]
-        public double InnerDiameter { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterDiameterState2")]
-        public double? OuterDiameterState2 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterDiameterStateBoolean")]
-        public bool? OuterDiameterStateBoolean { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FrictionFactorRotation")]
-        public double? FrictionFactorRotation { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FrictionFactorAxialDisplacement")]
-        public double? FrictionFactorAxialDisplacement { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PressureLossConstantLowFlowRate")]
-        public double? PressureLossConstantLowFlowRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PressureLossConstantHighFlowRate")]
-        public double? PressureLossConstantHighFlowRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("EccentricityDistance")]
-        public double? EccentricityDistance { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("EccentricityAngle")]
-        public double? EccentricityAngle { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TotalFlowAreaCondition1")]
-        public double? TotalFlowAreaCondition1 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TotalFlowAreaCondition2")]
-        public double? TotalFlowAreaCondition2 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TotalFlowAreaConditionBoolean")]
-        public bool? TotalFlowAreaConditionBoolean { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FlowrateThresholdValue")]
-        public double? FlowrateThresholdValue { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingThickness")]
-        public double? InnerCoatingThickness { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingDensity")]
-        public double? InnerCoatingDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingThermalCondutivity")]
-        public double? InnerCoatingThermalCondutivity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingHeatCapacity")]
-        public double? InnerCoatingHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingThickness")]
-        public double? OuterCoatingThickness { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingDensity")]
-        public double? OuterCoatingDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingThermalCondutivity")]
-        public double? OuterCoatingThermalCondutivity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingHeatCapacity")]
-        public double? OuterCoatingHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("YieldStrength")]
-        public double? YieldStrength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UltimateStrength")]
-        public double? UltimateStrength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SecondCrossSectionTorsionalInertia")]
-        public double? SecondCrossSectionTorsionalInertia { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FirstCrossSectionTorsionalInertia")]
-        public double FirstCrossSectionTorsionalInertia { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CrossSectionArea")]
-        public double CrossSectionArea { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("YoungModulus")]
-        public double YoungModulus { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PoissonRatio")]
-        public double PoissonRatio { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MaterialDensity")]
-        public double MaterialDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("AveragePartDensity")]
-        public double AveragePartDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Mass")]
-        public double Mass { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HeatCapacity")]
-        public double HeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalCondutivity")]
-        public double ThermalCondutivity { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillStringLight
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid? WellBoreID { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillStringSection
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Count")]
-        public int Count { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SectionComponentList")]
-        public System.Collections.Generic.ICollection<DrillStringComponent> SectionComponentList { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillStringSensor
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("DistanceFromBit")]
-        public double? DistanceFromBit { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MeasurementRange")]
-        public double? MeasurementRange { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorAngles")]
-        public System.Collections.Generic.ICollection<double> SensorAngles { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorTypeInt")]
-        public int SensorTypeInt { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<DrillStringSensorTypes>))]
-        public DrillStringSensorTypes SensorType { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BaseCompositionProperties
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
-        public GaussianDrillingProperty MassDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
-        public GaussianDrillingProperty MassFraction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
-        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
-        public ThermalConductivity ThermalConductivity { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BaseOil
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
-        public GaussianDrillingProperty MassDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
-        public GaussianDrillingProperty MassFraction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
-        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
-        public ThermalConductivity ThermalConductivity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PVTParameters")]
-        public BaseOilPVTParameters PVTParameters { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BaseOilPVTParameters
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("A0")]
-        public GaussianDrillingProperty A0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("B0")]
-        public GaussianDrillingProperty B0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("C0")]
-        public GaussianDrillingProperty C0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("D0")]
-        public GaussianDrillingProperty D0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("E0")]
-        public GaussianDrillingProperty E0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("F0")]
-        public GaussianDrillingProperty F0 { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Brine
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
-        public GaussianDrillingProperty MassDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
-        public GaussianDrillingProperty MassFraction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
-        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
-        public ThermalConductivity ThermalConductivity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PVTParameters")]
-        public BrinePVTParameters PVTParameters { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SaltContent")]
-        public System.Collections.Generic.ICollection<SaltContent> SaltContent { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class BrinePVTParameters
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("S0")]
-        public GaussianDrillingProperty S0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("S1")]
-        public GaussianDrillingProperty S1 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("S2")]
-        public GaussianDrillingProperty S2 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("S3")]
-        public GaussianDrillingProperty S3 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Bw")]
-        public GaussianDrillingProperty Bw { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Cw")]
-        public GaussianDrillingProperty Cw { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Dw")]
-        public GaussianDrillingProperty Dw { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Ew")]
-        public GaussianDrillingProperty Ew { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Fw")]
-        public GaussianDrillingProperty Fw { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CompletedDrillingFluid
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("GellingProperties")]
-        public GellingProperties GellingProperties { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
-        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
-        public ThermalConductivity ThermalConductivity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
-        public GaussianDrillingProperty MassDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PostProcessedFlowCurve")]
-        public FlowCurve PostProcessedFlowCurve { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FluidPVTParameters")]
-        public FluidPVTParameters FluidPVTParameters { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RheologicalModelProperties")]
-        public System.Collections.Generic.ICollection<GenericRheologicalModel> RheologicalModelProperties { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillingFluid
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescription")]
-        public DrillingFluidDescription DrillingFluidDescription { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillStringID")]
-        public System.Guid DrillStringID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OutputParam")]
-        public double? OutputParam { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillingFluidComposition
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("BrineProperies")]
-        public Brine BrineProperies { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BaseOilProperies")]
-        public BaseOil BaseOilProperies { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WaterOilRatio")]
-        public GaussianDrillingProperty WaterOilRatio { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HighGravitySolid")]
-        public BaseCompositionProperties HighGravitySolid { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LowGravitySolid")]
-        public BaseCompositionProperties LowGravitySolid { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LostCirculationMaterials")]
-        public System.Collections.Generic.ICollection<LostCirculationMaterial> LostCirculationMaterials { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillingFluidDescription
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidComposition")]
-        public DrillingFluidComposition DrillingFluidComposition { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FluidPVTParameters")]
-        public FluidPVTParameters FluidPVTParameters { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FluidMassDensity")]
-        public GaussianDrillingProperty FluidMassDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ReferenceTemperature")]
-        public GaussianDrillingProperty ReferenceTemperature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GellingProperties")]
-        public GellingProperties GellingProperties { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("FlowCurve")]
-        public FlowCurve FlowCurve { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
-        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
-        public ThermalConductivity ThermalConductivity { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillingFluidLight
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class DrillingFluidOrder
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescriptionID")]
-        public System.Guid DrillingFluidDescriptionID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescription")]
-        public DrillingFluidDescription DrillingFluidDescription { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
-        public double Temperature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PTModelExtrapolation")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PTModelExtrapolation>))]
-        public PTModelExtrapolation PTModelExtrapolation { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RheologicalModelsEnum")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<RheologicalModelsEnum>))]
-        public RheologicalModelsEnum RheologicalModelsEnum { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Options")]
-        public ParticleSwarmSolverOptions Options { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CompletedDrillingFluid")]
-        public CompletedDrillingFluid CompletedDrillingFluid { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("OutputParam")]
-        public double? OutputParam { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FlowCurve
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("CouetteRheometer")]
-        public CouetteRheometer CouetteRheometer { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TableValues")]
-        public System.Collections.Generic.ICollection<FlowCurveTable> TableValues { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FlowCurveTable
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
-        public GaussianDrillingProperty Temperature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Pressure")]
-        public GaussianDrillingProperty Pressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RheometerMeasurements")]
-        public System.Collections.Generic.ICollection<RheometerMeasurement> RheometerMeasurements { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ShearRateReference")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<MeasurementTypesShearRate>))]
-        public MeasurementTypesShearRate ShearRateReference { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ShearStressReference")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<MeasurementTypesShearStress>))]
-        public MeasurementTypesShearStress ShearStressReference { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FluidPVTParameters
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("A0")]
-        public GaussianDrillingProperty A0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("B0")]
-        public GaussianDrillingProperty B0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("C0")]
-        public GaussianDrillingProperty C0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("D0")]
-        public GaussianDrillingProperty D0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("E0")]
-        public GaussianDrillingProperty E0 { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("F0")]
-        public GaussianDrillingProperty F0 { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GelData
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("GelDuration")]
-        public GaussianDrillingProperty GelDuration { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GelStrength")]
-        public GaussianDrillingProperty GelStrength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
-        public GaussianDrillingProperty Temperature { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GellingProperties
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("GelPropertiesTable")]
-        public System.Collections.Generic.ICollection<GelData> GelPropertiesTable { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class GenericRheologicalModel
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("RheologicalModelUsed")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<RheologicalModelsEnum>))]
-        public RheologicalModelsEnum RheologicalModelUsed { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
-        public double Temperature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Pressure")]
-        public double Pressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PowerLawViscosityInfty")]
-        public double? PowerLawViscosityInfty { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PowerLawConsistencyIndex")]
-        public double? PowerLawConsistencyIndex { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BinghamViscosityInfty")]
-        public double? BinghamViscosityInfty { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BinghamYieldStress")]
-        public double? BinghamYieldStress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HerschelBulkleyViscosityInfty")]
-        public double? HerschelBulkleyViscosityInfty { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HerschelBulkleyYieldStress")]
-        public double? HerschelBulkleyYieldStress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HerschelBulkleyConsistencyIndex")]
-        public double? HerschelBulkleyConsistencyIndex { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("QuemadaViscosityInfty")]
-        public double? QuemadaViscosityInfty { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("QuemadaCharacteristicShearRate")]
-        public double? QuemadaCharacteristicShearRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("QuemadaConsistencyIndex")]
-        public double? QuemadaConsistencyIndex { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("QuemadaXi")]
-        public double? QuemadaXi { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RobertsonStiffYieldStress")]
-        public double? RobertsonStiffYieldStress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RobertsonStiffCharacteristicShearRate")]
-        public double? RobertsonStiffCharacteristicShearRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RobertsonStiffConsistencyIndex")]
-        public double? RobertsonStiffConsistencyIndex { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class LostCirculationMaterial
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
-        public GaussianDrillingProperty MassDensity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
-        public GaussianDrillingProperty MassFraction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
-        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
-        public ThermalConductivity ThermalConductivity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GrainSize")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<LostCiruclationMaterialGrainType>))]
-        public LostCiruclationMaterialGrainType GrainSize { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum LostCiruclationMaterialGrainType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"UltraFine")]
-        UltraFine = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Fine")]
-        Fine = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Medium")]
-        Medium = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Coarse")]
-        Coarse = 3,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum MeasurementTypesShearRate
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Rotation")]
-        Rotation = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"IsoNewtonianShearRate")]
-        IsoNewtonianShearRate = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BobNewtonianShearRate")]
-        BobNewtonianShearRate = 2,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum MeasurementTypesShearStress
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Torque")]
-        Torque = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"IsoNewtonianShearStress")]
-        IsoNewtonianShearStress = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BobNewtonianShearStress")]
-        BobNewtonianShearStress = 2,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum PTModelExtrapolation
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Unkown")]
-        Unkown = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"StandardWaterBasedMud")]
-        StandardWaterBasedMud = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"StandardOilBasedMud")]
-        StandardOilBasedMud = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MicronizedOilBasedMud")]
-        MicronizedOilBasedMud = 3,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum RheologicalModelsEnum
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Unkown")]
-        Unkown = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Bingham")]
-        Bingham = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"PowerLaw")]
-        PowerLaw = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"HerschelBulkley")]
-        HerschelBulkley = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Quemada")]
-        Quemada = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"RobertsonStiff")]
-        RobertsonStiff = 5,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SaltContent
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Salt")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SaltOptions>))]
-        public SaltOptions Salt { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WeightPerCubicMeter")]
-        public GaussianDrillingProperty WeightPerCubicMeter { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum SaltOptions
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"NaCl")]
-        NaCl = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"NaBr")]
-        NaBr = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"KCl")]
-        KCl = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"KBr")]
-        KBr = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"CaCl2")]
-        CaCl2 = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"CaBr2")]
-        CaBr2 = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ZnCl2")]
-        ZnCl2 = 6,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ZnBr2")]
-        ZnBr2 = 7,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SpecificHeatCapacity
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Slope")]
-        public GaussianDrillingProperty Slope { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HeatCapacityAtZeroKelvin")]
-        public GaussianDrillingProperty HeatCapacityAtZeroKelvin { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TemperatureRange")]
-        public System.Collections.Generic.ICollection<double?> TemperatureRange { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CoefficientRange")]
-        public System.Collections.Generic.ICollection<double?> CoefficientRange { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ThermalConductivity
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Slope")]
-        public GaussianDrillingProperty Slope { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivityAtZeroKelvin")]
-        public GaussianDrillingProperty ThermalConductivityAtZeroKelvin { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TemperatureRange")]
-        public System.Collections.Generic.ICollection<double?> TemperatureRange { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CoefficientRange")]
-        public System.Collections.Generic.ICollection<double?> CoefficientRange { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CouetteRheometer
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public System.Guid Id { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("rheometerType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<RheometerTypeEnum>))]
-        public RheometerTypeEnum RheometerType { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("bobRadius")]
-        public double BobRadius { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("gap")]
-        public double Gap { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("newtonianEndEffectCorrection")]
-        public double NewtonianEndEffectCorrection { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("bobLength")]
-        public double BobLength { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("conicalAngle")]
-        public double ConicalAngle { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("measurementPrecision")]
-        public double MeasurementPrecision { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("useISOConvention")]
-        public bool UseISOConvention { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("fixedSpeedList")]
-        public System.Collections.Generic.ICollection<double> FixedSpeedList { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class RheometerMeasurement
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("rotationalSpeed")]
-        public double RotationalSpeed { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("torque")]
-        public double Torque { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("isoNewtonianShearRate")]
-        public double IsoNewtonianShearRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("isoNewtonianShearStress")]
-        public double IsoNewtonianShearStress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("bobNewtonianShearRate")]
-        public double BobNewtonianShearRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("bobNewtonianShearStress")]
-        public double BobNewtonianShearStress { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum RheometerTypeEnum
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"_0")]
-        _0 = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"_1")]
-        _1 = 1,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ParticleSwarmSolverOptions
-    {
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Trajectory
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid WellBoreID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurveyStationList")]
-        public System.Collections.Generic.ICollection<SurveyStation> SurveyStationList { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InterpolatedTrajectory")]
-        public System.Collections.Generic.ICollection<SurveyPoint> InterpolatedTrajectory { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MDStep")]
-        public double MDStep { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class TrajectoryLight
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid WellBoreID { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum ErrorCode
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XYM1")]
-        XYM1 = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XYM2")]
-        XYM2 = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XYM3")]
-        XYM3 = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XYM4")]
-        XYM4 = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"SAG")]
-        SAG = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DRFR")]
-        DRFR = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DRFS")]
-        DRFS = 6,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DSFS")]
-        DSFS = 7,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DSTG")]
-        DSTG = 8,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XYM3E")]
-        XYM3E = 9,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XYM4E")]
-        XYM4E = 10,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"SAGE")]
-        SAGE = 11,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XCLH")]
-        XCLH = 12,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XCLL")]
-        XCLL = 13,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"XCLA")]
-        XCLA = 14,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ABXY_TI1S")]
-        ABXY_TI1S = 15,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ABXY_TI2S")]
-        ABXY_TI2S = 16,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ABIXY_TI1S")]
-        ABIXY_TI1S = 17,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ABIXY_TI2S")]
-        ABIXY_TI2S = 18,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ABZ")]
-        ABZ = 19,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ASXY_TI1S")]
-        ASXY_TI1S = 20,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ASXY_TI2S")]
-        ASXY_TI2S = 21,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ASXY_TI3S")]
-        ASXY_TI3S = 22,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"ASZ")]
-        ASZ = 23,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MBXY_TI1")]
-        MBXY_TI1 = 24,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MBXY_TI2")]
-        MBXY_TI2 = 25,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MBZ")]
-        MBZ = 26,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MSXY_TI1")]
-        MSXY_TI1 = 27,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MSXY_TI2")]
-        MSXY_TI2 = 28,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MSXY_TI3")]
-        MSXY_TI3 = 29,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MSZ")]
-        MSZ = 30,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AMIL")]
-        AMIL = 31,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DEC_U")]
-        DEC_U = 32,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DEC_OS")]
-        DEC_OS = 33,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DEC_OH")]
-        DEC_OH = 34,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DEC_OI")]
-        DEC_OI = 35,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DECR")]
-        DECR = 36,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DBH_U")]
-        DBH_U = 37,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DBH_OS")]
-        DBH_OS = 38,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DBH_OH")]
-        DBH_OH = 39,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DBH_OI")]
-        DBH_OI = 40,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"DBHR")]
-        DBHR = 41,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_XYB")]
-        AXYZ_XYB = 42,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_ZB")]
-        AXYZ_ZB = 43,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_SF")]
-        AXYZ_SF = 44,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_MIS")]
-        AXYZ_MIS = 45,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXY_B")]
-        AXY_B = 46,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXY_SF")]
-        AXY_SF = 47,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXY_MS")]
-        AXY_MS = 48,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"AXY_GB")]
-        AXY_GB = 49,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYB1")]
-        GXYZ_XYB1 = 50,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYB2")]
-        GXYZ_XYB2 = 51,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYRN")]
-        GXYZ_XYRN = 52,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG1")]
-        GXYZ_XYG1 = 53,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG2")]
-        GXYZ_XYG2 = 54,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG3")]
-        GXYZ_XYG3 = 55,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG4")]
-        GXYZ_XYG4 = 56,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZB")]
-        GXYZ_ZB = 57,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZRN")]
-        GXYZ_ZRN = 58,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZG1")]
-        GXYZ_ZG1 = 59,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZG2")]
-        GXYZ_ZG2 = 60,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_SF")]
-        GXYZ_SF = 61,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_MIS")]
-        GXYZ_MIS = 62,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_B1")]
-        GXY_B1 = 63,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_B2")]
-        GXY_B2 = 64,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_RN")]
-        GXY_RN = 65,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G1")]
-        GXY_G1 = 66,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G2")]
-        GXY_G2 = 67,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G3")]
-        GXY_G3 = 68,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G4")]
-        GXY_G4 = 69,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_SF")]
-        GXY_SF = 70,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_MIS")]
-        GXY_MIS = 71,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"EXT_REF")]
-        EXT_REF = 72,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"EXT_TIE")]
-        EXT_TIE = 73,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"EXT_MIS")]
-        EXT_MIS = 74,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_GD")]
-        GXYZ_GD = 75,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_RW")]
-        GXYZ_RW = 76,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_GD")]
-        GXY_GD = 77,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GXY_RW")]
-        GXY_RW = 78,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GZ_GD")]
-        GZ_GD = 79,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"GZ_RW")]
-        GZ_RW = 80,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ErrorSource
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ErrorCode")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ErrorCode>))]
-        public ErrorCode ErrorCode { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Index")]
-        public int Index { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsSystematic")]
-        public bool IsSystematic { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsRandom")]
-        public bool IsRandom { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsGlobal")]
-        public bool IsGlobal { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SingularIssues")]
-        public bool SingularIssues { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsContinuous")]
-        public bool IsContinuous { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("IsStationary")]
-        public bool IsStationary { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("KOperatorImposed")]
-        public bool KOperatorImposed { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Magnitude")]
-        public double? Magnitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MagnitudeQuantity")]
-        public string MagnitudeQuantity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseInclinationInterval")]
-        public bool UseInclinationInterval { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("StartInclination")]
-        public double? StartInclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("EndInclination")]
-        public double? EndInclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InitInclination")]
-        public double? InitInclination { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SurveyInstrument
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ModelType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SurveyInstrumentModelType>))]
-        public SurveyInstrumentModelType ModelType { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ErrorSourceList")]
-        public System.Collections.Generic.ICollection<ErrorSource> ErrorSourceList { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Dip")]
-        public double Dip { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Declination")]
-        public double Declination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Gravity")]
-        public double Gravity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BField")]
-        public double BField { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Convergence")]
-        public double Convergence { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
-        public double Latitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("EarthRotRate")]
-        public double EarthRotRate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CantAngle")]
-        public double CantAngle { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GyroRunningSpeed")]
-        public double? GyroRunningSpeed { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ExtRefInitInc")]
-        public double? ExtRefInitInc { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GyroSwitching")]
-        public double? GyroSwitching { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GyroMinDist")]
-        public double? GyroMinDist { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GyroNoiseRed")]
-        public double? GyroNoiseRed { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseRelDepthError")]
-        public bool UseRelDepthError { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RelDepthError")]
-        public double? RelDepthError { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseMisalignment")]
-        public bool UseMisalignment { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Misalignment")]
-        public double? Misalignment { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseTrueInclination")]
-        public bool UseTrueInclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TrueInclination")]
-        public double? TrueInclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseReferenceError")]
-        public bool UseReferenceError { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ReferenceError")]
-        public double? ReferenceError { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseDrillStringMag")]
-        public bool UseDrillStringMag { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillStringMag")]
-        public double? DrillStringMag { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseGyroCompassError")]
-        public bool UseGyroCompassError { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("GyroCompassError")]
-        public double? GyroCompassError { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum SurveyInstrumentModelType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MWD_WolffDeWardt")]
-        MWD_WolffDeWardt = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Gyro_WolffDeWardt")]
-        Gyro_WolffDeWardt = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"MWD_ISCWSA")]
-        MWD_ISCWSA = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Gyro_ISCWSA")]
-        Gyro_ISCWSA = 3,
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SurveyPoint
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Z")]
-        public double? Z { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Abscissa")]
-        public double? Abscissa { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MD")]
-        public double? MD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
-        public double? Azimuth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
-        public double? Inclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("X")]
-        public double? X { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Y")]
-        public double? Y { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TVD")]
-        public double? TVD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RiemannianNorth")]
-        public double? RiemannianNorth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RiemannianEast")]
-        public double? RiemannianEast { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
-        public double? Latitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Longitude")]
-        public double? Longitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
-        public double? Curvature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Toolface")]
-        public double? Toolface { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BUR")]
-        public double? BUR { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TUR")]
-        public double? TUR { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SurveyStation
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Z")]
-        public double? Z { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Abscissa")]
-        public double? Abscissa { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("MD")]
-        public double? MD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
-        public double? Azimuth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
-        public double? Inclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("X")]
-        public double? X { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Y")]
-        public double? Y { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TVD")]
-        public double? TVD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RiemannianNorth")]
-        public double? RiemannianNorth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RiemannianEast")]
-        public double? RiemannianEast { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
-        public double? Latitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Longitude")]
-        public double? Longitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
-        public double? Curvature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Toolface")]
-        public double? Toolface { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BUR")]
-        public double? BUR { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TUR")]
-        public double? TUR { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Covariance")]
-        public SymmetricMatrix3x3 Covariance { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("EigenVectors")]
-        public Matrix3x3 EigenVectors { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("EigenValues")]
-        public Vector3D EigenValues { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Bias")]
-        public Vector3D Bias { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurveyTool")]
-        public SurveyInstrument SurveyTool { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BoreholeRadius")]
-        public double? BoreholeRadius { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Matrix3x3
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("RowCount")]
-        public int RowCount { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ColumnCount")]
-        public int ColumnCount { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SymmetricMatrix3x3
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("ColumnCount")]
-        public int ColumnCount { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RowCount")]
-        public int RowCount { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Vector3D
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("X")]
-        public double? X { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Y")]
-        public double? Y { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Z")]
-        public double? Z { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Dim")]
-        public int Dim { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Config
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("VirtualSensorPositionFromBit")]
-        public double VirtualSensorPositionFromBit { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalScalarValues")]
-        public double LoggingIntervalScalarValues { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalProfiles")]
-        public double LoggingIntervalProfiles { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CoulombStaticFriction")]
-        public double CoulombStaticFriction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CoulombKineticFriction")]
-        public double CoulombKineticFriction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("UseHeave")]
-        public bool UseHeave { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HeaveAmplitude")]
-        public double HeaveAmplitude { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HeavePeriod")]
-        public double HeavePeriod { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopDriveStartupTime")]
-        public double TopDriveStartupTime { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LengthBetweenLumpedElements")]
-        public double LengthBetweenLumpedElements { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ContextualData
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillStringID")]
-        public System.Guid? DrillStringID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescriptionID")]
-        public System.Guid? DrillingFluidDescriptionID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreArchitectureID")]
-        public System.Guid? WellBoreArchitectureID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TrajectoryID")]
-        public System.Guid? TrajectoryID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RigID")]
-        public System.Guid? RigID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CasingID")]
-        public int? CasingID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
-        public double Temperature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurfacePipePressure")]
-        public double SurfacePipePressure { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SolverType")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SolverType>))]
-        public SolverType SolverType { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class InitialValues
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitDepth")]
-        public double BitDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HoleDepth")]
-        public double HoleDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringPosition")]
-        public double TopOfStringPosition { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Profiles
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("Time")]
-        public double Time { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
-        public System.Collections.Generic.ICollection<double> Depth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DepthAll")]
-        public System.Collections.Generic.ICollection<double> DepthAll { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SleevesDepth")]
-        public System.Collections.Generic.ICollection<double> SleevesDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SideForce")]
-        public System.Collections.Generic.ICollection<double> SideForce { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SideForceSoftString")]
-        public System.Collections.Generic.ICollection<double> SideForceSoftString { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("PipeAngularVelocity")]
-        public System.Collections.Generic.ICollection<double> PipeAngularVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SleevesAngularVelocity")]
-        public System.Collections.Generic.ICollection<double> SleevesAngularVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("RadialClearance")]
-        public System.Collections.Generic.ICollection<double> RadialClearance { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LateralDisplacement")]
-        public System.Collections.Generic.ICollection<double> LateralDisplacement { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LateralDisplacementAngle")]
-        public System.Collections.Generic.ICollection<double> LateralDisplacementAngle { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BendingMoment")]
-        public System.Collections.Generic.ICollection<double> BendingMoment { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Torque")]
-        public System.Collections.Generic.ICollection<double> Torque { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Tension")]
-        public System.Collections.Generic.ICollection<double> Tension { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("AxialVelocityD")]
-        public System.Collections.Generic.ICollection<double> AxialVelocityD { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
-        public System.Collections.Generic.ICollection<double> Inclination { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
-        public System.Collections.Generic.ICollection<double> Azimuth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
-        public System.Collections.Generic.ICollection<double> Curvature { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BuildUpRate")]
-        public System.Collections.Generic.ICollection<double> BuildUpRate { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Results
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("AvgCumulativeSSI")]
-        public double AvgCumulativeSSI { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Scalars")]
-        public Scalars Scalars { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Profiles")]
-        public System.Collections.Generic.ICollection<Profiles> Profiles { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Scalars
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("AvgCumulativeSSI")]
-        public double AvgCumulativeSSI { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitAxialVelocity")]
-        public System.Collections.Generic.ICollection<double> BitAxialVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringAxialVelocity")]
-        public System.Collections.Generic.ICollection<double> TopOfStringAxialVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WOB")]
-        public System.Collections.Generic.ICollection<double> WOB { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitRPM")]
-        public System.Collections.Generic.ICollection<double> BitRPM { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurfaceRPM")]
-        public System.Collections.Generic.ICollection<double> SurfaceRPM { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitDepth")]
-        public System.Collections.Generic.ICollection<double> BitDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("HoleDepth")]
-        public System.Collections.Generic.ICollection<double> HoleDepth { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurfaceTorque")]
-        public System.Collections.Generic.ICollection<double> SurfaceTorque { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BitTorque")]
-        public System.Collections.Generic.ICollection<double> BitTorque { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorAngularVelocity")]
-        public System.Collections.Generic.ICollection<double> SensorAngularVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorWhirlVelocity")]
-        public System.Collections.Generic.ICollection<double> SensorWhirlVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorAxialVelocity")]
-        public System.Collections.Generic.ICollection<double> SensorAxialVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorRadialVelocity")]
-        public System.Collections.Generic.ICollection<double> SensorRadialVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorRadialAcc")]
-        public System.Collections.Generic.ICollection<double> SensorRadialAcc { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorTangentialAcc")]
-        public System.Collections.Generic.ICollection<double> SensorTangentialAcc { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorAxialAcc")]
-        public System.Collections.Generic.ICollection<double> SensorAxialAcc { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentX")]
-        public System.Collections.Generic.ICollection<double> SensorBendingMomentX { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentY")]
-        public System.Collections.Generic.ICollection<double> SensorBendingMomentY { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorTension")]
-        public System.Collections.Generic.ICollection<double> SensorTension { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SensorTorque")]
-        public System.Collections.Generic.ICollection<double> SensorTorque { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Time")]
-        public System.Collections.Generic.ICollection<double> Time { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SSI")]
-        public System.Collections.Generic.ICollection<double> SSI { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SetPoints
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("TimeDuration")]
-        public double TimeDuration { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SurfaceRPM")]
-        public double SurfaceRPM { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringVelocity")]
-        public double TopOfStringVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("BottomExtraSideForce")]
-        public double BottomExtraSideForce { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("StribeckCriticalVelocity")]
-        public double StribeckCriticalVelocity { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("DifferenceStaticKineticFriction")]
-        public double DifferenceStaticKineticFriction { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Sticking")]
-        public bool Sticking { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Simulation
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("ContextualData")]
-        public ContextualData ContextualData { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid? WellBoreID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Config")]
-        public Config Config { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("InitialValues")]
-        public InitialValues InitialValues { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("SetPointsList")]
-        public System.Collections.Generic.ICollection<SetPoints> SetPointsList { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CurrentTime")]
-        public double CurrentTime { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Progress")]
-        public double? Progress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TerminationState")]
-        public int? TerminationState { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Results")]
-        public Results Results { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class SimulationLight
-    {
-
-        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
-        public MetaInfo MetaInfo { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Name")]
-        public string Name { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Description")]
-        public string Description { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
-        public System.DateTimeOffset? CreationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
-        public System.DateTimeOffset? LastModificationDate { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
-        public System.Guid? WellBoreID { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("Progress")]
-        public double Progress { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("TerminationState")]
-        public int TerminationState { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [System.Text.Json.Serialization.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public enum SolverType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"EulerMethod")]
-        EulerMethod = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"VerletMethod")]
-        VerletMethod = 1,
 
     }
 
@@ -21652,6 +19497,3413 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
             set { _additionalProperties = value; }
         }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class UsageStatisticsWell
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastSaved")]
+        public System.DateTimeOffset LastSaved { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BackUpInterval")]
+        public string BackUpInterval { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellIdPerDay")]
+        public History GetAllWellIdPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellMetaInfoPerDay")]
+        public History GetAllWellMetaInfoPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetWellByIdPerDay")]
+        public History GetWellByIdPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellPerDay")]
+        public History GetAllWellPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PostWellPerDay")]
+        public History PostWellPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PutWellByIdPerDay")]
+        public History PutWellByIdPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DeleteWellByIdPerDay")]
+        public History DeleteWellByIdPerDay { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Well
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SlotID")]
+        public System.Guid? SlotID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ClusterID")]
+        public System.Guid? ClusterID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsSingleWell")]
+        public bool IsSingleWell { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SidetrackType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Undefined")]
+        Undefined = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Technical")]
+        Technical = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Production")]
+        Production = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Appraisal")]
+        Appraisal = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Lateral")]
+        Lateral = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class UsageStatisticsWellBore
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastSaved")]
+        public System.DateTimeOffset LastSaved { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BackUpInterval")]
+        public string BackUpInterval { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellBoreIdPerDay")]
+        public History GetAllWellBoreIdPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellBoreMetaInfoPerDay")]
+        public History GetAllWellBoreMetaInfoPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetWellBoreByIdPerDay")]
+        public History GetWellBoreByIdPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GetAllWellBorePerDay")]
+        public History GetAllWellBorePerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PostWellBorePerDay")]
+        public History PostWellBorePerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PutWellBoreByIdPerDay")]
+        public History PutWellBoreByIdPerDay { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DeleteWellBoreByIdPerDay")]
+        public History DeleteWellBoreByIdPerDay { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WellBore
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellID")]
+        public System.Guid? WellID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RigID")]
+        public System.Guid? RigID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsSidetrack")]
+        public bool IsSidetrack { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ParentWellBoreID")]
+        public System.Guid? ParentWellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TieInPointAlongHoleDepth")]
+        public GaussianDrillingProperty TieInPointAlongHoleDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SidetrackType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SidetrackType>))]
+        public SidetrackType SidetrackType { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BoreHoleSize
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("HoleSize")]
+        public GaussianDrillingProperty HoleSize { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Length")]
+        public GaussianDrillingProperty Length { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class CasingSection
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopDepth")]
+        public GaussianDrillingProperty TopDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Length")]
+        public GaussianDrillingProperty Length { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopCementDepth")]
+        public GaussianDrillingProperty TopCementDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CasingSectionElements")]
+        public System.Collections.Generic.ICollection<CasingSectionElement> CasingSectionElements { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CasingSectionSizeTable")]
+        public System.Collections.Generic.ICollection<BoreHoleSize> CasingSectionSizeTable { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OpenHoleSection")]
+        public OpenHoleSection OpenHoleSection { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class CasingSectionElement
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("BodyOD")]
+        public GaussianDrillingProperty BodyOD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BodyID")]
+        public GaussianDrillingProperty BodyID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CollarOD")]
+        public GaussianDrillingProperty CollarOD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("JointLength")]
+        public GaussianDrillingProperty JointLength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SectionLength")]
+        public GaussianDrillingProperty SectionLength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MaxDLS")]
+        public ScalarDrillingProperty MaxDLS { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ConnectionType")]
+        public string ConnectionType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Grade")]
+        public string Grade { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MaterialDensity")]
+        public GaussianDrillingProperty MaterialDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("YoungModulus")]
+        public GaussianDrillingProperty YoungModulus { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LinearWeight")]
+        public GaussianDrillingProperty LinearWeight { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TensileStrength")]
+        public GaussianDrillingProperty TensileStrength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TorsionalStrength")]
+        public GaussianDrillingProperty TorsionalStrength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BurstPressure")]
+        public GaussianDrillingProperty BurstPressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CollapsePressure")]
+        public GaussianDrillingProperty CollapsePressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("YieldStress")]
+        public GaussianDrillingProperty YieldStress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MakeUpTorqueRecommended")]
+        public ScalarDrillingProperty MakeUpTorqueRecommended { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ElementConnectivity
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("UpstreamElement")]
+        public SideElement UpstreamElement { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DownstreamElement")]
+        public SideElement DownstreamElement { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum FluidType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Air")]
+        Air = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Water")]
+        Water = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class OpenHoleSection
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("HoleSizes")]
+        public System.Collections.Generic.ICollection<BoreHoleSize> HoleSizes { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SideConnector
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Position")]
+        public GaussianDrillingProperty Position { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("VerticalDepth")]
+        public GaussianDrillingProperty VerticalDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FirstSideElement")]
+        public SideElement FirstSideElement { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ElementConnectivities")]
+        public System.Collections.Generic.ICollection<ElementConnectivity> ElementConnectivities { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SideElement
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Type")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SideElementType>))]
+        public SideElementType Type { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Length")]
+        public GaussianDrillingProperty Length { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopVerticalDepth")]
+        public GaussianDrillingProperty TopVerticalDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OD")]
+        public GaussianDrillingProperty OD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ID")]
+        public GaussianDrillingProperty ID { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SideElementType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
+        Unknown = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Pipe")]
+        Pipe = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Hose")]
+        Hose = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GateValve")]
+        GateValve = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Choke")]
+        Choke = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Pump")]
+        Pump = 5,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SurfaceSection
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Type")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SurfaceSectionType>))]
+        public SurfaceSectionType Type { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SectionLength")]
+        public GaussianDrillingProperty SectionLength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BodyOD")]
+        public GaussianDrillingProperty BodyOD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BodyID")]
+        public GaussianDrillingProperty BodyID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ConnectionType")]
+        public string ConnectionType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Grade")]
+        public string Grade { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MaterialDensity")]
+        public GaussianDrillingProperty MaterialDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("YoungModulus")]
+        public GaussianDrillingProperty YoungModulus { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LinearWeight")]
+        public GaussianDrillingProperty LinearWeight { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TensileStrength")]
+        public GaussianDrillingProperty TensileStrength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BurstPressure")]
+        public GaussianDrillingProperty BurstPressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CollapsePressure")]
+        public GaussianDrillingProperty CollapsePressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("YieldStress")]
+        public GaussianDrillingProperty YieldStress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MakeUpTorqueRecommended")]
+        public ScalarDrillingProperty MakeUpTorqueRecommended { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SideConnectors")]
+        public System.Collections.Generic.ICollection<SideConnector> SideConnectors { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SurfaceSectionType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
+        Unknown = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"BOP")]
+        BOP = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"HighPressureRiser")]
+        HighPressureRiser = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"LowPressureRiser")]
+        LowPressureRiser = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MarineRiser")]
+        MarineRiser = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ExpansionJoint")]
+        ExpansionJoint = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"BellNipple")]
+        BellNipple = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Diverter")]
+        Diverter = 7,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RotatingControlDevice")]
+        RotatingControlDevice = 8,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WellBoreArchitecture
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid? WellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellHead")]
+        public WellHead WellHead { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FluidsAboveGroundLevel")]
+        public System.Collections.Generic.ICollection<WellBoreArchitectureFluid> FluidsAboveGroundLevel { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfaceSections")]
+        public System.Collections.Generic.ICollection<SurfaceSection> SurfaceSections { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CasingSections")]
+        public System.Collections.Generic.ICollection<CasingSection> CasingSections { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WellBoreArchitectureFluid
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Fluid")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<FluidType>))]
+        public FluidType Fluid { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
+        public GaussianDrillingProperty Depth { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WellBoreArchitectureLight
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WellHead
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MaxOD")]
+        public ScalarDrillingProperty MaxOD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MinOD")]
+        public ScalarDrillingProperty MinOD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
+        public GaussianDrillingProperty Depth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CasingHangerDepth")]
+        public ScalarDrillingProperty CasingHangerDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TubingHangerDepth")]
+        public ScalarDrillingProperty TubingHangerDepth { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum DrillStringComponentTypes
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DrillPipe")]
+        DrillPipe = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DrillCollar")]
+        DrillCollar = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"HeavyWeightDrillPipe")]
+        HeavyWeightDrillPipe = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Jar")]
+        Jar = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Mwd")]
+        Mwd = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Stabilizer")]
+        Stabilizer = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SteerableRotaryTool")]
+        SteerableRotaryTool = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Bit")]
+        Bit = 7,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
+        Other = 8,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum DrillStringSensorTypes
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Acoustic")]
+        Acoustic = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AccelerometerX")]
+        AccelerometerX = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AccelerometerY")]
+        AccelerometerY = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AccelerometerZ")]
+        AccelerometerZ = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ResistivitySource")]
+        ResistivitySource = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ResistivityReceiver")]
+        ResistivityReceiver = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NeutronDensity")]
+        NeutronDensity = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NeutronPorosity")]
+        NeutronPorosity = 7,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MagnetometerX")]
+        MagnetometerX = 8,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MagnetometerY")]
+        MagnetometerY = 9,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RotationalPitch")]
+        RotationalPitch = 10,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RotationalRoll")]
+        RotationalRoll = 11,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RotationalYaw")]
+        RotationalYaw = 12,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"BendingMomentX")]
+        BendingMomentX = 13,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"BendingMomentY")]
+        BendingMomentY = 14,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"StringPressure")]
+        StringPressure = 15,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AnnulusPressure")]
+        AnnulusPressure = 16,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"StringTemperature")]
+        StringTemperature = 17,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ElectronicTemperature")]
+        ElectronicTemperature = 18,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AnnulusTemperature")]
+        AnnulusTemperature = 19,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GammaRay")]
+        GammaRay = 20,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
+        Other = 21,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Tension")]
+        Tension = 22,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Torque")]
+        Torque = 23,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillString
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid? WellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringSectionList")]
+        public System.Collections.Generic.ICollection<DrillStringSection> DrillStringSectionList { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorsList")]
+        public System.Collections.Generic.ICollection<DrillStringSensor> SensorsList { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillStringComponent
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FieldID")]
+        public System.Guid? FieldID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Type")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<DrillStringComponentTypes>))]
+        public DrillStringComponentTypes Type { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PartList")]
+        public System.Collections.Generic.ICollection<DrillStringComponentPart> PartList { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Length")]
+        public double Length { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillStringComponentPart
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("ID")]
+        public System.Guid ID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TotalLength")]
+        public double TotalLength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterDiameter")]
+        public double OuterDiameter { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InnerDiameter")]
+        public double InnerDiameter { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterDiameterState2")]
+        public double? OuterDiameterState2 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterDiameterStateBoolean")]
+        public bool? OuterDiameterStateBoolean { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FrictionFactorRotation")]
+        public double? FrictionFactorRotation { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FrictionFactorAxialDisplacement")]
+        public double? FrictionFactorAxialDisplacement { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PressureLossConstantLowFlowRate")]
+        public double? PressureLossConstantLowFlowRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PressureLossConstantHighFlowRate")]
+        public double? PressureLossConstantHighFlowRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EccentricityDistance")]
+        public double? EccentricityDistance { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EccentricityAngle")]
+        public double? EccentricityAngle { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TotalFlowAreaCondition1")]
+        public double? TotalFlowAreaCondition1 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TotalFlowAreaCondition2")]
+        public double? TotalFlowAreaCondition2 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TotalFlowAreaConditionBoolean")]
+        public bool? TotalFlowAreaConditionBoolean { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FlowrateThresholdValue")]
+        public double? FlowrateThresholdValue { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingThickness")]
+        public double? InnerCoatingThickness { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingDensity")]
+        public double? InnerCoatingDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingThermalCondutivity")]
+        public double? InnerCoatingThermalCondutivity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InnerCoatingHeatCapacity")]
+        public double? InnerCoatingHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingThickness")]
+        public double? OuterCoatingThickness { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingDensity")]
+        public double? OuterCoatingDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingThermalCondutivity")]
+        public double? OuterCoatingThermalCondutivity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OuterCoatingHeatCapacity")]
+        public double? OuterCoatingHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("YieldStrength")]
+        public double? YieldStrength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UltimateStrength")]
+        public double? UltimateStrength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SecondCrossSectionTorsionalInertia")]
+        public double? SecondCrossSectionTorsionalInertia { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FirstCrossSectionTorsionalInertia")]
+        public double FirstCrossSectionTorsionalInertia { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CrossSectionArea")]
+        public double CrossSectionArea { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("YoungModulus")]
+        public double YoungModulus { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PoissonRatio")]
+        public double PoissonRatio { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MaterialDensity")]
+        public double MaterialDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("AveragePartDensity")]
+        public double AveragePartDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Mass")]
+        public double Mass { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HeatCapacity")]
+        public double HeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalCondutivity")]
+        public double ThermalCondutivity { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillStringLight
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid? WellBoreID { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillStringSection
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Count")]
+        public int Count { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SectionComponentList")]
+        public System.Collections.Generic.ICollection<DrillStringComponent> SectionComponentList { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillStringSensor
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("DistanceFromBit")]
+        public double? DistanceFromBit { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MeasurementRange")]
+        public double? MeasurementRange { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAngles")]
+        public System.Collections.Generic.ICollection<double> SensorAngles { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTypeInt")]
+        public int SensorTypeInt { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<DrillStringSensorTypes>))]
+        public DrillStringSensorTypes SensorType { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BaseCompositionProperties
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
+        public GaussianDrillingProperty MassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
+        public GaussianDrillingProperty MassFraction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
+        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
+        public ThermalConductivity ThermalConductivity { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BaseOil
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
+        public GaussianDrillingProperty MassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
+        public GaussianDrillingProperty MassFraction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
+        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
+        public ThermalConductivity ThermalConductivity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PVTParameters")]
+        public BaseOilPVTParameters PVTParameters { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BaseOilPVTParameters
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("A0")]
+        public GaussianDrillingProperty A0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("B0")]
+        public GaussianDrillingProperty B0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("C0")]
+        public GaussianDrillingProperty C0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("D0")]
+        public GaussianDrillingProperty D0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("E0")]
+        public GaussianDrillingProperty E0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("F0")]
+        public GaussianDrillingProperty F0 { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Brine
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
+        public GaussianDrillingProperty MassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
+        public GaussianDrillingProperty MassFraction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
+        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
+        public ThermalConductivity ThermalConductivity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PVTParameters")]
+        public BrinePVTParameters PVTParameters { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SaltContent")]
+        public System.Collections.Generic.ICollection<SaltContent> SaltContent { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BrinePVTParameters
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("S0")]
+        public GaussianDrillingProperty S0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("S1")]
+        public GaussianDrillingProperty S1 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("S2")]
+        public GaussianDrillingProperty S2 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("S3")]
+        public GaussianDrillingProperty S3 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Bw")]
+        public GaussianDrillingProperty Bw { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Cw")]
+        public GaussianDrillingProperty Cw { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Dw")]
+        public GaussianDrillingProperty Dw { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Ew")]
+        public GaussianDrillingProperty Ew { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Fw")]
+        public GaussianDrillingProperty Fw { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class CompletedDrillingFluid
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("GellingProperties")]
+        public GellingProperties GellingProperties { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
+        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
+        public ThermalConductivity ThermalConductivity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
+        public GaussianDrillingProperty MassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PostProcessedFlowCurve")]
+        public FlowCurve PostProcessedFlowCurve { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FluidPVTParameters")]
+        public FluidPVTParameters FluidPVTParameters { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RheologicalModelProperties")]
+        public System.Collections.Generic.ICollection<GenericRheologicalModel> RheologicalModelProperties { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillingFluid
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescription")]
+        public DrillingFluidDescription DrillingFluidDescription { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringID")]
+        public System.Guid DrillStringID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OutputParam")]
+        public double? OutputParam { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillingFluidComposition
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("BrineProperies")]
+        public Brine BrineProperies { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BaseOilProperies")]
+        public BaseOil BaseOilProperies { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WaterOilRatio")]
+        public GaussianDrillingProperty WaterOilRatio { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HighGravitySolid")]
+        public BaseCompositionProperties HighGravitySolid { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LowGravitySolid")]
+        public BaseCompositionProperties LowGravitySolid { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LostCirculationMaterials")]
+        public System.Collections.Generic.ICollection<LostCirculationMaterial> LostCirculationMaterials { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillingFluidDescription
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidComposition")]
+        public DrillingFluidComposition DrillingFluidComposition { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FluidPVTParameters")]
+        public FluidPVTParameters FluidPVTParameters { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FluidMassDensity")]
+        public GaussianDrillingProperty FluidMassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ReferenceTemperature")]
+        public GaussianDrillingProperty ReferenceTemperature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GellingProperties")]
+        public GellingProperties GellingProperties { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("FlowCurve")]
+        public FlowCurve FlowCurve { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
+        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
+        public ThermalConductivity ThermalConductivity { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillingFluidLight
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DrillingFluidOrder
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescriptionID")]
+        public System.Guid DrillingFluidDescriptionID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescription")]
+        public DrillingFluidDescription DrillingFluidDescription { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public double Temperature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PTModelExtrapolation")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PTModelExtrapolation>))]
+        public PTModelExtrapolation PTModelExtrapolation { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RheologicalModelsEnum")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<RheologicalModelsEnum>))]
+        public RheologicalModelsEnum RheologicalModelsEnum { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Options")]
+        public ParticleSwarmSolverOptions Options { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CompletedDrillingFluid")]
+        public CompletedDrillingFluid CompletedDrillingFluid { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("OutputParam")]
+        public double? OutputParam { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class FlowCurve
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("CouetteRheometer")]
+        public CouetteRheometer CouetteRheometer { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TableValues")]
+        public System.Collections.Generic.ICollection<FlowCurveTable> TableValues { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class FlowCurveTable
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public GaussianDrillingProperty Temperature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Pressure")]
+        public GaussianDrillingProperty Pressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RheometerMeasurements")]
+        public System.Collections.Generic.ICollection<RheometerMeasurement> RheometerMeasurements { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ShearRateReference")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<MeasurementTypesShearRate>))]
+        public MeasurementTypesShearRate ShearRateReference { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ShearStressReference")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<MeasurementTypesShearStress>))]
+        public MeasurementTypesShearStress ShearStressReference { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class FluidPVTParameters
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("A0")]
+        public GaussianDrillingProperty A0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("B0")]
+        public GaussianDrillingProperty B0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("C0")]
+        public GaussianDrillingProperty C0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("D0")]
+        public GaussianDrillingProperty D0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("E0")]
+        public GaussianDrillingProperty E0 { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("F0")]
+        public GaussianDrillingProperty F0 { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GelData
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("GelDuration")]
+        public GaussianDrillingProperty GelDuration { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GelStrength")]
+        public GaussianDrillingProperty GelStrength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public GaussianDrillingProperty Temperature { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GellingProperties
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("GelPropertiesTable")]
+        public System.Collections.Generic.ICollection<GelData> GelPropertiesTable { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GenericRheologicalModel
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("RheologicalModelUsed")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<RheologicalModelsEnum>))]
+        public RheologicalModelsEnum RheologicalModelUsed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public double Temperature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Pressure")]
+        public double Pressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PowerLawViscosityInfty")]
+        public double? PowerLawViscosityInfty { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PowerLawConsistencyIndex")]
+        public double? PowerLawConsistencyIndex { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BinghamViscosityInfty")]
+        public double? BinghamViscosityInfty { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BinghamYieldStress")]
+        public double? BinghamYieldStress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HerschelBulkleyViscosityInfty")]
+        public double? HerschelBulkleyViscosityInfty { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HerschelBulkleyYieldStress")]
+        public double? HerschelBulkleyYieldStress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HerschelBulkleyConsistencyIndex")]
+        public double? HerschelBulkleyConsistencyIndex { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("QuemadaViscosityInfty")]
+        public double? QuemadaViscosityInfty { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("QuemadaCharacteristicShearRate")]
+        public double? QuemadaCharacteristicShearRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("QuemadaConsistencyIndex")]
+        public double? QuemadaConsistencyIndex { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("QuemadaXi")]
+        public double? QuemadaXi { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RobertsonStiffYieldStress")]
+        public double? RobertsonStiffYieldStress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RobertsonStiffCharacteristicShearRate")]
+        public double? RobertsonStiffCharacteristicShearRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RobertsonStiffConsistencyIndex")]
+        public double? RobertsonStiffConsistencyIndex { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class LostCirculationMaterial
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassDensity")]
+        public GaussianDrillingProperty MassDensity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MassFraction")]
+        public GaussianDrillingProperty MassFraction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SpecificHeatCapacity")]
+        public SpecificHeatCapacity SpecificHeatCapacity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivity")]
+        public ThermalConductivity ThermalConductivity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GrainSize")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<LostCiruclationMaterialGrainType>))]
+        public LostCiruclationMaterialGrainType GrainSize { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum LostCiruclationMaterialGrainType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"UltraFine")]
+        UltraFine = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Fine")]
+        Fine = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Medium")]
+        Medium = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Coarse")]
+        Coarse = 3,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum MeasurementTypesShearRate
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Rotation")]
+        Rotation = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"IsoNewtonianShearRate")]
+        IsoNewtonianShearRate = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"BobNewtonianShearRate")]
+        BobNewtonianShearRate = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum MeasurementTypesShearStress
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Torque")]
+        Torque = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"IsoNewtonianShearStress")]
+        IsoNewtonianShearStress = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"BobNewtonianShearStress")]
+        BobNewtonianShearStress = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum PTModelExtrapolation
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Unkown")]
+        Unkown = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"StandardWaterBasedMud")]
+        StandardWaterBasedMud = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"StandardOilBasedMud")]
+        StandardOilBasedMud = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MicronizedOilBasedMud")]
+        MicronizedOilBasedMud = 3,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum RheologicalModelsEnum
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Unkown")]
+        Unkown = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Bingham")]
+        Bingham = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"PowerLaw")]
+        PowerLaw = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"HerschelBulkley")]
+        HerschelBulkley = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Quemada")]
+        Quemada = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RobertsonStiff")]
+        RobertsonStiff = 5,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SaltContent
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Salt")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SaltOptions>))]
+        public SaltOptions Salt { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WeightPerCubicMeter")]
+        public GaussianDrillingProperty WeightPerCubicMeter { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SaltOptions
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NaCl")]
+        NaCl = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NaBr")]
+        NaBr = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"KCl")]
+        KCl = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"KBr")]
+        KBr = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"CaCl2")]
+        CaCl2 = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"CaBr2")]
+        CaBr2 = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ZnCl2")]
+        ZnCl2 = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ZnBr2")]
+        ZnBr2 = 7,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SpecificHeatCapacity
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Slope")]
+        public GaussianDrillingProperty Slope { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HeatCapacityAtZeroKelvin")]
+        public GaussianDrillingProperty HeatCapacityAtZeroKelvin { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TemperatureRange")]
+        public System.Collections.Generic.ICollection<double?> TemperatureRange { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CoefficientRange")]
+        public System.Collections.Generic.ICollection<double?> CoefficientRange { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ThermalConductivity
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Slope")]
+        public GaussianDrillingProperty Slope { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ThermalConductivityAtZeroKelvin")]
+        public GaussianDrillingProperty ThermalConductivityAtZeroKelvin { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TemperatureRange")]
+        public System.Collections.Generic.ICollection<double?> TemperatureRange { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CoefficientRange")]
+        public System.Collections.Generic.ICollection<double?> CoefficientRange { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class CouetteRheometer
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        public System.Guid Id { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("rheometerType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<RheometerTypeEnum>))]
+        public RheometerTypeEnum RheometerType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("bobRadius")]
+        public double BobRadius { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("gap")]
+        public double Gap { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("newtonianEndEffectCorrection")]
+        public double NewtonianEndEffectCorrection { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("bobLength")]
+        public double BobLength { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("conicalAngle")]
+        public double ConicalAngle { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("measurementPrecision")]
+        public double MeasurementPrecision { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("useISOConvention")]
+        public bool UseISOConvention { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("fixedSpeedList")]
+        public System.Collections.Generic.ICollection<double> FixedSpeedList { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class RheometerMeasurement
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("rotationalSpeed")]
+        public double RotationalSpeed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("torque")]
+        public double Torque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("isoNewtonianShearRate")]
+        public double IsoNewtonianShearRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("isoNewtonianShearStress")]
+        public double IsoNewtonianShearStress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("bobNewtonianShearRate")]
+        public double BobNewtonianShearRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("bobNewtonianShearStress")]
+        public double BobNewtonianShearStress { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum RheometerTypeEnum
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"_0")]
+        _0 = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"_1")]
+        _1 = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ParticleSwarmSolverOptions
+    {
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Trajectory
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid WellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurveyStationList")]
+        public System.Collections.Generic.ICollection<SurveyStation> SurveyStationList { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InterpolatedTrajectory")]
+        public System.Collections.Generic.ICollection<SurveyPoint> InterpolatedTrajectory { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MDStep")]
+        public double MDStep { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class TrajectoryLight
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid WellBoreID { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum ErrorCode
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XYM1")]
+        XYM1 = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XYM2")]
+        XYM2 = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XYM3")]
+        XYM3 = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XYM4")]
+        XYM4 = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SAG")]
+        SAG = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DRFR")]
+        DRFR = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DRFS")]
+        DRFS = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DSFS")]
+        DSFS = 7,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DSTG")]
+        DSTG = 8,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XYM3E")]
+        XYM3E = 9,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XYM4E")]
+        XYM4E = 10,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SAGE")]
+        SAGE = 11,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XCLH")]
+        XCLH = 12,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XCLL")]
+        XCLL = 13,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"XCLA")]
+        XCLA = 14,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ABXY_TI1S")]
+        ABXY_TI1S = 15,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ABXY_TI2S")]
+        ABXY_TI2S = 16,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ABIXY_TI1S")]
+        ABIXY_TI1S = 17,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ABIXY_TI2S")]
+        ABIXY_TI2S = 18,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ABZ")]
+        ABZ = 19,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ASXY_TI1S")]
+        ASXY_TI1S = 20,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ASXY_TI2S")]
+        ASXY_TI2S = 21,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ASXY_TI3S")]
+        ASXY_TI3S = 22,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"ASZ")]
+        ASZ = 23,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MBXY_TI1")]
+        MBXY_TI1 = 24,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MBXY_TI2")]
+        MBXY_TI2 = 25,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MBZ")]
+        MBZ = 26,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MSXY_TI1")]
+        MSXY_TI1 = 27,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MSXY_TI2")]
+        MSXY_TI2 = 28,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MSXY_TI3")]
+        MSXY_TI3 = 29,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MSZ")]
+        MSZ = 30,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AMIL")]
+        AMIL = 31,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DEC_U")]
+        DEC_U = 32,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DEC_OS")]
+        DEC_OS = 33,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DEC_OH")]
+        DEC_OH = 34,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DEC_OI")]
+        DEC_OI = 35,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DECR")]
+        DECR = 36,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DBH_U")]
+        DBH_U = 37,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DBH_OS")]
+        DBH_OS = 38,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DBH_OH")]
+        DBH_OH = 39,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DBH_OI")]
+        DBH_OI = 40,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DBHR")]
+        DBHR = 41,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_XYB")]
+        AXYZ_XYB = 42,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_ZB")]
+        AXYZ_ZB = 43,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_SF")]
+        AXYZ_SF = 44,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXYZ_MIS")]
+        AXYZ_MIS = 45,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXY_B")]
+        AXY_B = 46,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXY_SF")]
+        AXY_SF = 47,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXY_MS")]
+        AXY_MS = 48,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"AXY_GB")]
+        AXY_GB = 49,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYB1")]
+        GXYZ_XYB1 = 50,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYB2")]
+        GXYZ_XYB2 = 51,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYRN")]
+        GXYZ_XYRN = 52,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG1")]
+        GXYZ_XYG1 = 53,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG2")]
+        GXYZ_XYG2 = 54,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG3")]
+        GXYZ_XYG3 = 55,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_XYG4")]
+        GXYZ_XYG4 = 56,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZB")]
+        GXYZ_ZB = 57,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZRN")]
+        GXYZ_ZRN = 58,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZG1")]
+        GXYZ_ZG1 = 59,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_ZG2")]
+        GXYZ_ZG2 = 60,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_SF")]
+        GXYZ_SF = 61,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_MIS")]
+        GXYZ_MIS = 62,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_B1")]
+        GXY_B1 = 63,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_B2")]
+        GXY_B2 = 64,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_RN")]
+        GXY_RN = 65,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G1")]
+        GXY_G1 = 66,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G2")]
+        GXY_G2 = 67,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G3")]
+        GXY_G3 = 68,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_G4")]
+        GXY_G4 = 69,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_SF")]
+        GXY_SF = 70,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_MIS")]
+        GXY_MIS = 71,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"EXT_REF")]
+        EXT_REF = 72,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"EXT_TIE")]
+        EXT_TIE = 73,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"EXT_MIS")]
+        EXT_MIS = 74,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_GD")]
+        GXYZ_GD = 75,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXYZ_RW")]
+        GXYZ_RW = 76,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_GD")]
+        GXY_GD = 77,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GXY_RW")]
+        GXY_RW = 78,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GZ_GD")]
+        GZ_GD = 79,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GZ_RW")]
+        GZ_RW = 80,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ErrorSource
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ErrorCode")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ErrorCode>))]
+        public ErrorCode ErrorCode { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Index")]
+        public int Index { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsSystematic")]
+        public bool IsSystematic { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsRandom")]
+        public bool IsRandom { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsGlobal")]
+        public bool IsGlobal { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SingularIssues")]
+        public bool SingularIssues { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsContinuous")]
+        public bool IsContinuous { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("IsStationary")]
+        public bool IsStationary { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("KOperatorImposed")]
+        public bool KOperatorImposed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Magnitude")]
+        public double? Magnitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MagnitudeQuantity")]
+        public string MagnitudeQuantity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseInclinationInterval")]
+        public bool UseInclinationInterval { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("StartInclination")]
+        public double? StartInclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EndInclination")]
+        public double? EndInclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InitInclination")]
+        public double? InitInclination { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SurveyInstrument
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ModelType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SurveyInstrumentModelType>))]
+        public SurveyInstrumentModelType ModelType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ErrorSourceList")]
+        public System.Collections.Generic.ICollection<ErrorSource> ErrorSourceList { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Dip")]
+        public double Dip { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Declination")]
+        public double Declination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Gravity")]
+        public double Gravity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BField")]
+        public double BField { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Convergence")]
+        public double Convergence { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
+        public double Latitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EarthRotRate")]
+        public double EarthRotRate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CantAngle")]
+        public double CantAngle { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GyroRunningSpeed")]
+        public double? GyroRunningSpeed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ExtRefInitInc")]
+        public double? ExtRefInitInc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GyroSwitching")]
+        public double? GyroSwitching { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GyroMinDist")]
+        public double? GyroMinDist { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GyroNoiseRed")]
+        public double? GyroNoiseRed { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseRelDepthError")]
+        public bool UseRelDepthError { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RelDepthError")]
+        public double? RelDepthError { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseMisalignment")]
+        public bool UseMisalignment { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Misalignment")]
+        public double? Misalignment { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseTrueInclination")]
+        public bool UseTrueInclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TrueInclination")]
+        public double? TrueInclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseReferenceError")]
+        public bool UseReferenceError { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ReferenceError")]
+        public double? ReferenceError { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseDrillStringMag")]
+        public bool UseDrillStringMag { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringMag")]
+        public double? DrillStringMag { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseGyroCompassError")]
+        public bool UseGyroCompassError { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GyroCompassError")]
+        public double? GyroCompassError { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SurveyInstrumentModelType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MWD_WolffDeWardt")]
+        MWD_WolffDeWardt = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Gyro_WolffDeWardt")]
+        Gyro_WolffDeWardt = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"MWD_ISCWSA")]
+        MWD_ISCWSA = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Gyro_ISCWSA")]
+        Gyro_ISCWSA = 3,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SurveyPoint
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Z")]
+        public double? Z { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Abscissa")]
+        public double? Abscissa { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MD")]
+        public double? MD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
+        public double? Azimuth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
+        public double? Inclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("X")]
+        public double? X { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Y")]
+        public double? Y { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TVD")]
+        public double? TVD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RiemannianNorth")]
+        public double? RiemannianNorth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RiemannianEast")]
+        public double? RiemannianEast { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
+        public double? Latitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Longitude")]
+        public double? Longitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
+        public double? Curvature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Toolface")]
+        public double? Toolface { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BUR")]
+        public double? BUR { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TUR")]
+        public double? TUR { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SurveyStation
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Z")]
+        public double? Z { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Abscissa")]
+        public double? Abscissa { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("MD")]
+        public double? MD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
+        public double? Azimuth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
+        public double? Inclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("X")]
+        public double? X { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Y")]
+        public double? Y { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TVD")]
+        public double? TVD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RiemannianNorth")]
+        public double? RiemannianNorth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RiemannianEast")]
+        public double? RiemannianEast { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
+        public double? Latitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Longitude")]
+        public double? Longitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
+        public double? Curvature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Toolface")]
+        public double? Toolface { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BUR")]
+        public double? BUR { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TUR")]
+        public double? TUR { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Covariance")]
+        public SymmetricMatrix3x3 Covariance { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EigenVectors")]
+        public Matrix3x3 EigenVectors { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("EigenValues")]
+        public Vector3D EigenValues { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Bias")]
+        public Vector3D Bias { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurveyTool")]
+        public SurveyInstrument SurveyTool { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BoreholeRadius")]
+        public double? BoreholeRadius { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Matrix3x3
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("RowCount")]
+        public int RowCount { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ColumnCount")]
+        public int ColumnCount { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SymmetricMatrix3x3
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("ColumnCount")]
+        public int ColumnCount { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RowCount")]
+        public int RowCount { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Vector3D
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("X")]
+        public double? X { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Y")]
+        public double? Y { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Z")]
+        public double? Z { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Dim")]
+        public int Dim { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Config
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("VirtualSensorPositionFromBit")]
+        public double VirtualSensorPositionFromBit { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalScalarValues")]
+        public double LoggingIntervalScalarValues { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LoggingIntervalProfiles")]
+        public double LoggingIntervalProfiles { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CoulombStaticFriction")]
+        public double CoulombStaticFriction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CoulombKineticFriction")]
+        public double CoulombKineticFriction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("UseHeave")]
+        public bool UseHeave { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HeaveAmplitude")]
+        public double HeaveAmplitude { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HeavePeriod")]
+        public double HeavePeriod { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopDriveStartupTime")]
+        public double TopDriveStartupTime { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LengthBetweenLumpedElements")]
+        public double LengthBetweenLumpedElements { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ContextualData
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillStringID")]
+        public System.Guid? DrillStringID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DrillingFluidDescriptionID")]
+        public System.Guid? DrillingFluidDescriptionID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreArchitectureID")]
+        public System.Guid? WellBoreArchitectureID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TrajectoryID")]
+        public System.Guid? TrajectoryID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RigID")]
+        public System.Guid? RigID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CasingID")]
+        public int? CasingID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public double Temperature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfacePipePressure")]
+        public double SurfacePipePressure { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SolverType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SolverType>))]
+        public SolverType SolverType { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class InitialValues
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitDepth")]
+        public double BitDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HoleDepth")]
+        public double HoleDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringPosition")]
+        public double TopOfStringPosition { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Profiles
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Time")]
+        public double Time { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Depth")]
+        public System.Collections.Generic.ICollection<double> Depth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DepthAll")]
+        public System.Collections.Generic.ICollection<double> DepthAll { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SleevesDepth")]
+        public System.Collections.Generic.ICollection<double> SleevesDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SideForce")]
+        public System.Collections.Generic.ICollection<double> SideForce { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SideForceSoftString")]
+        public System.Collections.Generic.ICollection<double> SideForceSoftString { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("PipeAngularVelocity")]
+        public System.Collections.Generic.ICollection<double> PipeAngularVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SleevesAngularVelocity")]
+        public System.Collections.Generic.ICollection<double> SleevesAngularVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("RadialClearance")]
+        public System.Collections.Generic.ICollection<double> RadialClearance { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LateralDisplacement")]
+        public System.Collections.Generic.ICollection<double> LateralDisplacement { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LateralDisplacementAngle")]
+        public System.Collections.Generic.ICollection<double> LateralDisplacementAngle { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BendingMoment")]
+        public System.Collections.Generic.ICollection<double> BendingMoment { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Torque")]
+        public System.Collections.Generic.ICollection<double> Torque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Tension")]
+        public System.Collections.Generic.ICollection<double> Tension { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("AxialVelocityD")]
+        public System.Collections.Generic.ICollection<double> AxialVelocityD { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Inclination")]
+        public System.Collections.Generic.ICollection<double> Inclination { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Azimuth")]
+        public System.Collections.Generic.ICollection<double> Azimuth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Curvature")]
+        public System.Collections.Generic.ICollection<double> Curvature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BuildUpRate")]
+        public System.Collections.Generic.ICollection<double> BuildUpRate { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Results
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("AvgCumulativeSSI")]
+        public double AvgCumulativeSSI { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Scalars")]
+        public Scalars Scalars { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Profiles")]
+        public System.Collections.Generic.ICollection<Profiles> Profiles { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Scalars
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("AvgCumulativeSSI")]
+        public double AvgCumulativeSSI { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitAxialVelocity")]
+        public System.Collections.Generic.ICollection<double> BitAxialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringAxialVelocity")]
+        public System.Collections.Generic.ICollection<double> TopOfStringAxialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WOB")]
+        public System.Collections.Generic.ICollection<double> WOB { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitRPM")]
+        public System.Collections.Generic.ICollection<double> BitRPM { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfaceRPM")]
+        public System.Collections.Generic.ICollection<double> SurfaceRPM { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitDepth")]
+        public System.Collections.Generic.ICollection<double> BitDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("HoleDepth")]
+        public System.Collections.Generic.ICollection<double> HoleDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfaceTorque")]
+        public System.Collections.Generic.ICollection<double> SurfaceTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BitTorque")]
+        public System.Collections.Generic.ICollection<double> BitTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAngularVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorAngularVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorWhirlVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorWhirlVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAxialVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorAxialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorRadialVelocity")]
+        public System.Collections.Generic.ICollection<double> SensorRadialVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorRadialAcc")]
+        public System.Collections.Generic.ICollection<double> SensorRadialAcc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTangentialAcc")]
+        public System.Collections.Generic.ICollection<double> SensorTangentialAcc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorAxialAcc")]
+        public System.Collections.Generic.ICollection<double> SensorAxialAcc { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentX")]
+        public System.Collections.Generic.ICollection<double> SensorBendingMomentX { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorBendingMomentY")]
+        public System.Collections.Generic.ICollection<double> SensorBendingMomentY { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTension")]
+        public System.Collections.Generic.ICollection<double> SensorTension { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SensorTorque")]
+        public System.Collections.Generic.ICollection<double> SensorTorque { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Time")]
+        public System.Collections.Generic.ICollection<double> Time { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SSI")]
+        public System.Collections.Generic.ICollection<double> SSI { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SetPoints
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("TimeDuration")]
+        public double TimeDuration { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SurfaceRPM")]
+        public double SurfaceRPM { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TopOfStringVelocity")]
+        public double TopOfStringVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("BottomExtraSideForce")]
+        public double BottomExtraSideForce { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("StribeckCriticalVelocity")]
+        public double StribeckCriticalVelocity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("DifferenceStaticKineticFriction")]
+        public double DifferenceStaticKineticFriction { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Sticking")]
+        public bool Sticking { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Simulation
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ContextualData")]
+        public ContextualData ContextualData { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid? WellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Config")]
+        public Config Config { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InitialValues")]
+        public InitialValues InitialValues { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("SetPointsList")]
+        public System.Collections.Generic.ICollection<SetPoints> SetPointsList { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CurrentTime")]
+        public double CurrentTime { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Progress")]
+        public double? Progress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TerminationState")]
+        public int? TerminationState { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Results")]
+        public Results Results { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SimulationLight
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid? WellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Progress")]
+        public double Progress { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TerminationState")]
+        public int TerminationState { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum SolverType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"EulerMethod")]
+        EulerMethod = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"VerletMethod")]
+        VerletMethod = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum CompletionMethod
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"LinearInterpolation")]
+        LinearInterpolation = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"LinearExtrapolation")]
+        LinearExtrapolation = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GeothermalData
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("RegionType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<GeothermalPropertiesType>))]
+        public GeothermalPropertiesType RegionType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("VerticalDepth")]
+        public double? VerticalDepth { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
+        public double? Temperature { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TemperatureGradient")]
+        public double? TemperatureGradient { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GeothermalProperties
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("WellBoreID")]
+        public System.Guid? WellBoreID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TrajectoryID")]
+        public System.Guid? TrajectoryID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TableType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<TableType>))]
+        public TableType TableType { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("GeothermalDataList")]
+        public System.Collections.Generic.ICollection<GeothermalData> GeothermalDataList { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GeothermalPropertiesCompletionOrder
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("ReferenceGeothermalProperties")]
+        public GeothermalProperties ReferenceGeothermalProperties { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CompletedGeothermalProperties")]
+        public GeothermalProperties CompletedGeothermalProperties { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("InterpolationStep")]
+        public double InterpolationStep { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CompletionMethod")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<CompletionMethod>))]
+        public CompletionMethod CompletionMethod { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GeothermalPropertiesCompletionOrderLight
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("MetaInfo")]
+        public MetaInfo MetaInfo { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Name")]
+        public string Name { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Description")]
+        public string Description { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("CreationDate")]
+        public System.DateTimeOffset? CreationDate { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("LastModificationDate")]
+        public System.DateTimeOffset? LastModificationDate { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum GeothermalPropertiesType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Air")]
+        Air = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Water")]
+        Water = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RockFormation")]
+        RockFormation = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum TableType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"RawData")]
+        RawData = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Interpolated")]
+        Interpolated = 1,
 
     }
 
