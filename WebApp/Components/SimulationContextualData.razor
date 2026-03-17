@@ -124,10 +124,21 @@
                 }
             </MudSelect>
         </MudItem>
+        
         <MudItem xs="6">
-            @if (casingSections.Count > 0)
+            @if (SelectedArchitecture != null)
             {
-                <MudText Typo="Typo.body2">Casing sections available in selected architecture: @casingSections.Count</MudText>
+                <MudSelect T="int" Label="Casing Section" Value="casingID" ValueChanged="UpdateCasingSectionIndex">
+                    @if (SelectedArchitecture.CasingSections != null)
+                    {
+                        @foreach (CasingSection casingSection in SelectedArchitecture.CasingSections)
+                        {
+                            <MudSelectItem Value="@casingSections.IndexOf(casingSection)">
+                                @ProcessCasingOption(casingSection)                            
+                            </MudSelectItem>    
+                        }                              
+                    }     
+                </MudSelect>
             }
         </MudItem>
         <MudItem xs="6">
@@ -219,6 +230,8 @@
 
     private WellBoreArchitecture? selectedArchitcture;
     private List<CasingSection> casingSections = new();
+    private int casingID = 0;
+    
     private Field? _selectedField = null;
     private Cluster? _selectedCluster = null;
     private Cluster? SelectedCluster { get { return _selectedCluster; } set { _selectedCluster = value; ProcessSelectedCluster(); } }
@@ -345,6 +358,46 @@
     private string? _clusterSearchText = null;
     private string? _wellSearchText = null;
     private string? _wellBoreSearchText = null;
+    private void UpdateCasingSectionIndex(int val)
+    {
+        casingID = val;
+        Simulation!.ContextualData.CasingID = val;
+    }
+    private string ProcessCasingOption(CasingSection casingSection)
+    {
+        string outputString = "";
+        if (casingSection.CasingSectionSizeTable.Count == 1)
+        {
+
+            double? nullableVal1 = Parent!.FromSI(
+                    casingSection.CasingSectionSizeTable.ElementAt(0).HoleSize.GaussianValue.Mean,
+                    "DiameterPipeDrilling"
+                )!;
+            double val1 = (nullableVal1 == null) ? Double.NaN : (double) nullableVal1;
+            outputString += "Initial Hole Diameter [" + Parent!.GetUnitLabel("DiameterPipeDrilling") + "]: " 
+                + val1.ToString("F2");
+        }
+        else if (casingSection.CasingSectionSizeTable.Count > 1)
+        {
+            double? nullableVal1 = Parent!.FromSI(
+                    casingSection.CasingSectionSizeTable.ElementAt(0).HoleSize.GaussianValue.Mean,
+                    "DiameterPipeDrilling"
+                )!;
+            double? nullableVal2 = Parent.FromSI(
+                casingSection.CasingSectionSizeTable.ElementAt(casingSection.CasingSectionSizeTable.Count-1).HoleSize.GaussianValue.Mean,
+                "DiameterPipeDrilling"
+            )!;
+            double val1 = (nullableVal1 == null) ? Double.NaN : (double) nullableVal1;
+            double val2 = (nullableVal2 == null) ? Double.NaN : (double) nullableVal2;
+            
+            outputString += "Initial Hole Diameter [" + Parent!.GetUnitLabel("DiameterPipeDrilling") + "]: " 
+                + val1.ToString("F2");
+            outputString += " ||  Final Hole Diameter [" + Parent!.GetUnitLabel("DiameterPipeDrilling") + "]: " 
+                + val2.ToString("F2");
+        }
+
+        return outputString;
+    }
 
     private void ProcessSelectedCluster()
     {

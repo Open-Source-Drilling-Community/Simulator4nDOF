@@ -13,8 +13,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public class UpwindScheme : ISolverODE<AxialTorsionalModel>
     {     
+        private bool simulationDiverged = false;
         public void AddNewLumpedElement(){}
-        public void IntegrationStep(State state, AxialTorsionalModel axialTorsionalModel, in SimulationParameters simulationParameters)
+        public bool IntegrationStep(State state, AxialTorsionalModel axialTorsionalModel, in SimulationParameters simulationParameters)
         {   
             // Use the torsional model instance to estimate the accelerations
             axialTorsionalModel.CalculateAccelerations(state, simulationParameters);
@@ -60,9 +61,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                     state.UpwardTorsionalWave[i, j]   += c1 * simulationParameters.Drillstring.TorsionalWaveSpeed * state.DiffUpwardTorsionalWave[i, j];
                     state.DownwardAxialWave[i, j]     -= c1 * simulationParameters.Drillstring.AxialWaveSpeed * state.DiffDownwardAxialWave[i, j];
                     state.UpwardAxialWave[i, j]       += c1 * simulationParameters.Drillstring.AxialWaveSpeed * state.DiffUpwardAxialWave[i, j];   
+                
+                    if (double.IsNaN(state.DownwardTorsionalWave[i, j]) ||
+                        double.IsNaN(state.UpwardTorsionalWave[i, j]) ||
+                        double.IsNaN(state.DownwardAxialWave[i, j]) ||
+                        double.IsNaN(state.UpwardAxialWave[i, j]))
+                    {
+                        return false;
+                    }               
                 }
             }
-        
+            return true;
         }
     }
 }

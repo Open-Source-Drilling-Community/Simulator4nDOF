@@ -6,7 +6,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public interface ISolverODE<TypeModel> where TypeModel : IModel<TypeModel>
     {
-        void IntegrationStep(State state, TypeModel model, in SimulationParameters simulationParameters);
+        bool IntegrationStep(State state, TypeModel model, in SimulationParameters simulationParameters);
         void AddNewLumpedElement();
     }     
 }

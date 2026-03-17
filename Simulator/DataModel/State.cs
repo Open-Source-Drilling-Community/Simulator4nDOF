@@ -6,6 +6,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 {
     public class State
     {
+        public bool SimulationDiverged { get; set; } = false;
         public Matrix<double> PipeShearStrain;                // Pipe shear strain
         public Matrix<double> PipeAngularVelocity;            // Pipe angular velocity
         public Matrix<double> PipeAxialStrain;                // Pipe axial strain

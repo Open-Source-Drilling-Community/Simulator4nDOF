@@ -46,7 +46,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 contextualData.WellBoreArchitectureID,
                 id => APIUtils.ClientWellBoreArchitecture.GetWellBoreArchitectureByIdAsync(id));
 
-            var casingSection = ResolveCasingSection(wellBoreArchitecture);
+            var casingSection = ResolveCasingSection(wellBoreArchitecture, contextualData.CasingID);
             var fluidDensity = ResolveFluidDensity(drillingFluidDescription, contextualData.Temperature, contextualData.SurfacePipePressure);
             var bitRadius = ResolveBitRadius(drillString);
 
@@ -142,20 +142,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return await loader(id.Value);
         }
 
-        private static CasingSection? ResolveCasingSection(WellBoreArchitecture? wellBoreArchitecture)
+        private static CasingSection? ResolveCasingSection(WellBoreArchitecture? wellBoreArchitecture, int? casingID)
         {
-            if (wellBoreArchitecture?.CasingSections == null)
+            if (wellBoreArchitecture?.CasingSections == null || casingID == null)
             {
                 return null;
             }
-
             var casingSections = wellBoreArchitecture.CasingSections.ToList();
-            if (casingSections.Count <= 1)
-            {
-                return casingSections.SingleOrDefault();
-            }
-
-            throw new Exception("Wellbore architecture contains multiple casing sections, but CasingSection has no Guid in the shared model so it cannot be uniquely referenced from ContextualData.");
+            return casingSections[(int) casingID];
         }
 
         private static double ResolveFluidDensity(DrillingFluidDescription drillingFluidDescription, double temperature, double surfacePipePressure)

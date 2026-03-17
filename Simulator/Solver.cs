@@ -254,11 +254,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 UpdateDepthInnerLoop();            
                 // Update axial-torsional state using upwind scheme
                 // The staggered method is used for a semi-implicit integration, increasing stability           
-                solverODEAxialTorsional.IntegrationStep(state, axialTorsionalModel, in simulationParameters);                   
+                output.SimulationHealthy = solverODEAxialTorsional.IntegrationStep(state, axialTorsionalModel, in simulationParameters);                   
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
                 axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters);
                 // Calculate lateral accelerations                    
-                solverODELateral.IntegrationStep(state, lateralModel, in simulationParameters);
+                output.SimulationHealthy = solverODELateral.IntegrationStep(state, lateralModel, in simulationParameters);
                 // Mud motor
                 if (simulationParameters.UseMudMotor)
                 {

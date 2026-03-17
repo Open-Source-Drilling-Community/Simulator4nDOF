@@ -13,7 +13,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
     public class EulerMethod : ISolverODE<LateralModel>
     {     
-        public void IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
+        public bool IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
         {   
             // Use the lateral model instance to estimate the accelerations
             lateralModel.CalculateAccelerations(state, simulationParameters);
@@ -30,6 +30,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 //Y DoF
                 state.YDisplacement[i] = state.YDisplacement[i] + state.YVelocity[i] * simulationParameters.InnerLoopTimeStep;
                 state.YVelocity[i]     = state.YVelocity[i] + state.YAcceleration[i] * simulationParameters.InnerLoopTimeStep;    
+                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]));
+                {
+                    return false;
+                }      
             }
 
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
@@ -38,6 +42,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 state.SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i] + state.SleeveAngularVelocity[i] * simulationParameters.InnerLoopTimeStep;
                 state.SleeveAngularVelocity[i]     = state.SleeveAngularVelocity[i] + state.SleeveAngularAcceleration[i] * simulationParameters.InnerLoopTimeStep;
             }
+            return true;
         }
         public void AddNewLumpedElement()
         {

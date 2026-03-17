@@ -495,11 +495,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 state.AxialAcceleration[i] = ZAcceleration;
                 state.XAcceleration[i] = XAcceleration;
                 state.YAcceleration[i] = YAcceleration;   
-                state.AngularAcceleration[i] = angularAcceleration;       
-                
+                state.AngularAcceleration[i] = angularAcceleration;                       
+    
                 #endregion
                 
-                #region  Debbugging Outputs
+                #region  Debbugging Outputs                
                 //===============================================================================================
                 //                                 UNCOMMENT FOR DEBUGGING PURPOSES
                 //===============================================================================================
@@ -528,8 +528,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                             );
                     }                
                 #endregion
-
-            }             
+            }
         }
     }
 }

@@ -65,6 +65,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         private readonly Configuration configuration;
         private int queueSize;
 
+        public bool SimulationHealthy;
         public Output(in SimulationParameters simulationParameters, in Configuration config)
         {
             NormalForceProfileStiffString = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -86,7 +87,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             CummulativeStickSlipIndex = 0.0;
             AverageStickSlipIndex = 0.0;
             StickSlipIndex = 0.0;
-
+            SimulationHealthy = true;
             this.configuration = config;
         }
 

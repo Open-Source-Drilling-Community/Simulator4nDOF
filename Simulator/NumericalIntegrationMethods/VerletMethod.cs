@@ -79,7 +79,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             FirstStep = false;
         }
 
-        public void IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
+        public bool IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
         {               
             // Use the lateral model instance to estimate the accelerations
             lateralModel.CalculateAccelerations(state, simulationParameters);
@@ -114,15 +114,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 YDisplacement[i] = state.YDisplacement[i];            
                 AxialVelocity[i] = state.AxialVelocity[i]; // Rollover axial velocity for next iteration
                 AxialAcceleration[i] = state.AxialAcceleration[i]; // Rollover axial acceleration for next iteration
-
-                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]))
+                //Check if the simulation diverged
+                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]));
                 {
-                    Console.WriteLine("NaN detected in lateral calculations at element " + i.ToString() +
-                        " XVel: " + state.XVelocity[i].ToString() +
-                        " YVel: " + state.YVelocity[i].ToString() +
-                        " ZVel: " + state.AxialVelocity[i].ToString()
-                        );
-                }              
+                    return false;
+                }        
             }
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {
@@ -131,7 +127,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 //Rollover data for next iteration 
                 SleeveAngularDisplacementMinus1[i] = SleeveAngularDisplacement[i];
                 SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i];                         
-            }                        
+            }         
+            return true;       
         }
         public void AddNewLumpedElement()
         {

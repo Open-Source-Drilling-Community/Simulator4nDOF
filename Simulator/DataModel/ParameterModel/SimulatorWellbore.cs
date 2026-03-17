@@ -17,10 +17,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> boreholeRadius;                   // [m] Wellbore radius calculation
 
         public SimulatorWellbore(
-                        in SimulatorDrillString drillString,
-                        in LumpedCells lumpedCells,
-                        in CasingSection casingSection
-                    )
+                in SimulatorDrillString drillString,
+                in LumpedCells lumpedCells,
+                in CasingSection casingSection
+            )
         {
             
             List<SimulatorBoreHole> boreHoleSizes = new();

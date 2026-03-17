@@ -9,6 +9,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public Guid? WellBoreArchitectureID { get; set; } = null;
         public Guid? TrajectoryID { get; set; } = null;
         public Guid? RigID { get; set; } = null;
+        public int? CasingID { get; set; } = null;
         public double Temperature { get; set; } = 293;
         public double SurfacePipePressure { get; set; } = 100_000;
         public SolverType SolverType { get; set; } = SolverType.VerletMethod;
