@@ -68,16 +68,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                              configuration.CasingSection
                              );
             Trajectory = new SimulatorTrajectory(LumpedCells, configuration.Trajectory);
-            Flow = new SimulatorFlow(
-                LumpedCells, 
-                Trajectory, 
-                Drillstring, 
-                configuration.DrillingFluidDescription, 
-                configuration.FluidDensity, 
-                configuration.UseBuoyancyFactor, 
-                configuration.SurfacePressure,
-                configuration.GeothermalProperties
-            );
+            Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
 
             MudMotor = new MudMotor();
             DistributedCells = new DistributedCells(LumpedCells, Drillstring, configuration.SurfaceRPM);

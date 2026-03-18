@@ -12,6 +12,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public Guid? GeothermalPropertiesID { get; set; } = null;        
         public int? CasingID { get; set; } = null;
         public double Temperature { get; set; } = 293;
+        public double? WellheadPressure { get; set; } = null;
         public double SurfacePipePressure { get; set; } = 100_000;
         public SolverType SolverType { get; set; }
     }

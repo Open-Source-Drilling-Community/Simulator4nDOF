@@ -110,7 +110,47 @@
     {
         DataUtils.UnitAndReferenceParameters.UnitSystemName = (string)val;
     }
-
+    private async Task<bool> CheckSimulationInputs()
+    {
+        string errorMessage = "";
+        bool simulationReady = true;
+        if (Simulation != null)
+        {
+            if (Simulation.ContextualData.DrillStringID == null || Simulation.ContextualData.DrillStringID == Guid.Empty)
+            {
+                errorMessage += "\nt- Please select a Drill String";
+                simulationReady = false;
+            }
+            if (Simulation.ContextualData.TrajectoryID == null || Simulation.ContextualData.TrajectoryID == Guid.Empty)
+            {
+                errorMessage = "\n\t- Please select a Trajectory";
+                simulationReady = false;
+            }
+            if (RequiresRigSelection() && (Simulation.ContextualData.RigID == null || Simulation.ContextualData.RigID == Guid.Empty))
+            {
+                errorMessage = "\n\t- Please select a Rig for a non-fixed platform cluster"; 
+                simulationReady = false;
+            }
+            if (Simulation.ContextualData.DrillingFluidDescriptionID == null || Simulation.ContextualData.DrillStringID == Guid.Empty)
+            {
+                errorMessage = "\n\t- Please select a drilling fluid"; 
+                simulationReady = false;
+            }
+            if (!simulationReady)
+            {
+                 Snackbar.Add(errorMessage, Severity.Warning);
+            }
+            //Return true if the simulation is ready
+            return simulationReady;
+        }
+        else 
+        {
+            simulationReady = false;
+            return simulationReady;
+        }
+        
+        
+    }
     private async Task AddSimulation()
     {
         if (Simulation != null)

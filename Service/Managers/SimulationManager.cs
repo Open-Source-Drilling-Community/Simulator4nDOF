@@ -1102,7 +1102,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 DrillingFluidDescription = resolvedContext.DrillingFluidDescription,
                 Trajectory = resolvedContext.Trajectory,
                 DrillString = resolvedContext.DrillString,
-                SurfacePressure = contextualData.SurfacePipePressure,
+                PumpPressure = contextualData.SurfacePipePressure,
                 BitDepth = simulation.InitialValues.BitDepth,                             // [m]
                 FluidTemperature = contextualData.Temperature,                 // [K]
                 HoleDepth = simulation.InitialValues.HoleDepth,                           // [m]
@@ -1136,6 +1136,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 KpStiffAndZTorque = topDrive.ProportionalGain ?? 50,
                 KiStiffAndZTorque = topDrive.IntegralGain ?? 5,
                 SolverType = contextualData.SolverType,
+                WellheadPressure = contextualData.WellheadPressure,
                 GeothermalProperties = resolvedContext.GeothermalProperties
             };
 

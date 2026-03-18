@@ -43,8 +43,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double Stribeck = 5;                         // [s/rad] Parameter controlling smoothness of transition from static to kinetic friction (Stribeck model)
 
 
-        public required double FluidDensity  = 1200;        // [kg/m3] Density of drilling mud, f.rhoMud
-        public double SurfacePressure;
+        public required double FluidDensity;        // [kg/m3] Density of drilling mud, f.rhoMud
+        public double PumpPressure;
+        public double? WellheadPressure;
 
         // Top drive ZTorque controller parameters
         public double VFDFilterTimeconstantZTorque = 0.005;         // [s] VFD filter time constant

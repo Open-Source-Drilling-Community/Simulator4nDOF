@@ -385,6 +385,11 @@
             "type": "number",
             "format": "double"
           },
+          "WellheadPressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "SurfacePipePressure": {
             "type": "number",
             "format": "double"

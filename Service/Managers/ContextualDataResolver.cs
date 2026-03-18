@@ -47,10 +47,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 contextualData.WellBoreArchitectureID,
                 id => APIUtils.ClientWellBoreArchitecture.GetWellBoreArchitectureByIdAsync(id));
 
-            var geothermalProperties = await LoadOptionalAsync(
-                contextualData.GeothermalPropertiesID,                
-                id => APIUtils.ClientGeothermalProperties.GetGeothermalPropertiesByIdAsync(id));
-            
+            var geothermalProperties = await LoadInterpolatedGeothermalProperties(contextualData.GeothermalPropertiesID, simulation.Config);
+        
             var casingSection = ResolveCasingSection(wellBoreArchitecture, contextualData.CasingID);
             var fluidDensity = ResolveFluidDensity(drillingFluidDescription, contextualData.Temperature, contextualData.SurfacePipePressure);
             var bitRadius = ResolveBitRadius(drillString);
@@ -147,6 +145,49 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
             return await loader(id.Value);
         }
+        private static async Task<GeothermalProperties?> LoadInterpolatedGeothermalProperties(Guid? id, Config? config) 
+        {
+            if (id == null || id == Guid.Empty)
+            {
+                return null;
+            }
+            GeothermalProperties? geothermalProperties = await APIUtils.ClientGeothermalProperties.GetGeothermalPropertiesByIdAsync(id.Value); 
+            if (geothermalProperties != null)
+            {
+                //If the data is a RawData type, it means it was not completed.
+                if (geothermalProperties.TableType == TableType.RawData)
+                {
+                    try
+                    {
+                        double defaultStep = config == null ? 30.0 : config.LengthBetweenLumpedElements ;
+                        Guid completedID = Guid.NewGuid();
+                        MetaInfo metaInfo = new MetaInfo
+                        {
+                            ID = completedID
+                        };
+                        GeothermalPropertiesCompletionOrder completedGeothermal = new GeothermalPropertiesCompletionOrder
+                        {
+                            MetaInfo = metaInfo,  
+                            Name = "Completed for simulation",
+                            CreationDate = DateTimeOffset.UtcNow,
+                            LastModificationDate = DateTimeOffset.UtcNow,
+                            ReferenceGeothermalProperties = geothermalProperties,
+                            InterpolationStep = defaultStep
+                        };                 
+                        await APIUtils.ClientGeothermalProperties.PostGeothermalPropertiesCompletionOrderAsync(completedGeothermal);
+                        completedGeothermal = await APIUtils.ClientGeothermalProperties.GetGeothermalPropertiesCompletionOrderByIdAsync(completedID);
+                        return completedGeothermal.CompletedGeothermalProperties;
+                    }   
+                    catch 
+                    {
+                        throw new Exception ("Failed to fetch interpolated geothermal data!");
+                    }
+                }            
+            }
+            return geothermalProperties;
+        }
+
+
 
         private static CasingSection? ResolveCasingSection(WellBoreArchitecture? wellBoreArchitecture, int? casingID)
         {

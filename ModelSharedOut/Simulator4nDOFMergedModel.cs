@@ -22361,6 +22361,9 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("Temperature")]
         public double Temperature { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("WellheadPressure")]
+        public double? WellheadPressure { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("SurfacePipePressure")]
         public double SurfacePipePressure { get; set; }
 

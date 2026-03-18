@@ -141,27 +141,7 @@
                 </MudSelect>
             }
         </MudItem>
-        <MudItem xs="6">
-            <MudSelect T="DrillingFluidDescription" Label="Fluid" @bind-Value="SelectedFluid" Variant="Variant.Text">
-                @if (FluidDescriptions != null)
-                {
-                    @foreach (DrillingFluidDescription fluidDescription in FluidDescriptions)
-                    {
-                        @if (fluidDescription != null && !string.IsNullOrEmpty(fluidDescription.Name))
-                        {
-                            <MudSelectItem Value="@fluidDescription">@fluidDescription.Name</MudSelectItem>
-                        }
-                    }
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="6">
-            <MudInputWithUnit VariantType="Variant.Text"
-                              QuantityLabel="Drill-string surface pressure"
-                              QuantityName="PressureDrilling"
-                              SIValue="Simulation.ContextualData.SurfacePipePressure"
-                              SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.SurfacePipePressure = val.Value; }" />
-        </MudItem>
+        
         @if (SelectedCluster != null && !SelectedCluster.IsFixedPlatform)
         {
             <MudItem xs="12">
@@ -179,7 +159,7 @@
                 </MudSelect>
             </MudItem>
         }
-        <MudItem xs="6">
+        <MudItem xs="12">
             <MudSelect T="GeothermalProperties" Label="Geothermal Properties Source" @bind-Value="SelectedGeothermal" Variant="Variant.Text">
                 @if (GeothermalProperties != null)
                 {
@@ -193,6 +173,37 @@
                 }
             </MudSelect>
         </MudItem>
+        <MudItem xs="6">
+            <MudSelect T="DrillingFluidDescription" Label="Fluid" @bind-Value="SelectedFluid" Variant="Variant.Text">
+                @if (FluidDescriptions != null)
+                {
+                    @foreach (DrillingFluidDescription fluidDescription in FluidDescriptions)
+                    {
+                        @if (fluidDescription != null && !string.IsNullOrEmpty(fluidDescription.Name))
+                        {
+                            <MudSelectItem Value="@fluidDescription">@fluidDescription.Name</MudSelectItem>
+                        }
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="3">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Drill-string surface pressure"
+                              QuantityName="PressureDrilling"
+                              SIValue="Simulation.ContextualData.SurfacePipePressure"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.SurfacePipePressure = val.Value; }" />
+        </MudItem>
+        @if (SelectedGeothermal != null)
+        {
+            <MudItem xs="3">
+                <MudInputWithUnit VariantType="Variant.Text"
+                                  QuantityLabel="Wellhead pressure"
+                                  QuantityName="PressureDrilling"
+                                  SIValueNullable="Simulation.ContextualData.WellheadPressure"
+                                  SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.WellheadPressure = val.Value; }" />
+            </MudItem>
+        }
         <MudItem xs = "6">
             <MudText Typo="Typo.body1"><b>Solver method</b></MudText>
             <MudRadioGroup T = "SolverType" @bind-Value="@Simulation.ContextualData.SolverType">
