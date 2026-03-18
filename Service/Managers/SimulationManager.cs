@@ -1135,9 +1135,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 TuningFrequenceySoftTorqueSpeed = topDrive.TuningFrequency ?? 0.2,
                 KpStiffAndZTorque = topDrive.ProportionalGain ?? 50,
                 KiStiffAndZTorque = topDrive.IntegralGain ?? 5,
-                SolverType = contextualData.SolverType
-
-
+                SolverType = contextualData.SolverType,
+                GeothermalProperties = resolvedContext.GeothermalProperties
             };
 
             return config;

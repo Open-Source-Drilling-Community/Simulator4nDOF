@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
@@ -32,10 +33,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private double FPvtCoeff;
         private Vector<double> XVectorAnnulusVariables;
         private Vector<double> XVectorStringVariables;
-                
+        private List<GeothermalData>? geothermalDataList;
+        private double currentTemparetureGratient;
         public SimulatorFlow(in LumpedCells lumpedCells, in SimulatorTrajectory trajectory, in SimulatorDrillString drillString,
-            DrillingFluidDescription drillingFluidDescription, double fluidDensity, bool useBuoyancyFactor, double surfacePressure)
+            DrillingFluidDescription drillingFluidDescription, double fluidDensity, bool useBuoyancyFactor, double surfacePressure, GeothermalProperties? geothermalProperties)
         {
+            //Default value for temperature gradient 
+            currentTemparetureGratient = 0.03;
+            geothermalDataList = geothermalProperties == null
+                ? null
+                : geothermalProperties.GeothermalDataList
+                    .Where(d => d.VerticalDepth != null)
+                    .OrderBy(d => d.VerticalDepth)
+                    .ToList();
             FluidDensity = fluidDensity;
             AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
             AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.ElementLength.Count);
@@ -167,6 +177,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 {
                     dX = i > 1 ? depthIntegrationProfile[i - 1] - depthIntegrationProfile[i - 2] : depthIntegrationProfile[0]; 
                     currentDepth = depthIntegrationProfile[i - 1];
+
+                    if (geothermalDataList != null)
+                    {
+                        var bounds = GetGeothermalDataBounds(currentDepth);
+                        if (bounds.HasValue)
+                        {
+                            var (lower, upper) = bounds.Value;
+                            double lowerDepth = lower.VerticalDepth ?? currentDepth;
+                            double upperDepth = upper.VerticalDepth ?? currentDepth;
+
+                            double lowerGradient = lower.TemperatureGradient ?? currentTemparetureGratient;
+                            double upperGradient = upper.TemperatureGradient ?? currentTemparetureGratient;
+
+                            currentTemparetureGratient = (upperDepth != lowerDepth)
+                                ? lowerGradient + (upperGradient - lowerGradient) * (currentDepth - lowerDepth) / (upperDepth - lowerDepth)
+                                : lowerGradient;
+                        }
+                        else 
+                        {   
+                            currentTemparetureGratient = 0.03;
+                        }
+                    }
+
                     //Get the next step
                     XVectorAnnulusVariables = odeSolver.Solve(XVectorAnnulusVariables, PVTOrdinaryDifferentialEquation, currentDepth, dX);
                     AnnulusDensity[i] = XVectorAnnulusVariables[0];
@@ -180,6 +213,40 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 }      
             }
         }
+    
+        private (GeothermalData Lower, GeothermalData Upper)? GetGeothermalDataBounds(double depth)
+        {
+            if (geothermalDataList == null || geothermalDataList.Count == 0)
+            {
+                return null;
+            }
+
+            // If the requested depth is outside the range of available geothermal points, use the closest available point.
+            if (depth <= geothermalDataList[0].VerticalDepth)
+            {
+                return (geothermalDataList[0], geothermalDataList[0]);
+            }
+
+            var lastIndex = geothermalDataList.Count - 1;
+            if (depth >= geothermalDataList[lastIndex].VerticalDepth)
+            {
+                return (geothermalDataList[lastIndex], geothermalDataList[lastIndex]);
+            }
+
+            // Find the two points that bracket the desired depth.
+            for (int i = 1; i < geothermalDataList.Count; i++)
+            {
+                var upper = geothermalDataList[i];
+                var lower = geothermalDataList[i - 1];
+                if (upper.VerticalDepth >= depth)
+                {
+                    return (lower, upper);
+                }
+            }
+
+            return (geothermalDataList[lastIndex], geothermalDataList[lastIndex]);
+        }
+
         private FluidPVTParameters? CalculateFluidPVTParameters(
             BrinePVTParameters brinePVTParameters, 
                 BaseOilPVTParameters baseOilPVTParameters,             
@@ -260,7 +327,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             //
             RightSideOfTheODE[0] = 0.0;
             RightSideOfTheODE[1] = Constants.GravitationalAcceleration * Xinputs[0];
-            RightSideOfTheODE[2] = 0.03;            
+            RightSideOfTheODE[2] = currentTemparetureGratient;            
             Matrix<double> CoefficientMatrix = Matrix<double>.Build.Dense(3 , 3);
             // 1st column
             CoefficientMatrix[0, 0] = -1;

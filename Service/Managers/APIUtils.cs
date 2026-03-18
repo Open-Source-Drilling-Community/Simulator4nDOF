@@ -45,6 +45,11 @@ public static class APIUtils
     public static readonly HttpClient HttpClientRig = APIUtils.SetHttpClient(HostNameRig, HostBasePathRig);
     public static readonly Client ClientRig = new Client(APIUtils.HttpClientRig.BaseAddress!.ToString(), APIUtils.HttpClientRig);
 
+    public static readonly string HostNameGeothermalProperties = NORCE.Drilling.Simulator4nDOF.Service.ServiceConfiguration.GeothermalPropertiesHostURL!;
+    public static readonly string HostBasePathGeothermalProperties = "GeothermalProperties/api/";
+    public static readonly HttpClient HttpClientGeothermalProperties = APIUtils.SetHttpClient(HostNameGeothermalProperties, HostBasePathGeothermalProperties);
+    public static readonly NORCE.Drilling.Simulator4nDOF.ModelShared.Client ClientGeothermalProperties = new NORCE.Drilling.Simulator4nDOF.ModelShared.Client(APIUtils.HttpClientGeothermalProperties.BaseAddress!.ToString(), APIUtils.HttpClientGeothermalProperties);
+
     // API utility methods
     public static HttpClient SetHttpClient(string host, string microServiceUri)
     {

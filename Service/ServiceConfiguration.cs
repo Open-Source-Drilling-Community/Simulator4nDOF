@@ -17,5 +17,6 @@
         public static string? WellHostURL { get; set; }
 
         public static string? WellBoreArchitectureHostURL { get; set; }
+        public static string? GeothermalPropertiesHostURL { get; set; }
     }
 }

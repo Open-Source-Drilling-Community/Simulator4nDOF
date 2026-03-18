@@ -81,6 +81,8 @@ if (!String.IsNullOrEmpty(builder.Configuration["WellBoreArchitectureHostURL"]))
     ServiceConfiguration.WellBoreArchitectureHostURL = builder.Configuration["WellBoreArchitectureHostURL"];
 if (!String.IsNullOrEmpty(builder.Configuration["RigHostURL"]))
     ServiceConfiguration.RigHostURL = builder.Configuration["RigHostURL"];
+if (!String.IsNullOrEmpty(builder.Configuration["GeothermalPropertiesHostURL"]))
+    ServiceConfiguration.GeothermalPropertiesHostURL = builder.Configuration["GeothermalPropertiesHostURL"];
 
 
 if (builder.Environment.IsDevelopment())

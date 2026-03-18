@@ -14,6 +14,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         public required DrillingFluidDescription DrillingFluidDescription { get; init; }
         public required Trajectory Trajectory { get; init; }
         public required Rig Rig { get; init; }
+        public GeothermalProperties? GeothermalProperties { get; init; }
         public required double FluidDensity { get; init; }
         public required double BitRadius { get; init; }
         public CasingSection? CasingSection { get; init; }
@@ -46,6 +47,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 contextualData.WellBoreArchitectureID,
                 id => APIUtils.ClientWellBoreArchitecture.GetWellBoreArchitectureByIdAsync(id));
 
+            var geothermalProperties = await LoadOptionalAsync(
+                contextualData.GeothermalPropertiesID,                
+                id => APIUtils.ClientGeothermalProperties.GetGeothermalPropertiesByIdAsync(id));
+            
             var casingSection = ResolveCasingSection(wellBoreArchitecture, contextualData.CasingID);
             var fluidDensity = ResolveFluidDensity(drillingFluidDescription, contextualData.Temperature, contextualData.SurfacePipePressure);
             var bitRadius = ResolveBitRadius(drillString);
@@ -59,6 +64,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 CasingSection = casingSection,
                 FluidDensity = fluidDensity,
                 BitRadius = bitRadius,
+                GeothermalProperties = geothermalProperties
             };
         }
 

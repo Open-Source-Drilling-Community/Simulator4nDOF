@@ -75,7 +75,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 configuration.DrillingFluidDescription, 
                 configuration.FluidDensity, 
                 configuration.UseBuoyancyFactor, 
-                configuration.SurfacePressure
+                configuration.SurfacePressure,
+                configuration.GeothermalProperties
             );
 
             MudMotor = new MudMotor();
@@ -87,31 +88,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 BitRockModelEnum.MSE => new MSE(),
                 _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
             };
-            
-            // Lateral Modal analysis 
-            /*
-            Matrix<double> StiffnessMatrix = Matrix<double>.Build.Dense(Drillstring.BendingStiffness.Count, Drillstring.BendingStiffness.Count);
-            Matrix<double> MassMatrix = Matrix<double>.Build.Dense(Drillstring.BendingStiffness.Count, Drillstring.BendingStiffness.Count);
-          
-          
-            for (int i = 0; i < Drillstring.BendingStiffness.Count; i++)
-            {
-                MassMatrix[i, i] = Drillstring.LumpedElementMass[i];
-                StiffnessMatrix[i, i] = - Drillstring.BendingStiffness[i];                
-                if (i >= 1)                    
-                    StiffnessMatrix[i, i - 1] = Drillstring.BendingStiffness[i];
-                if (i < Drillstring.BendingStiffness.Count - 1)
-                {
-                    StiffnessMatrix[i, i + 1] = Drillstring.BendingStiffness[i + 1];                                   
-                    StiffnessMatrix[i, i] -= Drillstring.BendingStiffness[i + 1]; 
-                }
-            }
-            var EigenProblem = (StiffnessMatrix.Inverse() * MassMatrix).Evd();
-            List<double> Omega = new List<double> ();
-            foreach (Complex eigenval in EigenProblem.EigenValues)
-            {
-                Omega.Add(eigenval.Real);
-            }*/
 
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
         
