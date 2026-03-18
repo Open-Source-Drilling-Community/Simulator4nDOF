@@ -65,8 +65,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double localRadius;
             for (int i = 1; i < lumpedElement.ElementLength.Count(); i++)
             {
+
                 // If the element depth is greater than the borehole, go to the next one
-                index += (lumpedElement.ElementLength[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
+                if (index < BoreHoleSizes.Count)
+                    index += (lumpedElement.ElementLength[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
                 // Switch between borehole radius and bit radius
                 localRadius = index < BoreHoleSizes.Count ? 0.5 * BoreHoleSizes[index].Diameter : drillString.BitRadius;
                 //Update radius list

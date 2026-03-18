@@ -192,18 +192,16 @@
                               QuantityLabel="Drill-string surface pressure"
                               QuantityName="PressureDrilling"
                               SIValue="Simulation.ContextualData.SurfacePipePressure"
-                              SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.SurfacePipePressure = val.Value; }" />
+                              SIValueChanged="val => { if (val != null) Simulation.ContextualData.SurfacePipePressure = val; }" />
+        </MudItem>        
+        <MudItem xs="3">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Wellhead pressure"
+                              QuantityName="PressureDrilling"
+                              SIValue="Simulation.ContextualData.WellheadPressure"
+                              SIValueChanged="val => { if (val != null) Simulation.ContextualData.WellheadPressure = val; }" />
         </MudItem>
-        @if (SelectedGeothermal != null)
-        {
-            <MudItem xs="3">
-                <MudInputWithUnit VariantType="Variant.Text"
-                                  QuantityLabel="Wellhead pressure"
-                                  QuantityName="PressureDrilling"
-                                  SIValueNullable="Simulation.ContextualData.WellheadPressure"
-                                  SIValueNullableChanged="val => { if (val != null) Simulation.ContextualData.WellheadPressure = val.Value; }" />
-            </MudItem>
-        }
+        
         <MudItem xs = "6">
             <MudText Typo="Typo.body1"><b>Solver method</b></MudText>
             <MudRadioGroup T = "SolverType" @bind-Value="@Simulation.ContextualData.SolverType">

@@ -37,7 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private double currentTemparetureGratient;
         // Auxiliar variables from configurations
         private DrillingFluidDescription drillingFluidDescription;
-        private readonly double? wellheadPressure;
+        private readonly double wellheadPressure;
         private readonly bool useBuoyancyFactor;
         private readonly double pumpPressure; 
         private readonly GeothermalProperties? geothermalProperties;
@@ -130,7 +130,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             FluidPVTParameters fluidPVTParameters, 
             double? densityNullable, 
             double? temperatureNullable,
-            double? wellheadPressure, 
+            double wellheadPressure, 
             double pumpPressure,
             Vector<double> depthIntegrationProfile)
         {
@@ -159,46 +159,43 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 EPvtCoeff = (double) fluidPVTParameters.E0.GaussianValue.Mean;
                 FPvtCoeff = (double) fluidPVTParameters.F0.GaussianValue.Mean;
                 double annulusDensity;
-                double annulusTemperature = (double) temperatureNullable;
+                double annulusTemperature;
                 double annulusPressure;
-                
-                (GeothermalData, GeothermalData)? bounds = GetGeothermalDataBounds(depthIntegrationProfile[0]);
-                
+
+                double referenceTemperature = (double) temperatureNullable;                
+                 //  If there is no available geothermal data, use the fluid description datasheet to
+                // calculate the fluid's properties
+                double referencePressure = wellheadPressure;
+                double referenceDensity = (
+                            APvtCoeff + BPvtCoeff * referenceTemperature
+                            + (CPvtCoeff + DPvtCoeff * referenceTemperature) * referencePressure
+                            + (EPvtCoeff + FPvtCoeff * referenceTemperature) * referencePressure * referencePressure                        
+                        );                             
+                        
+                (GeothermalData, GeothermalData)? bounds = GetGeothermalDataBounds(depthIntegrationProfile[0]);                
+
                 if (bounds != null)
                 {   
                     //Get the initial temperature through the geothermal data
                     var (lowerGeothermalData, upperGeothermalData) = bounds.Value;
                     double lowerDepth = lowerGeothermalData.VerticalDepth ?? currentDepth;
                     double upperDepth = upperGeothermalData.VerticalDepth ?? currentDepth;
-                    double lowerTemperature = lowerGeothermalData.Temperature ?? annulusTemperature;
-                    double upperTemperature = upperGeothermalData.Temperature ?? annulusTemperature;
+                    double lowerTemperature = lowerGeothermalData.Temperature ?? referenceTemperature;
+                    double upperTemperature = upperGeothermalData.Temperature ?? referenceTemperature;
                     double localGradient = (upperDepth != lowerDepth) ?  (upperTemperature - lowerTemperature)/(upperDepth - lowerDepth) : (lowerGeothermalData.TemperatureGradient ?? 0.03);
                     double tempAtZero = lowerTemperature - lowerDepth * localGradient;
-                    annulusTemperature = localGradient * currentDepth + tempAtZero;
-                    annulusPressure = wellheadPressure ?? pumpPressure;
+                    annulusTemperature = localGradient * currentDepth + tempAtZero;                
+                    annulusPressure = referencePressure;
                     annulusDensity = APvtCoeff + BPvtCoeff * annulusTemperature
                                     + (CPvtCoeff + DPvtCoeff * annulusTemperature) * annulusPressure
                                     + (EPvtCoeff + FPvtCoeff * annulusTemperature) * annulusPressure * annulusPressure;
                 }
                 else 
                 {
-                    //  If there is no available geothermal data, use the fluid description datasheet to
-                    // calculate the fluid's properties
-                    annulusDensity = (double)densityNullable;
-                    //  Initial pressure in the annulus can be calculated with Bhaskara. 
-                    // One answer will always be negative as b > 0 and Delta > 0. 
-                    // We calculate only the one that will be positive              
-                    double a = EPvtCoeff + FPvtCoeff * annulusTemperature;
-                    double b = DPvtCoeff * annulusTemperature + CPvtCoeff;
-                    double c = APvtCoeff + BPvtCoeff * annulusTemperature - annulusDensity;
-                    double Delta = b * b - 4 * a * c;
-                    if (Delta < 0)
-                    {
-                        throw new ArgumentException("Initial pressure could not be computed!");
-                    }
-                    annulusPressure = (-b + Math.Sqrt(Delta)) / (2.0 * a); 
+                   annulusDensity = referenceDensity;
+                   annulusPressure = referencePressure;
+                   annulusTemperature = referenceTemperature;                   
                 }
-
                 
                 //The Drill-string initial temperature is calculated as:
                 double drillStringTemperature = (
