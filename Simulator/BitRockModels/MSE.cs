@@ -33,18 +33,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         /// [-] Efficiency factor (MSE model)
         /// </summary>
         public readonly double BitEfficiencyFactor = 0.35;      
-        public double[] CalculateInteractionForce(State state, double mudoRotorAngularVelocity, SimulationParameters simulationParameters)
+        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters)
         {
             double tb = 0.0;
             double wb = 0.0;
+            double angularVelocity = state.BitVelocity / simulationParameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius
             if (state.BitOnBotton)
             {
                 // Update the last element of l
                 int lastIndex = state.DepthOfCut.Count - 1;
-                state.DepthOfCut[lastIndex] = (1 - AlphaROP) * state.DepthOfCut[lastIndex] + AlphaROP * 2 * Math.PI * state.BitVelocity / mudoRotorAngularVelocity * (mudoRotorAngularVelocity > 0.5 ? 1 : 0);
+                state.DepthOfCut[lastIndex] = (1 - AlphaROP) * state.DepthOfCut[lastIndex] + AlphaROP * 2 * Math.PI * state.BitVelocity / angularVelocity * (angularVelocity > 0.5 ? 1 : 0);
                 state.DepthOfCut[lastIndex] = Math.Max(state.DepthOfCut[lastIndex], 0);
                 // Calculate mu_b
-                double mu_b = Mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * mudoRotorAngularVelocity / (2.0 * Math.PI)));
+                double mu_b = Mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * angularVelocity / (2.0 * Math.PI)));
                 // Calculate wb
                 wb = Math.PI * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * CCS / BitEfficiencyFactor / (1 + 2 * mu_b * simulationParameters.Drillstring.BitRadius / (3 * state.DepthOfCut[lastIndex]));
                 wb = Math.Max(wb, 0);
@@ -56,7 +57,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 tb = 0;
                 wb = 0;
             }
-            return new double[]{tb, wb};
+            state.TorqueOnBit = tb; 
+            state.WeightOnBit = wb;    
+            return ;
         }           
     
     }

@@ -344,7 +344,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 #endregion                                        
                 #region Coulomb Friction
                 // Axial velocity
-                axialVelocity = state.AxialVelocity[i];
+                axialVelocity = state.ZVelocity[i];
                 // "Masks" sleeve or non-sleeve variables if hasSleeve = true
                 outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : parameters.Drillstring.OuterRadius[i];
                 //double innerRadius = hasSleeve ? parameters.Drillstring.SleeveInnerRadius : parameters.Drillstring.OuterRadius[i];  
@@ -352,7 +352,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // The total normal force is the sum of elastic, pre-stress, fluid, unbalance forces, damping and colission forces                        
                 sumForcesX = ElasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - parameters.Drillstring.CalculateLateralDamping * state.XVelocity[i] - normalCollisionForce * cosWhirlAngle;
                 sumForcesY = ElasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - parameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - normalCollisionForce * sinWhirlAngle;
-                sumForcesZ = axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * state.AxialVelocity[i]; 
+                sumForcesZ = axialForceDifference - parameters.Drillstring.CalculatedAxialDamping * state.ZVelocity[i]; 
                 coulombFrictionX = 0.0;
                 coulombFrictionY = 0.0;
                 coulombFrictionZ = 0.0;                   
@@ -367,7 +367,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     {
                         state.XVelocity[i] - outerRadius * rotationSpeed * sinWhirlAngle,
                         state.YVelocity[i] + outerRadius * rotationSpeed * cosWhirlAngle,
-                        state.AxialVelocity[i]
+                        state.ZVelocity[i]
                     };
                     double tangentialMagnitude = Math.Sqrt(tangentialVelocityVector[0] * tangentialVelocityVector[0] + tangentialVelocityVector[1] * tangentialVelocityVector[1] + tangentialVelocityVector[2] * tangentialVelocityVector[2]) + Constants.RegularizationCoefficient;
                     // Get tangential direction unit vector
@@ -483,7 +483,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 state.RadialVelocity[i] = radialVelocity;
                 state.WhirlAngle[i] = whirlAngle;
                 state.WhirlVelocity[i] = whirlVelocity;
-                state.AxialAcceleration[i] = ZAcceleration;
+                state.ZAcceleration[i] = ZAcceleration;
                 state.XAcceleration[i] = XAcceleration;
                 state.YAcceleration[i] = YAcceleration;   
                 state.AngularAcceleration[i] = angularAcceleration;                       

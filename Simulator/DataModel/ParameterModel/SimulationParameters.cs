@@ -40,6 +40,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public bool UseBuoyancyFactor {get; set;} = true;
         //Output properties
         public bool UsePipeMovementReconstruction {get; set;} = true;
+        
 
         public SimulationParameters(DataModel.Configuration configuration)
         {
@@ -71,14 +72,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
 
             MudMotor = new MudMotor();
-            DistributedCells = new DistributedCells(LumpedCells, Drillstring, configuration.SurfaceRPM);
-            
-            BitRock = configuration.BitRockModelEnum switch
-            {
-                BitRockModelEnum.Detournay => new Detournay(DistributedCells, Drillstring, configuration.RockStrengthEpsilon, configuration.BitWearLength, configuration.BitRockFrictionCoeff, configuration.PdcBladeNo),
-                BitRockModelEnum.MSE => new MSE(),
-                _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
-            };
+            DistributedCells = new DistributedCells(LumpedCells, Drillstring, configuration.SurfaceRPM);        
 
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
         

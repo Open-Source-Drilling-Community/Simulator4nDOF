@@ -1163,7 +1163,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.AxialVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.ZVelocity).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
                 Inclination = parameters.Trajectory.InterpolatedTheta.Append(parameters.Trajectory.InterpolatedTheta.LastOrDefault<double>()).ToList(),
                 Azimuth = parameters.Trajectory.InterpolatedPhi.Append(parameters.Trajectory.InterpolatedPhi.LastOrDefault<double>()).ToList(),

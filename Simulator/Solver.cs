@@ -12,7 +12,7 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 using NORCE.Drilling.Simulator4nDOF.Model;
-
+using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator
 {
@@ -25,32 +25,52 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         //private Input simulationParameters.Input;
         private TopdriveController topdriveController;
         private DrawworksAndTopdriveController drawworksAndTopdrive;
-        private AxialTorsionalModel axialTorsionalModel;
+        private AxialModel axialModel;
+        private TorsionalModel torsionalModel;
+        
         private LateralModel lateralModel;
+        private IBitRock bitRockModel;
 
         private ISolverODE<LateralModel> solverODELateral; 
         // Upwind scheme is used for the axial and torsional wave equations to better capture the wave propagation dynamics
 
-        private ISolverODE<AxialTorsionalModel> solverODEAxialTorsional = new UpwindScheme(); 
+        private ISolverODE<WaveModel> solverODEAxial; 
+        private ISolverODE<WaveModel> solverODETorsional; 
+        
         public Solver(SimulationParameters simulationParameters, in DataModel.Configuration configuration)
         {
             this.simulationParameters = simulationParameters;
             this.configuration = configuration;
         
      
-            state = new State(in simulationParameters);
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdriveController();
-            axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters);
+            torsionalModel = new TorsionalModel(state, simulationParameters);
+            axialModel = new AxialModel(state, simulationParameters);            
             lateralModel = new LateralModel(simulationParameters, state);
+            state = new State(in axialModel, in torsionalModel, in lateralModel, in simulationParameters);            
+            bitRockModel = configuration.BitRockModelEnum switch
+            {
+                BitRockModelEnum.Detournay => new Detournay(
+                                                    axialModel,
+                                                    torsionalModel, 
+                                                    simulationParameters.Drillstring, 
+                                                    configuration),
+                BitRockModelEnum.MSE => new MSE(),
+                _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
+            };
+
             //Create an instance of the selected ODE solver
             solverODELateral = simulationParameters.SolverType switch
             {
                 SolverType.EulerMethod => solverODELateral = new EulerMethod(),
                 SolverType.VerletMethod => solverODELateral = new VerletMethod(simulationParameters),
                 _ => throw new ArgumentException($"Unknown SolverType: {simulationParameters.SolverType}")
-            };       
+            };
+            
+            solverODEAxial = new UpwindScheme(axialModel, in simulationParameters);
+            solverODETorsional = new UpwindScheme(torsionalModel, in simulationParameters);
         }
 
         public (State, Output, Input) OuterStep(SetPoints setPoints)
@@ -87,7 +107,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // update axial position of distributed and lumped elements to simulate moving drillstring
                 simulationParameters.DistributedCells.x = simulationParameters.DistributedCells.x + ToVector(state.PipeAxialVelocity.ToColumnMajorArray()) * simulationParameters.OuterLoopTimeStep;
                 simulationParameters.LumpedCells.ElementLength[0] = simulationParameters.LumpedCells.ElementLength[0] + state.TopDrive.CalculateSurfaceAxialVelocity * simulationParameters.OuterLoopTimeStep;
-                simulationParameters.LumpedCells.ElementLength.SetSubVector(1, simulationParameters.LumpedCells.ElementLength.Count() - 1, simulationParameters.LumpedCells.ElementLength.SubVector(1, simulationParameters.LumpedCells.ElementLength.Count - 1) + state.AxialVelocity * simulationParameters.OuterLoopTimeStep);
+                simulationParameters.LumpedCells.ElementLength.SetSubVector(1, simulationParameters.LumpedCells.ElementLength.Count() - 1, simulationParameters.LumpedCells.ElementLength.SubVector(1, simulationParameters.LumpedCells.ElementLength.Count - 1) + state.ZVelocity * simulationParameters.OuterLoopTimeStep);
 
                 // update trajectory parameters and buoyancy force calculations
                 if (Math.Abs(state.BitDepth - state.PreviousCalculatedBitDepth) > 1.0)
@@ -238,25 +258,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Set these output values in the beginning to match matlab plotting
             output.TopDriveRotationInRPM = state.TopDrive.TopDriveAngularVelocity;
             if (!simulationParameters.UseMudMotor)
-                output.BitRotationInRPM = state.PipeAngularVelocity[state.PipeAngularVelocity.RowCount - 1, state.PipeAngularVelocity.ColumnCount - 1];
+                output.BitRotationInRPM = state.PipeAngularVelocity[state.PipeAngularVelocity.Count - 1];
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
             double dtTemp = simulationParameters.DistributedCells.DistributedSectionLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             // Wave equations are transformed into their Riemann invariants
-            axialTorsionalModel.PrepareModel(axialTorsionalModel, state, simulationParameters);
+            axialModel.PrepareModel(axialModel, state, simulationParameters);   
+            torsionalModel.PrepareModel(torsionalModel, state, simulationParameters);
             lateralModel.PrepareModel(lateralModel, state, simulationParameters);
-            //AccelerationCalculation.PrepareAxialTorsional(axialTorsionalModel, state, simulationParameters);            
-            //AccelerationCalculation.PreprareLateral(lateralModel, state, simulationParameters);            
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
                 UpdateDepthInnerLoop();            
                 // Update axial-torsional state using upwind scheme
                 // The staggered method is used for a semi-implicit integration, increasing stability           
-                output.SimulationHealthy = solverODEAxialTorsional.IntegrationStep(state, axialTorsionalModel, in simulationParameters);                   
+                output.SimulationHealthy = solverODEAxial.IntegrationStep(state, axialModel, in simulationParameters);                   
+                output.SimulationHealthy = solverODETorsional.IntegrationStep(state, torsionalModel, in simulationParameters);                                   
+                //  Calculate interaction forces on bit based on selected bit-rock model 
+                // and update the state accordingly
+                bitRockModel.CalculateInteractionForce(state, in simulationParameters);
+                bitRockModel.ManageStickingOnBottom(state, in simulationParameters);
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
-                axialTorsionalModel.IntegrateTopDriveSpeed(state, simulationParameters);
+                torsionalModel.IntegrateTopDriveSpeed(state, in simulationParameters);
                 // Calculate lateral accelerations                    
                 output.SimulationHealthy = solverODELateral.IntegrationStep(state, lateralModel, in simulationParameters);
                 //Abort simulation in case of divergence
@@ -274,11 +298,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
 
             // Compute states from Riemann invariants
-            state.PipeAngularVelocity = 0.5 * (state.DownwardTorsionalWave + state.UpwardTorsionalWave);
-            state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (state.DownwardTorsionalWave - state.UpwardTorsionalWave);
-
-            state.PipeAxialVelocity = 0.5 * (state.DownwardAxialWave + state.UpwardAxialWave);
-            state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (state.DownwardAxialWave - state.UpwardAxialWave);
+            //state.PipeAngularVelocity = 0.5 * (state.DownwardTorsionalWave + state.UpwardTorsionalWave);
+            //state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (state.DownwardTorsionalWave - state.UpwardTorsionalWave);
+            //state.PipeAxialVelocity = 0.5 * (state.DownwardAxialWave + state.UpwardAxialWave);
+            //state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (state.DownwardAxialWave - state.UpwardAxialWave);
         
             // Bending moments
             lateralModel.UpdateBendingMoments(state, simulationParameters);
@@ -391,7 +414,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             if (simulationParameters.UsePipeMovementReconstruction)
             {
-                output.SensorAxialVelocity = state.AxialVelocity[simulationParameters.Drillstring.IndexSensor]; // sleeve angular displacement;
+                output.SensorAxialVelocity = state.ZVelocity[simulationParameters.Drillstring.IndexSensor]; // sleeve angular displacement;
                 output.SensorAxialDisplacement = output.SensorAxialDisplacement + output.SensorAxialVelocity * simulationParameters.OuterLoopTimeStep;
                 if (!simulationParameters.Drillstring.SleeveIndexPosition.Contains(simulationParameters.Drillstring.IndexSensor)) //sleeve angular velocity
                 {
@@ -408,7 +431,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.SensorWhirlAngle = state.WhirlAngle[simulationParameters.Drillstring.IndexSensor]; //whirl angle
                 output.SensorRadialSpeed =state.RadialVelocity[simulationParameters.Drillstring.IndexSensor]; //radial velocity
                 output.SensorWhirlSpeed = state.WhirlVelocity[simulationParameters.Drillstring.IndexSensor]; //whirl velocity
-                output.SensorAxialAcceleration = state.AxialAcceleration[simulationParameters.Drillstring.IndexSensor]; //axial acceleration
+                output.SensorAxialAcceleration = state.ZAcceleration[simulationParameters.Drillstring.IndexSensor]; //axial acceleration
                 output.SensorAngularAcceleration = theta_ddot; // angular acceleration
                 output.SensorRadialAcceleration = r_ddot; // radial acceleration
                 output.SensorWhirlAcceleration = phi_ddot; // whirl acceleration

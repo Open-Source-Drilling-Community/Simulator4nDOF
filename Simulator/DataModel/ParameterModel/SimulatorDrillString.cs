@@ -76,7 +76,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double CalculatedTorsionalDamping;
         public double CalculatedAxialDamping;
         public double CalculateLateralDamping;
-
+        // 
+        public double TotalLength;
         public double PipeLengthForBending;                               // [m] Length of pipe used in bending stiffness calculation
         public Vector<double> BendingStiffness;                       // [N/m] Bending stiffness
         public Vector<double> FluidAddedMass;                       // [kg] Added fluid mass
@@ -127,7 +128,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             bool readFromMS = true; 
            
             double scaleFactor = readFromMS ? 1.0 : Constants.InchToMeterConversion;
-            
+            TotalLength = lumpedCells.Length;
       
             foreach (var section in drillString.DrillStringSectionList)
             {
