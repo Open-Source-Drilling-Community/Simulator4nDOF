@@ -7,7 +7,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
     public interface IBitRock
     {                    
         public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters){}
-        public void ManageStickingOnBottom(State state, in SimulationParameters parameters)
+        public void ManageStickingOnBottom(State state, 
+                                        in AxialModel axialModel, 
+                                        in TorsionalModel torsionalModel, 
+                                        in SimulationParameters parameters)
         {
            // manage the bit sticking off bottom condition
             if (!state.BitOnBotton)
@@ -17,8 +20,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 {
                     int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;             
                     // Can be recovered from the speed and strain data from the models!
-                    double torsionalAcceleration = state.UpwardTorsionalWave[state.UpwardTorsionalWave.RowCount - 1, state.UpwardTorsionalWave.ColumnCount - 1];
-                    double axialAcceleration = state.UpwardAxialWave[state.UpwardAxialWave.RowCount - 1, state.UpwardAxialWave.ColumnCount - 1];                                            
+                    double torsionalAcceleration = torsionalModel.UpwardWave[torsionalModel.NumberOfElements - 1];
+                    double axialAcceleration = axialModel.UpwardWave[axialModel.NumberOfElements - 1];                                            
                     state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] / parameters.Drillstring.TorsionalWaveSpeed * torsionalAcceleration;
                     state.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] / parameters.Drillstring.AxialWaveSpeed * axialAcceleration;
                 }

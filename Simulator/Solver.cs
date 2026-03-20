@@ -277,7 +277,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 //  Calculate interaction forces on bit based on selected bit-rock model 
                 // and update the state accordingly
                 bitRockModel.CalculateInteractionForce(state, in simulationParameters);
-                bitRockModel.ManageStickingOnBottom(state, in simulationParameters);
+                bitRockModel.ManageStickingOnBottom(state, in axialModel, in torsionalModel, in simulationParameters);
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
                 torsionalModel.IntegrateTopDriveSpeed(state, in simulationParameters);
                 // Calculate lateral accelerations                    

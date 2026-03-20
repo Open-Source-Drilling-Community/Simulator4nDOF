@@ -1149,7 +1149,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             {
                 Time = time,
                 Depth = output.Depth.ToList(),
-                DepthAll = parameters.DistributedCells.x.ToList(),
+                DepthAll = output.Depth.ToList(),
                 SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.LumpedCells.CumulativeElementLength[(int)index]).ToList(),
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
