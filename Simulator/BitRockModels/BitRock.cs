@@ -16,6 +16,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 if (parameters.Input.StickingBoolean)
                 {
                     int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;             
+                    // Can be recovered from the speed and strain data from the models!
                     double torsionalAcceleration = state.UpwardTorsionalWave[state.UpwardTorsionalWave.RowCount - 1, state.UpwardTorsionalWave.ColumnCount - 1];
                     double axialAcceleration = state.UpwardAxialWave[state.UpwardAxialWave.RowCount - 1, state.UpwardAxialWave.ColumnCount - 1];                                            
                     state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] / parameters.Drillstring.TorsionalWaveSpeed * torsionalAcceleration;

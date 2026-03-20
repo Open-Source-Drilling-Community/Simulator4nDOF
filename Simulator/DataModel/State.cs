@@ -129,6 +129,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             AngularAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element axial displacement
             ZDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            for (int i = 0; i < simulationParameters.LumpedCells.NumberOfLumpedElements; i++)
+            {
+                ZDisplacement[i] = simulationParameters.LumpedCells.CumulativeElementLength[i];
+            }
             // Initialize lumped element axial velocity
             ZVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element axial acceleration

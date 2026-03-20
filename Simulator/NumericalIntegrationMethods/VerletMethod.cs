@@ -22,7 +22,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         public Vector<double> ZDisplacementMinus1;
 
         public Vector<double> ZVelocityMinus1;
-        private double timeStepSquared;       
+        private double timeStepSquared;
+        private double timeStep;       
 
         public Vector<double> SleeveAngularDisplacement;                        
         public Vector<double> AngularDisplacement;                
@@ -43,6 +44,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             XDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             YDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            ZDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            
             AngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             XVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             YVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -53,21 +56,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             AngularDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             XDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             YDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            ZDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             ZVelocityMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            timeStep = simulationParameters.InnerLoopTimeStep;
+            timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;
         }    
 
         public void InitializeVerletMethod(State state, in SimulationParameters simulationParameters)
         {
 
-            timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;
-            for (int i = 0; i < state.XDisplacement.Count; i++)
+                //timeStepSquared = timeStep * timeStep;
+                for (int i = 0; i < state.XDisplacement.Count; i++)
             {
-                AngularDisplacementMinus1[i] = state.AngularDisplacement[i] - state.AngularVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.AngularAcceleration[i];
-                XDisplacementMinus1[i] = state.XDisplacement[i] - state.XVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.XAcceleration[i];
-                YDisplacementMinus1[i] = state.YDisplacement[i] - state.YVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.YAcceleration[i];
-                ZDisplacementMinus1[i] = state.ZDisplacement[i] - state.ZVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.ZAcceleration[i];
+                AngularDisplacementMinus1[i] = state.AngularDisplacement[i] - state.AngularVelocity[i] * timeStep + 0.5 * timeStepSquared * state.AngularAcceleration[i];
+                XDisplacementMinus1[i] = state.XDisplacement[i] - state.XVelocity[i] * timeStep + 0.5 * timeStepSquared * state.XAcceleration[i];
+                YDisplacementMinus1[i] = state.YDisplacement[i] - state.YVelocity[i] * timeStep + 0.5 * timeStepSquared * state.YAcceleration[i];
+                ZDisplacementMinus1[i] = state.ZDisplacement[i] - state.ZVelocity[i] * timeStep + 0.5 * timeStepSquared * state.ZAcceleration[i];
                 
-                ZVelocityMinus1[i] = state.ZVelocity[i] - state.ZAcceleration[i] * simulationParameters.InnerLoopTimeStep;
+                ZVelocityMinus1[i] = state.ZVelocity[i] - state.ZAcceleration[i] * timeStep;
 
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];
@@ -79,7 +85,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             }
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {
-                SleeveAngularDisplacementMinus1[i] = state.SleeveAngularDisplacement[i] - state.SleeveAngularVelocity[i] * simulationParameters.InnerLoopTimeStep + 0.5 * timeStepSquared * state.SleeveAngularAcceleration[i];
+                SleeveAngularDisplacementMinus1[i] = state.SleeveAngularDisplacement[i] - state.SleeveAngularVelocity[i] * timeStep + 0.5 * timeStepSquared * state.SleeveAngularAcceleration[i];
                 SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i];
             }
             FirstStep = false;
@@ -89,7 +95,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         {               
             // Use the lateral model instance to estimate the accelerations
             lateralModel.CalculateAccelerations(state, simulationParameters);
-            timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;            
+            timeStepSquared = timeStep * timeStep;            
             int n = state.SleeveAngularDisplacement.Count;
             // If it is the first step, initialize the minus one values                        
             if (FirstStep)
@@ -106,13 +112,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 state.ZDisplacement[i] = 2 * ZDisplacement[i] - ZDisplacementMinus1[i] + timeStepSquared * state.ZAcceleration[i];
 
                 // Velocities            
-                state.AngularVelocity[i] = (state.AngularDisplacement[i] - AngularDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
-                state.XVelocity[i] = (state.XDisplacement[i] - XDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
-                state.YVelocity[i] = (state.YDisplacement[i] - YDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
-                state.ZVelocity[i] = (state.ZDisplacement[i] - ZDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
+                state.AngularVelocity[i] = (state.AngularDisplacement[i] - AngularDisplacementMinus1[i]) / (2 * timeStep);
+                state.XVelocity[i] = (state.XDisplacement[i] - XDisplacementMinus1[i]) / (2 * timeStep);
+                state.YVelocity[i] = (state.YDisplacement[i] - YDisplacementMinus1[i]) / (2 * timeStep);
+                state.ZVelocity[i] = (state.ZDisplacement[i] - ZDisplacementMinus1[i]) / (2 * timeStep);
                 
                 // Verlet Method for velocity update: v(t+dt) = v(t) + 0.5*dt*(a(t) + a(t+dt))
-                //state.ZVelocity[i] = ZVelocityMinus1[i] + 0.5 * simulationParameters.InnerLoopTimeStep * (ZAcceleration[i] + state.ZAcceleration[i]);
+                //state.ZVelocity[i] = ZVelocityMinus1[i] + 0.5 * timeStep * (ZAcceleration[i] + state.ZAcceleration[i]);
                 //Rollover data for next iteration                
                 AngularDisplacementMinus1[i] = AngularDisplacement[i];
                 XDisplacementMinus1[i] = XDisplacement[i];
@@ -135,7 +141,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {
                 state.SleeveAngularDisplacement[i] = 2 * SleeveAngularDisplacement[i] - SleeveAngularDisplacementMinus1[i] + timeStepSquared * state.SleeveAngularAcceleration[i];
-                state.SleeveAngularVelocity[i] = (state.SleeveAngularDisplacement[i] - SleeveAngularDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);       
+                state.SleeveAngularVelocity[i] = (state.SleeveAngularDisplacement[i] - SleeveAngularDisplacementMinus1[i]) / (2 * timeStep);       
                 //Rollover data for next iteration 
                 SleeveAngularDisplacementMinus1[i] = SleeveAngularDisplacement[i];
                 SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i];                         

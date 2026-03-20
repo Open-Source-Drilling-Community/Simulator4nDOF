@@ -63,7 +63,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             //Create an instance of the selected ODE solver
             solverODELateral = simulationParameters.SolverType switch
             {
-                SolverType.EulerMethod => solverODELateral = new EulerMethod(),
+                SolverType.EulerMethod => solverODELateral = new EulerMethod(simulationParameters),
                 SolverType.VerletMethod => solverODELateral = new VerletMethod(simulationParameters),
                 _ => throw new ArgumentException($"Unknown SolverType: {simulationParameters.SolverType}")
             };
@@ -389,7 +389,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Theta_x_ddot = -(u_y_ddot - u_y_ddot_iMinus1) / simulationParameters.LumpedCells.DistanceBetweenElements; // Bending angle second derivative x-component
                 Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / simulationParameters.LumpedCells.DistanceBetweenElements; // Bending angle second derivative y-component*/
             }
-          
+
+            
+            output.Depth = state.ZDisplacement;          
             output.BitVelocity = state.BitVelocity;//Bit Velocity
             // Parse outputs
             output.NormalForceProfileStiffString = state.NormalCollisionForce; // Pipe shear strain 
@@ -403,7 +405,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.WeightOnBit = state.WeightOnBit;  // Weight on bit 
             output.TorqueOnBit = state.TorqueOnBit;  // Torque on bit
             
-            output.Depth = simulationParameters.LumpedCells.CumulativeElementLength;
+
             output.SensorMb_x = state.BendingMomentX[simulationParameters.Drillstring.IndexSensor];
             output.SensorMb_y = state.BendingMomentY[simulationParameters.Drillstring.IndexSensor];
             output.RadialDisplacement = state.RadialDisplacement;
