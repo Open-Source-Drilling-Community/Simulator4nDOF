@@ -72,8 +72,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];
                 YDisplacement[i] = state.YDisplacement[i];
-                ZVelocity[i] = state.ZVelocity[i];
+                ZDisplacement[i] = state.ZDisplacement[i];
 
+                ZVelocity[i] = state.ZVelocity[i];
                 ZAcceleration[i] = state.ZAcceleration[i];            
             }
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
@@ -102,23 +103,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 state.AngularDisplacement[i] = 2 * AngularDisplacement[i] - AngularDisplacementMinus1[i] + timeStepSquared * state.AngularAcceleration[i];
                 state.XDisplacement[i] = 2 * XDisplacement[i] - XDisplacementMinus1[i] + timeStepSquared * state.XAcceleration[i];
                 state.YDisplacement[i] = 2 * YDisplacement[i] - YDisplacementMinus1[i] + timeStepSquared * state.YAcceleration[i];
+                state.ZDisplacement[i] = 2 * ZDisplacement[i] - ZDisplacementMinus1[i] + timeStepSquared * state.ZAcceleration[i];
+
                 // Velocities            
                 state.AngularVelocity[i] = (state.AngularDisplacement[i] - AngularDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
                 state.XVelocity[i] = (state.XDisplacement[i] - XDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
                 state.YVelocity[i] = (state.YDisplacement[i] - YDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
+                state.ZVelocity[i] = (state.ZDisplacement[i] - ZDisplacementMinus1[i]) / (2 * simulationParameters.InnerLoopTimeStep);
+                
                 // Verlet Method for velocity update: v(t+dt) = v(t) + 0.5*dt*(a(t) + a(t+dt))
-                state.ZVelocity[i] = ZVelocityMinus1[i] + 0.5 * simulationParameters.InnerLoopTimeStep * (ZAcceleration[i] + state.ZAcceleration[i]);
+                //state.ZVelocity[i] = ZVelocityMinus1[i] + 0.5 * simulationParameters.InnerLoopTimeStep * (ZAcceleration[i] + state.ZAcceleration[i]);
                 //Rollover data for next iteration                
                 AngularDisplacementMinus1[i] = AngularDisplacement[i];
                 XDisplacementMinus1[i] = XDisplacement[i];
                 YDisplacementMinus1[i] = YDisplacement[i];
-                ZVelocityMinus1[i] = ZVelocity[i];
+                ZDisplacementMinus1[i] = ZDisplacement[i];
+                //ZVelocityMinus1[i] = ZVelocity[i];
                 
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];
                 YDisplacement[i] = state.YDisplacement[i];            
-                ZVelocity[i] = state.ZVelocity[i]; // Rollover axial velocity for next iteration
-                ZAcceleration[i] = state.ZAcceleration[i]; // Rollover axial acceleration for next iteration
+                ZDisplacement[i] = state.ZDisplacement[i];
+                //ZVelocity[i] = state.ZVelocity[i]; // Rollover axial velocity for next iteration
+                //ZAcceleration[i] = state.ZAcceleration[i]; // Rollover axial acceleration for next iteration
                 //Check if the simulation diverged
                 if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]))
                 {
@@ -141,10 +148,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             AngularDisplacementMinus1 = ExtendVectorStart(AngularDisplacementMinus1[0], AngularDisplacementMinus1);
             XDisplacementMinus1 = ExtendVectorStart(XDisplacementMinus1[0], XDisplacementMinus1);
             YDisplacementMinus1 = ExtendVectorStart(YDisplacementMinus1[0], YDisplacementMinus1);
-            ZVelocityMinus1 = ExtendVectorStart(ZVelocityMinus1[0], ZVelocityMinus1);
+            ZDisplacementMinus1 = ExtendVectorStart(ZDisplacementMinus1[0], ZDisplacementMinus1);
+       
+            //ZVelocityMinus1 = ExtendVectorStart(ZVelocityMinus1[0], ZVelocityMinus1);
             AngularDisplacement = ExtendVectorStart(AngularDisplacement[0], AngularDisplacement);
             XDisplacement = ExtendVectorStart(XDisplacement[0], XDisplacement);
             YDisplacement = ExtendVectorStart(YDisplacement[0], YDisplacement);
+            ZDisplacement = ExtendVectorStart(ZDisplacement[0], ZDisplacement);
+            
             AngularVelocity = ExtendVectorStart(AngularVelocity[0], AngularVelocity);
             XVelocity = ExtendVectorStart(XVelocity[0], XVelocity);
             YVelocity = ExtendVectorStart(YVelocity[0], YVelocity);
