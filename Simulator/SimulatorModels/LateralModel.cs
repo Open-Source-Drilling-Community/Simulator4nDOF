@@ -13,11 +13,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
     public class LateralModel : IModel<LateralModel>
     {       
+        public int NumberOfElements; // Number of elements is one less than the number of nodes
+
         private Vector<double> BendingStiffness;
         private Vector<double> PolarMomentTimesShearModuli;
         private Vector<double> PreStressNormalForce;
         private Vector<double> PreStressBinormalForce;                  
-        private Matrix<double> ScalingMatrix;
+        //private Matrix<double> ScalingMatrix;
         private Vector<double> ToolFaceAngle;
         // State variables -> can be simplified but decided to leave for the sake of debugging and readability. Can be optimized later if needed.
         private double radialDisplacement;
@@ -81,20 +83,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         double coulombFrictionZ;
                    
         
-        public LateralModel(SimulationParameters simulationParameters, State state)
+        public LateralModel(SimulationParameters simulationParameters)
         {
-            state.Torque = Vector<double>.Build.Dense(state.XDisplacement.Count + 1);
-            BendingStiffness = Vector<double>.Build.Dense(state.XDisplacement.Count+1);
-            PolarMomentTimesShearModuli = Vector<double>.Build.Dense(state.XDisplacement.Count);
-            PreStressNormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
-            PreStressBinormalForce = Vector<double>.Build.Dense(state.XDisplacement.Count);
-            ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
-            ToolFaceAngle = Vector<double>.Build.Dense(state.XDisplacement.Count);
+            NumberOfElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
+            BendingStiffness = Vector<double>.Build.Dense(NumberOfElements+1);
+            PolarMomentTimesShearModuli = Vector<double>.Build.Dense(NumberOfElements);
+            PreStressNormalForce = Vector<double>.Build.Dense(NumberOfElements);
+            PreStressBinormalForce = Vector<double>.Build.Dense(NumberOfElements);
+            //ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
+            ToolFaceAngle = Vector<double>.Build.Dense(NumberOfElements);
         }
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
         {
             double XiMinus1, YiMinus1, XiPlus1, YiPlus1;
-            double invElementLengthSquared = 1.0 / (simulationParameters.LumpedCells.ElementLength * simulationParameters.LumpedCells.ElementLength);
+            double invElementLengthSquared = 1.0 / (simulationParameters.LumpedCells.CumulativeElementLength * simulationParameters.LumpedCells.CumulativeElementLength);
             double momentX, momentY;
             
             for (int i = 1; i < state.XDisplacement.Count - 1; i++)
@@ -117,7 +119,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // Initialize scaling matrix and compute element-wise product    
             Vector<double> elementWiseProduct = parameters.Drillstring.YoungModuli.PointwiseMultiply(parameters.Drillstring.PipeArea);
             //Column matrix with ones
-            model.ScalingMatrix = Vector<double>.Build.Dense(parameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
             //Matrix with YoungModulus * Area repeated in each column
             /*
             |EA1 EA2 EA3 ... EAn|
@@ -125,20 +126,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             |...                |
             |EA1 EA2 EA3 ... EAn|
             */
-            Matrix<double> dragMatrix = model.ScalingMatrix * elementWiseProduct.ToRowMatrix();
-            dragMatrix = state.PipeAxialStrain.PointwiseMultiply(dragMatrix);
-        
-            Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
-            Vector<double> drag = LinearInterpolate(parameters.DistributedCells.x, drag_flattened, parameters.LumpedCells.ElementLength);
-
+            //model.ScalingMatrix = Vector<double>.Build.Dense(parameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();            
+            //Matrix<double> dragMatrix = model.ScalingMatrix * elementWiseProduct.ToRowMatrix();
+            //dragMatrix = state.PipeAxialStrain.PointwiseMultiply(elementWiseProduct);        
+            //Vector<double> drag_flattened = ToVector(dragMatrix.ToColumnMajorArray());
+            //Vector<double> drag = LinearInterpolate(parameters.DistributedCells.x, drag_flattened, parameters.LumpedCells.ElementLength);
+          
+            Vector<double> drag = state.PipeAxialStrain.PointwiseMultiply(elementWiseProduct);
             Vector<double> phiVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffPhiInterpolated);
             Vector<double> thetaVec_dote = ExtendVectorStart(0, parameters.Trajectory.DiffThetaInterpolated);
             Vector<double> thetaVece = ExtendVectorStart(0, parameters.Trajectory.InterpolatedTheta);
-            Vector<double> trapezoidalsIntegration = CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, Reverse(parameters.Flow.dSigmaDx));
+            Vector<double> trapezoidalsIntegration = CumulativeTrapezoidal(parameters.LumpedCells.CumulativeElementLength, Reverse(parameters.Flow.dSigmaDx));
             state.Tension = Reverse(trapezoidalsIntegration) + parameters.Flow.AxialBuoyancyForceChangeOfDiameters - drag;
             Vector<double> fN_softstring = (Square((state.Tension + parameters.Flow.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(thetaVec_dote) - parameters.Flow.BuoyantWeightPerLength.PointwiseMultiply(thetaVece.PointwiseSin())) +
                                             Square((state.Tension + parameters.Flow.NormalBuoyancyForceChangeOfDiameters).PointwiseMultiply(phiVec_dote).PointwiseMultiply(thetaVece.PointwiseSin()))).PointwiseSqrt();
-            Vector<double> I_fN_softstring = Utilities.CumulativeTrapezoidal(parameters.LumpedCells.ElementLength, fN_softstring);
+            Vector<double> I_fN_softstring = Utilities.CumulativeTrapezoidal(parameters.LumpedCells.CumulativeElementLength, fN_softstring);
             state.SoftStringNormalForce = Diff(I_fN_softstring); // [N] Lumped normal force per element assuming soft - string model(not used in 4nDOF model)
             Vector<double> AiExtended = ExtendVectorStart(parameters.Drillstring.InnerArea[0], parameters.Drillstring.InnerArea);
             Vector<double> AoExtended = ExtendVectorStart(parameters.Drillstring.OuterArea[0], parameters.Drillstring.OuterArea);
@@ -152,10 +154,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             Vector<double> bendingStiffness = ExtendVectorStart(parameters.Drillstring.BendingStiffness[0], parameters.Drillstring.BendingStiffness); 
             model.BendingStiffness = - (bendingStiffness - Math.Pow(Math.PI, 2) * state.Tension / (2 * parameters.Drillstring.PipeLengthForBending)).PointwiseMaximum(0.0);                                            
             model.PolarMomentTimesShearModuli = parameters.Drillstring.PipePolarMoment.PointwiseMultiply(parameters.Drillstring.ShearModuli); // Element-wise multiplication
-            Matrix<double> torqueMatrix = state.PipeShearStrain.PointwiseMultiply(model.ScalingMatrix * model.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
-            Vector<double> torqueFlattened = ToVector(torqueMatrix.ToColumnMajorArray());
-            state.Torque = LinearInterpolate(parameters.DistributedCells.x, torqueFlattened, parameters.LumpedCells.ElementLength);
-
+            //Matrix<double> torqueMatrix = state.PipeShearStrain.PointwiseMultiply(model.ScalingMatrix * model.PolarMomentTimesShearModuli.ToRowMatrix()); // 5x136 matrix
+            //Vector<double> torqueFlattened = ToVector(torqueMatrix.ToColumnMajorArray());            
+            //state.Torque = LinearInterpolate(parameters.DistributedCells.x, torqueFlattened, parameters.LumpedCells.ElementLength);
+            state.Torque = state.PipeShearStrain.PointwiseMultiply(parameters.Drillstring.PipePolarMoment.PointwiseMultiply(parameters.Drillstring.ShearModuli)); // Alternative way of calculating torque without using the scaling matrix. Should give the same result as the previous lines.
             //Allocate variables for the loop. For synchronous computing
             double normalForce;
             double binormalForce;
@@ -199,8 +201,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // ========== Update relevant model variables ==========
                 model.ToolFaceAngle[i] = Math.Acos(dotProduct) * signToolFace;
                 //This is equivalent of integrating with the trapezoidal rule and then getting the difference.                    
-                model.PreStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * (parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i]);
-                model.PreStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * (parameters.LumpedCells.ElementLength[i+1] - parameters.LumpedCells.ElementLength[i]);
+                model.PreStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * (parameters.LumpedCells.CumulativeElementLength[i+1] - parameters.LumpedCells.CumulativeElementLength[i]);
+                model.PreStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * (parameters.LumpedCells.CumulativeElementLength[i+1] - parameters.LumpedCells.CumulativeElementLength[i]);
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
                 oldBinormalForce = binormalForce;     
@@ -239,31 +241,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 #endregion
                 #region Axial-Torsional Distributed Forces Forces
                 torqueOnBit = parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit;
-                //Calculated the torque and force difference in each element (TorqueElement and TorqueNextElement)                
-                deltaTorsionalWave = state.DownwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - state.UpwardTorsionalWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
-                deltaAxialWave = state.DownwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i] - state.UpwardAxialWave[parameters.LumpedCells.DistributedToLumpedRatio - 1, i];                
-                
-                torqueElement = parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i] / (2.0 * parameters.Drillstring.TorsionalWaveSpeed) * deltaTorsionalWave;                
-                forceElement = parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] / (2.0 * parameters.Drillstring.AxialWaveSpeed) * deltaAxialWave;
-
+                //Calculated the torque and force difference in each element (TorqueElement and TorqueNextElement)                                
+                torqueElement = parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i] * state.PipeShearStrain[i];
+                forceElement = parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] * state.PipeAxialStrain[i];
+                    
                 //If it is the last element, use the torque on bit
                 torqueNextElement = (i == state.XDisplacement.Count - 1) ? 
-                    torqueOnBit 
-                    : 
-                    parameters.Drillstring.PipePolarMoment[i + 1] * parameters.Drillstring.ShearModuli[i + 1] / (2.0 * parameters.Drillstring.TorsionalWaveSpeed) * 
-                        (
-                            state.DownwardTorsionalWave[0, i + 1] 
-                          - state.UpwardTorsionalWave[0, i + 1]
-                        );                
+                    torqueOnBit : parameters.Drillstring.PipePolarMoment[i + 1] * parameters.Drillstring.ShearModuli[i + 1] * state.PipeShearStrain[i + 1];
+                    
                 forceNextElement = (i == state.XDisplacement.Count - 1) ? 
-                    state.WeightOnBit 
-                    : 
-                    parameters.Drillstring.PipeArea[i + 1] * parameters.Drillstring.YoungModuli[i + 1] / (2.0 * parameters.Drillstring.AxialWaveSpeed) * 
-                        (
-                            state.DownwardAxialWave[0, i + 1] 
-                          - state.UpwardAxialWave[0, i + 1]
-                        );            
-
+                    state.WeightOnBit : parameters.Drillstring.PipeArea[i + 1] * parameters.Drillstring.YoungModuli[i + 1] * state.PipeAxialStrain[i + 1];
+                    
                 torqueDifference = torqueElement - torqueNextElement;
                 axialForceDifference = forceElement - forceNextElement;                      
                 #endregion

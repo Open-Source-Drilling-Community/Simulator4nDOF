@@ -128,7 +128,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             bool readFromMS = true; 
            
             double scaleFactor = readFromMS ? 1.0 : Constants.InchToMeterConversion;
-            TotalLength = lumpedCells.Length;
+            TotalLength = lumpedCells.ElementLength;
       
             foreach (var section in drillString.DrillStringSectionList)
             {
@@ -353,7 +353,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 Lwc.Add(Lwc_sum / Lc_sum);
             }
 
-            double Lavg = lumpedCells.Length / lumpedCells.NumberOfLumpedElements;
+            double Lavg = lumpedCells.ElementLength / lumpedCells.NumberOfLumpedElements;
 
             // number of elements in BHA section, excluding stabilizers
             List<int> Nc = CollarLength.Select(l => Math.Max((int)Math.Floor(l / Lavg), 1)).ToList(); 
@@ -411,7 +411,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             for (int i = 0; i < TotalSleeveNumber; i++)
             {
-                SleeveIndexPosition[i] = Array.FindIndex(lumpedCells.ElementLength.ToArray(), x => x > MD - lumpedCells.DistanceBetweenElements - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
+                SleeveIndexPosition[i] = Array.FindIndex(lumpedCells.CumulativeElementLength.ToArray(), x => x > MD - lumpedCells.DistanceBetweenElements - sleeveDistancesFromBit[i] && x <= MD - sleeveDistancesFromBit[i]); // Index of sleeves in lumped nodes
             }
             SleeveIndexPosition = Reverse(SleeveIndexPosition);
         
@@ -433,7 +433,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             for (int i = idx_previousToolJoint + 1; i < Np.Sum(); i++)
             {
-                if (lumpedCells.ElementLength[i] - lumpedCells.ElementLength[idx_previousToolJoint] >= 10 && !SleeveIndexPosition.Contains(i))
+                if (lumpedCells.CumulativeElementLength[i] - lumpedCells.CumulativeElementLength[idx_previousToolJoint] >= 10 && !SleeveIndexPosition.Contains(i))
                 {
                     isToolJoint[i] = 1;
                     idx_previousToolJoint = i;
@@ -620,7 +620,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             EccentricMass = MassImbalancePercentage * LumpedElementMass; // [kg] Eccentric mass
 
             var dxL = lumpedCells.DistanceBetweenElements;
-            IndexSensor = (int)lumpedCells.ElementLength
+            IndexSensor = (int)lumpedCells.CumulativeElementLength
             .Select((value, index) => new { Value = value, Index = index })
             .Where(x => x.Value > MD - sensorDistanceFromBit - dxL && x.Value <= MD - sensorDistanceFromBit)
             .Select(x => (double)x.Index) // Convert index to double

@@ -42,14 +42,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             this.simulationParameters = simulationParameters;
             this.configuration = configuration;
         
-     
+            state = new State(in simulationParameters);                        
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdriveController();
-            torsionalModel = new TorsionalModel(state, simulationParameters);
-            axialModel = new AxialModel(state, simulationParameters);            
-            lateralModel = new LateralModel(simulationParameters, state);
-            state = new State(in axialModel, in torsionalModel, in lateralModel, in simulationParameters);            
+            torsionalModel = new TorsionalModel(simulationParameters);
+            axialModel = new AxialModel(simulationParameters);            
+            lateralModel = new LateralModel(simulationParameters);
             bitRockModel = configuration.BitRockModelEnum switch
             {
                 BitRockModelEnum.Detournay => new Detournay(
@@ -105,9 +104,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             if (simulationParameters.MovingDrillstring)
             {
                 // update axial position of distributed and lumped elements to simulate moving drillstring
-                simulationParameters.DistributedCells.x = simulationParameters.DistributedCells.x + ToVector(state.PipeAxialVelocity.ToColumnMajorArray()) * simulationParameters.OuterLoopTimeStep;
-                simulationParameters.LumpedCells.ElementLength[0] = simulationParameters.LumpedCells.ElementLength[0] + state.TopDrive.CalculateSurfaceAxialVelocity * simulationParameters.OuterLoopTimeStep;
-                simulationParameters.LumpedCells.ElementLength.SetSubVector(1, simulationParameters.LumpedCells.ElementLength.Count() - 1, simulationParameters.LumpedCells.ElementLength.SubVector(1, simulationParameters.LumpedCells.ElementLength.Count - 1) + state.ZVelocity * simulationParameters.OuterLoopTimeStep);
+                //simulationParameters.DistributedCells.x = simulationParameters.DistributedCells.x + ToVector(state.PipeAxialVelocity.ToColumnMajorArray()) * simulationParameters.OuterLoopTimeStep;
+                simulationParameters.LumpedCells.CumulativeElementLength[0] = simulationParameters.LumpedCells.CumulativeElementLength[0] + state.TopDrive.CalculateSurfaceAxialVelocity * simulationParameters.OuterLoopTimeStep;
+                simulationParameters.LumpedCells.CumulativeElementLength.SetSubVector(1, simulationParameters.LumpedCells.CumulativeElementLength.Count() - 1, simulationParameters.LumpedCells.CumulativeElementLength.SubVector(1, simulationParameters.LumpedCells.CumulativeElementLength.Count - 1) + state.ZVelocity * simulationParameters.OuterLoopTimeStep);
 
                 // update trajectory parameters and buoyancy force calculations
                 if (Math.Abs(state.BitDepth - state.PreviousCalculatedBitDepth) > 1.0)
@@ -121,7 +120,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // if the top most element has traveled more than the distance between
                 // elements, we create a new lumped element and corresponding distributed section;
                 // we also need to reconstruct the parameter and state vectors to include the new elements
-                if (simulationParameters.LumpedCells.ElementLength[0] > simulationParameters.LumpedCells.DistanceBetweenElements)
+                if (simulationParameters.LumpedCells.CumulativeElementLength[0] > simulationParameters.LumpedCells.DistanceBetweenElements)
                 {
                     AddNewLumpedElement();
                     simulationParameters.Trajectory.UpdateTrajectory(simulationParameters.LumpedCells);
@@ -262,7 +261,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
-            double dtTemp = simulationParameters.DistributedCells.DistributedSectionLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
+            double dtTemp = simulationParameters.DistributedCells.ElementLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             // Wave equations are transformed into their Riemann invariants
             axialModel.PrepareModel(axialModel, state, simulationParameters);   
             torsionalModel.PrepareModel(torsionalModel, state, simulationParameters);
@@ -404,7 +403,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.WeightOnBit = state.WeightOnBit;  // Weight on bit 
             output.TorqueOnBit = state.TorqueOnBit;  // Torque on bit
             
-            output.Depth = simulationParameters.LumpedCells.ElementLength;
+            output.Depth = simulationParameters.LumpedCells.CumulativeElementLength;
             output.SensorMb_x = state.BendingMomentX[simulationParameters.Drillstring.IndexSensor];
             output.SensorMb_y = state.BendingMomentY[simulationParameters.Drillstring.IndexSensor];
             output.RadialDisplacement = state.RadialDisplacement;

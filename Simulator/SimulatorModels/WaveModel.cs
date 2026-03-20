@@ -39,24 +39,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double zeroVelocity;
         public Vector<double> InterpolatedStrain;
         public Vector<double> InterpolatedVelocity;
-        public WaveModel(State state, in SimulationParameters simulationParameters)
+        public WaveModel(in SimulationParameters simulationParameters)
         {
             //Needs to be update after testing stage
-            ElementLength = 4 * simulationParameters.Drillstring.TotalLength / simulationParameters.LumpedCells.NumberOfLumpedElements;
+            ElementLength = simulationParameters.DistributedCells.ElementLength;             
             // Calculate the number of elements based on the total length and element length, ensuring it's an integer
-            NumberOfElements = (int) Math.Ceiling(simulationParameters.Drillstring.TotalLength / ElementLength);
-            // Recalculate the element length to fit the total length exactly
-            ElementLength = simulationParameters.Drillstring.TotalLength / NumberOfElements;
+            NumberOfElements = simulationParameters.DistributedCells.NumberOfElements;
             DownwardWave = Vector<double>.Build.Dense(NumberOfElements);
             UpwardWave = Vector<double>.Build.Dense(NumberOfElements);
             Strain = Vector<double>.Build.Dense(NumberOfElements);
             Velocity = Vector<double>.Build.Dense(NumberOfElements);
             DiffDownwardWave = Vector<double>.Build.Dense(NumberOfElements);
             DiffUpwardWave = Vector<double>.Build.Dense(NumberOfElements);  
-            InterpolatedStrain = Vector<double>.Build.Dense(state.ZVelocity.Count);
-            InterpolatedVelocity = Vector<double>.Build.Dense(state.ZVelocity.Count);
+            InterpolatedStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            InterpolatedVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             WaveSpeed = simulationParameters.Drillstring.AxialWaveSpeed;
-
             //UpdateBoundaryConditions(state, simulationParameters);           
         }
 
@@ -90,10 +87,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     UpwardWave[i + 1] - UpwardWave[i];        
             }
             #endregion
-            //Update the state with the interpolated values of velocity and strain for the next iteration
-            InterpolateStateFromWave(state, this, parameters);
-            state.ZVelocity = InterpolatedVelocity;
-            state.PipeAxialStrain = InterpolatedStrain;
         }
         public void InterpolateStateFromWave(State state, in WaveModel model, in SimulationParameters simulationParameters)
         {                       

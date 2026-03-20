@@ -20,8 +20,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         
         
         
-        public TorsionalModel(State state, in SimulationParameters simulationParameters) : base(state, simulationParameters)
+        
+        public TorsionalModel(in SimulationParameters simulationParameters) : base(simulationParameters)
         {
+            //Needs to be update after testing stage
+            ElementLength = simulationParameters.DistributedCells.ElementLength;             
+            // Calculate the number of elements based on the total length and element length, ensuring it's an integer
+            NumberOfElements = simulationParameters.DistributedCells.NumberOfElements;// Recalculate the element length to fit the total length exactly
+            DownwardWave = Vector<double>.Build.Dense(NumberOfElements);
+            UpwardWave = Vector<double>.Build.Dense(NumberOfElements);
+            Strain = Vector<double>.Build.Dense(NumberOfElements);
+            Velocity = Vector<double>.Build.Dense(NumberOfElements);
+            DiffDownwardWave = Vector<double>.Build.Dense(NumberOfElements);
+            DiffUpwardWave = Vector<double>.Build.Dense(NumberOfElements);  
+            InterpolatedStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            InterpolatedVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            WaveSpeed = simulationParameters.Drillstring.AxialWaveSpeed;
             useMudMotor = simulationParameters.UseMudMotor;
             WaveSpeed = simulationParameters.Drillstring.TorsionalWaveSpeed;
 

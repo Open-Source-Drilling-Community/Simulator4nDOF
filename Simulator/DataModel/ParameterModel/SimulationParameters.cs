@@ -72,11 +72,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
 
             MudMotor = new MudMotor();
-            DistributedCells = new DistributedCells(LumpedCells, Drillstring, configuration.SurfaceRPM);        
+            DistributedCells = new DistributedCells(Drillstring, configuration.SurfaceRPM, 4 * LumpedCells.ElementLength);        
 
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
         
-            double dtTemp = DistributedCells.DistributedSectionLength / Math.Max(Drillstring.TorsionalWaveSpeed, Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
+            double dtTemp = DistributedCells.ElementLength / Math.Max(Drillstring.TorsionalWaveSpeed, Drillstring.AxialWaveSpeed) * .4;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             dxl = 1.0 / DistributedCells.CellsInDepthOfCut;
             dtl = dxl / DistributedCells.OmegaMax;  // As per the CFL condition for the depth of cut PDE
             OuterLoopTimeStep = configuration.TimeStep; // time step of outer loop, which updates the distributed cells and calculates the bit forces
@@ -152,17 +152,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Drillstring.EccentricMass = ExtendVectorStart(mass_imbalance_percent * Drillstring.LumpedElementMass[0], Drillstring.EccentricMass);
 
             // Update spatial variables
-            int Pt_old = LumpedCells.DistributedToLumpedRatio * LumpedCells.NumberOfLumpedElements;
-            int NL_old = LumpedCells.NumberOfLumpedElements;
+            //int Pt_old = LumpedCells.DistributedToLumpedRatio * LumpedCells.NumberOfLumpedElements;
+            //int NL_old = LumpedCells.NumberOfLumpedElements;
 
             // Generate the range from 0 to DistributedCells.x[0] with step size dx
-            List<double> range = new List<double>();
-            for (double value = 0; value <= DistributedCells.x[0]; value += DistributedCells.DistributedSectionAndLumpedLength)
-            {
-                range.Add(value);
-            }
-            DistributedCells.x = MathNet.Numerics.LinearAlgebra.Vector<double>.Build.Dense(range.Concat(DistributedCells.x).ToArray());
-            LumpedCells.ElementLength = ExtendVectorStart(0, LumpedCells.ElementLength); // lumped section
+            //List<double> range = new List<double>();
+            //for (double value = 0; value <= DistributedCells.x[0]; value += DistributedCells.DistributedSectionAndLumpedLength)
+            //{
+            //    range.Add(value);
+            //}
+            //DistributedCells.x = MathNet.Numerics.LinearAlgebra.Vector<double>.Build.Dense(range.Concat(DistributedCells.x).ToArray());
+            LumpedCells.CumulativeElementLength = ExtendVectorStart(0, LumpedCells.CumulativeElementLength); // lumped section
             LumpedCells.NumberOfLumpedElements = LumpedCells.NumberOfLumpedElements + 1;
             if (Drillstring.SleeveIndexPosition.Count > 0)
             {

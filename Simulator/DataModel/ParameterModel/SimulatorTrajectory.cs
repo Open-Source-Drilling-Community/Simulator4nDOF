@@ -65,7 +65,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         }
         public void UpdateTrajectory(in LumpedCells lumpedCells)
         {
-            Vector<double> vectorWithoutFirstElement = lumpedCells.ElementLength.SubVector(1, lumpedCells.ElementLength.Count() - 1);
+            Vector<double> vectorWithoutFirstElement = lumpedCells.CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
             InterpolatedVerticalDepth = LinearInterpolate(MeasuredDepthProfile, VerticalDepthProfile, vectorWithoutFirstElement);
             InterpolatedTheta = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, InclinationProfile, vectorWithoutFirstElement);
             InterpolatedPhi = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, AzimuthProfile, vectorWithoutFirstElement);

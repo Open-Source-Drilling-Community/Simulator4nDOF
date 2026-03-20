@@ -92,22 +92,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double ConnectionStartTime;                     // Connection start time [s]
         public double TopDriveStartupTime;                     // Top drive startup time [s]
 
-        public State(
-                in AxialModel axialModel,
-                in TorsionalModel torsionalModel,
-                in LateralModel lateralModel,
-                in SimulationParameters simulationParameters)
+        public State(in SimulationParameters simulationParameters)
         {
             
             
-            //// Initialize pipe shear strain matrix
-            //PipeShearStrain = Vector<double>.Build.Dense(torsionalModel.NumberOfElements);
-            //// Initialize pipe angular velocity matrix
-            //PipeAngularVelocity = Vector<double>.Build.Dense(torsionalModel.NumberOfElements);
-            //// Initialize pipe axial strain matrix
-            //PipeAxialStrain = Vector<double>.Build.Dense(axialModel.NumberOfElements);
-            //// Initialize pipe axial velocity matrix
-            //PipeAxialVelocity = Vector<double>.Build.Dense(axialModel.NumberOfElements);
+            // Initialize pipe shear strain matrix
+            PipeShearStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize pipe angular velocity matrix
+            PipeAngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize pipe axial strain matrix
+            PipeAxialStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            // Initialize pipe axial velocity matrix
+            PipeAxialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
 
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
