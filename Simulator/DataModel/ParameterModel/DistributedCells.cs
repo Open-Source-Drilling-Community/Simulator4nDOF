@@ -18,13 +18,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         // Number of cells in depth of cut PDE
         public int CellsInDepthOfCut;
         public int NumberOfElements;
+        public int LateralModelToWaveRatio = 5;
         public double ElementLength;
-        public int WaveToLumpedRatio;
         public DistributedCells(in SimulatorDrillString drillString,
-            in double omega0, in int waveToLumpedRatio, in double elementLength)
+            in double omega0, in double elementLength)
         {
-            WaveToLumpedRatio = waveToLumpedRatio; 
-            double lengthBetweenWaveNodes = elementLength * waveToLumpedRatio;
+            double lengthBetweenWaveNodes = elementLength / (double) LateralModelToWaveRatio;
             NumberOfElements = (int) Math.Ceiling(drillString.TotalLength / lengthBetweenWaveNodes);
             ElementLength = drillString.TotalLength / ((double) NumberOfElements);
           

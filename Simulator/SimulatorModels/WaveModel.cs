@@ -17,6 +17,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         // Wave propagation variables
         public Vector<double> DownwardWave;
         public Vector<double> UpwardWave;
+        public Vector<double> DownwardWaveBoundary;
+        public Vector<double> UpwardWaveBoundary;
 
         public Vector<double> DiffDownwardWave;
         public Vector<double> DiffUpwardWave;
@@ -27,6 +29,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 
         public double ElementLength;
         public int NumberOfElements;
+        public int LateralModelToWaveRatio;
 
         public double WaveSpeed;
         public Vector<double> Strain;
@@ -44,20 +47,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public double BottomBoundaryVelocity;
         public double TopBoundaryStrain;
         public double BottomBoundaryStrain;
-        public int WaveToLumpedRatio;
         public Vector<double> InterpolatedStrain;
         public Vector<double> InterpolatedVelocity;
         public WaveModel(in SimulationParameters simulationParameters)
         {
             //Needs to be update after testing stage
             ElementLength = simulationParameters.DistributedCells.ElementLength;   
-            WaveToLumpedRatio = simulationParameters.DistributedCells.WaveToLumpedRatio;          
+            LateralModelToWaveRatio = simulationParameters.DistributedCells.LateralModelToWaveRatio;
             // Calculate the number of elements based on the total length and element length, ensuring it's an integer
-            NumberOfElements = simulationParameters.DistributedCells.NumberOfElements + 2;
+            NumberOfElements = simulationParameters.DistributedCells.NumberOfElements;
             DownwardWave = Vector<double>.Build.Dense(NumberOfElements);
             UpwardWave = Vector<double>.Build.Dense(NumberOfElements);
-            Strain = Vector<double>.Build.Dense(NumberOfElements + 1);
-            Velocity = Vector<double>.Build.Dense(NumberOfElements + 1);
+            DownwardWaveBoundary = Vector<double>.Build.Dense(NumberOfElements);
+            UpwardWaveBoundary = Vector<double>.Build.Dense(NumberOfElements);
+            // Made matching the lateral-torsional model
+            Strain = Vector<double>.Build.Dense(NumberOfElements);
+            Velocity = Vector<double>.Build.Dense(NumberOfElements);
             DiffDownwardWave = Vector<double>.Build.Dense(NumberOfElements);
             DiffUpwardWave = Vector<double>.Build.Dense(NumberOfElements);  
             InterpolatedStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -74,31 +79,43 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 UpwardWave[i]   = Strain[i] - WaveSpeed * Strain[i];
             }                     
         }
-        public void UpdateDifferential(Vector<double> veloctyVector, double initialVelocity)
+        public void UpdateDifferential(in Vector<double> velocityVector, in double initialVelocity)
         {
 
-            for (int i = 1; i < NumberOfElements - 1; i++)
-            {
-                double auxDownward =  2 * veloctyVector[WaveToLumpedRatio * i - 1] - UpwardWave[i];
-                double auxUpward =  2 * veloctyVector[WaveToLumpedRatio * i - 1] - DownwardWave[i];
-                DownwardWave[i] = auxDownward;
-                UpwardWave[i] = auxUpward;
-            }
-            DownwardWave[0] =  2 * initialVelocity - UpwardWave[0];            
             Velocity[0] = initialVelocity;
-            Strain[0] = (UpwardWave[0] - DownwardWave[0]) / (2 * WaveSpeed);
+            double topBoundary;
+            double bottomBoundary;
 
             //Create differential wave 
-            for (int i = 1; i < NumberOfElements - 1; i ++)
-            {                                
-                // Compute states from Riemann invariants
+            for (int i = 0; i < NumberOfElements; i ++)
+            {             
+                // Update the boundary conditions
+                if (i % LateralModelToWaveRatio == 0)
+                {
+                    int j = i / LateralModelToWaveRatio;
+                    topBoundary = (j == 0) ?  2 * initialVelocity - UpwardWave[j] : 2 * velocityVector[j - 1] - UpwardWave[j];
+                }             
+                else
+                {
+                    topBoundary = DownwardWave[i - 1];
+                }
+                if ((i + 1) % LateralModelToWaveRatio == 0)
+                {
+                    int j = i / LateralModelToWaveRatio;
+                    bottomBoundary = 2 * velocityVector[j] - DownwardWave[j];
+                }             
+                else
+                {
+                    bottomBoundary = UpwardWave[i + 1];
+                }
+                // Compute states from Riemann invariants              
                 Strain[i] = (DownwardWave[i] - UpwardWave[i]) / (2 * WaveSpeed);
-                Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);
+                Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);    
                 //============= Create differential for waves ===============                   
                 // Torsional waves
-                DiffDownwardWave[i] = DownwardWave[i] - DownwardWave[i - 1];
-                DiffUpwardWave[i] = UpwardWave[i + 1] - UpwardWave[i];            
-            }    
+                DiffDownwardWave[i] = DownwardWave[i] - topBoundary;
+                DiffUpwardWave[i] = bottomBoundary - UpwardWave[i];            
+            }                      
         }
         public virtual void CalculateAccelerations(State state, in SimulationParameters parameters)
         {

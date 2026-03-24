@@ -43,10 +43,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             state.MudRotorAngularVelocity  : 0.5 * (DownwardWave[NumberOfElements - 1] + UpwardWave[NumberOfElements - 1]);
             // ============== Calculate boundary conditions for the next iteration based on current velocities
             UpdateDifferential(state.AngularVelocity,  parameters.TopDriveDrawwork.SurfaceRotation);
-            InterpolateStateFromWave(state, this, parameters);
-            state.PipeAngularVelocity = InterpolatedVelocity;                
-            //state.AngularVelocity = InterpolatedVelocity;
-            state.PipeShearStrain = InterpolatedStrain;
+            for (int i = 0; i < NumberOfElements/LateralModelToWaveRatio; i ++)
+            {
+                int j = i * LateralModelToWaveRatio;     
+                state.PipeShearStrain[i] = Strain[j];
+                state.AngularVelocity[i] = Velocity[j];
+                state.PipeAngularVelocity[i] = Velocity[j];                            
+            }
+
        }                
     }
 }

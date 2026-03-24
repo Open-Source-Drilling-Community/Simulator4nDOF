@@ -124,7 +124,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 XDisplacementMinus1[i] = XDisplacement[i];
                 YDisplacementMinus1[i] = YDisplacement[i];
                 ZDisplacementMinus1[i] = ZDisplacement[i];
-                //ZVelocityMinus1[i] = ZVelocity[i];
+                ZVelocityMinus1[i] = ZVelocity[i];
                 
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];

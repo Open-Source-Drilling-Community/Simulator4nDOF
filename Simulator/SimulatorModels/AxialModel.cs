@@ -26,10 +26,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // Axial boundary conditions
             UpdateDifferential(state.ZVelocity, parameters.TopDriveDrawwork.SurfaceAxialVelocity);
             //Update the state with the interpolated values of velocity and strain for the next iteration
-            InterpolateStateFromWave(state, this, parameters);
-            state.PipeAxialVelocity = InterpolatedVelocity;                
-            state.PipeAxialStrain = InterpolatedStrain;
-        
+            //InterpolateStateFromWave(state, this, parameters);
+            for (int i = 0; i < NumberOfElements/LateralModelToWaveRatio; i ++)
+            {
+                int j = i * LateralModelToWaveRatio;     
+                state.PipeAxialStrain[i] = Strain[j];
+                state.PipeAxialVelocity[i] = Velocity[j];
+                state.ZVelocity[i] = Velocity[j];                            
+            } 
        }   
   
              

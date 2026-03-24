@@ -79,7 +79,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             WhirlSpeed = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             BendingMoment = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            Torque = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements * simulationParameters.LumpedCells.DistributedToLumpedRatio);
+            Torque = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
 
             queueSize = config.SSIWindowSize * (int)Math.Round(1 / simulationParameters.OuterLoopTimeStep);
             BitRPMQueue = new Queue<double>(queueSize);
