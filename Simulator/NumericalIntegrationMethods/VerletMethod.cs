@@ -73,15 +73,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 YDisplacementMinus1[i] = state.YDisplacement[i] - state.YVelocity[i] * timeStep + 0.5 * timeStepSquared * state.YAcceleration[i];
                 ZDisplacementMinus1[i] = state.ZDisplacement[i] - state.ZVelocity[i] * timeStep + 0.5 * timeStepSquared * state.ZAcceleration[i];
                 
-                ZVelocityMinus1[i] = state.ZVelocity[i] - state.ZAcceleration[i] * timeStep;
+                //ZVelocityMinus1[i] = state.ZVelocity[i] - state.ZAcceleration[i] * timeStep;
 
                 AngularDisplacement[i] = state.AngularDisplacement[i];
                 XDisplacement[i] = state.XDisplacement[i];
                 YDisplacement[i] = state.YDisplacement[i];
                 ZDisplacement[i] = state.ZDisplacement[i];
 
-                ZVelocity[i] = state.ZVelocity[i];
-                ZAcceleration[i] = state.ZAcceleration[i];            
+                //ZVelocity[i] = state.ZVelocity[i];
+                //ZAcceleration[i] = state.ZAcceleration[i];            
             }
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {

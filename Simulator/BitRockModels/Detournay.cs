@@ -80,7 +80,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             {
                 double previousDepthOfCut;
                 double diffDepthOfCut;
-                int lpSize = (int)simulationParameters.LumpedCells.DistributedToLumpedRatio - 1;
                 double lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
                 double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
                 double d = this.N * maxValue; // Compute d

@@ -72,7 +72,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
 
             MudMotor = new MudMotor();
-            DistributedCells = new DistributedCells(Drillstring, configuration.SurfaceRPM, 4 * LumpedCells.ElementLength);        
+            DistributedCells = new DistributedCells(Drillstring, configuration.SurfaceRPM, 2, configuration.LengthBetweenLumpedElements);        
 
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
         

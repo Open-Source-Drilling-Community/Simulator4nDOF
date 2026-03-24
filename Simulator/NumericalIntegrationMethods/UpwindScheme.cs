@@ -27,7 +27,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             // Use the torsional model instance to estimate the accelerations
             waveModel.CalculateAccelerations(state, simulationParameters);
             //Update separately to avoid overwritting
-            for (int i = 0; i < simulationParameters.LumpedCells.DistributedToLumpedRatio; i++)          
+            for (int i = 1; i < waveModel.NumberOfElements - 1; i++)          
             {                                 
                 waveModel.DownwardWave[i] -= integrationConstant * simulationParameters.Drillstring.TorsionalWaveSpeed * waveModel.DiffDownwardWave[i];
                 waveModel.UpwardWave[i]   += integrationConstant * simulationParameters.Drillstring.TorsionalWaveSpeed * waveModel.DiffUpwardWave[i];                    

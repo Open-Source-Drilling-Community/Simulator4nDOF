@@ -23,23 +23,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         
         public TorsionalModel(in SimulationParameters simulationParameters) : base(simulationParameters)
         {
-            //Needs to be update after testing stage
-            ElementLength = simulationParameters.DistributedCells.ElementLength;             
-            // Calculate the number of elements based on the total length and element length, ensuring it's an integer
-            NumberOfElements = simulationParameters.DistributedCells.NumberOfElements;// Recalculate the element length to fit the total length exactly
-            DownwardWave = Vector<double>.Build.Dense(NumberOfElements);
-            UpwardWave = Vector<double>.Build.Dense(NumberOfElements);
-            Strain = Vector<double>.Build.Dense(NumberOfElements);
-            Velocity = Vector<double>.Build.Dense(NumberOfElements);
-            DiffDownwardWave = Vector<double>.Build.Dense(NumberOfElements);
-            DiffUpwardWave = Vector<double>.Build.Dense(NumberOfElements);  
-            InterpolatedStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            InterpolatedVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            WaveSpeed = simulationParameters.Drillstring.AxialWaveSpeed;
             useMudMotor = simulationParameters.UseMudMotor;
             WaveSpeed = simulationParameters.Drillstring.TorsionalWaveSpeed;
-
-            //UpdateBoundaryConditions(state, simulationParameters);           
         }
    
         public void IntegrateTopDriveSpeed(State state, in SimulationParameters parameters)
@@ -57,32 +42,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double angularVelocity = (useMudMotor) ? 
             state.MudRotorAngularVelocity  : 0.5 * (DownwardWave[NumberOfElements - 1] + UpwardWave[NumberOfElements - 1]);
             // ============== Calculate boundary conditions for the next iteration based on current velocities
-            // Axial boundary conditions
-            // Torsional boundary conditions
-            double torsionalBoundaryTop = - UpwardWave[0] + 2 * state.TopDrive.TopDriveAngularVelocity;
-            double torsionalBoundaryBottom = - DownwardWave[NumberOfElements - 1] + 2 * state.AngularVelocity[state.AngularVelocity.Count - 1];
-            #region Update the differentials for the upwind scheme
-            for (int i = 0; i < NumberOfElements; i ++)
-            {        
-                // Compute states from Riemann invariants
-                Strain[i] = (DownwardWave[i] - UpwardWave[i]) / (2 * WaveSpeed);
-                Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);
-                //Update state with relevant variables
-                state.PipeAngularVelocity[i] = Velocity[i];
-                state.PipeShearStrain[i] = Strain[i];   
-                //============= Create differential for waves ===============
-                // Torsional waves
-                DiffDownwardWave[i] = (i == 0) ? 
-                    DownwardWave[i] - torsionalBoundaryTop : 
-                    DownwardWave[i] - DownwardWave[i - 1];
-                DiffUpwardWave[i] = (i == NumberOfElements - 1) ? 
-                    torsionalBoundaryBottom - UpwardWave[i] : 
-                    UpwardWave[i + 1] - UpwardWave[i];                
-            }
-            #endregion
-            //Update the state with the interpolated values of velocity and strain for the next iteration
+            UpdateDifferential(state.AngularVelocity,  parameters.TopDriveDrawwork.SurfaceRotation);
             InterpolateStateFromWave(state, this, parameters);
-            state.AngularVelocity = InterpolatedVelocity;
+            state.PipeAngularVelocity = InterpolatedVelocity;                
+            //state.AngularVelocity = InterpolatedVelocity;
             state.PipeShearStrain = InterpolatedStrain;
        }                
     }

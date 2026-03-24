@@ -263,9 +263,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             double dtTemp = simulationParameters.DistributedCells.ElementLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             // Wave equations are transformed into their Riemann invariants
-            axialModel.PrepareModel(axialModel, state, simulationParameters);   
-            torsionalModel.PrepareModel(torsionalModel, state, simulationParameters);
-            lateralModel.PrepareModel(lateralModel, state, simulationParameters);
+            axialModel.PrepareModel(state, simulationParameters);   
+            torsionalModel.PrepareModel(state, simulationParameters);
+            lateralModel.PrepareModel(state, simulationParameters);
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
