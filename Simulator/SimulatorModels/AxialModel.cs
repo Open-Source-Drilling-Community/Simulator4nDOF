@@ -21,12 +21,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {                        
             base.UpdateState(state);
             state.PipeAxialStrain[0] = Strain[0];
-            state.PipeAxialVelocity[0] = Velocity[0];     
+            state.PipeAxialVelocity[0] = Velocity[0];  
+            //state.ZVelocity[0] = Velocity[0];         
             for (int i = 1; i < NumberOfLateralElements; i ++)
             {
                 int j = i * LateralModelToWaveRatio - 1;     
                 state.PipeAxialStrain[i] = Strain[j];
-                state.PipeAxialVelocity[i] = Velocity[j];                            
+                state.PipeAxialVelocity[i] = Velocity[j];      
+                //state.ZVelocity[i] = Velocity[j];                                            
             }   
         }
              

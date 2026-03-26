@@ -69,8 +69,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {
             for (int i = 0; i < NumberOfElements-1; i++)          
             {
-                DownwardWave[i] = Strain[i] + WaveSpeed * Strain[i];
-                UpwardWave[i]   = Strain[i] - WaveSpeed * Strain[i];
+                DownwardWave[i] = Velocity[i] + WaveSpeed * Strain[i];
+                UpwardWave[i]   = Velocity[i] - WaveSpeed * Strain[i];
             }                     
         }
         public void UpdateDifferential(in Vector<double> velocityVector, in double initialVelocity)
