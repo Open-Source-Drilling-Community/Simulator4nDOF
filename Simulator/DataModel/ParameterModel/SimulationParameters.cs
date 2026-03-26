@@ -1,13 +1,6 @@
-﻿using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
-using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
+﻿using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
-
-using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using NORCE.Drilling.Simulator4nDOF.Model;
-using NORCE.Drilling.Simulator4nDOF.ModelShared;
-using System.Numerics;
 
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel

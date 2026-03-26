@@ -1,15 +1,5 @@
-using MathNet.Numerics.Distributions;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using OSDC.DotnetLibraries.General.Common;
-using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Metadata;
-using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
-
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
     public class AxialModel : WaveModel 
@@ -25,17 +15,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             state.BitVelocity = 0.5 * (DownwardWave[NumberOfElements - 1] + UpwardWave[NumberOfElements - 1]);
             // Axial boundary conditions
             UpdateDifferential(state.ZVelocity, state.TopDrive.CalculateSurfaceAxialVelocity);
-            //Update the state with the interpolated values of velocity and strain for the next iteration
-            //InterpolateStateFromWave(state, this, parameters);
-            for (int i = 0; i < NumberOfElements/LateralModelToWaveRatio; i ++)
-            {
-                int j = i * LateralModelToWaveRatio;     
-                state.PipeAxialStrain[i] = Strain[j];
-                state.PipeAxialVelocity[i] = Velocity[j];
-                state.ZVelocity[i] = Velocity[j];                            
-            } 
+            //Update the state with the interpolated values of velocity and strain for the next iteration            
        }   
-  
+        public override void UpdateState(State state)
+        {                        
+            base.UpdateState(state);
+            state.PipeAxialStrain[0] = Strain[0];
+            state.PipeAxialVelocity[0] = Velocity[0];     
+            for (int i = 1; i < NumberOfLateralElements; i ++)
+            {
+                int j = i * LateralModelToWaveRatio - 1;     
+                state.PipeAxialStrain[i] = Strain[j];
+                state.PipeAxialVelocity[i] = Velocity[j];                            
+            }   
+        }
              
     }
 }

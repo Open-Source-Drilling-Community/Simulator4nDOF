@@ -1,14 +1,6 @@
-using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using OSDC.DotnetLibraries.General.Common;
-using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Metadata;
-using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
@@ -133,19 +125,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 DiffUpwardWave[i] = upwardBoundary - UpwardWave[i]; 
                 
             }
-            #endregion
-
+            #endregion                          
+        }
+        public virtual void CalculateAccelerations(State state, in SimulationParameters parameters)
+        {
+            
+        }
+        public virtual void UpdateState(State state)
+        {
             // Compute states from Riemann invariants                              
             for (int i = 0; i < NumberOfElements; i ++)
             {                       
                 // Compute states from Riemann invariants              
                 Strain[i] = (DownwardWave[i] - UpwardWave[i]) / (2 * WaveSpeed);
                 Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);                                               
-            }                      
-        }
-        public virtual void CalculateAccelerations(State state, in SimulationParameters parameters)
-        {
-            
+            }      
         }
         public void InterpolateStateFromWave( 
             in WaveModel model, 

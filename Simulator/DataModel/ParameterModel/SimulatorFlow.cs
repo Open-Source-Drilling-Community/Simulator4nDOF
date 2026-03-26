@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using MathNet.Numerics.LinearAlgebra;
+﻿using MathNet.Numerics.LinearAlgebra;
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
@@ -67,24 +66,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             // Paper presented at the SPE/IADC International Drilling Conference and Exhibition,
             // Virtual, March 2021. doi: https://doi.org/10.2118/204084-MS      
             FluidDensity = drillingFluidDescription.FluidMassDensity.GaussianValue.Mean ?? 1750;
-            AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            AnnulusTemperature = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            StringDensity = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            StringPressure = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            StringTemperature = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
+            AnnulusDensity = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            AnnulusPressure = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            AnnulusTemperature = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            StringDensity = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            StringPressure = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            StringTemperature = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
 
-            HydrostaticStringPressure = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            HydrostaticAnnulusPressure = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
+            HydrostaticStringPressure = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            HydrostaticAnnulusPressure = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
 
             XVectorAnnulusVariables = Vector<double>.Build.Dense(3);
             XVectorStringVariables = Vector<double>.Build.Dense(3);
             
-            BuoyantWeightPerLength = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);  
-            AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
-            NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
+            BuoyantWeightPerLength = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);  
+            AxialBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
+            NormalBuoyancyForceChangeOfDiameters = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
 
-            dSigmaDx = Vector<double>.Build.Dense(lumpedCells.CumulativeElementLength.Count);
+            dSigmaDx = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements + 1);
             FluidPVTParameters? fluidPVTParameters;
             if (drillingFluidDescription.FluidPVTParameters == null)
             {   

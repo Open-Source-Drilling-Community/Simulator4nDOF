@@ -1,13 +1,6 @@
-using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using OSDC.DotnetLibraries.General.Common;
-using System;
-using System.Reflection;
-using System.Reflection.Metadata;
-using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
@@ -93,8 +86,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             //ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
             toolFaceAngle = Vector<double>.Build.Dense(NumberOfElements);
             tensionIntegral = Vector<double>.Build.Dense(NumberOfElements);
-            tension = Vector<double>.Build.Dense(NumberOfElements);
-            torque = Vector<double>.Build.Dense(NumberOfElements);
+            tension = Vector<double>.Build.Dense(NumberOfElements + 1);
+            torque = Vector<double>.Build.Dense(NumberOfElements + 1);
         }
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
         {
@@ -124,7 +117,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double differentialTrajectoryPhi;
             double differentialTrajectoryTheta;
             double trajectoryTheta;
-            double deltaLength;
             double Tension;
             double tensionIntegralTemp = 0;
             double softStringTempTerm1;
@@ -136,25 +128,31 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double oldDifferencialNormalForceSoftString = 0.0;
             double localBendingStiffness;
             bool isFirst;
+            int revIdx;
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
             {
-                tensionIntegralTemp += 0.5*(parameters.Flow.dSigmaDx[i + 1] + parameters.Flow.dSigmaDx[i])/ parameters.LumpedCells.ElementLength;
+                // Index for reverse loop
+                revIdx = parameters.LumpedCells.NumberOfLumpedElements - i;
+                tensionIntegralTemp += 0.5*(parameters.Flow.dSigmaDx[revIdx] + parameters.Flow.dSigmaDx[revIdx - 1])/ parameters.LumpedCells.ElementLength;
                 tensionIntegral[i] = tensionIntegralTemp;
             }
             // Loop to compute the tensions and the stiffness of the model
-            for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
+            for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements + 1; i++)
             {
                 isFirst = i == 0;
-                axialForce = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeArea[i] * state.PipeAxialStrain[i];
-                differentialTrajectoryPhi = isFirst ? 0.0 : parameters.Trajectory.DiffPhiInterpolated[i-1];
-                differentialTrajectoryTheta = isFirst ? 0.0 : parameters.Trajectory.DiffThetaInterpolated[i-1];    
-                trajectoryTheta = isFirst ? 0.0 : parameters.Trajectory.InterpolatedTheta[i-1];
-                innerArea = isFirst ? parameters.Drillstring.InnerArea[0] : parameters.Drillstring.InnerArea[i-1];
-                outerArea = isFirst ? parameters.Drillstring.OuterArea[0] : parameters.Drillstring.OuterArea[i-1];
+                int offPhaseIndex = isFirst ? 0 : i - 1;
+                // Calculate the axial elastic force: E * A 
+                axialForce = parameters.Drillstring.YoungModuli[offPhaseIndex] * parameters.Drillstring.PipeArea[offPhaseIndex] * state.PipeAxialStrain[offPhaseIndex];
+                // Get the current property and repeat the fist as a boundary condition
+                differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
+                differentialTrajectoryTheta = parameters.Trajectory.DiffThetaInterpolated[offPhaseIndex];    
+                trajectoryTheta = parameters.Trajectory.InterpolatedTheta[offPhaseIndex];
+                innerArea = parameters.Drillstring.InnerArea[offPhaseIndex];
+                outerArea = parameters.Drillstring.OuterArea[offPhaseIndex];
                 localBendingStiffness = isFirst ? parameters.Drillstring.BendingStiffness[0] : parameters.Drillstring.BendingStiffness[i-1];
-       
-
-                Tension = tensionIntegral[parameters.LumpedCells.NumberOfLumpedElements - i - 1] + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i] - axialForce;
+                // Index for reverse loop
+                revIdx = i == parameters.LumpedCells.NumberOfLumpedElements ? 0 : parameters.LumpedCells.NumberOfLumpedElements - i - 1;                
+                Tension = tensionIntegral[revIdx] + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i] - axialForce;
                 softStringTempTerm1 = (Tension + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i]) * differentialTrajectoryTheta - parameters.Flow.BuoyantWeightPerLength[i] * Math.Cos(trajectoryTheta); 
                 softStringTempTerm2 = (Tension + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i]) * differentialTrajectoryPhi - parameters.Flow.BuoyantWeightPerLength[i] * Math.Sin(trajectoryTheta); 
                 differentialNormalForceSoftString = Math.Sqrt(softStringTempTerm1 * softStringTempTerm1 + softStringTempTerm2 * softStringTempTerm2);
@@ -174,11 +172,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 tension[i] = Tension;
                 //This step checks if there is a negative element and sets to zero
                 bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (2 * parameters.Drillstring.PipeLengthForBending), 0.0);                                            
-                torque[i] = state.PipeShearStrain[i] * parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i];
+                torque[i] = state.PipeShearStrain[offPhaseIndex] * parameters.Drillstring.PipePolarMoment[offPhaseIndex] * parameters.Drillstring.ShearModuli[offPhaseIndex];
                 //Roll over for integration
                 oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;
             }
-
+            //bendingStiffness[0] = bendingStiffness[1];
+            //torque[0] = torque[1];
+            //tension[0] = tension[1];
             //Allocate variables for the loop. For synchronous computing
             double normalForce;
             double binormalForce;
@@ -194,14 +194,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             {     
                 isFirst = i == 0;
                 // Normal force components in Frenet-Serret coordinate system
-                differentialTorque = isFirst ?  0 : (state.Torque[i+1] - state.Torque[i]) / parameters.LumpedCells.DistanceBetweenElements;
+                differentialTorque = isFirst ?  0 : (torque[i+1] - torque[i]) / parameters.LumpedCells.DistanceBetweenElements;
                 InertiaTimesYoungModulus = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeInertia[i];
                 binormalForce = parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.bz[i] 
                                 + parameters.Trajectory.Curvature[i] * differentialTorque 
-                                + parameters.Trajectory.CurvatureDerivative[i] * state.Torque[i+1] 
+                                + parameters.Trajectory.CurvatureDerivative[i] * torque[i+1] 
                                 - 2 * InertiaTimesYoungModulus * parameters.Trajectory.CurvatureDerivative[i] * parameters.Trajectory.Torsion[i] 
                                 - InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * parameters.Trajectory.TorsionDerivative[i];
-                normalForce = parameters.Trajectory.Curvature[i] * (state.Tension[i+1] + parameters.Flow.NormalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * state.Torque[i+1]) 
+                normalForce = parameters.Trajectory.Curvature[i] * (tension[i+1] + parameters.Flow.NormalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * torque[i+1]) 
                                 + parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.nz[i] 
                                 - InertiaTimesYoungModulus * parameters.Trajectory.CurvatureSecondDerivative[i] 
                                 + InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * (parameters.Trajectory.Torsion[i] * parameters.Trajectory.Torsion[i]);
