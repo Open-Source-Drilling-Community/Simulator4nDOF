@@ -29,11 +29,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
    
         public void IntegrateTopDriveSpeed(State state, in SimulationParameters parameters)
         {
-            topDriveTorque = 0.5 * parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] / parameters.Drillstring.TorsionalWaveSpeed *
-                (   
-                    DownwardWave[0] 
-                    - UpwardWave[0]
-                );            
+            topDriveTorque = parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] * Strain[0];            
             state.TopDrive.TopDriveAngularVelocity = state.TopDrive.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.TopDriveDrawwork.TopDriveInertia;                
         }
         
@@ -42,7 +38,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double angularVelocity = (useMudMotor) ? 
             state.MudRotorAngularVelocity  : 0.5 * (DownwardWave[NumberOfElements - 1] + UpwardWave[NumberOfElements - 1]);
             // ============== Calculate boundary conditions for the next iteration based on current velocities
-            UpdateDifferential(state.AngularVelocity,  parameters.TopDriveDrawwork.SurfaceRotation);
+            UpdateDifferential(state.AngularVelocity,  state.TopDrive.TopDriveAngularVelocity);
             for (int i = 0; i < NumberOfElements/LateralModelToWaveRatio; i ++)
             {
                 int j = i * LateralModelToWaveRatio;     

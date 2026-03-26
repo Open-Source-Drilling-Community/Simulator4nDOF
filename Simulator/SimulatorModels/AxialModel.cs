@@ -24,7 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {   
             state.BitVelocity = 0.5 * (DownwardWave[NumberOfElements - 1] + UpwardWave[NumberOfElements - 1]);
             // Axial boundary conditions
-            UpdateDifferential(state.ZVelocity, parameters.TopDriveDrawwork.SurfaceAxialVelocity);
+            UpdateDifferential(state.ZVelocity, state.TopDrive.CalculateSurfaceAxialVelocity);
             //Update the state with the interpolated values of velocity and strain for the next iteration
             //InterpolateStateFromWave(state, this, parameters);
             for (int i = 0; i < NumberOfElements/LateralModelToWaveRatio; i ++)

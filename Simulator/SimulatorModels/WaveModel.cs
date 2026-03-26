@@ -30,6 +30,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public double ElementLength;
         public int NumberOfElements;
         public int LateralModelToWaveRatio;
+        public int NumberOfLateralElements;
 
         public double WaveSpeed;
         public Vector<double> Strain;
@@ -54,6 +55,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             //Needs to be update after testing stage
             ElementLength = simulationParameters.DistributedCells.ElementLength;   
             LateralModelToWaveRatio = simulationParameters.DistributedCells.LateralModelToWaveRatio;
+            NumberOfLateralElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
             // Calculate the number of elements based on the total length and element length, ensuring it's an integer
             NumberOfElements = simulationParameters.DistributedCells.NumberOfElements;
             DownwardWave = Vector<double>.Build.Dense(NumberOfElements);
@@ -81,59 +83,81 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         }
         public void UpdateDifferential(in Vector<double> velocityVector, in double initialVelocity)
         {
-
-            Velocity[0] = initialVelocity;
-            double topBoundary;
-            double bottomBoundary;
-
-            //Create differential wave 
+            // Allocate relevant variables
+            int nodeIndex;
+            #region Downward wave
+            double downwardBoundary;            
+            // Loop through downward wave
             for (int i = 0; i < NumberOfElements; i ++)
-            {             
-                // Update the boundary conditions
-                if (i % LateralModelToWaveRatio == 0)
+            {
+                nodeIndex = i / NumberOfLateralElements;
+                if (i == nodeIndex *  NumberOfLateralElements)
                 {
-                    int j = i / LateralModelToWaveRatio;
-                    topBoundary = (j == 0) ?  2 * initialVelocity - UpwardWave[j] : 2 * velocityVector[j - 1] - UpwardWave[j];
-                }             
+                    // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
+                    double velocity = (i == 0) ? initialVelocity : velocityVector[nodeIndex - 1];
+                    downwardBoundary = - UpwardWave[i] + 2 * velocity;
+                    // Correct element adjacent element by assuming constant derivative in the neighborhood
+                    if (i > 1)
+                    {
+                        DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);
+                    }
+                }
                 else
                 {
-                    topBoundary = DownwardWave[i - 1];
+                    downwardBoundary = DownwardWave[i - 1];
                 }
-                if ((i + 1) % LateralModelToWaveRatio == 0)
+                //Update differential vector
+                DiffDownwardWave[i] = DownwardWave[i] - downwardBoundary;
+            }
+            #endregion
+            #region Upward wave
+            double upwardBoundary;            
+            // Reverse loop through upward wave to avoid overwritting
+            for (int i = NumberOfElements-2; i >= 0; i--)
+            {
+                nodeIndex = i / NumberOfLateralElements;
+                if (i == nodeIndex *  NumberOfLateralElements - 1)
                 {
-                    int j = i / LateralModelToWaveRatio;
-                    bottomBoundary = 2 * velocityVector[j] - DownwardWave[j];
-                }             
+                    // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
+                    upwardBoundary = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
+                    // Correct element adjacent element by assuming constant derivative in the neighborhood
+                    if (i < NumberOfElements - 2)
+                    {
+                        UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]); 
+                    }
+                }
                 else
                 {
-                    bottomBoundary = UpwardWave[i + 1];
+                    upwardBoundary = UpwardWave[i + 1];
                 }
+                DiffUpwardWave[i] = upwardBoundary - UpwardWave[i]; 
+                
+            }
+            #endregion
+
+            // Compute states from Riemann invariants                              
+            for (int i = 0; i < NumberOfElements; i ++)
+            {                       
                 // Compute states from Riemann invariants              
                 Strain[i] = (DownwardWave[i] - UpwardWave[i]) / (2 * WaveSpeed);
-                Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);    
-                //============= Create differential for waves ===============                   
-                // Torsional waves
-                DiffDownwardWave[i] = DownwardWave[i] - topBoundary;
-                DiffUpwardWave[i] = bottomBoundary - UpwardWave[i];            
+                Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);                                               
             }                      
         }
         public virtual void CalculateAccelerations(State state, in SimulationParameters parameters)
         {
             
         }
-        public void InterpolateStateFromWave(State state, 
+        public void InterpolateStateFromWave( 
             in WaveModel model, 
             in SimulationParameters simulationParameters)
         {                       
-            for (int i = 0; i < state.ZVelocity.Count; i++)
+            for (int i = 0; i < NumberOfLateralElements; i++)
             {
-
-                currentPosition = i * simulationParameters.Drillstring.TotalLength / state.ZVelocity.Count;
+                currentPosition = i * simulationParameters.Drillstring.TotalLength / NumberOfLateralElements;
                 //Get the position index
                 lowerWaveIndex = (int) Math.Floor(currentPosition / model.ElementLength);
                 upperWaveIndex = lowerWaveIndex + 1;
                 lowerPosition = lowerWaveIndex * model.ElementLength;
-                
                 //Interpolate strain
                 deltaStrain = (model.Strain[upperWaveIndex] - model.Strain[lowerWaveIndex]) / model.ElementLength;//(upperPosition - lowerPosition);
                 zeroStrain = model.Strain[lowerWaveIndex] - deltaStrain * lowerPosition;

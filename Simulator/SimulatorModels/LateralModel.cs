@@ -138,16 +138,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             bool isFirst;
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
             {
-                deltaLength = parameters.LumpedCells.CumulativeElementLength[i+1] - parameters.LumpedCells.CumulativeElementLength[i];
-                tensionIntegralTemp += 0.5*(parameters.Flow.dSigmaDx[i + 1] + parameters.Flow.dSigmaDx[i])/ deltaLength;
+                tensionIntegralTemp += 0.5*(parameters.Flow.dSigmaDx[i + 1] + parameters.Flow.dSigmaDx[i])/ parameters.LumpedCells.ElementLength;
                 tensionIntegral[i] = tensionIntegralTemp;
             }
             // Loop to compute the tensions and the stiffness of the model
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
             {
                 isFirst = i == 0;
-
-                deltaLength = parameters.LumpedCells.CumulativeElementLength[i+1] - parameters.LumpedCells.CumulativeElementLength[i];              
                 axialForce = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeArea[i] * state.PipeAxialStrain[i];
                 differentialTrajectoryPhi = isFirst ? 0.0 : parameters.Trajectory.DiffPhiInterpolated[i-1];
                 differentialTrajectoryTheta = isFirst ? 0.0 : parameters.Trajectory.DiffThetaInterpolated[i-1];    
@@ -167,7 +164,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;
                 }
                 // Update the normal force
-                normalForceSoftString += 0.5 * (differentialNormalForceSoftString + differentialNormalForceSoftString) * deltaLength;
+                normalForceSoftString += 0.5 * (differentialNormalForceSoftString + differentialNormalForceSoftString) * parameters.LumpedCells.ElementLength;
                 Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                             (
                                 outerArea * (parameters.Flow.AnnulusPressure[i] - parameters.Flow.HydrostaticAnnulusPressure[i])
@@ -196,7 +193,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
             {     
                 isFirst = i == 0;
-                deltaLength = parameters.LumpedCells.CumulativeElementLength[i+1] - parameters.LumpedCells.CumulativeElementLength[i];                                                                     
                 // Normal force components in Frenet-Serret coordinate system
                 differentialTorque = isFirst ?  0 : (state.Torque[i+1] - state.Torque[i]) / parameters.LumpedCells.DistanceBetweenElements;
                 InertiaTimesYoungModulus = parameters.Drillstring.YoungModuli[i] * parameters.Drillstring.PipeInertia[i];
@@ -228,8 +224,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // ========== Update relevant model variables ==========
                 toolFaceAngle[i] = Math.Acos(dotProduct) * signToolFace;
                 //This is equivalent of integrating with the trapezoidal rule and then getting the difference.                    
-                preStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * deltaLength;
-                preStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * deltaLength;
+                preStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * parameters.LumpedCells.ElementLength;
+                preStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * parameters.LumpedCells.ElementLength;
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
                 oldBinormalForce = binormalForce;     
@@ -533,6 +529,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                             " AxialVel: " + axialVelocity.ToString() +
                             " SlipCondition: " + state.SlipCondition[i].ToString()
                             );
+                            return;
                     }                
                 #endregion
             }
