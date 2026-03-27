@@ -142,7 +142,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 isFirst = i == 0;
                 int offPhaseIndex = isFirst ? 0 : i - 1;
                 // Calculate the axial elastic force: E * A 
-                axialForce = parameters.Drillstring.YoungModuli[offPhaseIndex] * parameters.Drillstring.PipeArea[offPhaseIndex] * state.PipeAxialStrain[offPhaseIndex];
+                axialForce = parameters.Drillstring.YoungModuli[offPhaseIndex] * parameters.Drillstring.PipeArea[offPhaseIndex] * state.AxialStrain[offPhaseIndex];
                 // Get the current property and repeat the fist as a boundary condition
                 differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
                 differentialTrajectoryTheta = parameters.Trajectory.DiffThetaInterpolated[offPhaseIndex];    
@@ -172,7 +172,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 tension[i] = Tension;
                 //This step checks if there is a negative element and sets to zero
                 bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (2 * parameters.Drillstring.PipeLengthForBending), 0.0);                                            
-                torque[i] = state.PipeShearStrain[offPhaseIndex] * parameters.Drillstring.PipePolarMoment[offPhaseIndex] * parameters.Drillstring.ShearModuli[offPhaseIndex];
+                torque[i] = state.ShearStrain[offPhaseIndex] * parameters.Drillstring.PipePolarMoment[offPhaseIndex] * parameters.Drillstring.ShearModuli[offPhaseIndex];
                 //Roll over for integration
                 oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;
             }
@@ -265,15 +265,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 #region Axial-Torsional Distributed Forces Forces
                 torqueOnBit = parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit;
                 //Calculated the torque and force difference in each element (TorqueElement and TorqueNextElement)                                
-                torqueElement = parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i] * state.PipeShearStrain[i];
-                forceElement = parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] * state.PipeAxialStrain[i];
+                torqueElement = parameters.Drillstring.PipePolarMoment[i] * parameters.Drillstring.ShearModuli[i] * state.ShearStrain[i];
+                forceElement = parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] * state.AxialStrain[i];
                     
                 //If it is the last element, use the torque on bit
                 torqueNextElement = (i == state.XDisplacement.Count - 1) ? 
-                    torqueOnBit : parameters.Drillstring.PipePolarMoment[i + 1] * parameters.Drillstring.ShearModuli[i + 1] * state.PipeShearStrain[i + 1];
+                    torqueOnBit : parameters.Drillstring.PipePolarMoment[i + 1] * parameters.Drillstring.ShearModuli[i + 1] * state.ShearStrain[i + 1];
                     
                 forceNextElement = (i == state.XDisplacement.Count - 1) ? 
-                    state.WeightOnBit : parameters.Drillstring.PipeArea[i + 1] * parameters.Drillstring.YoungModuli[i + 1] * state.PipeAxialStrain[i + 1];
+                    state.WeightOnBit : parameters.Drillstring.PipeArea[i + 1] * parameters.Drillstring.YoungModuli[i + 1] * state.AxialStrain[i + 1];
                     
                 torqueDifference = torqueElement - torqueNextElement;
                 axialForceDifference = forceElement - forceNextElement;                      
@@ -316,7 +316,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //If it is not used properly, it should crash the code.
                 int sleeveIndex = hasSleeve ?  state.SleeveToLumpedIndex[i] : -1;
                 //Select between sleeve and non-sleeve nodes
-                rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocity[i];                            
+                rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.PipeAngularVelocity[i];                            
                 rotationSpeedSquared = rotationSpeed * rotationSpeed;
                 fluidDampingCoefficient = parameters.Flow.FluidDampingCoefficient / parameters.Drillstring.FluidAddedMass[i];                    
                 fluidForceX = - parameters.Drillstring.FluidAddedMass[i] * 

@@ -7,9 +7,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
     public class State
     {
         public bool SimulationDiverged { get; set; } = false;
-        public Vector<double> PipeShearStrain;                // Pipe shear strain
+        public Vector<double> ShearStrain;                    // Pipe shear strain
         public Vector<double> PipeAngularVelocity;            // Pipe angular velocity
-        public Vector<double> PipeAxialStrain;                // Pipe axial strain
+        public Vector<double> AxialStrain;                    // Pipe axial strain
         public Vector<double> PipeAxialVelocity;              // Pipe axial velocity
 
         public Vector<double> SleeveAngularVelocity;          // Sleeve angular velocity
@@ -97,13 +97,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             
             
             // Initialize pipe shear strain matrix
-            PipeShearStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            ShearStrain = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
             // Initialize pipe angular velocity matrix
-            PipeAngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            PipeAngularVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
             // Initialize pipe axial strain matrix
-            PipeAxialStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            AxialStrain = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
+            // Initialize pipe axial strain matrix
+            AxialStrain = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);           
             // Initialize pipe axial velocity matrix
-            PipeAxialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            PipeAxialVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
 
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -214,13 +216,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public void AddNewLumpedElement()
         {
             // Extend PipeShearStrain matrix by prepending a column with the first column's values            
-            PipeShearStrain = ExtendVectorStart(PipeShearStrain[0], PipeShearStrain);            
+            ShearStrain = ExtendVectorStart(ShearStrain[0], ShearStrain);            
 
             // Extend PipeAngularVelocity matrix by prepending a column with the first column's values
             PipeAngularVelocity = ExtendVectorStart(PipeAngularVelocity[0], PipeAngularVelocity);            
 
             // Extend PipeAxialStrain matrix by prepending 
-            PipeAxialStrain = ExtendVectorStart(PipeAxialStrain[0], PipeAxialStrain);            
+            AxialStrain = ExtendVectorStart(AxialStrain[0], AxialStrain);            
 
             // Extend PipeAxialVelocity vector by prepending a the first element's value
             PipeAxialVelocity = ExtendVectorStart(PipeAxialVelocity[0], PipeAxialVelocity);            

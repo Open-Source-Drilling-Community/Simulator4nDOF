@@ -17,9 +17,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double topDriveTorque;
         // Other variables
         private bool useMudMotor;
-        
-        
-        
+                            
         
         public TorsionalModel(in SimulationParameters simulationParameters) : base(simulationParameters)
         {
@@ -44,15 +42,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public override void UpdateState(State state)
         {                        
             base.UpdateState(state);
-            state.PipeShearStrain[0] = Strain[0];
-            state.PipeAngularVelocity[0] = Velocity[0];                            
-            //state.AngularVelocity[0] = Velocity[0];      
-            for (int i = 1; i < NumberOfLateralElements; i ++)
+            for (int i = 0; i < NumberOfLateralElements; i ++)
             {
-                int j = i * LateralModelToWaveRatio - 1;     
-                state.PipeShearStrain[i] = Strain[j];
-                state.PipeAngularVelocity[i] = Velocity[j];    
-                //state.AngularVelocity[i] = Velocity[j];                              
+                state.ShearStrain[i] = Strain[i];
+                state.PipeAngularVelocity[i] = Velocity[i];    
             }   
         }
 
