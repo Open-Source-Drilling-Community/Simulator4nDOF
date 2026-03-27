@@ -38,7 +38,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double forceElement;
         private double torqueNextElement;
         private double forceNextElement;
-        private double torqueDifference;
+        private double torsionalElasticForce;
         private double axialForceDifference;
         // Normal force variables
         private double heavesideStep;
@@ -300,7 +300,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                                  * parameters.Drillstring.YoungModuli[i + 1]
                                  * state.AxialStrain[idx + 1];
                     
-                torqueDifference = torqueElement - torqueNextElement;
+                torsionalElasticForce = torqueElement - torqueNextElement;
                 axialForceDifference = forceElement - forceNextElement;                      
                 #endregion
                 #region Collision calculation
@@ -505,9 +505,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 
                 angularAcceleration = 
                         (
-                            torqueDifference
-                             - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed
-                             - frictionTorque
+                            0//torsionalElasticForce
+                             //- parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed
+                             //- frictionTorque
                         )/inertia;      
                 // Variables are generated locally to facilitate debugging only.
                 XAcceleration = sumForcesX / parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i];

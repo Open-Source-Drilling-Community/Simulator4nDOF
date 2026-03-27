@@ -15,10 +15,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public Vector<double> DiffDownwardWave;
         public Vector<double> DiffUpwardWave;
         public double TopBoundary;
-        public double BottomBoundary;
-        
-
-
+        public double BottomBoundary;                
         public double ElementLength;
         public int NumberOfElements;
         public int LateralModelToWaveRatio;
@@ -27,6 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public double WaveSpeed;
         public Vector<double> Strain;
         public Vector<double> Velocity;
+         
         //Interpolation variables
         private double currentPosition;
         private int lowerWaveIndex;
@@ -42,6 +40,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public double BottomBoundaryStrain;
         public Vector<double> InterpolatedStrain;
         public Vector<double> InterpolatedVelocity;
+        private List<int> DownwardBoundaryIndex = new();
+        private List<int> UpwardBoundaryIndex = new();
+
         public WaveModel(in SimulationParameters simulationParameters)
         {
             //Needs to be update after testing stage
@@ -62,6 +63,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             InterpolatedStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             InterpolatedVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             WaveSpeed = simulationParameters.Drillstring.AxialWaveSpeed;
+            for (int i = 0; i < NumberOfLateralElements; i++)
+            {
+                DownwardBoundaryIndex.Add(i * LateralModelToWaveRatio);
+                UpwardBoundaryIndex.Add((i+1) * LateralModelToWaveRatio - 1);
+                
+            }
             //UpdateBoundaryConditions(state, simulationParameters);           
         }
 
@@ -82,20 +89,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // Loop through downward wave
             for (int i = 0; i < NumberOfElements; i ++)
             {
-                nodeIndex = i / NumberOfLateralElements;
-                if (i == nodeIndex *  NumberOfLateralElements)
+                // get the lateral model element number
+                nodeIndex = i / LateralModelToWaveRatio;
+                //Special treatment for the top-drive
+                if (i == 0)
+                {
+                    downwardBoundary = - UpwardWave[i] + 2 * initialVelocity;                                   
+                }
+                //Assume a boundary condition for other nodes
+                else if (DownwardBoundaryIndex.Contains(i))//(i == nodeIndex * LateralModelToWaveRatio)
                 {
                     // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
-                    double velocity = (i == 0) ? initialVelocity : velocityVector[nodeIndex - 1];
-                    downwardBoundary = - UpwardWave[i] + 2 * velocity;
-                    // Correct element adjacent element by assuming constant derivative in the neighborhood
-                    if (i > 1)
-                    {
-                        DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);
-                    }
+                    downwardBoundary = - UpwardWave[i] + 2 * velocityVector[nodeIndex - 1];
+                    // Correct element adjacent element by assuming constant derivative in the neighborhood                                 
+                    DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                       
                 }
                 else
                 {
+                    //Else use the previous element for the upwind stage.
                     downwardBoundary = DownwardWave[i - 1];
                 }
                 //Update differential vector
@@ -105,18 +116,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             #region Upward wave
             double upwardBoundary;            
             // Reverse loop through upward wave to avoid overwritting
-            for (int i = NumberOfElements-2; i >= 0; i--)
+            for (int i = NumberOfElements-1; i >= 0; i--)
             {
-                nodeIndex = i / NumberOfLateralElements;
-                if (i == nodeIndex *  NumberOfLateralElements - 1)
+                nodeIndex = i  / LateralModelToWaveRatio;
+                if (i == NumberOfElements-1)
                 {
+                    // Use the last element
+                    upwardBoundary = - DownwardWave[i] + 2 * velocityVector[velocityVector.Count - 1];                    
+                }
+                else if (UpwardBoundaryIndex.Contains(i))//(i == nodeIndex *  LateralModelToWaveRatio - 1)
+                {                
+                    //Note that the last element is used twice.
                     // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
                     upwardBoundary = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
-                    // Correct element adjacent element by assuming constant derivative in the neighborhood
-                    if (i < NumberOfElements - 2)
-                    {
-                       UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]); 
-                    }
+                    // Correct element adjacent element by assuming constant derivative in the neighborhood                         
+                    UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                  
                 }
                 else
                 {
