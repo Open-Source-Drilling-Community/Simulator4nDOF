@@ -42,7 +42,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public override void UpdateState(State state)
         {                        
             base.UpdateState(state);
-            for (int i = 0; i < NumberOfLateralElements; i ++)
+            for (int i = 0; i < NumberOfElements; i ++)
             {
                 state.ShearStrain[i] = Strain[i];
                 state.PipeAngularVelocity[i] = Velocity[i];    

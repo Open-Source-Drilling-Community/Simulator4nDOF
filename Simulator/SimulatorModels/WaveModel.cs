@@ -115,7 +115,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     // Correct element adjacent element by assuming constant derivative in the neighborhood
                     if (i < NumberOfElements - 2)
                     {
-                        UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]); 
+                       UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]); 
                     }
                 }
                 else
