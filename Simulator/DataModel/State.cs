@@ -12,6 +12,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Vector<double> AxialStrain;                    // Pipe axial strain
         public Vector<double> PipeAxialVelocity;              // Pipe axial velocity
 
+        public Vector<double> AxialStrainDifference;                // Pipe axial strain rate
+        public Vector<double> ShearStrainDifference;        // Pipe axial acceleration
+
         public Vector<double> SleeveAngularVelocity;          // Sleeve angular velocity
         public Vector<double> DepthOfCut;                     // Depth of cut
 
@@ -107,6 +110,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize pipe axial velocity matrix
             PipeAxialVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
 
+            // Initialize lumped element angular displacement
+            AxialStrainDifference = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            ShearStrainDifference = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element radial displacement

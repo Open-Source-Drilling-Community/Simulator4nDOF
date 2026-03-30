@@ -300,8 +300,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                                  * parameters.Drillstring.YoungModuli[i + 1]
                                  * state.AxialStrain[idx + 1];
                     
-                torsionalElasticForce = torqueElement - torqueNextElement;
-                axialForceDifference = forceElement - forceNextElement;                      
+                torsionalElasticForce =  - parameters.Drillstring.PipePolarMoment[i]  * parameters.Drillstring.ShearModuli[i] * state.ShearStrainDifference[i]; //torqueElement - torqueNextElement;
+                axialForceDifference = - parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] * state.AxialStrainDifference[i]; //forceElement - forceNextElement;                      
                 #endregion
                 #region Collision calculation
                 // Check if there is collision or not and store the Heaveside Step Function

@@ -1,14 +1,6 @@
-using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using OSDC.DotnetLibraries.General.Common;
-using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Metadata;
-using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
@@ -42,10 +34,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public override void UpdateState(State state)
         {                        
             base.UpdateState(state);
+            state.ShearStrainDifference = Vector<double>.Build.Dense(NumberOfLateralElements);
             for (int i = 0; i < NumberOfElements; i ++)
-            {
+            {                
+                int j = i / LateralModelToWaveRatio;
                 state.ShearStrain[i] = Strain[i];
-                state.PipeAngularVelocity[i] = Velocity[i];    
+                state.PipeAngularVelocity[i] = Velocity[i];
+                state.ShearStrainDifference[j] += StrainDifference[i] / LateralModelToWaveRatio;    
             }   
         }
 

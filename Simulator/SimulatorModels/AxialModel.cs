@@ -1,3 +1,4 @@
+using MathNet.Numerics.LinearAlgebra;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
@@ -20,12 +21,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public override void UpdateState(State state)
         {                        
             base.UpdateState(state);
-            //state.ZVelocity[0] = Velocity[0];         
+            //state.ZVelocity[0] = Velocity[0];    
+            state.AxialStrainDifference = Vector<double>.Build.Dense(NumberOfLateralElements);       
             for (int i = 0; i < NumberOfElements; i ++)
             {
-                int j = i * LateralModelToWaveRatio - 1;     
+                int j = i / LateralModelToWaveRatio;     
                 state.AxialStrain[i] = Strain[i];
                 state.PipeAxialVelocity[i] = Velocity[i];      
+                state.AxialStrainDifference[j] += StrainDifference[i] / LateralModelToWaveRatio;
             }   
         }
              
