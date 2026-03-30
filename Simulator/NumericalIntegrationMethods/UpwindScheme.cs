@@ -17,6 +17,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         public bool IntegrationStep(State state, WaveModel waveModel, in SimulationParameters simulationParameters)
         {   
             // Use the torsional model instance to estimate the accelerations
+            integrationConstant = waveModel.WaveSpeed * simulationParameters.InnerLoopTimeStep / waveModel.ElementLength;       
             waveModel.CalculateAccelerations(state, simulationParameters);
             //Update separately to avoid overwritting
             for (int i = 0; i < waveModel.NumberOfElements; i++)          

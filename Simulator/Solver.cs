@@ -294,14 +294,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     state.MudRotorAngularVelocity = state.MudRotorAngularVelocity + simulationParameters.InnerLoopTimeStep / (simulationParameters.MudMotor.I_rotor + simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * Math.Pow(simulationParameters.MudMotor.N_rotor, 2)) *
                         (state.AngularAcceleration[state.WhirlVelocity.Count - 1] * simulationParameters.MudMotor.M_rotor * Math.Pow(simulationParameters.MudMotor.delta_rotor, 2) * simulationParameters.MudMotor.N_stator * simulationParameters.MudMotor.N_rotor + state.MudTorque - state.TorqueOnBit);
                 }
-            }
-
-            // Compute states from Riemann invariants
-            //state.PipeAngularVelocity = 0.5 * (state.DownwardTorsionalWave + state.UpwardTorsionalWave);
-            //state.PipeShearStrain = 1.0 / (2.0 * simulationParameters.Drillstring.TorsionalWaveSpeed) * (state.DownwardTorsionalWave - state.UpwardTorsionalWave);
-            //state.PipeAxialVelocity = 0.5 * (state.DownwardAxialWave + state.UpwardAxialWave);
-            //state.PipeAxialStrain = 1.0 / (2.0 * simulationParameters.Drillstring.AxialWaveSpeed) * (state.DownwardAxialWave - state.UpwardAxialWave);
-        
+            }            
             // Bending moments
             lateralModel.UpdateBendingMoments(state, simulationParameters);
            

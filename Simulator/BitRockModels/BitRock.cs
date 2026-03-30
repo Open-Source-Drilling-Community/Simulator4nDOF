@@ -22,8 +22,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                     // Can be recovered from the speed and strain data from the models!
                     double torsionalAcceleration = torsionalModel.UpwardWave[torsionalModel.NumberOfElements - 1];
                     double axialAcceleration = axialModel.UpwardWave[axialModel.NumberOfElements - 1];                                            
-                    state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] / parameters.Drillstring.TorsionalWaveSpeed * torsionalAcceleration;
-                    state.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] / parameters.Drillstring.AxialWaveSpeed * axialAcceleration;
+                    state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] * state.ShearStrain[state.ShearStrain.Count-1];// parameters.Drillstring.TorsionalWaveSpeed * torsionalAcceleration;
+                    state.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] * state.AxialStrain[state.AxialStrain.Count-1];// parameters.Drillstring.AxialWaveSpeed * axialAcceleration;
                 }
                 else
                 {

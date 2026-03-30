@@ -20,7 +20,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public void IntegrateTopDriveSpeed(State state, in SimulationParameters parameters)
         {
             topDriveTorque = parameters.Drillstring.PipePolarMoment[0] * parameters.Drillstring.ShearModuli[0] * Strain[0];            
-            state.TopDrive.TopDriveAngularVelocity = state.TopDrive.TopDriveAngularVelocity + parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.TopDriveDrawwork.TopDriveInertia;                
+            state.TopDrive.TopDriveAngularVelocity += parameters.InnerLoopTimeStep * (state.TopDrive.TopDriveMotorTorque - topDriveTorque) / parameters.TopDriveDrawwork.TopDriveInertia;                
         }
         
         public override void CalculateAccelerations(State state, in SimulationParameters parameters)

@@ -105,7 +105,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
                     downwardBoundary = - UpwardWave[i] + 2 * velocityVector[nodeIndex - 1];
                     // Correct element adjacent element by assuming constant derivative in the neighborhood                                 
-                    //DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                       
+                    DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                       
                 }
                 else
                 {
@@ -133,7 +133,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
                     upwardBoundary = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
                     // Correct element adjacent element by assuming constant derivative in the neighborhood                         
-                    //UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                  
+                    UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                  
                 }
                 else
                 {
