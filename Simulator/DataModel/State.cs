@@ -100,13 +100,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             
             
             // Initialize pipe shear strain matrix
-            ShearStrain = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
+            ShearStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize pipe angular velocity matrix
             PipeAngularVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
             // Initialize pipe axial strain matrix
-            AxialStrain = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
+            AxialStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize pipe axial strain matrix
-            AxialStrain = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);           
             // Initialize pipe axial velocity matrix
             PipeAxialVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
 

@@ -31,7 +31,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                     return false;
                 }                               
             }
-            waveModel.UpdateState(state);
+            waveModel.UpdateState(state, simulationParameters);
             return true;
         }    
      

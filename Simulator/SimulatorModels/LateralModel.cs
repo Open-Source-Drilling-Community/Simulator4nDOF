@@ -147,13 +147,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // Loop to compute the tensions and the stiffness of the model
             for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements + 1; i++)
             {
-                int torsionalToLateralIndex = (i == 0 || i == 1) ? 0 : i * parameters.DistributedCells.LateralModelToWaveRatio - 1;
                 isFirst = i == 0;
                 int offPhaseIndex = isFirst ? 0 : i - 1;
                 // Calculate the axial elastic force: E * A 
                 axialForce = parameters.Drillstring.YoungModuli[offPhaseIndex]
                             * parameters.Drillstring.PipeArea[offPhaseIndex]
-                            * state.AxialStrain[torsionalToLateralIndex];
+                            * state.AxialStrain[offPhaseIndex];
                 
                 // Get the current property and repeat the fist as a boundary condition
                 differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
@@ -184,7 +183,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 tension[i] = Tension;
                 //This step checks if there is a negative element and sets to zero
                 bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (2 * parameters.Drillstring.PipeLengthForBending), 0.0);                                            
-                torque[i] = state.ShearStrain[torsionalToLateralIndex] 
+                torque[i] = state.ShearStrain[offPhaseIndex] 
                     * parameters.Drillstring.PipePolarMoment[offPhaseIndex] 
                     * parameters.Drillstring.ShearModuli[offPhaseIndex];
                 //Roll over for integration
@@ -282,23 +281,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //obtained from the axial and the torsional models. As they heve different indexes, they need to be re-aligned with the
                 //lateral elements.
                 int idx = i == 0 ? 0 : i * parameters.DistributedCells.LateralModelToWaveRatio - 1;                          
-                torqueElement = parameters.Drillstring.PipePolarMoment[i] 
-                                 * parameters.Drillstring.ShearModuli[i] 
-                                 * state.ShearStrain[idx];
-                forceElement = parameters.Drillstring.PipeArea[i]
-                                 * parameters.Drillstring.YoungModuli[i]
-                                 * state.AxialStrain[idx];
-                    
-                //If it is the last element, use the torque on bit
-                torqueNextElement = (i == state.XDisplacement.Count - 1) ?  torqueOnBit : 
-                                parameters.Drillstring.PipePolarMoment[i + 1]
-                                 * parameters.Drillstring.ShearModuli[i + 1]
-                                 * state.ShearStrain[idx + 1];
-                    
-                forceNextElement = (i == state.XDisplacement.Count - 1) ? state.WeightOnBit : 
-                                parameters.Drillstring.PipeArea[i + 1]
-                                 * parameters.Drillstring.YoungModuli[i + 1]
-                                 * state.AxialStrain[idx + 1];
+                //torqueElement = parameters.Drillstring.PipePolarMoment[i] 
+                //                 * parameters.Drillstring.ShearModuli[i] 
+                //                 * state.ShearStrain[idx];
+                //forceElement = parameters.Drillstring.PipeArea[i]
+                //                 * parameters.Drillstring.YoungModuli[i]
+                //                 * state.AxialStrain[idx];
+                //    
+                ////If it is the last element, use the torque on bit
+                //torqueNextElement = (i == state.XDisplacement.Count - 1) ?  torqueOnBit : 
+                //                parameters.Drillstring.PipePolarMoment[i + 1]
+                //                 * parameters.Drillstring.ShearModuli[i + 1]
+                //                 * state.ShearStrain[idx + 1];
+                //    
+                //forceNextElement = (i == state.XDisplacement.Count - 1) ? state.WeightOnBit : 
+                //                parameters.Drillstring.PipeArea[i + 1]
+                //                 * parameters.Drillstring.YoungModuli[i + 1]
+                //                 * state.AxialStrain[idx + 1];
                     
                 torsionalElasticForce =  - parameters.Drillstring.PipePolarMoment[i]  * parameters.Drillstring.ShearModuli[i] * state.ShearStrainDifference[i]; //torqueElement - torqueNextElement;
                 axialForceDifference = - parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] * state.AxialStrainDifference[i]; //forceElement - forceNextElement;                      

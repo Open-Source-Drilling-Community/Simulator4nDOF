@@ -105,7 +105,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
                     downwardBoundary = - UpwardWave[i] + 2 * velocityVector[nodeIndex - 1];
                     // Correct element adjacent element by assuming constant derivative in the neighborhood                                 
-                    DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                       
+                    //DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                       
                 }
                 else
                 {
@@ -133,7 +133,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
                     upwardBoundary = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
                     // Correct element adjacent element by assuming constant derivative in the neighborhood                         
-                    UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                  
+                    //UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                  
                 }
                 else
                 {
@@ -147,7 +147,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {
             
         }
-        public virtual void UpdateState(State state)
+        public virtual void UpdateState(State state, in SimulationParameters parameters)
         {
             // Compute states from Riemann invariants                              
             for (int i = 0; i < NumberOfElements; i ++)
@@ -157,6 +157,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);   
                 StrainDifference[i] = i > 0 ? Strain[i] - Strain[i-1] : 0;                                            
             }      
+            InterpolateStateFromWave(this, parameters);      
         }
         public void InterpolateStateFromWave( 
             in WaveModel model, 
@@ -173,10 +174,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 deltaStrain = (model.Strain[upperWaveIndex] - model.Strain[lowerWaveIndex]) / model.ElementLength;//(upperPosition - lowerPosition);
                 zeroStrain = model.Strain[lowerWaveIndex] - deltaStrain * lowerPosition;
                 InterpolatedStrain[i] = deltaStrain * currentPosition + zeroStrain;                
-                //Interpolate velocity
-                deltaVelocity = (model.Velocity[upperWaveIndex] - model.Velocity[lowerWaveIndex]) / model.ElementLength;// (upperPosition - lowerPosition);
-                zeroVelocity = model.Velocity[lowerWaveIndex] - deltaVelocity * lowerPosition;
-                InterpolatedVelocity[i] = deltaVelocity * currentPosition + zeroVelocity;                
             }
         }                
     }
