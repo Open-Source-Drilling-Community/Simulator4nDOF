@@ -31,17 +31,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             UpdateDifferential(state.AngularVelocity,  state.TopDrive.TopDriveAngularVelocity);
             
         }
-        public override void UpdateState(State state, in SimulationParameters parameters)
+        public override void UpdateState(State state)
         {                        
-            base.UpdateState(state, in parameters);
-            state.ShearStrain = InterpolatedStrain;
-            state.ShearStrainDifference = Vector<double>.Build.Dense(NumberOfLateralElements);            
+            base.UpdateState(state);
             state.ShearStrain = Vector<double>.Build.Dense(NumberOfLateralElements);
+            state.ShearStrainDifference = Vector<double>.Build.Dense(NumberOfLateralElements);            
             for (int i = 0; i < NumberOfElements; i ++)
             {                
-                int j = i / LateralModelToWaveRatio;
+                int j = i  / LateralModelToWaveRatio;
                 state.PipeAngularVelocity[i] = Velocity[i];
                 state.ShearStrainDifference[j] += StrainDifference[i] / LateralModelToWaveRatio;    
+                state.ShearStrain[j] = Strain[i];// / LateralModelToWaveRatio;
             }   
         }
 

@@ -280,27 +280,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //  Calculated the torque and force difference in each element (TorqueElement and TorqueNextElement) using the strains 
                 //obtained from the axial and the torsional models. As they heve different indexes, they need to be re-aligned with the
                 //lateral elements.
-                int idx = i == 0 ? 0 : i * parameters.DistributedCells.LateralModelToWaveRatio - 1;                          
-                //torqueElement = parameters.Drillstring.PipePolarMoment[i] 
-                //                 * parameters.Drillstring.ShearModuli[i] 
-                //                 * state.ShearStrain[idx];
-                //forceElement = parameters.Drillstring.PipeArea[i]
-                //                 * parameters.Drillstring.YoungModuli[i]
-                //                 * state.AxialStrain[idx];
-                //    
-                ////If it is the last element, use the torque on bit
-                //torqueNextElement = (i == state.XDisplacement.Count - 1) ?  torqueOnBit : 
-                //                parameters.Drillstring.PipePolarMoment[i + 1]
-                //                 * parameters.Drillstring.ShearModuli[i + 1]
-                //                 * state.ShearStrain[idx + 1];
-                //    
-                //forceNextElement = (i == state.XDisplacement.Count - 1) ? state.WeightOnBit : 
-                //                parameters.Drillstring.PipeArea[i + 1]
-                //                 * parameters.Drillstring.YoungModuli[i + 1]
-                //                 * state.AxialStrain[idx + 1];
+                //If it is the last element, use the torque on bit
+
+                torqueElement = parameters.Drillstring.PipePolarMoment[i] 
+                                 * parameters.Drillstring.ShearModuli[i] 
+                                 * state.ShearStrain[i];
+                //If it is the last element, use the torque on bit
+                torqueNextElement = (i == state.XDisplacement.Count - 1) ?  torqueOnBit : 
+                                parameters.Drillstring.PipePolarMoment[i + 1]
+                                 * parameters.Drillstring.ShearModuli[i + 1]
+                                 * state.ShearStrain[i + 1];
+                forceElement = parameters.Drillstring.PipeArea[i]
+                                 * parameters.Drillstring.YoungModuli[i]
+                                 * state.AxialStrain[i];                    
+                //If it is the last element, use the torque on bit                    
+                forceNextElement = (i == state.XDisplacement.Count - 1) ? state.WeightOnBit : 
+                                parameters.Drillstring.PipeArea[i + 1]
+                                 * parameters.Drillstring.YoungModuli[i + 1]
+                                 * state.AxialStrain[i + 1];
                     
-                torsionalElasticForce =  - parameters.Drillstring.PipePolarMoment[i]  * parameters.Drillstring.ShearModuli[i] * state.ShearStrainDifference[i]; //torqueElement - torqueNextElement;
-                axialForceDifference = - parameters.Drillstring.PipeArea[i] * parameters.Drillstring.YoungModuli[i] * state.AxialStrainDifference[i]; //forceElement - forceNextElement;                      
+                torsionalElasticForce = torqueElement - torqueNextElement;
+                axialForceDifference = forceElement - forceNextElement;                      
                 #endregion
                 #region Collision calculation
                 // Check if there is collision or not and store the Heaveside Step Function
@@ -504,9 +504,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 
                 angularAcceleration = 
                         (
-                            0//torsionalElasticForce
-                             //- parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed
-                             //- frictionTorque
+                            torsionalElasticForce
+                             - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed
+                             - frictionTorque
                         )/inertia;      
                 // Variables are generated locally to facilitate debugging only.
                 XAcceleration = sumForcesX / parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i];

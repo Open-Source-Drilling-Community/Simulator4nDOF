@@ -9,6 +9,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         // Wave propagation variables
         public Vector<double> DownwardWave;
         public Vector<double> UpwardWave;
+        public Vector<double> OffsetDownwardWave;
+        public Vector<double> OffsetUpwardWave;
+        
         public Vector<double> DownwardWaveBoundary;
         public Vector<double> UpwardWaveBoundary;
 
@@ -55,8 +58,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             NumberOfElements = simulationParameters.DistributedCells.NumberOfElements;
             DownwardWave = Vector<double>.Build.Dense(NumberOfElements);
             UpwardWave = Vector<double>.Build.Dense(NumberOfElements);
-            DownwardWaveBoundary = Vector<double>.Build.Dense(NumberOfElements);
-            UpwardWaveBoundary = Vector<double>.Build.Dense(NumberOfElements);
+            OffsetDownwardWave = Vector<double>.Build.Dense(NumberOfElements);
+            OffsetUpwardWave = Vector<double>.Build.Dense(NumberOfElements);
             // Made matching the lateral-torsional model
             Strain = Vector<double>.Build.Dense(NumberOfElements);
             Velocity = Vector<double>.Build.Dense(NumberOfElements);
@@ -68,7 +71,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             StrainDifference = Vector<double>.Build.Dense(NumberOfElements);
             for (int i = 0; i < NumberOfLateralElements; i++)
             {
-                DownwardBoundaryIndex.Add(i * LateralModelToWaveRatio);
+                DownwardBoundaryIndex.Add(i * LateralModelToWaveRatio - 1);
                 UpwardBoundaryIndex.Add((i+1) * LateralModelToWaveRatio - 1);
                 
             }
@@ -100,20 +103,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     downwardBoundary = - UpwardWave[i] + 2 * initialVelocity;                                   
                 }
                 //Assume a boundary condition for other nodes
-                else if (DownwardBoundaryIndex.Contains(i))
-                {
-                    // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
-                    downwardBoundary = - UpwardWave[i] + 2 * velocityVector[nodeIndex - 1];
-                    // Correct element adjacent element by assuming constant derivative in the neighborhood                                 
-                    DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                       
-                }
+                //else if (DownwardBoundaryIndex.Contains(i))
+                //{
+                //    // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
+                //    DownwardWave[i] = - UpwardWave[i] + 2 * velocityVector[nodeIndex];
+                //    downwardBoundary = - UpwardWave[i] + 2 * velocityVector[nodeIndex];
+                //    //DownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);
+                //}
+                //else if (DownwardBoundaryIndex.Contains(i - 1) && i > 1)
+                //{
+                //    // Correct element adjacent element by assuming constant derivative in the neighborhood                                 
+                //    OffsetDownwardWave[i + 1] = DownwardWave[i] + (DownwardWave[i - 1] - DownwardWave[i - 2]);                                                                                           
+                //}
                 else
                 {
                     //Else use the previous element for the upwind stage.
                     downwardBoundary = DownwardWave[i - 1];
                 }
-                //Update differential vector
-                DiffDownwardWave[i] = DownwardWave[i] - downwardBoundary;
+                    DiffDownwardWave[i] = DownwardWave[i] - downwardBoundary;
             }
             #endregion
             #region Upward wave
@@ -126,15 +133,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 {
                     // Use the last element
                     upwardBoundary = - DownwardWave[i] + 2 * velocityVector[velocityVector.Count - 1];                    
+
                 }
-                else if (UpwardBoundaryIndex.Contains(i))
-                {                
-                    //Note that the last element is used twice.
-                    // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
-                    upwardBoundary = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
-                    // Correct element adjacent element by assuming constant derivative in the neighborhood                         
-                    UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                  
-                }
+                //else if (UpwardBoundaryIndex.Contains(i))
+                //{                
+                //    //Note that the last element is used twice.
+                //    // Calculate unkown wave properties by setting vel = (upwward_wave + downward_wave) / 2
+                //    UpwardWave[i] = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
+                //    //UpwardWave[i - 1] = UpwardWave[i] - (UpwardWave[i + 2] - UpwardWave[i + 1]);                                                                                  
+                //    upwardBoundary = - DownwardWave[i] + 2 * velocityVector[nodeIndex];
+                //}          
                 else
                 {
                     upwardBoundary = UpwardWave[i + 1];
@@ -147,7 +155,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {
             
         }
-        public virtual void UpdateState(State state, in SimulationParameters parameters)
+        public virtual void UpdateState(State state)
         {
             // Compute states from Riemann invariants                              
             for (int i = 0; i < NumberOfElements; i ++)
@@ -157,7 +165,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 Velocity[i] = 0.5 * (DownwardWave[i] + UpwardWave[i]);   
                 StrainDifference[i] = i > 0 ? Strain[i] - Strain[i-1] : 0;                                            
             }      
-            InterpolateStateFromWave(this, parameters);      
         }
         public void InterpolateStateFromWave( 
             in WaveModel model, 

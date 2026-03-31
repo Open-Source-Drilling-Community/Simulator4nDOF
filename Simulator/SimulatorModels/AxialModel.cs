@@ -18,9 +18,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             UpdateDifferential(state.ZVelocity, state.TopDrive.CalculateSurfaceAxialVelocity);
             //Update the state with the interpolated values of velocity and strain for the next iteration            
        }   
-        public override void UpdateState(State state, in SimulationParameters parameters)
+        public override void UpdateState(State state)
         {                        
-            base.UpdateState(state, in parameters);
+            base.UpdateState(state);
             //state.ZVelocity[0] = Velocity[0];    
             state.AxialStrainDifference = Vector<double>.Build.Dense(NumberOfLateralElements);       
             state.AxialStrain = InterpolatedStrain;

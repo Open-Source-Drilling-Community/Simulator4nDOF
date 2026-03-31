@@ -22,8 +22,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             //Update separately to avoid overwritting
             for (int i = 0; i < waveModel.NumberOfElements; i++)          
             {                                 
-                waveModel.DownwardWave[i] -= integrationConstant * waveModel.DiffDownwardWave[i];
-                waveModel.UpwardWave[i]   += integrationConstant * waveModel.DiffUpwardWave[i];                    
+                waveModel.DownwardWave[i] -= integrationConstant * waveModel.DiffDownwardWave[i];//(waveModel.DownwardWave[i] - waveModel.OffsetDownwardWave[i]);
+                waveModel.UpwardWave[i]   += integrationConstant * waveModel.DiffUpwardWave[i];//(waveModel.UpwardWave[i] - waveModel.OffsetUpwardWave[i]);                    
                 if (
                         double.IsNaN(waveModel.DownwardWave[i]) ||
                         double.IsNaN(waveModel.UpwardWave[i]) 
@@ -32,7 +32,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                     return false;
                 }                               
             }
-            waveModel.UpdateState(state, simulationParameters);
+            waveModel.UpdateState(state);
             return true;
         }    
      
