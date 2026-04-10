@@ -12,7 +12,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
     public class SimulatorDrillString
     {
         public double BitRadius = .2159 / 2;                   // [m] Bit radius(used in both Detournay and MSE model)
-
+        public readonly double DrillPipeLumpedElementLength = 1.3;             // [m] Drill pipe lumped element length 
+     
         // Material Properties 
         private readonly double PipeYoungModulus = 200e9;             // [Pa] Pipe Young's modulus
         private readonly double CollarYoungModulus = 200e9;             // [Pa] Collar Young's modulus
@@ -21,7 +22,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public readonly double SteelDensity = 7850;              // [kg / m3] Density of steel
         public readonly double PoissonRatio = 0.28;               // Poisson ratio of steel
 
-        public readonly double DrillPipeLumpedElementLength = 1.3;             // [m] Drill pipe lumped element length 
         private readonly double BHALumpedElementLength = 1.5;            // [m] BHA Lumped element length
         public double ToolJointLength = 0.5;                       // [m] Default tool joint length
 
@@ -103,18 +103,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                            double sensorDistanceFromBit, 
                            Vector<double> sleeveDistancesFromBit, 
                            double sleepDampingFactor, 
-                           double lumpedParameterLength,
                            double torsionalDampingFactor,
                            double axialDampingFactor,
                            double lateralDampingFactor)
         {
-            this.DrillPipeLumpedElementLength = lumpedParameterLength;
             this.SensorDistanceFromBit = sensorDistanceFromBit;
-            this.SleeveDistancesFromBit = sleeveDistancesFromBit;
-            this.SleeveTorsionalDampingCoefficient = sleepDampingFactor;
-            this.TorsionalDampingFactor = torsionalDampingFactor;
-            this.AxialDampingFactor = axialDampingFactor;
-            this.LateralDampingFactor = lateralDampingFactor;
+            //this.SleeveDistancesFromBit = sleeveDistancesFromBit;
+            //this.SleeveTorsionalDampingCoefficient = sleepDampingFactor;
+            //this.TorsionalDampingFactor = torsionalDampingFactor;
+            //this.AxialDampingFactor = axialDampingFactor;
+            //this.LateralDampingFactor = lateralDampingFactor;
             this.BitRadius = Rb;
 
             List<string> componentType = new List<string>();
@@ -125,11 +123,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             List<double> id = new List<double>();
             List<double> od = new List<double>();
             List<double> linearWeight = new List<double>();
-            bool readFromMS = true; 
-           
-            double scaleFactor = readFromMS ? 1.0 : Constants.InchToMeterConversion;
+
+
             TotalLength = lumpedCells.ElementLength;
-      
+
             foreach (var section in drillString.DrillStringSectionList)
             {
                 var compCount = section.Count;
@@ -137,14 +134,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 var repetitions = section.SectionComponentList.Count == 1 ? 1 : compCount;
                 for (int i = 0; i < repetitions; i++)
                 {
-                    foreach (var comp in section.SectionComponentList)
+                    foreach (DrillStringComponent comp in section.SectionComponentList)
                     {
-                        var type = comp.Type;
-                        var length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
-                        var mass = 0.0;
-                        var sectionConnectionID = double.MaxValue;
-                        var sectionConnectionOD = double.MinValue;
-                        var sectionConnectionLength = double.MaxValue;
+                        DrillStringComponentTypes type = comp.Type;
+                        double length = comp.Length * (section.SectionComponentList.Count == 1 ? compCount : 1);
+                        double mass = 0.0;
+                        double sectionConnectionID = double.MaxValue;
+                        double sectionConnectionOD = double.MinValue;
+                        double sectionConnectionLength = double.MaxValue;
                         foreach (var part in comp.PartList)
                         {
                             mass += part.Mass;
@@ -253,8 +250,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
                 // Insert elements at the beginning to maintain order (MATLAB prepends using [newVal, array])
                 LcBha.Insert(0, componentLength[i]);
-                ODBha.Insert(0, od[i] * scaleFactor);
-                IDBha.Insert(0, id[i] * scaleFactor);
+                ODBha.Insert(0, od[i]);
+                IDBha.Insert(0, id[i]);
                 LinearWeightBha.Insert(0, linearWeight[i]);
 
                 if (componentType[i] == "Stabilizer")
@@ -273,10 +270,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     if (componentType[i] == "HW drillpipe" || componentType[i] == "Jar" || componentType[i] == "Drillpipe")
                     {
                         drillPipeLengthVector.Insert(0, componentLength[i]);
-                        ODDp.Insert(0, od[i] * scaleFactor);
-                        IDDp.Insert(0, id[i] * scaleFactor);
-                        ODDp_tj.Insert(0, connectionOD[i] * scaleFactor);
-                        IDDp_tj.Insert(0, connectionID[i] * scaleFactor);
+                        ODDp.Insert(0, od[i]);
+                        IDDp.Insert(0, id[i]);
+                        ODDp_tj.Insert(0, connectionOD[i]);
+                        IDDp_tj.Insert(0, connectionID[i]);
                         LinearWeightDp.Insert(0, linearWeight[i]);
                         ToolJointLength = connectionLength[i];
                     }
@@ -391,7 +388,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     Np[0] = lumpedCells.NumberOfLumpedElements - ((int)nStab + Nc.Sum());
                 }
             }
-
+            /*
             double sleeveThreshold = (nStab + Nc.Sum()) * Lavg;
             // Create a boolean mask for elements below the threshold
             var sleeves_belowTopOfBha = sleeveDistancesFromBit
@@ -552,7 +549,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 CharacteristicDrillPipeImpedance = PolarInertiaList.First() * Math.Sqrt(PipeShearModulus * SteelDensity); // Characteristic drill pipe impedance
             }
-
+        
             List<double> l_L_List = Enumerable.Repeat(lumpedParameterLength, Np.Sum()).ToList();
             for (int i = 0; i < nStab; i++)
             {
@@ -642,7 +639,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     SensorRadialDistance = 0.5 * (InnerRadius[adjustedIndex] + OuterRadius[adjustedIndex]);
                 }
             }
-
+            */
         }
     }
 }

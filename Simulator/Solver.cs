@@ -25,18 +25,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         //private Input simulationParameters.Input;
         private TopdriveController topdriveController;
         private DrawworksAndTopdriveController drawworksAndTopdrive;
-        private AxialModel axialModel;
-        private TorsionalModel torsionalModel;
         
-        private LateralModel lateralModel;
-        private IBitRock bitRockModel;
+        private LumpedElementModel drillStringModel;
 
-        private ISolverODE<LateralModel> solverODELateral; 
-        // Upwind scheme is used for the axial and torsional wave equations to better capture the wave propagation dynamics
+        private ISolverODE<LumpedElementModel> solverODE; 
 
-        private ISolverODE<WaveModel> solverODEAxial; 
-        private ISolverODE<WaveModel> solverODETorsional; 
-        
         public Solver(SimulationParameters simulationParameters, in DataModel.Configuration configuration)
         {
             this.simulationParameters = simulationParameters;
@@ -46,30 +39,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
             drawworksAndTopdrive = new DrawworksAndTopdriveController();
-            torsionalModel = new TorsionalModel(simulationParameters);
-            axialModel = new AxialModel(simulationParameters);            
-            lateralModel = new LateralModel(simulationParameters);
-            bitRockModel = configuration.BitRockModelEnum switch
+            IBitRock bitRockModel = configuration.BitRockModelEnum switch
             {
                 BitRockModelEnum.Detournay => new Detournay(
-                                                    axialModel,
-                                                    torsionalModel, 
+                                                    drillStringModel,
                                                     simulationParameters.Drillstring, 
                                                     configuration),
                 BitRockModelEnum.MSE => new MSE(),
                 _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
             };
-
+            drillStringModel = new LumpedElementModel(in simulationParameters, in simulationParameters.DrillString, in bitRockModel);
+          
             //Create an instance of the selected ODE solver
-            solverODELateral = simulationParameters.SolverType switch
+            solverODE = simulationParameters.SolverType switch
             {
-                SolverType.EulerMethod => solverODELateral = new EulerMethod(simulationParameters),
-                SolverType.VerletMethod => solverODELateral = new VerletMethod(simulationParameters),
+                SolverType.EulerMethod => solverODE = new EulerMethod(simulationParameters),
+                SolverType.VerletMethod => solverODE = new VerletMethod(simulationParameters),
                 _ => throw new ArgumentException($"Unknown SolverType: {simulationParameters.SolverType}")
             };
             
-            solverODEAxial = new UpwindScheme(axialModel, in simulationParameters);
-            solverODETorsional = new UpwindScheme(torsionalModel, in simulationParameters);
         }
 
         public (State, Output, Input) OuterStep(SetPoints setPoints)
@@ -263,25 +251,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             double dtTemp = simulationParameters.DistributedCells.ElementLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             // Wave equations are transformed into their Riemann invariants
-            axialModel.PrepareModel(state, simulationParameters);   
-            torsionalModel.PrepareModel(state, simulationParameters);
-            lateralModel.PrepareModel(state, simulationParameters);
+            drillStringModel.PrepareModel(state, simulationParameters);
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
                 UpdateDepthInnerLoop();            
-                // Update axial-torsional state using upwind scheme
-                // The staggered method is used for a semi-implicit integration, increasing stability           
-                output.SimulationHealthy = solverODEAxial.IntegrationStep(state, axialModel, in simulationParameters);                   
-                output.SimulationHealthy = solverODETorsional.IntegrationStep(state, torsionalModel, in simulationParameters);                                   
-                //  Calculate interaction forces on bit based on selected bit-rock model 
-                // and update the state accordingly
-                bitRockModel.CalculateInteractionForce(state, in simulationParameters);
-                bitRockModel.ManageStickingOnBottom(state, in axialModel, in torsionalModel, in simulationParameters);
                 // Calculate torque on bit and top drive torque for the next iteration                                                                   
                 torsionalModel.IntegrateTopDriveSpeed(state, in simulationParameters);
                 // Calculate lateral accelerations                    
-                output.SimulationHealthy = solverODELateral.IntegrationStep(state, lateralModel, in simulationParameters);
+                output.SimulationHealthy = solverODE.IntegrationStep(state, drillStringModel, in simulationParameters);
                 //Abort simulation in case of divergence
                 if (!output.SimulationHealthy)
                 {                    
@@ -448,7 +426,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             state.AddNewLumpedElement();
 
-            solverODELateral.AddNewLumpedElement();        
+            solverODE.AddNewLumpedElement();        
 
             //axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters, axialTorsionalModel);            
             //lateralModel = new LateralModel(simulationParameters, state);

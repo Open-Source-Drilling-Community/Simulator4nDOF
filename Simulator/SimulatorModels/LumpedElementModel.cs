@@ -1,17 +1,23 @@
 using MathNet.Numerics.LinearAlgebra;
+using NORCE.Drilling.Simulator4nDOF.ModelShared;
+using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
-    public class LateralModel : IModel<LateralModel>
+    public class LumpedElementModel : IModel<LumpedElementModel>
     {       
         public int NumberOfElements; // Number of elements is one less than the number of nodes
 
         private Vector<double> tension;
         private Vector<double> torque;
-        
+        // Structural properties
         private Vector<double> bendingStiffness;
+        // Bit-rock interaction related variables
+        private IBitRock bitRockModel;
+
+        // Pre-stress forces in the normal and binormal direction, used for calculating the contact forces in the friction model. These are calculated in the PrepareModel step and then used in the CalculateAccelerations step.
         private Vector<double> preStressNormalForce;
         private Vector<double> preStressBinormalForce;                  
         private Vector<double> tensionIntegral;        
@@ -73,12 +79,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         // Friction related variables
         private double coulombFrictionX;
         private double coulombFrictionY;                    
-        private double coulombFrictionZ;
-
-                   
-        
-        public LateralModel(SimulationParameters simulationParameters)
+        private double coulombFrictionZ;    
+        public LumpedElementModel(in SimulationParameters simulationParameters, in DrillString drillString, in IBitRock bitRockModel)
         {
+            // Allocate main variables for the model.
             NumberOfElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
             bendingStiffness = Vector<double>.Build.Dense(NumberOfElements+1);
             preStressNormalForce = Vector<double>.Build.Dense(NumberOfElements);
@@ -88,6 +92,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             tensionIntegral = Vector<double>.Build.Dense(NumberOfElements);
             tension = Vector<double>.Build.Dense(NumberOfElements + 1);
             torque = Vector<double>.Build.Dense(NumberOfElements + 1);
+            // Initialize the bit-rock model
+            this.bitRockModel = bitRockModel;
+
+
+
         }
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
         {
@@ -246,6 +255,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         }
         public void CalculateAccelerations(State state, in SimulationParameters parameters)
         {
+
+            /* For the addition - The axial and shear strains must be calculated for the bit-rock interaction */
+            #region Bit - rock interaction
+            //  Calculate interaction forces on bit based on selected bit-rock model 
+            // and update the state accordingly                
+            bitRockModel.CalculateInteractionForce(state, in parameters);
+            bitRockModel.ManageStickingOnBottom(state, in parameters);
+            #endregion
+
+
             if (!parameters.UseMudMotor)
             {
                 state.MudTorque = 0;
@@ -258,7 +277,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 else
                     state.MudTorque = -parameters.MudMotor.P0_motor * parameters.MudMotor.V_motor * (speedRatio - 1);                
             }
-                        
+
+
+
             // =============================== Main loop for calculating forces and accelerations in the lateral model ===============================
             for (int i = 0; i < state.XDisplacement.Count; i++)
             {                

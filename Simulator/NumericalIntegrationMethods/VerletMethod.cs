@@ -12,7 +12,7 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
-    public class VerletMethod : ISolverODE<LateralModel>
+    public class VerletMethod : ISolverODE<LumpedElementModel>
     {     
         public bool FirstStep = true;
         public Vector<double> SleeveAngularDisplacementMinus1;        
@@ -91,10 +91,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             FirstStep = false;
         }
 
-        public bool IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
+        public bool IntegrationStep(State state, LumpedElementModel drillStringModel, in SimulationParameters simulationParameters)
         {               
             // Use the lateral model instance to estimate the accelerations
-            lateralModel.CalculateAccelerations(state, simulationParameters);
+            drillStringModel.CalculateAccelerations(state, simulationParameters);
             timeStepSquared = timeStep * timeStep;            
             int n = state.SleeveAngularDisplacement.Count;
             // If it is the first step, initialize the minus one values                        

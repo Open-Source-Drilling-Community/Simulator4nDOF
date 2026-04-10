@@ -47,8 +47,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         
         
         public Detournay(
-            in AxialModel axialModel,
-            in TorsionalModel torsionalModel,                            
             in SimulatorDrillString drillString,
             in Configuration configuration
             )
@@ -61,21 +59,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             // Bit - rock interaction parameters
             WeightOnBitFrictionComponent = drillString.BitRadius * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
             TorqueFrictionComponent = gamma * Mu * drillString.BitRadius / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
-            double dtTemp = axialModel.ElementLength / 
-                Math.Max(torsionalModel.WaveSpeed, axialModel.WaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
-            double fc_ROP = 1.0;                                //[Hz] ROP filter cut-off frequency
-            AlphaROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
-
+            /* Alpha ROP is not used! */
+            //double dtTemp = axialModel.ElementLength / 
+            //    Math.Max(torsionalModel.WaveSpeed, axialModel.WaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
+            //double fc_ROP = 1.0;                                //[Hz] ROP filter cut-off frequency
+            //AlphaROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
         } 
 
-        public void CalculateInteractionForce(State state, 
-                                              in AxialModel axialModel, 
-                                              in TorsionalModel torsionalModel, 
-                                              in SimulationParameters simulationParameters)
+        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters)
         {
             double tb;
             double wb;
             double angularVelocity = state.BitVelocity / simulationParameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius 
+            double bitDisplacement = state.ZDisplacement[state.ZDisplacement.Count - 1]; // Assuming the last element corresponds to the bit
             if (state.BitOnBotton)
             {
                 double previousDepthOfCut;
@@ -90,13 +86,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 double ga = 1.0;
                 double wf = WeightOnBitFrictionComponent * ga;
                 double tf = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
-                double g_tt = torsionalModel.DownwardWave[torsionalModel.DownwardWave.Count - 1] * 
-                                simulationParameters.Drillstring.PipePolarMoment.Last() 
-                                * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
+                //double g_tt = torsionalModel.DownwardWave[torsionalModel.DownwardWave.Count - 1] * 
+                //                simulationParameters.Drillstring.PipePolarMoment.Last() 
+                //                * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
+                /* In the lumped parameter implementation */
+                double g_tt = bitDisplacement * simulationParameters.Drillstring.PipePolarMoment.Last() 
+                                            * simulationParameters.Drillstring.ShearModuli.Last() 
+                                            / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
+                
+
                 g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
-                double g_wt = axialModel.DownwardWave[axialModel.DownwardWave.Count - 1] 
-                    * simulationParameters.Drillstring.PipeArea.Last() * 
-                    simulationParameters.Drillstring.YoungModuli.Last() / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
+                double g_wt = bitDisplacement * simulationParameters.Drillstring.PipeArea.Last() 
+                                              * simulationParameters.Drillstring.YoungModuli.Last() 
+                                              / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
                 g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
             
                 // Calculate torque on bit and weight on bit

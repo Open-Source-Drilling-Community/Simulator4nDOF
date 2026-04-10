@@ -1,6 +1,7 @@
 ﻿using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 using NORCE.Drilling.Simulator4nDOF.Model;
+using NORCE.Drilling.Simulator4nDOF.ModelShared;
 
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
@@ -19,9 +20,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public SimulatorWellbore Wellbore;
         public SimulatorDrillString Drillstring;
         public SimulatorFlow Flow;
+        // DrillString from the microservice. It is used as an input for model
+        public DrillString DrillString;
         public Friction Friction;
         public BitRockModelEnum BitRockModelEnum;
         public TopDriveDrawwork TopDriveDrawwork;
+        // Discretization properties
+        public double NumberOfElements;
+        public double ElementLength;
+        public double DrillStringLength;
+        
         //Integration properties
         public double OuterLoopTimeStep;
         public double InnerLoopTimeStep;
@@ -44,7 +52,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 InitialTopOfStringPosition = configuration.TopOfStringPosition,
                 InitialTopOfStringVelocity = configuration.TopOfStringVelocity
             };
-            LumpedCells = new LumpedCells(configuration.BitDepth, configuration.LengthBetweenLumpedElements);
+            LumpedCells = new LumpedCells(configuration.BitDepth, configuration.ElementLength);
             Drillstring = new SimulatorDrillString(LumpedCells, 
                                  configuration.DrillString,
                                  configuration.FluidDensity,                                  
@@ -53,7 +61,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                  configuration.SensorDistanceFromBit, 
                                  configuration.SleeveDistancesFromBit,
                                  configuration.SleeveDamping,
-                                 configuration.DrillPipeLumpedElementLength,
                                  configuration.TorsionalDamping,
                                  configuration.AxialDamping,
                                  configuration.LateralDamping);
@@ -65,10 +72,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
 
             MudMotor = new MudMotor();
-            DistributedCells = new DistributedCells(Drillstring, configuration.SurfaceRPM, configuration.LengthBetweenLumpedElements);        
-
+            DistributedCells = new DistributedCells(Drillstring, configuration.SurfaceRPM, configuration.ElementLength);                    
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
-        
+            DrillStringLength = configuration.BitDepth - configuration.TopOfStringPosition;
+            ElementLength = configuration.ElementLength;
+
             double dtTemp = DistributedCells.ElementLength / Math.Max(Drillstring.TorsionalWaveSpeed, Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
             dxl = 1.0 / DistributedCells.CellsInDepthOfCut;
             dtl = dxl / DistributedCells.OmegaMax;  // As per the CFL condition for the depth of cut PDE

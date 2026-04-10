@@ -11,17 +11,17 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
-    public class EulerMethod : ISolverODE<LateralModel>
+    public class EulerMethod : ISolverODE<LumpedElementModel>
     {     
         private double timeStep;
         public EulerMethod(in SimulationParameters simulationParameters)        
         {
             timeStep = simulationParameters.InnerLoopTimeStep;
         }
-        public bool IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
+        public bool IntegrationStep(State state, LumpedElementModel drillStringModel, in SimulationParameters simulationParameters)
         {   
             // Use the lateral model instance to estimate the accelerations
-            lateralModel.CalculateAccelerations(state, simulationParameters);
+            drillStringModel.CalculateAccelerations(state, simulationParameters);
             for (int i = 0; i < state.XDisplacement.Count; i++)
             {
                 //Angular DoF

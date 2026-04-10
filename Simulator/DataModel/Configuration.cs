@@ -24,8 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double BitRockFrictionCoeff = 0.9;           // [-] Bit - rock friction coefficient(used in both Detournay and MSE model), br.mu
         public double PdcBladeNo = 5;                       // [-] Number of blades of the PDC bit(Detournay model), br.N
 
-        public double LengthBetweenLumpedElements = 5;      // [m] Length between two lumped elements, lc.dxL. 5 originally, may becompe unstable if increased to 30
-        public double DrillPipeLumpedElementLength = 1.3;   // [m] Drill pipe lumped element length, lc.l_dp
+        public double ElementLength = 5;      // [m] Length between two lumped elements, lc.dxL. 5 originally, may becompe unstable if increased to 30
 
         public required double SensorDistanceFromBit = 63;  // [m] axial distance(relative to bit depth) of an IMU measuring downhole RPM and accelerations
         public required Vector<double> SleeveDistancesFromBit; // [m] Sleeve distances from bit

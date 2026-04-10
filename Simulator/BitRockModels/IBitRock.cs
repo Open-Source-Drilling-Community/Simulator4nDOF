@@ -5,12 +5,9 @@ using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 {
     public interface IBitRock
-    {                    
+    {                  
         public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters){}
-        public void ManageStickingOnBottom(State state, 
-                                        in AxialModel axialModel, 
-                                        in TorsionalModel torsionalModel, 
-                                        in SimulationParameters parameters)
+        public void ManageStickingOnBottom(State state, in SimulationParameters parameters)
         {
            // manage the bit sticking off bottom condition
             if (!state.BitOnBotton)
@@ -20,10 +17,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 {
                     int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;             
                     // Can be recovered from the speed and strain data from the models!
-                    double torsionalAcceleration = torsionalModel.UpwardWave[torsionalModel.NumberOfElements - 1];
-                    double axialAcceleration = axialModel.UpwardWave[axialModel.NumberOfElements - 1];                                            
-                    state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] * state.ShearStrain[state.ShearStrain.Count-1];// parameters.Drillstring.TorsionalWaveSpeed * torsionalAcceleration;
-                    state.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] * state.AxialStrain[state.AxialStrain.Count-1];// parameters.Drillstring.AxialWaveSpeed * axialAcceleration;
+                    state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] * state.ShearStrain[state.ShearStrain.Count-1];
+                    state.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] * state.AxialStrain[state.AxialStrain.Count-1];
                 }
                 else
                 {
