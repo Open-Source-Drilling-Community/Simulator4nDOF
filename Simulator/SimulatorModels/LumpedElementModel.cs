@@ -9,14 +9,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
     public class LumpedElementModel : IModel<LumpedElementModel>
     {       
         public int NumberOfElements; // Number of elements is one less than the number of nodes
-
+        private int elementLength;
         private Vector<double> tension;
         private Vector<double> torque;
         // Structural properties
+        private Vector<double> crossSectionArea;
+        private Vector<double> crossSectionInertia;
+        private Matrix<double> massMatrix;
+        private Matrix<double> lateralStiffnessMatrix;
+        private Matrix<double> axialStiffnessMatrix;
+        private Matrix<double> torsionalStiffnessMatrix;                        
+        // Inactive drill-string elements
+        private List<double> inactiveElementYoungModuli = new();
+        private List<double> inactiveElementShearModuli = new();                        
+        private List<double> inactiveElementArea = new();
+        private List<double> inactiveElementInertia = new();
+        private List<double> inactiveElementMass = new();
+        private List<double> inactiveElementOuterRadius = new();
+        private List<double> inactiveElementLength = new();
+        // last element position in relation to the drill-string bit (drill-bit at position 0)
+        private List<double> lastElementPosition = new();
         private Vector<double> bendingStiffness;
         // Bit-rock interaction related variables
-        private IBitRock bitRockModel;
-
+        private IBitRock bitRockModel;        
         // Pre-stress forces in the normal and binormal direction, used for calculating the contact forces in the friction model. These are calculated in the PrepareModel step and then used in the CalculateAccelerations step.
         private Vector<double> preStressNormalForce;
         private Vector<double> preStressBinormalForce;                  
@@ -80,23 +95,196 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double coulombFrictionX;
         private double coulombFrictionY;                    
         private double coulombFrictionZ;    
+        
         public LumpedElementModel(in SimulationParameters simulationParameters, in DrillString drillString, in IBitRock bitRockModel)
         {
+            // Initialize the bit-rock model
+            this.bitRockModel = bitRockModel;
+            // Expected behaviour:
+            // Simplify geometry by merging similar components 
+            //  We try to keep the element size as constant as possible. 
+            // If there is a very small component, it uses it's own element 
+            // (MergedComponentLength < 2 * ExpectedElementLength)                         
+            #region Drill-String simplification
+            List<double> mergedComponentLength = new List<double> { 0.0 };            
+            List<double> mergedComponentMass = new List<double> { 0.0 };
+            List<double> mergedComponentOuterRadius = new List<double> { 0.0 };
+            List<double> mergedComponentArea = new List<double> { 0.0 };
+            List<double> mergedComponentInertia = new List<double> { 0.0 };
+            List<double> mergedComponentYoungsModulus = new List<double> { 0.0 };
+            List<double> mergedComponentShearModulus = new List<double> { 0.0 };
+            // Simplify geometry by merging similar components 
+            List<DrillStringComponentTypes> componentTypeList = new List<DrillStringComponentTypes>
+                                                {
+                                                    drillString.
+                                                    DrillStringSectionList.ElementAt(0).
+                                                    SectionComponentList.ElementAt(0).
+                                                    Type
+                                                };
+            // Loop through all sections
+            foreach (DrillStringSection section in drillString.DrillStringSectionList)
+            {
+                // Number of times the section is repeated
+                int sectionRepetitions = section.Count;
+                foreach (DrillStringComponent component in section.SectionComponentList)
+                {
+                    foreach (DrillStringComponentPart part in component.PartList)
+                    {
+                        //  Check if the last element is the same type as the previous.
+                        // If so, merge them.
+                        if (componentTypeList[componentTypeList.Count] == component.Type)
+                        {
+                            mergedComponentLength[mergedComponentLength.Count - 1] += sectionRepetitions * part.TotalLength;
+                            mergedComponentMass[mergedComponentLength.Count - 1] += sectionRepetitions *  part.Mass;
+                            //      Elements in here are to be averaged based on the length. 
+                            // They will be divided by the mergedComponent length later on
+                            mergedComponentYoungsModulus[mergedComponentYoungsModulus.Count - 1] += sectionRepetitions * part.TotalLength * part.YoungModulus;
+                            mergedComponentShearModulus[mergedComponentShearModulus.Count - 1] += sectionRepetitions * part.TotalLength
+                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ); 
+                            mergedComponentInertia[mergedComponentInertia.Count - 1] += sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia;
+                            mergedComponentOuterRadius[mergedComponentOuterRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter;
+                            mergedComponentArea[mergedComponentArea.Count - 1] += sectionRepetitions * part.TotalLength * part.CrossSectionArea;
+                        }
+                        else
+                        {
+                            //      If the element type is different, 
+                            // then add one item and start anew.
+                            componentTypeList.Add(component.Type);
+                            mergedComponentLength.Add(sectionRepetitions * part.TotalLength);
+                            mergedComponentMass.Add(sectionRepetitions * part.Mass);
+                            //      Elements in here are to be averaged based on the length. 
+                            // They will be divided by the mergedComponent length later on
+                            mergedComponentYoungsModulus.Add(sectionRepetitions * part.TotalLength * part.YoungModulus);
+                            mergedComponentShearModulus.Add( sectionRepetitions * part.TotalLength
+                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ) ); 
+                            mergedComponentInertia.Add(sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia);
+                            mergedComponentOuterRadius.Add(0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter);
+                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);                        
+                        }
+                    }
+                }
+            }            
+            //  Those properties that are to be averaged are called here and divided 
+            // by the length calulated for the merged component
+            for (int i = 0; i < mergedComponentLength.Count; i++)
+            {
+                mergedComponentYoungsModulus[i] /= mergedComponentLength[i];
+                mergedComponentShearModulus[i] /= mergedComponentLength[i];
+                mergedComponentInertia[i] /= mergedComponentLength[i];
+                mergedComponentOuterRadius[i] /= mergedComponentLength[i];
+                mergedComponentArea[i] /= mergedComponentLength[i];
+            }
+            //  If the drill-string starts with drill-pipes, 
+            // then it must be reverted to a Bit/BHA-first order
+            if (
+                componentTypeList[0] == DrillStringComponentTypes.DrillPipe ||
+                componentTypeList[0] == DrillStringComponentTypes.HeavyWeightDrillPipe
+            )
+            {
+                componentTypeList.Reverse();
+                mergedComponentLength.Reverse();
+                mergedComponentMass.Reverse();
+                mergedComponentOuterRadius.Reverse();
+                mergedComponentArea.Reverse();
+                mergedComponentInertia.Reverse();
+                mergedComponentYoungsModulus.Reverse();
+                mergedComponentShearModulus.Reverse();
+            }
+            #endregion
+            #region Lumped Element Discretization
+            //  In here the lumped elements are discretized. There are 
+            // two expected circumstances:
+            //  I - the merged component length > 2 * Expected Element Length
+            //       - divide the section in equally spaced elements
+            // II - the merged component length < 2 * Expected Element Length
+            //       - Use a single element
+            double expectedElementLength = simulationParameters.ElementLength;
+            // Initialize all properties as lists as it is easier to handle
+            List<double> elementYoungModuli = new();
+            List<double> elementShearModuli = new();                        
+            List<double> elementArea = new();
+            List<double> elementInertia = new();
+            List<double> elementMass = new();
+            List<double> elementOuterRadius = new();
+            List<double> elementLength = new();
+            //   The drill-string used for the simulation case might 
+            // be smaller than the one provided through the microservice.
+            // In this case, there will most likely be unused drill-pipe sections.
+            // Those  
+            inactiveElementYoungModuli.Clear();
+            inactiveElementShearModuli.Clear();                        
+            inactiveElementArea.Clear();
+            inactiveElementInertia.Clear();
+            inactiveElementMass.Clear();
+            inactiveElementOuterRadius.Clear();
+            inactiveElementLength.Clear();
+            //  Current position of the last elemebt in relation to the drill-string
+            // length (from the bit)
+            double lastElementPosition = 0;
+            // Loop through all drill-string length                        
+            for (int i = 0; i < mergedComponentLength.Count; i++)
+            {
+                // Using this integer notation, if the 
+                //  max(  floor(length/expectedLength) - 1, 0 ) + 1
+                //   will return 1 for all length/expectedLength < 2
+                //   will round up the number of elements for all length/expectedLength > 2  
+                int numberOfElementsInSection = Math.Max((int) Math.Floor(mergedComponentLength[i] / expectedElementLength - 1), 0) + 1;
+                for (int j = 0; j < numberOfElementsInSection; j++ )
+                {
+                    if (lastElementPosition <= simulationParameters.DrillStringLength)
+                    {  
+                        // Divide by the number of elements
+                        elementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
+                        elementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
+                        //  Those properties do not need to be divided, 
+                        // as they have been averaged by the length beforehand:
+                        elementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        elementYoungModuli.Add( mergedComponentYoungsModulus[i] );
+                        elementShearModuli.Add( mergedComponentShearModulus[i] );
+                        elementInertia.Add( mergedComponentInertia[i] );
+                        elementArea.Add( mergedComponentArea[i] );
+                    }
+                    else 
+                    {
+                        //  If the elements are not part of the initial state, they are nonetheless calculated.
+                        // if there drill-string displace downwards enough, a new element will be needed and 
+                        // thus the initial configuration shall be preserved.
+                        // Divide by the number of elements
+                        inactiveElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
+                        inactiveElementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
+                        //  Those properties do not need to be divided, 
+                        // as they have been averaged by the length beforehand:
+                        inactiveElementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        inactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
+                        inactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
+                        inactiveElementInertia.Add( mergedComponentInertia[i] );
+                        inactiveElementArea.Add( mergedComponentArea[i] );                            
+                    }
+                    lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
+                }                
+            }            
+            #endregion
+            #region Mass and stiffness matrices
+            // In here, the global and element mass and stiffness matrices are created
+            // After I populate the matrices, I want to split into 3 vector:
+            // left of diagonal, diagonal and right of diagonal for all DoF.
+
+            //  Keeping the matricial notation of the mass and stiffness is not required.
+            // However, it is very convenient to have them as it can be used for modal analysis,
+            // to calculate natural frequencies, mode shapes, frequency domain responses and so forth.                      
+            #endregion
             // Allocate main variables for the model.
-            NumberOfElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
+            NumberOfElements = elementLength.Count;
+            //NumberOfElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
             bendingStiffness = Vector<double>.Build.Dense(NumberOfElements+1);
             preStressNormalForce = Vector<double>.Build.Dense(NumberOfElements);
             preStressBinormalForce = Vector<double>.Build.Dense(NumberOfElements);
-            //ScalingMatrix = Vector<double>.Build.Dense(simulationParameters.LumpedCells.DistributedToLumpedRatio, 1).ToColumnMatrix();
+      
             toolFaceAngle = Vector<double>.Build.Dense(NumberOfElements);
             tensionIntegral = Vector<double>.Build.Dense(NumberOfElements);
             tension = Vector<double>.Build.Dense(NumberOfElements + 1);
             torque = Vector<double>.Build.Dense(NumberOfElements + 1);
-            // Initialize the bit-rock model
-            this.bitRockModel = bitRockModel;
-
-
-
+            
         }
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
         {
@@ -264,7 +452,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             bitRockModel.ManageStickingOnBottom(state, in parameters);
             #endregion
 
-
+            #region Mud motors properties            
             if (!parameters.UseMudMotor)
             {
                 state.MudTorque = 0;
@@ -277,7 +465,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 else
                     state.MudTorque = -parameters.MudMotor.P0_motor * parameters.MudMotor.V_motor * (speedRatio - 1);                
             }
-
+            #endregion
 
 
             // =============================== Main loop for calculating forces and accelerations in the lateral model ===============================
