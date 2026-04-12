@@ -9,7 +9,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
     public class LumpedElementModel : IModel<LumpedElementModel>
     {       
         public int NumberOfElements; // Number of elements is one less than the number of nodes
-        private int elementLength;
         private Vector<double> tension;
         private Vector<double> torque;
         // Structural properties
@@ -18,7 +17,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private Matrix<double> massMatrix;
         private Matrix<double> lateralStiffnessMatrix;
         private Matrix<double> axialStiffnessMatrix;
-        private Matrix<double> torsionalStiffnessMatrix;                        
+        private Matrix<double> torsionalStiffnessMatrix;
+        // Active drill-string elements
+        private List<double> elementYoungModuli = new();
+        private List<double> elementShearModuli = new();                        
+        private List<double> elementArea = new();
+        private List<double> elementInertia = new();
+        private List<double> elementMass = new();
+        private List<double> elementOuterRadius = new();
+        private List<double> elementLength = new();
+            
+
         // Inactive drill-string elements
         private List<double> inactiveElementYoungModuli = new();
         private List<double> inactiveElementShearModuli = new();                        
@@ -200,13 +209,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             //       - Use a single element
             double expectedElementLength = simulationParameters.ElementLength;
             // Initialize all properties as lists as it is easier to handle
-            List<double> elementYoungModuli = new();
-            List<double> elementShearModuli = new();                        
-            List<double> elementArea = new();
-            List<double> elementInertia = new();
-            List<double> elementMass = new();
-            List<double> elementOuterRadius = new();
-            List<double> elementLength = new();
+            elementYoungModuli = new();
+            elementShearModuli = new();                        
+            elementArea = new();
+            elementInertia = new();
+            elementMass = new();
+            elementOuterRadius = new();
+            elementLength = new();
             //   The drill-string used for the simulation case might 
             // be smaller than the one provided through the microservice.
             // In this case, there will most likely be unused drill-pipe sections.
