@@ -102,10 +102,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
         public void AddNewLumpedElement()
         {
-            double Pro = Math.Min(Drillstring.OuterRadius[0], Drillstring.OuterRadius[1]);                          // [m] Drill pipe outer radius
-            double Pri = Math.Max(Drillstring.InnerRadius[0], Drillstring.InnerRadius[1]);                          // [m] Drill pipe inner radius
-            double Pro_tj = Math.Max(Drillstring.OuterRadius[0], Drillstring.OuterRadius[1]);                       // [m] Tool joint outer radius
-            double Pri_tj = Math.Min(Drillstring.InnerRadius[0], Drillstring.InnerRadius[1]);                       // [m] Tool joint inner radius
+            double Pro = Math.Min(Drillstring.ElementOuterRadius[0], Drillstring.ElementOuterRadius[1]);                          // [m] Drill pipe outer radius
+            double Pri = Math.Max(Drillstring.ElementInnerRadius[0], Drillstring.ElementInnerRadius[1]);                          // [m] Drill pipe inner radius
+            double Pro_tj = Math.Max(Drillstring.ElementOuterRadius[0], Drillstring.ElementOuterRadius[1]);                       // [m] Tool joint outer radius
+            double Pri_tj = Math.Min(Drillstring.ElementInnerRadius[0], Drillstring.ElementInnerRadius[1]);                       // [m] Tool joint inner radius
             double Jp = Math.PI / 2.0 * (Math.Pow(Pro, 4) - Math.Pow(Pri, 4));  // [m ^ 4] Drill string polar moment of inertia
             double Ap = Math.PI * (Math.Pow(Pro, 2) - Math.Pow(Pri, 2));        // [m ^ 2] Drill string cross sectional area
             double Ip = Math.PI / 4.0 * (Math.Pow(Pro, 4) - Math.Pow(Pri, 4));  // [m ^ 4] Drill string moment of inertia
@@ -114,42 +114,42 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double Ai = Math.PI * Math.Pow(Pri, 2);                             // [m ^ 2] Drill pipe inner surface area
             double Atjo = Math.PI * Math.Pow(Pro_tj, 2);                        // [m ^ 2] Tool joint outer surface area
             double Atji = Math.PI * Math.Pow(Pri_tj, 2);                        // [m ^ 2] Tool joint inner surface area
-            double ecc_percent = Math.Max(Drillstring.Eccentricity[0], Drillstring.Eccentricity[1]) / Math.Max(Drillstring.OuterRadius[0], Drillstring.OuterRadius[1]); // eccentricity percent relative to total radius
+            double ecc_percent = Math.Max(Drillstring.ElementEccentricity[0], Drillstring.ElementEccentricity[1]) / Math.Max(Drillstring.ElementOuterRadius[0], Drillstring.ElementOuterRadius[1]); // eccentricity percent relative to total radius
             double mass_imbalance_percent = Drillstring.EccentricMass[0] / Drillstring.LumpedElementMass[0];
 
             // if current top element is a drill pipe, add a tool joint, and vice - versa
-            if (Drillstring.OuterRadius[0] == Pro)
+            if (Drillstring.ElementOuterRadius[0] == Pro)
             {
                 // Copy the original array elements to the new array, starting at index 1
-                Drillstring.OuterRadius = ExtendVectorStart(Pro_tj, Drillstring.OuterRadius);
-                Drillstring.InnerRadius = ExtendVectorStart(Pri_tj, Drillstring.InnerRadius);
-                Drillstring.Eccentricity = ExtendVectorStart(Pro_tj * ecc_percent, Drillstring.Eccentricity);
+                Drillstring.ElementOuterRadius = ExtendVectorStart(Pro_tj, Drillstring.ElementOuterRadius);
+                Drillstring.ElementInnerRadius = ExtendVectorStart(Pri_tj, Drillstring.ElementInnerRadius);
+                Drillstring.ElementEccentricity = ExtendVectorStart(Pro_tj * ecc_percent, Drillstring.ElementEccentricity);
                 Drillstring.LumpedElementMass = ExtendVectorStart(Drillstring.SteelDensity * Drillstring.LumpedElementMassMomentOfInertia[0] * Ap + Drillstring.SteelDensity * Drillstring.ToolJointLength * Atj, Drillstring.LumpedElementMass);
             }
             else
             {
-                Drillstring.OuterRadius = ExtendVectorStart(Pro, Drillstring.OuterRadius);
-                Drillstring.InnerRadius = ExtendVectorStart(Pri, Drillstring.InnerRadius);
-                Drillstring.Eccentricity = ExtendVectorStart(0, Drillstring.Eccentricity);
+                Drillstring.ElementOuterRadius = ExtendVectorStart(Pro, Drillstring.ElementOuterRadius);
+                Drillstring.ElementInnerRadius = ExtendVectorStart(Pri, Drillstring.ElementInnerRadius);
+                Drillstring.ElementEccentricity = ExtendVectorStart(0, Drillstring.ElementEccentricity);
                 Drillstring.LumpedElementMass = ExtendVectorStart(Drillstring.SteelDensity * Drillstring.LumpedElementMassMomentOfInertia[0] * Ap, Drillstring.LumpedElementMass);
             }
 
-            Drillstring.PipePolarMoment = ExtendVectorStart(Jp, Drillstring.PipePolarMoment);
-            Drillstring.PipeArea = ExtendVectorStart(Ap, Drillstring.PipeArea);
-            Drillstring.PipeInertia = ExtendVectorStart(Ip, Drillstring.PipeInertia);
-            Drillstring.OuterArea = ExtendVectorStart(Ao, Drillstring.OuterArea);
-            Drillstring.InnerArea = ExtendVectorStart(Ai, Drillstring.InnerArea);
+            Drillstring.ElementPolarInertia = ExtendVectorStart(Jp, Drillstring.ElementPolarInertia);
+            Drillstring.ElementArea = ExtendVectorStart(Ap, Drillstring.ElementArea);
+            Drillstring.ElementInertia = ExtendVectorStart(Ip, Drillstring.ElementInertia);
+            Drillstring.ElementOuterArea = ExtendVectorStart(Ao, Drillstring.ElementOuterArea);
+            Drillstring.ElementInnerArea = ExtendVectorStart(Ai, Drillstring.ElementInnerArea);
             Drillstring.ToolJointOuterArea = ExtendVectorStart(Atjo, Drillstring.ToolJointOuterArea);
             Drillstring.ToolJointInnerArea = ExtendVectorStart(Atji, Drillstring.ToolJointInnerArea);
-            Drillstring.YoungModuli = ExtendVectorStart(Drillstring.YoungModuli[0], Drillstring.YoungModuli);
-            Drillstring.ShearModuli = ExtendVectorStart(Drillstring.ShearModuli[0], Drillstring.ShearModuli);
+            Drillstring.ElementYoungModuli = ExtendVectorStart(Drillstring.ElementYoungModuli[0], Drillstring.ElementYoungModuli);
+            Drillstring.ElementShearModuli = ExtendVectorStart(Drillstring.ElementShearModuli[0], Drillstring.ElementShearModuli);
             Drillstring.WeightCorrectionFactor = ExtendVectorStart(Drillstring.WeightCorrectionFactor[0], Drillstring.WeightCorrectionFactor);
             Drillstring.LumpedElementMassMomentOfInertia = ExtendVectorStart(Drillstring.LumpedElementMassMomentOfInertia[0], Drillstring.LumpedElementMassMomentOfInertia);
             Drillstring.LumpedElementMomentOfInertia = ExtendVectorStart(Drillstring.SteelDensity * Drillstring.LumpedElementMassMomentOfInertia[0] * Jp, Drillstring.LumpedElementMomentOfInertia);
             Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient);
             Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient);
             Drillstring.BendingStiffness = ExtendVectorStart(Drillstring.BendingStiffness[0], Drillstring.BendingStiffness);
-            Drillstring.FluidAddedMass = ExtendVectorStart(Math.PI * Flow.FluidDensity * (Math.Pow(Drillstring.InnerRadius[0], 2) + Drillstring.AddedFluidMassCoefficient * Math.Pow(Drillstring.OuterRadius[0], 2)) * Drillstring.LumpedElementMassMomentOfInertia[0] / 2.0, Drillstring.FluidAddedMass);
+            Drillstring.FluidAddedMass = ExtendVectorStart(Math.PI * Flow.FluidDensity * (Math.Pow(Drillstring.ElementInnerRadius[0], 2) + Drillstring.AddedFluidMassCoefficient * Math.Pow(Drillstring.ElementOuterRadius[0], 2)) * Drillstring.LumpedElementMassMomentOfInertia[0] / 2.0, Drillstring.FluidAddedMass);
             Drillstring.EccentricMass = ExtendVectorStart(mass_imbalance_percent * Drillstring.LumpedElementMass[0], Drillstring.EccentricMass);
 
             // Update spatial variables

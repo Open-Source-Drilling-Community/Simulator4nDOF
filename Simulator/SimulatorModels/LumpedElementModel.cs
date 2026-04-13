@@ -22,10 +22,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public int NumberOfElements; // Number of elements is one less than the number of nodes
         private Vector<double> tension;
         private Vector<double> torque;
+        // Bore hole properties
+        private double wallStiffness = 5e7;
+        private double wallDamping = 5e4;
+        
         // Structural properties
-        private Vector<double> crossSectionArea;
-        private Vector<double> crossSectionInertia;
-        private Matrix<double> massMatrix;
         private Matrix<double> lateralStiffnessMatrix;
         private Matrix<double> axialStiffnessMatrix;
         private Matrix<double> torsionalStiffnessMatrix;
@@ -43,7 +44,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double[] torsionalLumpedInertia;
         
         // Active drill-string elements
-        private ElementDescription elementsDescription;
         private Vector<double> bendingStiffness;
         // Bit-rock interaction related variables
         private IBitRock bitRockModel;        
@@ -111,13 +111,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double coulombFrictionY;                    
         private double coulombFrictionZ;    
         
-        public LumpedElementModel(in SimulationParameters simulationParameters, in DrillString drillString, in IBitRock bitRockModel)
+        public LumpedElementModel(in SimulationParameters parameters, 
+            in IBitRock bitRockModel)
         {
             // Initialize the bit-rock model
             this.bitRockModel = bitRockModel;
             // Create a simplifiefd drill-string form the input
-            elementsDescription = new ElementDescription(in simulationParameters, in drillString);
-            NumberOfElements = elementsDescription.ElementLength.Count;            
+            NumberOfElements = parameters.Drillstring.ElementLength.Count;            
             #region Mass and stiffness matrices
             // In here, the global and element mass and stiffness matrices are created
             // After I populate the matrices, I want to split into 3 vector:
@@ -149,19 +149,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //compatible to a rigid body motion. The calculation can be foundEach element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx. 
                 // The lateral modes use a half-sine shape, which is compatible with a simply supported beam with C1 continuity. When the mass element is lumped, it falls
                 // back to the conventional 0.5 * rho * A * L for each node.
-                double axialMass = elementsDescription.ElementDensity[i] * elementsDescription.ElementArea[i] * elementsDescription.ElementLength[i] / 2.0;
-                double torsionalMass = elementsDescription.ElementDensity[i] * elementsDescription.ElementInertia[i] * elementsDescription.ElementLength[i];
-                double lateralMass = elementsDescription.ElementDensity[i] * elementsDescription.ElementArea[i] * elementsDescription.ElementLength[i] / 2.0;                
+                double axialMass = parameters.Drillstring.ElementDensity[i] * parameters.Drillstring.ElementArea[i] * parameters.Drillstring.ElementLength[i] / 2.0;
+                double torsionalMass = parameters.Drillstring.ElementDensity[i] * parameters.Drillstring.ElementInertia[i] * parameters.Drillstring.ElementLength[i];
+                double lateralMass = parameters.Drillstring.ElementDensity[i] * parameters.Drillstring.ElementArea[i] * parameters.Drillstring.ElementLength[i] / 2.0;                
                 axialLumpedMass[i] += axialMass; 
                 lateralLumpedMass[i] += lateralMass;
                 torsionalLumpedInertia[i] += torsionalMass;
-                double axialStiffness = elementsDescription.ElementYoungModuli[i] * elementsDescription.ElementArea[i] / elementsDescription.ElementLength[i];
-                double lateralStiffness = Math.PI * Math.PI * Math.PI * elementsDescription.ElementYoungModuli[i] * elementsDescription.ElementArea[i] 
-                            / elementsDescription.ElementLength[i];
+                double axialStiffness = parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementArea[i] / parameters.Drillstring.ElementLength[i];
+                double lateralStiffness = Math.PI * Math.PI * Math.PI * parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementArea[i] 
+                            / parameters.Drillstring.ElementLength[i];
                 // The torsional stiffness is calculated as 2 * G * J / L, where G is the shear modulus, 
                 // J is the polar moment of inertia and L is the length of the element. The polar moment of inertia is calculated as I * 2, 
                 // where I is the area moment of inertia. Each element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx 
-                double torsionalStiffness = 2.0 * elementsDescription.ElementShearModuli[i] * elementsDescription.ElementInertia[i] / elementsDescription.ElementLength[i];;         
+                double torsionalStiffness = 2.0 * parameters.Drillstring.ElementShearModuli[i] * parameters.Drillstring.ElementInertia[i] / parameters.Drillstring.ElementLength[i];;         
                 //   Add the local elements to the global 
                 // element matrix.
                 // ---------- Lateral Stiffness -----------  
@@ -228,11 +228,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 d2Xdz2 = - state.XDisplacement[i] * Math.PI * Math.PI * invElementLengthSquared; 
                 d2Ydz2 = - state.YDisplacement[i] * Math.PI * Math.PI * invElementLengthSquared; 
                 //Calcualte the bending moments using the central difference scheme
-                momentX = simulationParameters.Drillstring.YoungModuli[i]
-                         * simulationParameters.Drillstring.PipeInertia[i]
+                momentX = simulationParameters.Drillstring.ElementYoungModuli[i]
+                         * simulationParameters.Drillstring.ElementInertia[i]
                          * d2Xdz2; // Bending moment x-component
-                momentY = simulationParameters.Drillstring.YoungModuli[i]
-                         * simulationParameters.Drillstring.PipeInertia[i]
+                momentY = simulationParameters.Drillstring.ElementYoungModuli[i]
+                         * simulationParameters.Drillstring.ElementInertia[i]
                          * d2Ydz2; //
                 
                 state.BendingMomentX[i] =  momentX;
@@ -279,9 +279,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
                 differentialTrajectoryTheta = parameters.Trajectory.DiffThetaInterpolated[offPhaseIndex];    
                 trajectoryTheta = parameters.Trajectory.InterpolatedTheta[offPhaseIndex];
-                innerArea = parameters.Drillstring.InnerArea[offPhaseIndex];
-                outerArea = parameters.Drillstring.OuterArea[offPhaseIndex];
-                localBendingStiffness = isFirst ? parameters.Drillstring.BendingStiffness[0] : parameters.Drillstring.BendingStiffness[i-1];
+                innerArea = parameters.Drillstring.ElementInnerArea[offPhaseIndex];
+                outerArea = parameters.Drillstring.ElementOuterArea[offPhaseIndex];
+                localBendingStiffness = isFirst ? lateralStiffnessLeft[0] : lateralStiffnessMid[i-1];
                 // Index for reverse loop
                 revIdx = i == parameters.LumpedCells.NumberOfLumpedElements ? 0 : parameters.LumpedCells.NumberOfLumpedElements - i - 1;                
                 Tension = tensionIntegral[revIdx] + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i] - axialForce;
@@ -303,7 +303,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Update the model
                 tension[i] = Tension;
                 //This step checks if there is a negative element and sets to zero
-                bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (2 * parameters.Drillstring.PipeLengthForBending), 0.0);            
+                bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (parameters.Drillstring.ElementLength[i]), 0.0);            
                 torque[i] = CalculateTorsionalElasticForce(i, state);
                 //Roll over for integration
                 oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;
@@ -326,8 +326,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             {     
                 isFirst = i == 0;
                 // Normal force components in Frenet-Serret coordinate system
-                differentialTorque = isFirst ?  0 : (torque[i+1] - torque[i]) / elementsDescription.ElementLength[i];
-                InertiaTimesYoungModulus = elementsDescription.ElementYoungModuli[i] * elementsDescription.ElementInertia[i];
+                differentialTorque = isFirst ?  0 : (torque[i+1] - torque[i]) / parameters.Drillstring.ElementLength[i];
+                InertiaTimesYoungModulus = parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementInertia[i];
                 binormalForce = parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.bz[i] 
                                 + parameters.Trajectory.Curvature[i] * differentialTorque 
                                 + parameters.Trajectory.CurvatureDerivative[i] * torque[i+1] 
@@ -356,8 +356,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // ========== Update relevant model variables ==========
                 toolFaceAngle[i] = Math.Acos(dotProduct) * signToolFace;
                 //This is equivalent of integrating with the trapezoidal rule and then getting the difference.                    
-                preStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * elementsDescription.ElementLength[i];
-                preStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * elementsDescription.ElementLength[i];
+                preStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * parameters.Drillstring.ElementLength[i];
+                preStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * parameters.Drillstring.ElementLength[i];
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
                 oldBinormalForce = binormalForce;     
@@ -468,15 +468,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // The speed comes from the torsional model, which is more detailed. Thus, the converted index must me used
                 rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocity[i];                            
                 rotationSpeedSquared = rotationSpeed * rotationSpeed;
-                fluidDampingCoefficient = parameters.Flow.FluidDampingCoefficient / parameters.Drillstring.FluidAddedMass[i];                    
-                fluidForceX = - parameters.Drillstring.FluidAddedMass[i] * 
+                fluidDampingCoefficient = parameters.Flow.FluidDampingCoefficient / parameters.Drillstring.ElementFluidAddedMass[i];                    
+                fluidForceX = - parameters.Drillstring.ElementFluidAddedMass[i] * 
                                     (
                                         fluidDampingCoefficient * state.XVelocity[i]
                                         - 0.25 * rotationSpeedSquared * state.XDisplacement[i]
                                         + rotationSpeed * state.YVelocity[i]
                                         + 0.5 * fluidDampingCoefficient * rotationSpeed * state.YDisplacement[i]
                                     );
-                fluidForceY = - parameters.Drillstring.FluidAddedMass[i] * 
+                fluidForceY = - parameters.Drillstring.ElementFluidAddedMass[i] * 
                                     (
                                         fluidDampingCoefficient * state.YVelocity[i]
                                         - 0.25 * rotationSpeedSquared * state.YDisplacement[i]
@@ -492,12 +492,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // which causes a lateral force and a torque as the pipe is displaced                
                 rotationAngle = hasSleeve ? state.SleeveAngularDisplacement[sleeveIndex] : state.AngularDisplacement[i];                                        
                 rotationAcceleration = hasSleeve ? state.SleeveAngularAcceleration[sleeveIndex] : state.AngularAcceleration[i];                                        
-                unbalanceForceX = parameters.Drillstring.EccentricMass[i] * parameters.Drillstring.Eccentricity[i]*
+                unbalanceForceX = parameters.Drillstring.ElementEccentricMass[i] * parameters.Drillstring.ElementEccentricity[i]*
                     (
                         rotationSpeedSquared * Math.Cos(rotationAngle)
                         + state.AngularAcceleration[i] * Math.Sin(rotationAngle)
                     );
-                unbalanceForceY = parameters.Drillstring.EccentricMass[i] * parameters.Drillstring.Eccentricity[i]* 
+                unbalanceForceY = parameters.Drillstring.ElementEccentricMass[i] * parameters.Drillstring.ElementEccentricity[i]* 
                     (
                         rotationSpeedSquared * Math.Sin(rotationAngle)
                         - rotationAcceleration * Math.Cos(rotationAngle)
@@ -507,9 +507,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Axial velocity
                 axialVelocity = state.ZVelocity[i];
                 // "Masks" sleeve or non-sleeve variables if hasSleeve = true
-                outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : elementsDescription.ElementOuterRadius[i];
+                outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : parameters.Drillstring.ElementOuterRadius[i];
                 //double innerRadius = hasSleeve ? parameters.Drillstring.SleeveInnerRadius : parameters.Drillstring.OuterRadius[i];  
-                inertia = hasSleeve ? parameters.Drillstring.SleeveMassMomentOfInertia : elementsDescription.ElementInertia[i];
+                inertia = hasSleeve ? parameters.Drillstring.SleeveMassMomentOfInertia : parameters.Drillstring.ElementInertia[i];
                 // The total normal force is the sum of elastic, pre-stress, fluid, unbalance forces, damping and colission forces                        
                 sumForcesX = elasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - parameters.Drillstring.CalculateLateralDamping * state.XVelocity[i] - normalCollisionForce * cosWhirlAngle;
                 sumForcesY = elasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - parameters.Drillstring.CalculateLateralDamping * state.YVelocity[i] - normalCollisionForce * sinWhirlAngle;
@@ -549,8 +549,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                         // No slide acceleration: noSlipThetaDotDot = - (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/Router
                         // noSlipWhirlAcceleration = (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement
                         // xDotDot = sumForceX/Mass, yDotDot = sumForceY/Mass
-                        double xDotDot = sumForcesX / parameters.Drillstring.LumpedElementMass[i];
-                        double yDotDot = sumForcesY / parameters.Drillstring.LumpedElementMass[i];
+                        double xDotDot = sumForcesX / lateralLumpedMass[i];
+                        double yDotDot = sumForcesY / lateralLumpedMass[i];
                         noSlipWhirlAcceleration = radialDisplacement == 0 ? 10E5 : (xDotDot * sinWhirlAngle - yDotDot * cosWhirlAngle - 2 * radialVelocity * whirlVelocity) / radialDisplacement;
                         noSlipThetaDotDot = (radialVelocity * whirlVelocity + yDotDot * cosWhirlAngle - xDotDot * sinWhirlAngle) / outerRadius;//- (noSlipWhirlAcceleration * radialDisplacement + radialVelocity * whirlVelocity)/outerRadius;                                            
                     }
@@ -633,8 +633,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                              - frictionTorque;
                 // Variables are generated locally to facilitate debugging only.
                 angularAcceleration = sumTorque / torsionalLumpedInertia[i];      
-                xAcceleration = sumForcesX / (lateralLumpedMass[i] + parameters.Drillstring.FluidAddedMass[i]);
-                yAcceleration = sumForcesY / (lateralLumpedMass[i] + parameters.Drillstring.FluidAddedMass[i]);
+                xAcceleration = sumForcesX / (lateralLumpedMass[i] + parameters.Drillstring.ElementFluidAddedMass[i]);
+                yAcceleration = sumForcesY / (lateralLumpedMass[i] + parameters.Drillstring.ElementFluidAddedMass[i]);
                 zAcceleration = sumForcesZ / axialLumpedMass[i];                
                 //Update state
                 state.NormalCollisionForce[i] = normalCollisionForce;

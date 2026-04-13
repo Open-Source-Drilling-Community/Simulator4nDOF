@@ -52,7 +52,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 } 
             }
             BoreHoleSizes = boreHoleSizes;
-            DrillStringClearance = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
+            DrillStringClearance = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements);
 
             UpdateWellbore(drillString, lumpedCells);
         }
@@ -60,7 +60,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public void UpdateWellbore(in SimulatorDrillString drillString, in LumpedCells lumpedElement)
         {
             // Wellbore radius calculation
-            boreholeRadius = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
+            boreholeRadius = Vector<double>.Build.Dense(drillString.ElementOuterRadius.Count);
             int index = 0;
             double localRadius;
             for (int i = 1; i < lumpedElement.CumulativeElementLength.Count(); i++)
@@ -74,12 +74,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 //Update radius list
                 boreholeRadius[i - 1] = localRadius;            
             }
-
-            DrillStringClearance = boreholeRadius - drillString.OuterRadius;
-            foreach (int i in drillString.SleeveIndexPosition)
+            for (int i = 0; i < drillString.ElementOuterRadius.Count; i++)
             {
-                DrillStringClearance[i] = boreholeRadius[i] - drillString.SleeveOuterRadius;
+                DrillStringClearance[i] = drillString.SleeveIndexPosition.Contains(i) 
+                        ? boreholeRadius[i] - drillString.SleeveOuterRadius:boreholeRadius[i] - drillString.ElementOuterRadius[i];
             }
+        
         }
     }
 }

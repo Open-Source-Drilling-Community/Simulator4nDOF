@@ -427,9 +427,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             for (int i = 0; i < lumpedCell.CumulativeElementLength.Count; i++)
             {   
                 //Extract variables for computations assuming the first element used the same as the first one available 
-                elementInnerArea = i == 0 ? drillString.InnerArea[0] : drillString.InnerArea[i - 1];
-                elementOuterArea = i == 0 ? drillString.OuterArea[0] : drillString.OuterArea[i - 1];
-                pipeElementArea = i == 0 ? drillString.PipeArea[0] : drillString.PipeArea[i - 1];
+                elementInnerArea = i == 0 ? drillString.ElementInnerArea[0] : drillString.ElementInnerArea[i - 1];
+                elementOuterArea = i == 0 ? drillString.ElementOuterArea[0] : drillString.ElementOuterArea[i - 1];
+                pipeElementArea = i == 0 ? drillString.ElementArea[0] : drillString.ElementArea[i - 1];
                 toolJointElementInnerArea = i == 0 ? drillString.ToolJointInnerArea[0] : drillString.ToolJointInnerArea[i - 1];
                 toolJointElementOuterArea = i == 0 ? drillString.ToolJointOuterArea[0] : drillString.ToolJointOuterArea[i - 1];                    
                 // Stress variation

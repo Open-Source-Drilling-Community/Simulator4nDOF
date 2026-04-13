@@ -15,17 +15,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 double omega_ = state.AngularVelocity[state.AngularVelocity.Count - 1];
                 if (parameters.Input.StickingBoolean)
                 {
-                    int lastIndex = parameters.Drillstring.ShearModuli.Count - 1;             
+                    int lastIndex = parameters.Drillstring.ElementShearModuli.Count - 1;             
                     // Can be recovered from the speed and strain data from the models!
-                    state.TorqueOnBit = parameters.Drillstring.PipePolarMoment[lastIndex] * parameters.Drillstring.ShearModuli[lastIndex] * state.ShearStrain[state.ShearStrain.Count-1];
-                    state.WeightOnBit = parameters.Drillstring.PipeArea[lastIndex] * parameters.Drillstring.YoungModuli[lastIndex] * state.AxialStrain[state.AxialStrain.Count-1];
+                    state.TorqueOnBit = parameters.Drillstring.ElementPolarInertia[lastIndex] * parameters.Drillstring.ElementShearModuli[lastIndex] * (state.AngularDisplacement[state.AngularDisplacement.Count-1] - state.AngularDisplacement[state.AngularDisplacement.Count-2]);
+                    state.WeightOnBit = parameters.Drillstring.ElementArea[lastIndex] * parameters.Drillstring.ElementYoungModuli[lastIndex]  * (state.ZDisplacement[state.AngularDisplacement.Count-1] - state.ZDisplacement[state.AngularDisplacement.Count-2]);
                 }
                 else
                 {
                     double normalForce_ = parameters.Input.BottomExtraNormalForce;
                     if (normalForce_ > 0)
                     {
-                        double ro_ = parameters.Drillstring.OuterRadius[parameters.Drillstring.OuterRadius.Count - 1];
+                        double ro_ = parameters.Drillstring.ElementOuterRadius[parameters.Drillstring.ElementOuterRadius.Count - 1];
                         double Fs_ = normalForce_ * 1.0; //Static force
                         double Fc_ = normalForce_ * 0.5; //Kinematic force
                         double va_ = state.ZVelocity[state.ZVelocity.Count - 1]; //Axial velocity

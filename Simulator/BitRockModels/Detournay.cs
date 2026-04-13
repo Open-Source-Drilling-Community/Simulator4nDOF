@@ -90,14 +90,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 //                simulationParameters.Drillstring.PipePolarMoment.Last() 
                 //                * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
                 /* In the lumped parameter implementation */
-                double g_tt = bitDisplacement * simulationParameters.Drillstring.PipePolarMoment.Last() 
-                                            * simulationParameters.Drillstring.ShearModuli.Last() 
+                double g_tt = bitDisplacement * simulationParameters.Drillstring.ElementPolarInertia.Last() 
+                                            * simulationParameters.Drillstring.ElementShearModuli.Last() 
                                             / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
                 
 
                 g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
-                double g_wt = bitDisplacement * simulationParameters.Drillstring.PipeArea.Last() 
-                                              * simulationParameters.Drillstring.YoungModuli.Last() 
+                double g_wt = bitDisplacement * simulationParameters.Drillstring.ElementArea.Last() 
+                                              * simulationParameters.Drillstring.ElementYoungModuli.Last() 
                                               / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
                 g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
             
