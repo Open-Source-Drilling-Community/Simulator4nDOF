@@ -35,7 +35,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         double Torque0LowPass;
 
         double PreviousTopDriveAngularSpeed;                                 // Previous TopDriveAngularVelocity (top drive angular velocity) 
+        // Connection properties
+        private double torqueConnectionStart = 0;               // [s] connection start time
+        private double torqueTopdriveStartup = 0;               // [s] top drive start up time
 
+        // variables for rig activity state machine
+        private bool makeConnection = false;
+        private bool pullOutOfHoleBeforeConnectionBoolean = false;
+
+       
         public TopdriveController(in DataModel.Configuration configuration, in SimulationParameters simulationParameters)
         {
             KpSoftTorqueSpeed = configuration.KpSoftTorqueSpeed;
@@ -78,9 +86,53 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Torque0LowPass = 0.0;
             PreviousTopDriveAngularSpeed = 0.0; // Previous TopDriveAngularVelocity (top drive angular velocity)  
         }
-
-        public void Step(State state, in SimulationParameters simulationParameters)
+        public void StateStep(State state, in SimulationParameters parameters)
         {
+            double Vdf; //[m/s] drillfloor velocity
+            if (parameters.TopDriveDrawwork.UseHeave)
+                Vdf = parameters.TopDriveDrawwork.HeaveAmplitude * 2 * Math.PI / parameters.TopDriveDrawwork.HeavePeriod * Math.Cos(2 * Math.PI / parameters.TopDriveDrawwork.HeavePeriod * state.Step * parameters.OuterLoopTimeStep); // [m / s] drillfloor velocity
+            else
+                Vdf = 0;
+
+            if (state.Step * parameters.OuterLoopTimeStep - torqueTopdriveStartup > parameters.TopDriveDrawwork.TopDriveStartupTime && !makeConnection && !pullOutOfHoleBeforeConnectionBoolean)
+                state.TopDrive.CalculateSurfaceAxialVelocity = parameters.TopDriveDrawwork.SurfaceAxialVelocity;
+            else if (pullOutOfHoleBeforeConnectionBoolean)
+                state.TopDrive.CalculateSurfaceAxialVelocity = parameters.TopDriveDrawwork.PullingOutOfHoleTopVelocity;
+            else
+                state.TopDrive.CalculateSurfaceAxialVelocity = 0.0;
+
+            // add drilfloor velocity to top of string velocity setpoint
+            state.TopDrive.CalculateSurfaceAxialVelocity = state.TopDrive.CalculateSurfaceAxialVelocity + Vdf;
+
+            if (state.TopOfStringPosition < 1 && !pullOutOfHoleBeforeConnectionBoolean)
+            {
+                pullOutOfHoleBeforeConnectionBoolean = true;
+                state.OnBottomStart = -1;
+            }
+
+            if (state.TopOfStringPosition > 2 && pullOutOfHoleBeforeConnectionBoolean)
+            {
+                pullOutOfHoleBeforeConnectionBoolean = false;
+                makeConnection = true;
+                torqueConnectionStart = state.Step * parameters.OuterLoopTimeStep;
+            }
+
+            if (makeConnection && state.Step * parameters.OuterLoopTimeStep - torqueConnectionStart > parameters.TopDriveDrawwork.ConnectionTime)
+            {
+                makeConnection = false;
+                state.TopOfStringPosition = 31; // [m]
+                torqueTopdriveStartup = state.Step * parameters.OuterLoopTimeStep;
+            }
+
+            if (makeConnection)
+                state.TopDrive.TopDriveRPMSetPoint = state.TopDrive.TopDriveRPMSetPoint + 2 * parameters.OuterLoopTimeStep * (0 - state.TopDrive.TopDriveRPMSetPoint);
+            else
+                state.TopDrive.TopDriveRPMSetPoint = state.TopDrive.TopDriveRPMSetPoint + 2 * parameters.OuterLoopTimeStep * (parameters.TopDriveDrawwork.SurfaceRotation - state.TopDrive.TopDriveRPMSetPoint);
+        }
+
+        public void ControllerStep(State state, in SimulationParameters simulationParameters)
+        {
+            // Update top drive speed setpoint based on rig state (connection, pulling out of hole, etc.)
             double deltaTopDriveSpeed = state.TopDrive.TopDriveAngularVelocity - PreviousTopDriveAngularSpeed;
             PreviousTopDriveAngularSpeed = state.TopDrive.TopDriveAngularVelocity;
             double e_PI;

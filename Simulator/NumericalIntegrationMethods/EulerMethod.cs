@@ -18,6 +18,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         {
             timeStep = simulationParameters.InnerLoopTimeStep;
         }
+         public bool SimulationDivergedCheck(in State state, in int i)
+        {         
+            return double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]);
+        }
         public bool IntegrationStep(State state, LumpedElementModel drillStringModel, in SimulationParameters simulationParameters)
         {   
             // Use the lateral model instance to estimate the accelerations
@@ -36,20 +40,34 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 //Axial DoF
                 state.ZDisplacement[i] = state.ZDisplacement[i] + state.ZVelocity[i] * timeStep;
                 state.ZVelocity[i] = state.ZVelocity[i] + state.ZAcceleration[i] * timeStep;
-                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]))
+                if (SimulationDivergedCheck(in state, in i))
                 {
                     return false;
                 }      
             }
-
+            return true;
+        }
+        public bool IntegrationSleeve(State state, LumpedElementModel model, in SimulationParameters simulationParameters)
+        {      
             for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
             {
                 //Sleeve DoF
                 state.SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i] + state.SleeveAngularVelocity[i] * timeStep;
                 state.SleeveAngularVelocity[i]     = state.SleeveAngularVelocity[i] + state.SleeveAngularAcceleration[i] * timeStep;
-            }
+                if ( double.IsNaN(state.SleeveAngularVelocity[i]) || double.IsNaN(state.SleeveAngularDisplacement[i]) )
+                {
+                    return false;
+                }
+            }  
             return true;
         }
+        public bool IntegrationSurfacePosition(State state, LumpedElementModel model, in SimulationParameters simulationParameters)
+        {
+            //Calculate the top of string position based on the calculated speed        
+            state.TopOfStringRelativeAxialPosition = state.TopOfStringRelativeAxialPosition + state.TopDrive.CalculateSurfaceAxialVelocity * timeStep;         
+            return !double.IsNaN(state.TopOfStringRelativeAxialPosition);
+        }
+
         public void AddNewLumpedElement()
         {
 

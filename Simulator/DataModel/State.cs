@@ -7,13 +7,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
     public class State
     {
         public bool SimulationDiverged { get; set; } = false;
-        public Vector<double> ShearStrain;                    // Pipe shear strain
-        public Vector<double> PipeAngularVelocity;            // Pipe angular velocity
-        public Vector<double> AxialStrain;                    // Pipe axial strain
-        public Vector<double> PipeAxialVelocity;              // Pipe axial velocity
-
-        public Vector<double> AxialStrainDifference;                // Pipe axial strain rate
-        public Vector<double> ShearStrainDifference;        // Pipe axial acceleration
 
         public Vector<double> SleeveAngularVelocity;          // Sleeve angular velocity
         public Vector<double> DepthOfCut;                     // Depth of cut
@@ -28,9 +21,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Vector<double> YVelocity;                      // Lumped element lateral velocity in y-direction
         public Vector<double> YAcceleration;                  // Lumped element lateral acceleration in y-direction
         public Vector<double> ZDisplacement;                  // Lumped element lateral acceleration in x-direction        
-        public Vector<double> ZVelocity;                  // Lumped element axial velocity
-        public Vector<double> ZAcceleration;              // Lumped element axial acceleration
+        public Vector<double> ZVelocity;                        // Lumped element axial velocity
+        public Vector<double> ZAcceleration;                    // Lumped element axial acceleration
+        public double TopOfStringRelativeAxialPosition;               // Top of string relative position
+        public double TopOfStringRelativeRotation;               // Top of string relative rotation
         
+
         public Vector<double> AngularDisplacement;            // Lumped element angular displacement        
         public Vector<double> AngularVelocity;                // Lumped element angular velocity
         public Vector<double> AngularAcceleration;            // Lumped element angular acceleration
@@ -99,19 +95,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         {
             
             
-            // Initialize pipe shear strain matrix
-            ShearStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            // Initialize pipe angular velocity matrix
-            PipeAngularVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
-            // Initialize pipe axial strain matrix
-            AxialStrain = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            // Initialize pipe axial strain matrix
-            // Initialize pipe axial velocity matrix
-            PipeAxialVelocity = Vector<double>.Build.Dense(simulationParameters.DistributedCells.NumberOfElements);
 
-            // Initialize lumped element angular displacement
-            AxialStrainDifference = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            ShearStrainDifference = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             // Initialize lumped element radial displacement
@@ -166,17 +150,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             DepthOfCut = Vector<double>.Build.Dense(simulationParameters.DistributedCells.CellsInDepthOfCut);
             // Initialize sleeve forces
             SleeveForces = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            //Dimension initial state
-            //DownwardTorsionalWave = Vector<double>.Build.Dense(torsionalModel.NumberOfElements); // Downward traveling wave, torsional
-            //UpwardTorsionalWave   = Vector<double>.Build.Dense(torsionalModel.NumberOfElements); // Upward traveling wave, torsional
-            //DownwardAxialWave     = Vector<double>.Build.Dense(axialModel.NumberOfElements); // Downward traveling wave, axial
-            //UpwardAxialWave       = Vector<double>.Build.Dense(axialModel.NumberOfElements); // Upward traveling wave, axial            
-            //// Allocate boundary condition vectors
-            //DownwardTorsionalWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            //UpwardTorsionalWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            //DownwardAxialWaveLeftBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            //UpwardAxialWaveRightBoundary = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-           
+            TopOfStringRelativeAxialPosition = 0;
+            TopOfStringRelativeRotation = 0;
+
             // Initialize slip condition
             SlipCondition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
             BendingMomentX = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
@@ -220,18 +196,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
           }
         public void AddNewLumpedElement()
         {
-            // Extend PipeShearStrain matrix by prepending a column with the first column's values            
-            ShearStrain = ExtendVectorStart(ShearStrain[0], ShearStrain);            
-
-            // Extend PipeAngularVelocity matrix by prepending a column with the first column's values
-            PipeAngularVelocity = ExtendVectorStart(PipeAngularVelocity[0], PipeAngularVelocity);            
-
-            // Extend PipeAxialStrain matrix by prepending 
-            AxialStrain = ExtendVectorStart(AxialStrain[0], AxialStrain);            
-
-            // Extend PipeAxialVelocity vector by prepending a the first element's value
-            PipeAxialVelocity = ExtendVectorStart(PipeAxialVelocity[0], PipeAxialVelocity);            
-
+        
             // Extend AngularDisplacement vector by prepending the first element
             AngularDisplacement = ExtendVectorStart(AngularDisplacement[0], AngularDisplacement);
 

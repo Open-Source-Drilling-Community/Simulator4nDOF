@@ -24,7 +24,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private readonly Configuration configuration;
         //private Input simulationParameters.Input;
         private TopdriveController topdriveController;
-        private DrawworksAndTopdriveController drawworksAndTopdrive;
         
         private LumpedElementModel drillStringModel;
 
@@ -38,12 +37,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             state = new State(in simulationParameters);                        
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
-            drawworksAndTopdrive = new DrawworksAndTopdriveController();
             IBitRock bitRockModel = configuration.BitRockModelEnum switch
             {
                 BitRockModelEnum.Detournay => new Detournay(
-                                                    drillStringModel,
-                                                    simulationParameters.Drillstring, 
+                                                    simulationParameters.Drillstring,
                                                     configuration),
                 BitRockModelEnum.MSE => new MSE(),
                 _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
@@ -81,11 +78,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
             }
 
-            // Calculate u.v0 and u.omega_sp 
-            drawworksAndTopdrive.Step(state, in simulationParameters);
-
+            // Calculate Drawworks speed and surface rotational speed then apply controller 
+            topdriveController.StateStep(state, in simulationParameters);
             // Controller for top drive - calculate u.tau_Motor
-            topdriveController.Step(state, in simulationParameters);
+            topdriveController.ControllerStep(state, in simulationParameters);
 
             //UpdateDepths(); // BitDepth, HoleDepth, TopOfStringPosition, OnBottom
 
@@ -245,7 +241,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Set these output values in the beginning to match matlab plotting
             output.TopDriveRotationInRPM = state.TopDrive.TopDriveAngularVelocity;
             if (!simulationParameters.UseMudMotor)
-                output.BitRotationInRPM = state.PipeAngularVelocity[state.PipeAngularVelocity.Count - 1];
+                output.BitRotationInRPM = state.AngularVelocity[state.AngularVelocity.Count - 1];
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
@@ -255,11 +251,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < simulationParameters.InnerLoopIterations; innerIterationNo++)
             {
-                UpdateDepthInnerLoop();            
-                // Calculate torque on bit and top drive torque for the next iteration                                                                   
-                torsionalModel.IntegrateTopDriveSpeed(state, in simulationParameters);
+                // Update bit depth and top of string position based on current velocities for use in the bit-rock interaction model and top drive model within the inner loop
+                UpdateDepthInnerLoop();                                                                               
+                // Assuming the top drive is represented by the first element in the state vector for angular velocities
+                state.TopDrive.TopDriveAngularVelocity = state.AngularVelocity[0]; 
                 // Calculate lateral accelerations                    
                 output.SimulationHealthy = solverODE.IntegrationStep(state, drillStringModel, in simulationParameters);
+                output.SimulationHealthy = solverODE.IntegrationSleeve(state, drillStringModel, in simulationParameters);
+                output.SimulationHealthy = solverODE.IntegrationSurfacePosition(state, drillStringModel, in simulationParameters);
+                
                 //Abort simulation in case of divergence
                 if (!output.SimulationHealthy)
                 {                    
@@ -274,7 +274,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
             }            
             // Bending moments
-            lateralModel.UpdateBendingMoments(state, simulationParameters);
+            drillStringModel.UpdateBendingMoments(state, simulationParameters);
            
             double Theta_x = 0.0;
             double Theta_y = 0.0;
