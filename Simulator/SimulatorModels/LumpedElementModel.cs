@@ -38,10 +38,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double[] torsionalStiffnessLeft;
         private double[] torsionalStiffnessMid;
         private double[] torsionalStiffnessRight;
+        private double[] lateralLumpedMass;
+        private double[] axialLumpedMass;
+        private double[] torsionalLumpedMass;
+        
         // Active drill-string elements
         private ElementDescription elementsDescription;
-        // last element position in relation to the drill-string bit (drill-bit at position 0)
-        private List<double> lastElementPosition = new();
         private Vector<double> bendingStiffness;
         // Bit-rock interaction related variables
         private IBitRock bitRockModel;        
@@ -115,7 +117,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             this.bitRockModel = bitRockModel;
             // Create a simplifiefd drill-string form the input
             elementsDescription = new ElementDescription(in simulationParameters, in drillString);
-            NumberOfElements = elementsDescription.elementLength.Count;            
+            NumberOfElements = elementsDescription.ElementLength.Count;            
             #region Mass and stiffness matrices
             // In here, the global and element mass and stiffness matrices are created
             // After I populate the matrices, I want to split into 3 vector:
@@ -133,33 +135,50 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             torsionalStiffnessLeft = new double[NumberOfElements + 1];
             torsionalStiffnessMid = new double[NumberOfElements + 1];
             torsionalStiffnessRight = new double[NumberOfElements + 1];
+
+            axialLumpedMass = new double[NumberOfElements + 1];
+            lateralLumpedMass = new double[NumberOfElements + 1];
+            torsionalLumpedMass = new double[NumberOfElements + 1];
             // CHANGE TO SPARSE MATRICES??            
             lateralStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements + 1, NumberOfElements + 1);
             axialStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements+ 1, NumberOfElements + 1);
             torsionalStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements + 1, NumberOfElements + 1);
             for (int i = 0; i < NumberOfElements; i++)
             {
-                // ADD ACTUAL STIFFNESS CALCULATION 
-                double axialStiffness = 1.0;
-                double lateralStiffness = 1.0; 
-                double torsionalStiffness = 1.0;         
+                //  The equivalent mass for each DoF is dependent on the assumed mode shape. Axial and Torsional modes use a linear element, which is
+                //compatible to a rigid body motion. The calculation can be foundEach element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx. 
+                // The lateral modes use a half-sine shape, which is compatible with a simply supported beam with C1 continuity. When the mass element is lumped, it falls
+                // back to the conventional 0.5 * rho * A * L for each node.
+                double axialMass = elementsDescription.ElementDensity[i] * elementsDescription.ElementArea[i] * elementsDescription.ElementLength[i] / 2.0;
+                double torsionalMass = elementsDescription.ElementDensity[i] * elementsDescription.ElementInertia[i] * elementsDescription.ElementLength[i];
+                double lateralMass = elementsDescription.ElementDensity[i] * elementsDescription.ElementArea[i] * elementsDescription.ElementLength[i] / 2.0;                
+                axialLumpedMass[i] += axialMass; 
+                lateralLumpedMass[i] += lateralMass;
+                torsionalLumpedMass[i] += torsionalMass;
+                double axialStiffness = elementsDescription.ElementYoungModuli[i] * elementsDescription.ElementArea[i] / elementsDescription.ElementLength[i];
+                double lateralStiffness = Math.PI * Math.PI * Math.PI * elementsDescription.ElementYoungModuli[i] * elementsDescription.ElementArea[i] 
+                            / elementsDescription.ElementLength[i];
+                // The torsional stiffness is calculated as 2 * G * J / L, where G is the shear modulus, 
+                // J is the polar moment of inertia and L is the length of the element. The polar moment of inertia is calculated as I * 2, 
+                // where I is the area moment of inertia. Each element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx 
+                double torsionalStiffness = 2.0 * elementsDescription.ElementShearModuli[i] * elementsDescription.ElementInertia[i] / elementsDescription.ElementLength[i];;         
                 //   Add the local elements to the global 
                 // element matrix.
                 // ---------- Lateral Stiffness -----------  
-                lateralStiffnessLeft[i + 1] = lateralStiffness;
+                lateralStiffnessLeft[i + 1] = - lateralStiffness;
                 lateralStiffnessMid[i] += lateralStiffness;
                 lateralStiffnessMid[i + 1] += lateralStiffness;
-                lateralStiffnessRight[i] = lateralStiffness;
+                lateralStiffnessRight[i] = - lateralStiffness;
                 // ---------- Axial Stiffness -----------
-                axialStiffnessLeft[i + 1] = axialStiffness;
+                axialStiffnessLeft[i + 1] = - axialStiffness;
                 axialStiffnessMid[i] += axialStiffness;
                 axialStiffnessMid[i + 1] += axialStiffness;
-                axialStiffnessRight[i] = axialStiffness;
+                axialStiffnessRight[i] = - axialStiffness;
                 // ---------- Torsional Stiffness -----------       
-                torsionalStiffnessLeft[i + 1] = torsionalStiffness;
+                torsionalStiffnessLeft[i + 1] = - torsionalStiffness;
                 torsionalStiffnessMid[i] += torsionalStiffness;
                 torsionalStiffnessMid[i + 1] += torsionalStiffness;
-                torsionalStiffnessRight[i] = torsionalStiffness;
+                torsionalStiffnessRight[i] = - torsionalStiffness;
                 // ---------- Matrix notation --------------
                 // Lateral stiffness matrix
                 lateralStiffnessMatrix[i, i] += lateralStiffness;
@@ -205,11 +224,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //YiMinus1 = (i == 0) ? 0.0 : state.YDisplacement[i - 1];
                 //XiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.XDisplacement[i + 1];
                 //YiPlus1 = (i == state.YDisplacement.Count - 1) ? 0.0 : state.YDisplacement[i + 1];
-
                 // Calculate the derivatives using the half-sine first mode hypothesis
                 d2Xdz2 = - state.XDisplacement[i] * Math.PI * Math.PI * invElementLengthSquared; 
                 d2Ydz2 = - state.YDisplacement[i] * Math.PI * Math.PI * invElementLengthSquared; 
-
                 //Calcualte the bending moments using the central difference scheme
                 momentX = simulationParameters.Drillstring.YoungModuli[i]
                          * simulationParameters.Drillstring.PipeInertia[i]

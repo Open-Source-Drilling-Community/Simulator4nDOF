@@ -18,28 +18,28 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
     /// </summary>
     public class ElementDescription
     {
-        public List<double> elementYoungModuli = new();
-        public List<double> elementShearModuli = new();                        
-        public List<double> elementArea = new();
-        public List<double> elementInertia = new();
-        public List<double> elementMass = new();
-        public List<double> elementOuterRadius = new();
-        public List<double> elementLength = new();            
+        public List<double> ElementYoungModuli = new();
+        public List<double> ElementShearModuli = new();                        
+        public List<double> ElementArea = new();
+        public List<double> ElementInertia = new();
+        public List<double> ElementDensity = new();
+        public List<double> ElementOuterRadius = new();
+        public List<double> ElementLength = new();            
         //inactive drill-string elements
-        public List<double> inactiveElementYoungModuli = new();
-        public List<double> inactiveElementShearModuli = new();                        
-        public List<double> inactiveElementArea = new();
-        public List<double> inactiveElementInertia = new();
-        public List<double> inactiveElementMass = new();
-        public List<double> inactiveElementOuterRadius = new();
-        public List<double> inactiveElementLength = new();        
+        public List<double> InactiveElementYoungModuli = new();
+        public List<double> InactiveElementShearModuli = new();                        
+        public List<double> InactiveElementArea = new();
+        public List<double> InactiveElementInertia = new();
+        public List<double> InactiveElementDensity = new();
+        public List<double> InactiveElementOuterRadius = new();
+        public List<double> InactiveElementLength = new();        
         private List<double> mergedComponentLength = new List<double> { 0.0 };            
-        private List<double> mergedComponentMass = new List<double> { 0.0 };
         private List<double> mergedComponentOuterRadius = new List<double> { 0.0 };
         private List<double> mergedComponentArea = new List<double> { 0.0 };
         private List<double> mergedComponentInertia = new List<double> { 0.0 };
         private List<double> mergedComponentYoungsModulus = new List<double> { 0.0 };
-        private List<double> mergedComponentShearModulus = new List<double> { 0.0 };                
+        private List<double> mergedComponentShearModulus = new List<double> { 0.0 };     
+        private List<double> mergedComponentDensity = new List<double> { 0.0 };           
         public ElementDescription(in SimulationParameters simulationParameters, 
             in DrillString drillString)
         {
@@ -71,7 +71,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                         if (componentTypeList[componentTypeList.Count] == component.Type)
                         {
                             mergedComponentLength[mergedComponentLength.Count - 1] += sectionRepetitions * part.TotalLength;
-                            mergedComponentMass[mergedComponentLength.Count - 1] += sectionRepetitions *  part.Mass;
                             //      Elements in here are to be averaged based on the length. 
                             // They will be divided by the mergedComponent length later on
                             mergedComponentYoungsModulus[mergedComponentYoungsModulus.Count - 1] += sectionRepetitions * part.TotalLength * part.YoungModulus;
@@ -80,6 +79,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                             mergedComponentInertia[mergedComponentInertia.Count - 1] += sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia;
                             mergedComponentOuterRadius[mergedComponentOuterRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter;
                             mergedComponentArea[mergedComponentArea.Count - 1] += sectionRepetitions * part.TotalLength * part.CrossSectionArea;
+                            mergedComponentDensity[mergedComponentDensity.Count - 1] += sectionRepetitions * part.TotalLength * part.MaterialDensity;
                         }
                         else
                         {
@@ -87,7 +87,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                             // then add one item and start anew.
                             componentTypeList.Add(component.Type);
                             mergedComponentLength.Add(sectionRepetitions * part.TotalLength);
-                            mergedComponentMass.Add(sectionRepetitions * part.Mass);
                             //      Elements in here are to be averaged based on the length. 
                             // They will be divided by the mergedComponent length later on
                             mergedComponentYoungsModulus.Add(sectionRepetitions * part.TotalLength * part.YoungModulus);
@@ -95,7 +94,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                                     * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ) ); 
                             mergedComponentInertia.Add(sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia);
                             mergedComponentOuterRadius.Add(0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter);
-                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);                        
+                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);       
+                            mergedComponentDensity.Add(sectionRepetitions * part.TotalLength * part.MaterialDensity);                 
                         }
                     }
                 }
@@ -109,6 +109,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 mergedComponentInertia[i] /= mergedComponentLength[i];
                 mergedComponentOuterRadius[i] /= mergedComponentLength[i];
                 mergedComponentArea[i] /= mergedComponentLength[i];
+                mergedComponentDensity[i] /= mergedComponentLength[i];
             }
             //  If the drill-string starts with drill-pipes, 
             // then it must be reverted to a Bit/BHA-first order
@@ -119,12 +120,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             {
                 componentTypeList.Reverse();
                 mergedComponentLength.Reverse();
-                mergedComponentMass.Reverse();
                 mergedComponentOuterRadius.Reverse();
                 mergedComponentArea.Reverse();
                 mergedComponentInertia.Reverse();
                 mergedComponentYoungsModulus.Reverse();
                 mergedComponentShearModulus.Reverse();
+                mergedComponentDensity.Reverse();
             }
             #endregion
             #region Lumped Element Discretization
@@ -156,15 +157,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     if (lastElementPosition <= simulationParameters.DrillStringLength)
                     {  
                         // Divide by the number of elements
-                        elementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
-                        elementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
+                        ElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
                         //  Those properties do not need to be divided, 
                         // as they have been averaged by the length beforehand:
-                        elementOuterRadius.Add( mergedComponentOuterRadius[i] );
-                        elementYoungModuli.Add( mergedComponentYoungsModulus[i] );
-                        elementShearModuli.Add( mergedComponentShearModulus[i] );
-                        elementInertia.Add( mergedComponentInertia[i] );
-                        elementArea.Add( mergedComponentArea[i] );
+                        ElementDensity.Add( mergedComponentDensity[i] );                        
+                        ElementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        ElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
+                        ElementShearModuli.Add( mergedComponentShearModulus[i] );
+                        ElementInertia.Add( mergedComponentInertia[i] );
+                        ElementArea.Add( mergedComponentArea[i] );
                     }
                     else 
                     {
@@ -172,15 +173,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                         // if there drill-string displace downwards enough, a new element will be needed and 
                         // thus the initial configuration shall be preserved.
                         // Divide by the number of elements
-                        inactiveElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
-                        inactiveElementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
+                        InactiveElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
                         //  Those properties do not need to be divided, 
                         // as they have been averaged by the length beforehand:
-                        inactiveElementOuterRadius.Add( mergedComponentOuterRadius[i] );
-                        inactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
-                        inactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
-                        inactiveElementInertia.Add( mergedComponentInertia[i] );
-                        inactiveElementArea.Add( mergedComponentArea[i] );                            
+                        InactiveElementDensity.Add( mergedComponentDensity[i] );                                              
+                        InactiveElementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        InactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
+                        InactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
+                        InactiveElementInertia.Add( mergedComponentInertia[i] );
+                        InactiveElementArea.Add( mergedComponentArea[i] );                            
                     }
                     lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
                 }     
