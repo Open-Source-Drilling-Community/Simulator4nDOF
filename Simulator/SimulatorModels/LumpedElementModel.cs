@@ -6,6 +6,17 @@ using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 {
+    /// <summary>
+    ///     LumpedElementModel comes from the IModel interface. In here, it is expected to 
+    /// have an "PrepareModel" method which is used to apply any necessary operations before
+    /// it enters the integration loop. Those can be, for instance, updating the setpoints 
+    /// from the simulator.
+    /// 
+    ///     CalculateAccelerations is another method where the force models are to be implemented
+    /// note that the method for calculating accelerations can be shared through several other
+    /// models. In other words, how friction/impact is calculated can be the same whether it is 
+    /// a Finite Element, Finite Difference or a Lumped Element model.
+    /// </summary>
     public class LumpedElementModel : IModel<LumpedElementModel>
     {       
         public int NumberOfElements; // Number of elements is one less than the number of nodes
@@ -18,24 +29,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private Matrix<double> lateralStiffnessMatrix;
         private Matrix<double> axialStiffnessMatrix;
         private Matrix<double> torsionalStiffnessMatrix;
+        private double[] lateralStiffnessLeft;
+        private double[] lateralStiffnessMid;
+        private double[] lateralStiffnessRight;
+        private double[] axialStiffnessLeft;
+        private double[] axialStiffnessMid;
+        private double[] axialStiffnessRight;
+        private double[] torsionalStiffnessLeft;
+        private double[] torsionalStiffnessMid;
+        private double[] torsionalStiffnessRight;
         // Active drill-string elements
-        private List<double> elementYoungModuli = new();
-        private List<double> elementShearModuli = new();                        
-        private List<double> elementArea = new();
-        private List<double> elementInertia = new();
-        private List<double> elementMass = new();
-        private List<double> elementOuterRadius = new();
-        private List<double> elementLength = new();
-            
-
-        // Inactive drill-string elements
-        private List<double> inactiveElementYoungModuli = new();
-        private List<double> inactiveElementShearModuli = new();                        
-        private List<double> inactiveElementArea = new();
-        private List<double> inactiveElementInertia = new();
-        private List<double> inactiveElementMass = new();
-        private List<double> inactiveElementOuterRadius = new();
-        private List<double> inactiveElementLength = new();
+        private ElementDescription elementsDescription;
         // last element position in relation to the drill-string bit (drill-bit at position 0)
         private List<double> lastElementPosition = new();
         private Vector<double> bendingStiffness;
@@ -109,181 +113,75 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {
             // Initialize the bit-rock model
             this.bitRockModel = bitRockModel;
-            // Expected behaviour:
-            // Simplify geometry by merging similar components 
-            //  We try to keep the element size as constant as possible. 
-            // If there is a very small component, it uses it's own element 
-            // (MergedComponentLength < 2 * ExpectedElementLength)                         
-            #region Drill-String simplification
-            List<double> mergedComponentLength = new List<double> { 0.0 };            
-            List<double> mergedComponentMass = new List<double> { 0.0 };
-            List<double> mergedComponentOuterRadius = new List<double> { 0.0 };
-            List<double> mergedComponentArea = new List<double> { 0.0 };
-            List<double> mergedComponentInertia = new List<double> { 0.0 };
-            List<double> mergedComponentYoungsModulus = new List<double> { 0.0 };
-            List<double> mergedComponentShearModulus = new List<double> { 0.0 };
-            // Simplify geometry by merging similar components 
-            List<DrillStringComponentTypes> componentTypeList = new List<DrillStringComponentTypes>
-                                                {
-                                                    drillString.
-                                                    DrillStringSectionList.ElementAt(0).
-                                                    SectionComponentList.ElementAt(0).
-                                                    Type
-                                                };
-            // Loop through all sections
-            foreach (DrillStringSection section in drillString.DrillStringSectionList)
-            {
-                // Number of times the section is repeated
-                int sectionRepetitions = section.Count;
-                foreach (DrillStringComponent component in section.SectionComponentList)
-                {
-                    foreach (DrillStringComponentPart part in component.PartList)
-                    {
-                        //  Check if the last element is the same type as the previous.
-                        // If so, merge them.
-                        if (componentTypeList[componentTypeList.Count] == component.Type)
-                        {
-                            mergedComponentLength[mergedComponentLength.Count - 1] += sectionRepetitions * part.TotalLength;
-                            mergedComponentMass[mergedComponentLength.Count - 1] += sectionRepetitions *  part.Mass;
-                            //      Elements in here are to be averaged based on the length. 
-                            // They will be divided by the mergedComponent length later on
-                            mergedComponentYoungsModulus[mergedComponentYoungsModulus.Count - 1] += sectionRepetitions * part.TotalLength * part.YoungModulus;
-                            mergedComponentShearModulus[mergedComponentShearModulus.Count - 1] += sectionRepetitions * part.TotalLength
-                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ); 
-                            mergedComponentInertia[mergedComponentInertia.Count - 1] += sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia;
-                            mergedComponentOuterRadius[mergedComponentOuterRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter;
-                            mergedComponentArea[mergedComponentArea.Count - 1] += sectionRepetitions * part.TotalLength * part.CrossSectionArea;
-                        }
-                        else
-                        {
-                            //      If the element type is different, 
-                            // then add one item and start anew.
-                            componentTypeList.Add(component.Type);
-                            mergedComponentLength.Add(sectionRepetitions * part.TotalLength);
-                            mergedComponentMass.Add(sectionRepetitions * part.Mass);
-                            //      Elements in here are to be averaged based on the length. 
-                            // They will be divided by the mergedComponent length later on
-                            mergedComponentYoungsModulus.Add(sectionRepetitions * part.TotalLength * part.YoungModulus);
-                            mergedComponentShearModulus.Add( sectionRepetitions * part.TotalLength
-                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ) ); 
-                            mergedComponentInertia.Add(sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia);
-                            mergedComponentOuterRadius.Add(0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter);
-                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);                        
-                        }
-                    }
-                }
-            }            
-            //  Those properties that are to be averaged are called here and divided 
-            // by the length calulated for the merged component
-            for (int i = 0; i < mergedComponentLength.Count; i++)
-            {
-                mergedComponentYoungsModulus[i] /= mergedComponentLength[i];
-                mergedComponentShearModulus[i] /= mergedComponentLength[i];
-                mergedComponentInertia[i] /= mergedComponentLength[i];
-                mergedComponentOuterRadius[i] /= mergedComponentLength[i];
-                mergedComponentArea[i] /= mergedComponentLength[i];
-            }
-            //  If the drill-string starts with drill-pipes, 
-            // then it must be reverted to a Bit/BHA-first order
-            if (
-                componentTypeList[0] == DrillStringComponentTypes.DrillPipe ||
-                componentTypeList[0] == DrillStringComponentTypes.HeavyWeightDrillPipe
-            )
-            {
-                componentTypeList.Reverse();
-                mergedComponentLength.Reverse();
-                mergedComponentMass.Reverse();
-                mergedComponentOuterRadius.Reverse();
-                mergedComponentArea.Reverse();
-                mergedComponentInertia.Reverse();
-                mergedComponentYoungsModulus.Reverse();
-                mergedComponentShearModulus.Reverse();
-            }
-            #endregion
-            #region Lumped Element Discretization
-            //  In here the lumped elements are discretized. There are 
-            // two expected circumstances:
-            //  I - the merged component length > 2 * Expected Element Length
-            //       - divide the section in equally spaced elements
-            // II - the merged component length < 2 * Expected Element Length
-            //       - Use a single element
-            double expectedElementLength = simulationParameters.ElementLength;
-            // Initialize all properties as lists as it is easier to handle
-            elementYoungModuli = new();
-            elementShearModuli = new();                        
-            elementArea = new();
-            elementInertia = new();
-            elementMass = new();
-            elementOuterRadius = new();
-            elementLength = new();
-            //   The drill-string used for the simulation case might 
-            // be smaller than the one provided through the microservice.
-            // In this case, there will most likely be unused drill-pipe sections.
-            // Those  
-            inactiveElementYoungModuli.Clear();
-            inactiveElementShearModuli.Clear();                        
-            inactiveElementArea.Clear();
-            inactiveElementInertia.Clear();
-            inactiveElementMass.Clear();
-            inactiveElementOuterRadius.Clear();
-            inactiveElementLength.Clear();
-            //  Current position of the last elemebt in relation to the drill-string
-            // length (from the bit)
-            double lastElementPosition = 0;
-            // Loop through all drill-string length                        
-            for (int i = 0; i < mergedComponentLength.Count; i++)
-            {
-                // Using this integer notation, if the 
-                //  max(  floor(length/expectedLength) - 1, 0 ) + 1
-                //   will return 1 for all length/expectedLength < 2
-                //   will round up the number of elements for all length/expectedLength > 2  
-                int numberOfElementsInSection = Math.Max((int) Math.Floor(mergedComponentLength[i] / expectedElementLength - 1), 0) + 1;
-                for (int j = 0; j < numberOfElementsInSection; j++ )
-                {
-                    if (lastElementPosition <= simulationParameters.DrillStringLength)
-                    {  
-                        // Divide by the number of elements
-                        elementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
-                        elementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
-                        //  Those properties do not need to be divided, 
-                        // as they have been averaged by the length beforehand:
-                        elementOuterRadius.Add( mergedComponentOuterRadius[i] );
-                        elementYoungModuli.Add( mergedComponentYoungsModulus[i] );
-                        elementShearModuli.Add( mergedComponentShearModulus[i] );
-                        elementInertia.Add( mergedComponentInertia[i] );
-                        elementArea.Add( mergedComponentArea[i] );
-                    }
-                    else 
-                    {
-                        //  If the elements are not part of the initial state, they are nonetheless calculated.
-                        // if there drill-string displace downwards enough, a new element will be needed and 
-                        // thus the initial configuration shall be preserved.
-                        // Divide by the number of elements
-                        inactiveElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
-                        inactiveElementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
-                        //  Those properties do not need to be divided, 
-                        // as they have been averaged by the length beforehand:
-                        inactiveElementOuterRadius.Add( mergedComponentOuterRadius[i] );
-                        inactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
-                        inactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
-                        inactiveElementInertia.Add( mergedComponentInertia[i] );
-                        inactiveElementArea.Add( mergedComponentArea[i] );                            
-                    }
-                    lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
-                }                
-            }            
-            #endregion
+            // Create a simplifiefd drill-string form the input
+            elementsDescription = new ElementDescription(in simulationParameters, in drillString);
+            NumberOfElements = elementsDescription.elementLength.Count;            
             #region Mass and stiffness matrices
             // In here, the global and element mass and stiffness matrices are created
             // After I populate the matrices, I want to split into 3 vector:
             // left of diagonal, diagonal and right of diagonal for all DoF.
+            lateralStiffnessLeft = new double[NumberOfElements + 1];
+            lateralStiffnessMid = new double[NumberOfElements + 1];
+            lateralStiffnessRight = new double[NumberOfElements + 1];            
+            lateralStiffnessLeft[0] = 0.0;
+            lateralStiffnessRight[NumberOfElements] = 0.0;
 
+            axialStiffnessLeft = new double[NumberOfElements + 1];
+            axialStiffnessMid = new double[NumberOfElements + 1];
+            axialStiffnessRight = new double[NumberOfElements + 1];
+            
+            torsionalStiffnessLeft = new double[NumberOfElements + 1];
+            torsionalStiffnessMid = new double[NumberOfElements + 1];
+            torsionalStiffnessRight = new double[NumberOfElements + 1];
+            // CHANGE TO SPARSE MATRICES??            
+            lateralStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements + 1, NumberOfElements + 1);
+            axialStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements+ 1, NumberOfElements + 1);
+            torsionalStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements + 1, NumberOfElements + 1);
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                // ADD ACTUAL STIFFNESS CALCULATION 
+                double axialStiffness = 1.0;
+                double lateralStiffness = 1.0; 
+                double torsionalStiffness = 1.0;         
+                //   Add the local elements to the global 
+                // element matrix.
+                // ---------- Lateral Stiffness -----------  
+                lateralStiffnessLeft[i + 1] = lateralStiffness;
+                lateralStiffnessMid[i] += lateralStiffness;
+                lateralStiffnessMid[i + 1] += lateralStiffness;
+                lateralStiffnessRight[i] = lateralStiffness;
+                // ---------- Axial Stiffness -----------
+                axialStiffnessLeft[i + 1] = axialStiffness;
+                axialStiffnessMid[i] += axialStiffness;
+                axialStiffnessMid[i + 1] += axialStiffness;
+                axialStiffnessRight[i] = axialStiffness;
+                // ---------- Torsional Stiffness -----------       
+                torsionalStiffnessLeft[i + 1] = torsionalStiffness;
+                torsionalStiffnessMid[i] += torsionalStiffness;
+                torsionalStiffnessMid[i + 1] += torsionalStiffness;
+                torsionalStiffnessRight[i] = torsionalStiffness;
+                // ---------- Matrix notation --------------
+                // Lateral stiffness matrix
+                lateralStiffnessMatrix[i, i] += lateralStiffness;
+                lateralStiffnessMatrix[i + 1, i] -= lateralStiffness;
+                lateralStiffnessMatrix[i, i + 1] -= lateralStiffness;
+                lateralStiffnessMatrix[i + 1, i + 1] += lateralStiffness;                
+                // Axial stiffness matrix
+                axialStiffnessMatrix[i, i] += axialStiffness;
+                axialStiffnessMatrix[i + 1, i] -= axialStiffness;
+                axialStiffnessMatrix[i, i + 1] -= axialStiffness;
+                axialStiffnessMatrix[i + 1, i + 1] += axialStiffness;
+                // Torsional stiffness matrix 
+                torsionalStiffnessMatrix[i, i] += torsionalStiffness;
+                torsionalStiffnessMatrix[i + 1, i] -= torsionalStiffness;
+                torsionalStiffnessMatrix[i, i + 1] -= torsionalStiffness;
+                torsionalStiffnessMatrix[i + 1, i + 1] += torsionalStiffness;                
+            }
             //  Keeping the matricial notation of the mass and stiffness is not required.
             // However, it is very convenient to have them as it can be used for modal analysis,
             // to calculate natural frequencies, mode shapes, frequency domain responses and so forth.                      
             #endregion
             // Allocate main variables for the model.
-            NumberOfElements = elementLength.Count;
             //NumberOfElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
             bendingStiffness = Vector<double>.Build.Dense(NumberOfElements+1);
             preStressNormalForce = Vector<double>.Build.Dense(NumberOfElements);

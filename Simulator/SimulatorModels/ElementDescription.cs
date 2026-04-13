@@ -1,0 +1,191 @@
+using MathNet.Numerics.LinearAlgebra;
+using NORCE.Drilling.Simulator4nDOF.ModelShared;
+using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
+using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
+
+namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
+{   
+    /// <summary>
+    ///     ElementDescription is used to transform from a DrillString object extracted
+    /// from the DrillString microservice and create a simulation ready format. This 
+    /// implies that each similar consecutive part of the drill-string will have an 
+    /// averaged behaviour with all of the material properties. This is implemented as
+    /// a separete class as it can be imported in the future for other models. 
+    /// 
+    ///     Element description must not contain method-related variables (e.g.: stiffness values).
+    /// Those are expected to be calculated at the model's constructor level. 
+    /// </summary>
+    public class ElementDescription
+    {
+        public List<double> elementYoungModuli = new();
+        public List<double> elementShearModuli = new();                        
+        public List<double> elementArea = new();
+        public List<double> elementInertia = new();
+        public List<double> elementMass = new();
+        public List<double> elementOuterRadius = new();
+        public List<double> elementLength = new();            
+        //inactive drill-string elements
+        public List<double> inactiveElementYoungModuli = new();
+        public List<double> inactiveElementShearModuli = new();                        
+        public List<double> inactiveElementArea = new();
+        public List<double> inactiveElementInertia = new();
+        public List<double> inactiveElementMass = new();
+        public List<double> inactiveElementOuterRadius = new();
+        public List<double> inactiveElementLength = new();        
+        private List<double> mergedComponentLength = new List<double> { 0.0 };            
+        private List<double> mergedComponentMass = new List<double> { 0.0 };
+        private List<double> mergedComponentOuterRadius = new List<double> { 0.0 };
+        private List<double> mergedComponentArea = new List<double> { 0.0 };
+        private List<double> mergedComponentInertia = new List<double> { 0.0 };
+        private List<double> mergedComponentYoungsModulus = new List<double> { 0.0 };
+        private List<double> mergedComponentShearModulus = new List<double> { 0.0 };                
+        public ElementDescription(in SimulationParameters simulationParameters, 
+            in DrillString drillString)
+        {
+            // Expected behaviour:
+            // Simplify geometry by merging similar components 
+            //  We try to keep the element size as constant as possible. 
+            // If there is a very small component, it uses it's own element 
+            // (MergedComponentLength < 2 * ExpectedElementLength)                         
+            #region Drill-String simplification
+            // Simplify geometry by merging similar components 
+            List<DrillStringComponentTypes> componentTypeList = new List<DrillStringComponentTypes>
+                                                {
+                                                    drillString.
+                                                    DrillStringSectionList.ElementAt(0).
+                                                    SectionComponentList.ElementAt(0).
+                                                    Type
+                                                };
+            // Loop through all sections
+            foreach (DrillStringSection section in drillString.DrillStringSectionList)
+            {
+                // Number of times the section is repeated
+                int sectionRepetitions = section.Count;
+                foreach (DrillStringComponent component in section.SectionComponentList)
+                {
+                    foreach (DrillStringComponentPart part in component.PartList)
+                    {
+                        //  Check if the last element is the same type as the previous.
+                        // If so, merge them.
+                        if (componentTypeList[componentTypeList.Count] == component.Type)
+                        {
+                            mergedComponentLength[mergedComponentLength.Count - 1] += sectionRepetitions * part.TotalLength;
+                            mergedComponentMass[mergedComponentLength.Count - 1] += sectionRepetitions *  part.Mass;
+                            //      Elements in here are to be averaged based on the length. 
+                            // They will be divided by the mergedComponent length later on
+                            mergedComponentYoungsModulus[mergedComponentYoungsModulus.Count - 1] += sectionRepetitions * part.TotalLength * part.YoungModulus;
+                            mergedComponentShearModulus[mergedComponentShearModulus.Count - 1] += sectionRepetitions * part.TotalLength
+                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ); 
+                            mergedComponentInertia[mergedComponentInertia.Count - 1] += sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia;
+                            mergedComponentOuterRadius[mergedComponentOuterRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter;
+                            mergedComponentArea[mergedComponentArea.Count - 1] += sectionRepetitions * part.TotalLength * part.CrossSectionArea;
+                        }
+                        else
+                        {
+                            //      If the element type is different, 
+                            // then add one item and start anew.
+                            componentTypeList.Add(component.Type);
+                            mergedComponentLength.Add(sectionRepetitions * part.TotalLength);
+                            mergedComponentMass.Add(sectionRepetitions * part.Mass);
+                            //      Elements in here are to be averaged based on the length. 
+                            // They will be divided by the mergedComponent length later on
+                            mergedComponentYoungsModulus.Add(sectionRepetitions * part.TotalLength * part.YoungModulus);
+                            mergedComponentShearModulus.Add( sectionRepetitions * part.TotalLength
+                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ) ); 
+                            mergedComponentInertia.Add(sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia);
+                            mergedComponentOuterRadius.Add(0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter);
+                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);                        
+                        }
+                    }
+                }
+            }            
+            //  Those properties that are to be averaged are called here and divided 
+            // by the length calulated for the merged component
+            for (int i = 0; i < mergedComponentLength.Count; i++)
+            {
+                mergedComponentYoungsModulus[i] /= mergedComponentLength[i];
+                mergedComponentShearModulus[i] /= mergedComponentLength[i];
+                mergedComponentInertia[i] /= mergedComponentLength[i];
+                mergedComponentOuterRadius[i] /= mergedComponentLength[i];
+                mergedComponentArea[i] /= mergedComponentLength[i];
+            }
+            //  If the drill-string starts with drill-pipes, 
+            // then it must be reverted to a Bit/BHA-first order
+            if (
+                componentTypeList[0] == DrillStringComponentTypes.DrillPipe ||
+                componentTypeList[0] == DrillStringComponentTypes.HeavyWeightDrillPipe
+            )
+            {
+                componentTypeList.Reverse();
+                mergedComponentLength.Reverse();
+                mergedComponentMass.Reverse();
+                mergedComponentOuterRadius.Reverse();
+                mergedComponentArea.Reverse();
+                mergedComponentInertia.Reverse();
+                mergedComponentYoungsModulus.Reverse();
+                mergedComponentShearModulus.Reverse();
+            }
+            #endregion
+            #region Lumped Element Discretization
+            //  In here the lumped elements are discretized. There are 
+            // two expected circumstances:
+            //  I - the merged component length > 2 * Expected Element Length
+            //       - divide the section in equally spaced elements
+            // II - the merged component length < 2 * Expected Element Length
+            //       - Use a single element
+            double expectedElementLength = simulationParameters.ElementLength;
+            //   The drill-string used for the simulation case might 
+            // be smaller than the one provided through the microservice.
+            // In this case, there will most likely be unused drill-pipe sections.
+            // Those  
+            
+            //  Current position of the last elemebt in relation to the drill-string
+            // length (from the bit)
+            double lastElementPosition = 0;
+            // Loop through all drill-string length                        
+            for (int i = 0; i < mergedComponentLength.Count; i++)
+            {
+                // Using this integer notation, if the 
+                //  max(  floor(length/expectedLength) - 1, 0 ) + 1
+                //   will return 1 for all length/expectedLength < 2
+                //   will round up the number of elements for all length/expectedLength > 2  
+                int numberOfElementsInSection = Math.Max((int) Math.Floor(mergedComponentLength[i] / expectedElementLength - 1), 0) + 1;
+                for (int j = 0; j < numberOfElementsInSection; j++ )
+                {
+                    if (lastElementPosition <= simulationParameters.DrillStringLength)
+                    {  
+                        // Divide by the number of elements
+                        elementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
+                        elementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
+                        //  Those properties do not need to be divided, 
+                        // as they have been averaged by the length beforehand:
+                        elementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        elementYoungModuli.Add( mergedComponentYoungsModulus[i] );
+                        elementShearModuli.Add( mergedComponentShearModulus[i] );
+                        elementInertia.Add( mergedComponentInertia[i] );
+                        elementArea.Add( mergedComponentArea[i] );
+                    }
+                    else 
+                    {
+                        //  If the elements are not part of the initial state, they are nonetheless calculated.
+                        // if there drill-string displace downwards enough, a new element will be needed and 
+                        // thus the initial configuration shall be preserved.
+                        // Divide by the number of elements
+                        inactiveElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
+                        inactiveElementMass.Add( mergedComponentMass[i] / (double) numberOfElementsInSection );
+                        //  Those properties do not need to be divided, 
+                        // as they have been averaged by the length beforehand:
+                        inactiveElementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        inactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
+                        inactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
+                        inactiveElementInertia.Add( mergedComponentInertia[i] );
+                        inactiveElementArea.Add( mergedComponentArea[i] );                            
+                    }
+                    lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
+                }     
+            }            
+            #endregion
+        }
+    }
+}
