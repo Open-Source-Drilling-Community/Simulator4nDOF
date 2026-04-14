@@ -37,7 +37,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> vy;
         private Vector<double> vz;
 
-        public SimulatorTrajectory(LumpedCells lumpedCells, ModelShared.Trajectory trajectory)
+        public SimulatorTrajectory(in SimulatorDrillString drillString, in Trajectory trajectory)
         {
             
 
@@ -61,20 +61,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             AzimuthProfile = 180 / Math.PI * unwrappedRadians;
 
-            UpdateTrajectory(lumpedCells);
+            UpdateTrajectory(in drillString);
         }
-        public void UpdateTrajectory(in LumpedCells lumpedCells)
+        public void UpdateTrajectory(in SimulatorDrillString drillString)
         {
-            Vector<double> vectorWithoutFirstElement = lumpedCells.CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
+            Vector<double> vectorWithoutFirstElement = Vector<double>.Build.Dense(drillString.ElementLength.Count - 1); //CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
+            vectorWithoutFirstElement[0] = drillString.ElementLength[1];
+            for (int i = 1; i < drillString.ElementLength.Count - 1; i++)
+            {
+                vectorWithoutFirstElement[i] = vectorWithoutFirstElement[i - 1] + drillString.ElementLength[i + 1];
+            }
             InterpolatedVerticalDepth = LinearInterpolate(MeasuredDepthProfile, VerticalDepthProfile, vectorWithoutFirstElement);
             InterpolatedTheta = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, InclinationProfile, vectorWithoutFirstElement);
             InterpolatedPhi = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, AzimuthProfile, vectorWithoutFirstElement);
 
             int n = InterpolatedTheta.Count();
-            DiffThetaInterpolated = ComputeDerivative(InterpolatedTheta, lumpedCells.DistanceBetweenElements);
-            DiffPhiInterpolated = ComputeDerivative(InterpolatedPhi, lumpedCells.DistanceBetweenElements);
-            DiffDiffThetaInterpolated = ComputeSecondDerivative(InterpolatedTheta, lumpedCells.DistanceBetweenElements);
-            DiffDiffPhiInterpolated = ComputeSecondDerivative(InterpolatedPhi, lumpedCells.DistanceBetweenElements);
+            DiffThetaInterpolated = ComputeDerivative(InterpolatedTheta, drillString.ElementLength);
+            DiffPhiInterpolated = ComputeDerivative(InterpolatedPhi, drillString.ElementLength);
+            DiffDiffThetaInterpolated = ComputeSecondDerivative(InterpolatedTheta, drillString.ElementLength);
+            DiffDiffPhiInterpolated = ComputeSecondDerivative(InterpolatedPhi, drillString.ElementLength);
 
             Curvature = Vector<double>.Build.Dense(DiffThetaInterpolated.Count);
             for (int i = 0; i < DiffThetaInterpolated.Count(); i++)
@@ -101,9 +106,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     Torsion[i] = 0;
             }
 
-            CurvatureDerivative = ComputeDerivative(Curvature, lumpedCells.DistanceBetweenElements);
-            CurvatureSecondDerivative = ComputeSecondDerivative(Curvature, lumpedCells.DistanceBetweenElements);
-            TorsionDerivative = ComputeDerivative(Torsion, lumpedCells.DistanceBetweenElements);
+            CurvatureDerivative = ComputeDerivative(Curvature, drillString.ElementLength);
+            CurvatureSecondDerivative = ComputeSecondDerivative(Curvature, drillString.ElementLength);
+            TorsionDerivative = ComputeDerivative(Torsion, drillString.ElementLength);
 
             int[] idxZeroCurvature = Curvature.Select((value, index) => value == 0 ? index : -1).Where(x => x != -1).ToArray();
             foreach (int index in idxZeroCurvature)

@@ -94,9 +94,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         private int numberOfElements;
         public State(in SimulationParameters parameters)
         {
-            numberOfElements = parameters.Drillstring.NumberOfElements;
-            
-
+            numberOfElements = parameters.NumberOfElements;            
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element radial displacement
@@ -121,10 +119,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             AngularAcceleration = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element axial displacement
             ZDisplacement = Vector<double>.Build.Dense(numberOfElements);
-            for (int i = 0; i < numberOfElements; i++)
-            {
-                ZDisplacement[i] = parameters.LumpedCells.CumulativeElementLength[i];
-            }
+            //for (int i = 0; i < numberOfElements; i++)
+            //{
+            //    ZDisplacement[i] = parameters.LumpedCells.CumulativeElementLength[i];
+            //}
             // Initialize lumped element axial velocity
             ZVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element axial acceleration
@@ -148,7 +146,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize sleeve angular acceleration
             SleeveAngularAcceleration = Vector<double>.Build.Dense(parameters.Drillstring.TotalSleeveNumber);
             // Initialize depth of cut
-            DepthOfCut = Vector<double>.Build.Dense(parameters.DistributedCells.CellsInDepthOfCut);
+            DepthOfCut = Vector<double>.Build.Dense(parameters.CellsInDepthOfCut);
             // Initialize sleeve forces
             SleeveForces = Vector<double>.Build.Dense(numberOfElements);
             TopOfStringRelativeAxialPosition = 0;
@@ -197,7 +195,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
           }
         public void AddNewLumpedElement()
         {
-        
+            numberOfElements += 1;
             // Extend AngularDisplacement vector by prepending the first element
             AngularDisplacement = ExtendVectorStart(AngularDisplacement[0], AngularDisplacement);
 

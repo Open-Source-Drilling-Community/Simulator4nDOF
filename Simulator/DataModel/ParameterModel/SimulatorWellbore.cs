@@ -16,11 +16,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
         private Vector<double> boreholeRadius;                   // [m] Wellbore radius calculation
 
-        public SimulatorWellbore(
-                in SimulatorDrillString drillString,
-                in LumpedCells lumpedCells,
-                in CasingSection casingSection
-            )
+        public SimulatorWellbore( in SimulatorDrillString drillString, in CasingSection casingSection )
         {
             
             List<SimulatorBoreHole> boreHoleSizes = new();
@@ -52,23 +48,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 } 
             }
             BoreHoleSizes = boreHoleSizes;
-            DrillStringClearance = Vector<double>.Build.Dense(lumpedCells.NumberOfLumpedElements);
+            DrillStringClearance = Vector<double>.Build.Dense(drillString.ElementOuterRadius.Count);
 
-            UpdateWellbore(drillString, lumpedCells);
+            UpdateWellbore(drillString);
         }
         
-        public void UpdateWellbore(in SimulatorDrillString drillString, in LumpedCells lumpedElement)
+        public void UpdateWellbore(in SimulatorDrillString drillString)
         {
             // Wellbore radius calculation
             boreholeRadius = Vector<double>.Build.Dense(drillString.ElementOuterRadius.Count);
             int index = 0;
             double localRadius;
-            for (int i = 1; i < lumpedElement.CumulativeElementLength.Count(); i++)
+            for (int i = 1; i < drillString.ElementOuterRadius.Count; i++)
             {
 
                 // If the element depth is greater than the borehole, go to the next one
                 if (index < BoreHoleSizes.Count)
-                    index += (lumpedElement.CumulativeElementLength[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
+                    index += (drillString.ElementDepth[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
                 // Switch between borehole radius and bit radius
                 localRadius = index < BoreHoleSizes.Count ? 0.5 * BoreHoleSizes[index].Diameter : drillString.BitRadius;
                 //Update radius list
@@ -76,8 +72,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             }
             for (int i = 0; i < drillString.ElementOuterRadius.Count; i++)
             {
-                DrillStringClearance[i] = drillString.SleeveIndexPosition.Contains(i) 
-                        ? boreholeRadius[i] - drillString.SleeveOuterRadius:boreholeRadius[i] - drillString.ElementOuterRadius[i];
+                DrillStringClearance[i] = drillString.SleeveIndexPosition.Contains(i) ? 
+                    boreholeRadius[i] - drillString.SleeveOuterRadius:boreholeRadius[i] - drillString.ElementOuterRadius[i];
             }
         
         }

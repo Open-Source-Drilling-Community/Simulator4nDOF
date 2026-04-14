@@ -2,6 +2,7 @@
 using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
+using System.Numerics;
 
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
@@ -16,18 +17,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public MudMotor MudMotor;
         public SimulatorTrajectory Trajectory;
         public LumpedCells LumpedCells;
-        public DistributedCells DistributedCells;
         public SimulatorWellbore Wellbore;
         public SimulatorDrillString Drillstring;
         public SimulatorFlow Flow;
         // DrillString from the microservice. It is used as an input for model
         public Friction Friction;
-        public BitRockModelEnum BitRockModelEnum;
         public TopDriveDrawwork TopDriveDrawwork;
         // Discretization properties
-        public double NumberOfElements;
+        public int NumberOfElements;
         public double DrillStringLength;
-        
+        // 
+        public int CellsInDepthOfCut = 5;
+
         //Integration properties
         public double OuterLoopTimeStep;
         public double InnerLoopTimeStep;
@@ -51,36 +52,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 InitialTopOfStringVelocity = configuration.TopOfStringVelocity
             };
             LumpedCells = new LumpedCells(configuration.BitDepth, configuration.ElementLength);
-            Drillstring = new SimulatorDrillString(LumpedCells, 
-                                 configuration.DrillString,
-                                 configuration.FluidDensity,                                  
-                                 configuration.BitDepth, 
-                                 configuration.BitRadius, 
-                                 configuration.SensorDistanceFromBit, 
-                                 configuration.SleeveDistancesFromBit,
-                                 configuration.SleeveDamping,
-                                 configuration.TorsionalDamping,
-                                 configuration.AxialDamping,
-                                 configuration.LateralDamping);
-            Wellbore = new SimulatorWellbore(Drillstring,
-                             LumpedCells,
-                             configuration.CasingSection
-                             );
-            Trajectory = new SimulatorTrajectory(LumpedCells, configuration.Trajectory);
-            Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
+            Drillstring = new SimulatorDrillString(configuration);
 
+            NumberOfElements = Drillstring.ElementLength.Count;
+            Wellbore = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
+            Trajectory = new SimulatorTrajectory(Drillstring, configuration.Trajectory);
+            Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
             MudMotor = new MudMotor();
-            DistributedCells = new DistributedCells(Drillstring, configuration.SurfaceRPM, configuration.ElementLength);                    
             Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
             DrillStringLength = configuration.BitDepth - configuration.TopOfStringPosition;
-
-            double dtTemp = 1E-4;  // Needs to be changed
-            dxl = 1.0 / DistributedCells.CellsInDepthOfCut;
-            dtl = dxl / DistributedCells.OmegaMax;  // As per the CFL condition for the depth of cut PDE
-            OuterLoopTimeStep = configuration.TimeStep; // time step of outer loop, which updates the distributed cells and calculates the bit forces
-            InnerLoopIterations = (int)Math.Max(Math.Ceiling(configuration.TimeStep / dtTemp), Math.Ceiling(configuration.TimeStep / dtl)); // number of iterations in the inner loop
-            InnerLoopTimeStep = configuration.TimeStep / InnerLoopIterations; // time step of inner loop      
-            UseMudMotor = configuration.UseMudMotor;
             TopDriveDrawwork = new TopDriveDrawwork()
             {
                 SurfaceRotation = configuration.SurfaceRPM,
@@ -91,6 +71,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 TopDriveStartupTime = configuration.TopdriveStartupTime,
                 ConnectionTime = configuration.ConnectionTime
             };
+           
+            double dtTemp = 1E-4;  // Needs to be changed
+            dxl = 1.0 / CellsInDepthOfCut;
+            // That is the depth of cut minimum time-step
+            dtl = dxl / (10.0 * TopDriveDrawwork.SurfaceRotation);  // The CFL condition here will use 10 times the top speed for the depth of cut PDE
+            
+            OuterLoopTimeStep = configuration.TimeStep; // time step of outer loop, which updates the distributed cells and calculates the bit forces
+            InnerLoopIterations = (int)Math.Max(Math.Ceiling(configuration.TimeStep / dtTemp), Math.Ceiling(configuration.TimeStep / dtl)); // number of iterations in the inner loop
+            InnerLoopTimeStep = configuration.TimeStep / InnerLoopIterations; // time step of inner loop      
+            UseMudMotor = configuration.UseMudMotor;
             MovingDrillstring = configuration.MovingDrillstring;
             UseBuoyancyFactor = configuration.UseBuoyancyFactor;
             UsePipeMovementReconstruction = configuration.UsePipeMovementReconstruction;
@@ -138,7 +128,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (Drillstring.InactiveElementEccentricMass.Count > 1) Drillstring.InactiveElementEccentricMass.RemoveAt(0);
             
 
-            Drillstring.NumberOfElements = Drillstring.ElementLength.Count;
+            NumberOfElements = Drillstring.ElementLength.Count;
             // Fields without Inactive counterparts
             Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient);
             Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient);

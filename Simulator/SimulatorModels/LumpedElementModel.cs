@@ -203,7 +203,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // to calculate natural frequencies, mode shapes, frequency domain responses and so forth.                      
             #endregion
             // Allocate main variables for the model.
-            //NumberOfElements = simulationParameters.LumpedCells.NumberOfLumpedElements;
+            //NumberOfElements = simulationParameters.NumberOfElements;
             bendingStiffness = Vector<double>.Build.Dense(NumberOfElements+1);
             preStressNormalForce = Vector<double>.Build.Dense(NumberOfElements);
             preStressBinormalForce = Vector<double>.Build.Dense(NumberOfElements);
@@ -217,11 +217,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
         {
             //double XiMinus1, YiMinus1, XiPlus1, YiPlus1;
-            double invElementLengthSquared = 1.0 / (simulationParameters.LumpedCells.ElementLength * simulationParameters.LumpedCells.ElementLength);
+            double invElementLengthSquared;
             double momentX, momentY;
             double d2Xdz2, d2Ydz2; 
             for (int i = 1; i < state.XDisplacement.Count - 1; i++)
             {
+                invElementLengthSquared = 1.0 / (simulationParameters.Drillstring.ElementLength[i] * simulationParameters.Drillstring.ElementLength[i]);
+
                 //XiMinus1 = (i == 0) ? 0.0 : state.XDisplacement[i - 1];
                 //YiMinus1 = (i == 0) ? 0.0 : state.YDisplacement[i - 1];
                 //XiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.XDisplacement[i + 1];
@@ -260,15 +262,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double localBendingStiffness;
             bool isFirst;
             int revIdx;
-            for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements; i++)
+            for (int i = 0; i < parameters.NumberOfElements; i++)
             {
                 // Index for reverse loop
-                revIdx = parameters.LumpedCells.NumberOfLumpedElements - i;
-                tensionIntegralTemp += 0.5*(parameters.Flow.dSigmaDx[revIdx] + parameters.Flow.dSigmaDx[revIdx - 1])/ parameters.LumpedCells.ElementLength;
+                revIdx = parameters.NumberOfElements - i;
+                tensionIntegralTemp += 0.5*(parameters.Flow.dSigmaDx[revIdx] + parameters.Flow.dSigmaDx[revIdx - 1])/ parameters.Drillstring.ElementLength[i];
                 tensionIntegral[i] = tensionIntegralTemp;
             }
             // Loop to compute the tensions and the stiffness of the model
-            for (int i = 0; i < parameters.LumpedCells.NumberOfLumpedElements + 1; i++)
+            for (int i = 0; i < parameters.NumberOfElements + 1; i++)
             {
                 isFirst = i == 0;
                 int offPhaseIndex = isFirst ? 0 : i - 1;
@@ -285,7 +287,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 outerArea = parameters.Drillstring.ElementOuterArea[offPhaseIndex];
                 localBendingStiffness = isFirst ? lateralStiffnessLeft[0] : lateralStiffnessMid[i-1];
                 // Index for reverse loop
-                revIdx = i == parameters.LumpedCells.NumberOfLumpedElements ? 0 : parameters.LumpedCells.NumberOfLumpedElements - i - 1;                
+                revIdx = i == parameters.NumberOfElements ? 0 : parameters.NumberOfElements - i - 1;                
                 Tension = tensionIntegral[revIdx] + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i] - axialForce;
                 softStringTempTerm1 = (Tension + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i]) * differentialTrajectoryTheta - parameters.Flow.BuoyantWeightPerLength[i] * Math.Cos(trajectoryTheta); 
                 softStringTempTerm2 = (Tension + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i]) * differentialTrajectoryPhi - parameters.Flow.BuoyantWeightPerLength[i] * Math.Sin(trajectoryTheta); 
@@ -296,7 +298,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;
                 }
                 // Update the normal force
-                normalForceSoftString += 0.5 * (differentialNormalForceSoftString + differentialNormalForceSoftString) * parameters.LumpedCells.ElementLength;
+                normalForceSoftString += 0.5 * (differentialNormalForceSoftString + differentialNormalForceSoftString) * parameters.Drillstring.ElementLength[i];
                 Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                             (
                                 outerArea * (parameters.Flow.AnnulusPressure[i] - parameters.Flow.HydrostaticAnnulusPressure[i])

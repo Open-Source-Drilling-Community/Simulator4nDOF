@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NORCE.Drilling.Simulator4nDOF.Model;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using NORCE.Drilling.Simulator4nDOF.Simulator;
@@ -23,97 +24,266 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
     {
 
         //Default values
-        public double BitRadius = .2159 / 2;                   // [m] Bit radius(used in both Detournay and MSE model)
-        public readonly double SteelDensity = 7850;              // [kg / m3] Density of steel
-        public readonly double PoissonRatio = 0.28;               // Poisson ratio of steel
-        public double ToolJointLength = 0.5;                       // [m] Default tool joint length
-        
-        public double SleeveInnerRadius = 0.1651 / 2;                // [m] Sleeve inner radius
-        public double SleeveOuterRadius = 0.1905 / 2 + 0.005;        // [m] Sleeve outer radius
-        public double SleeveLength = 1.0;                        // [m] Sleeve length
-        public double SleeveTorsionalDampingCoefficient = 2.0e2;              // [N.s/rad] Sleeve torsional damping coefficient
-        public double AxialFrictionReduction = 0.99;    // Axial friction reduction factor due to spur wheels
-        public readonly double AddedFluidMassCoefficient = 1.7;              // Added fluid mass coefficient
-        public readonly double MassImbalancePercentage = .05; //percent (fraction?) of mass imbalance compared to total mass -  todo rename?
+        /// <summary>
+        /// [m] Bit radius (used in both Detournay and MSE model)
+        /// </summary>
+        public double BitRadius = .2159 / 2;
+        /// <summary>
+        /// [kg / m3] Density of steel
+        /// </summary>
+        public readonly double SteelDensity = 7850;
+        /// <summary>
+        /// Poisson ratio of steel
+        /// </summary>
+        public readonly double PoissonRatio = 0.28;
+        /// <summary>
+        /// [m] Default tool joint length
+        /// </summary>
+        public double ToolJointLength = 0.5;
 
-        public int NumberOfElements;
+        /// <summary>
+        /// [m] Sleeve inner radius
+        /// </summary>
+        public double SleeveInnerRadius = 0.1651 / 2;
+        /// <summary>
+        /// [m] Sleeve outer radius
+        /// </summary>
+        public double SleeveOuterRadius = 0.1905 / 2 + 0.005;
+        /// <summary>
+        /// [m] Sleeve length
+        /// </summary>
+        public double SleeveLength = 1.0;
+        /// <summary>
+        /// [N.s/rad] Sleeve torsional damping coefficient
+        /// </summary>
+        public double SleeveTorsionalDampingCoefficient = 2.0e2;
+        /// <summary>
+        /// Axial friction reduction factor due to spur wheels
+        /// </summary>
+        public double AxialFrictionReduction = 0.99;
+        /// <summary>
+        /// Added fluid mass coefficient
+        /// </summary>
+        public readonly double AddedFluidMassCoefficient = 1.7;
+        /// <summary>
+        /// Percent (fraction?) of mass imbalance compared to total mass - todo rename?
+        /// </summary>
+        public readonly double MassImbalancePercentage = .05;
+
+        public List<double> ElementDepth = new();
         public List<double> ElementLength = new();
         public List<double> ElementDensity = new();
-        public List<double> ElementOuterRadius = new();                       // [m] Outer radius vector
-        public List<double> ElementInnerRadius = new();                       // [m] Inner radius vector
-        public List<double> ElementEccentricity = new();                        // [m] Eccentricity vector
-        public List<double> ElementOuterArea = new();                       // [m^2] Drillpipe outer area vector
-        public List<double> ElementInnerArea = new();                       // [m^2] Drillpipe inner area vector
-        public List<double> ToolJointOuterArea = new();                     // [m^2] Tool joint outer area vector
-        public List<double> ToolJointInnerArea = new();                     // [m^2] Tool joint inner area vector
+        /// <summary>
+        /// [m] Outer radius vector
+        /// </summary>
+        public List<double> ElementOuterRadius = new();
+        /// <summary>
+        /// [m] Inner radius vector
+        /// </summary>
+        public List<double> ElementInnerRadius = new();
+        /// <summary>
+        /// [m] Eccentricity vector
+        /// </summary>
+        public List<double> ElementEccentricity = new();
+        /// <summary>
+        /// [m^2] Drillpipe outer area vector
+        /// </summary>
+        public List<double> ElementOuterArea = new();
+        /// <summary>
+        /// [m^2] Drillpipe inner area vector
+        /// </summary>
+        public List<double> ElementInnerArea = new();
+        /// <summary>
+        /// [m^2] Tool joint outer area vector
+        /// </summary>
+        public List<double> ToolJointOuterArea = new();
+        /// <summary>
+        /// [m^2] Tool joint inner area vector
+        /// </summary>
+        public List<double> ToolJointInnerArea = new();
 
-        // Inertial peroperties
-        public List<double> ElementPolarInertia = new();                        // [m^4] Drillpipe polar moment of inertia vector
-        public List<double> ElementArea = new();                        // [m^2] Drillpipe cross sectional area vector
-        public List<double> ElementInertia = new();                        // [m^4] Drillpipe moment of inertia vector
+        // Inertial properties
+        /// <summary>
+        /// [m^4] Drillpipe polar moment of inertia vector
+        /// </summary>
+        public List<double> ElementPolarInertia = new();
+        /// <summary>
+        /// [m^2] Drillpipe cross sectional area vector
+        /// </summary>
+        public List<double> ElementArea = new();
+        /// <summary>
+        /// [m^4] Drillpipe moment of inertia vector
+        /// </summary>
+        public List<double> ElementInertia = new();
 
-        public List<double> WeightCorrectionFactor = new();               // [-] Linear weight correction factor vector
-        public List<double> ElementYoungModuli = new();                        // [Pa] Young's modulus vector
-        public List<double> ElementShearModuli = new();                        // [Pa] Shear modulus vector
-        public List<double> ElementFluidAddedMass = new();                       // [kg] Added fluid mass
-        public List<double> ElementEccentricMass = new();                      // [kg] Eccentric mass
+        /// <summary>
+        /// [-] Linear weight correction factor vector
+        /// </summary>
+        public List<double> WeightCorrectionFactor = new();
+        /// <summary>
+        /// [Pa] Young's modulus vector
+        /// </summary>
+        public List<double> ElementYoungModuli = new();
+        /// <summary>
+        /// [Pa] Shear modulus vector
+        /// </summary>
+        public List<double> ElementShearModuli = new();
+        /// <summary>
+        /// [kg] Added fluid mass
+        /// </summary>
+        public List<double> ElementFluidAddedMass = new();
+        /// <summary>
+        /// [kg] Eccentric mass
+        /// </summary>
+        public List<double> ElementEccentricMass = new();
 
-        public List<double> InactiveElementLength = new();                       // [m] Outer radius vector
-        public List<double> InactiveElementDensity = new();                       // [m] Outer radius vector
+        /// <summary>
+        /// [m] Inactive element length vector
+        /// </summary>
+        public List<double> InactiveElementLength = new();
+        /// <summary>
+        /// [kg/m^3] Inactive element density vector
+        /// </summary>
+        public List<double> InactiveElementDensity = new();
 
-        public List<double> InactiveElementOuterRadius = new();                       // [m] Outer radius vector
-        public List<double> InactiveElementInnerRadius = new();                       // [m] Inner radius vector
-        public List<double> InactiveElementEccentricity = new();                        // [m] Eccentricity vector
-        public List<double> InactiveElementOuterArea = new();                       // [m^2] Drillpipe outer area vector
-        public List<double> InactiveElementInnerArea = new();                       // [m^2] Drillpipe inner area vector
-        public List<double> InactiveToolJointOuterArea = new();                     // [m^2] Tool joint outer area vector
-        public List<double> InactiveToolJointInnerArea = new();                     // [m^2] Tool joint inner area vector
+        /// <summary>
+        /// [m] Outer radius vector
+        /// </summary>
+        public List<double> InactiveElementOuterRadius = new();
+        /// <summary>
+        /// [m] Inner radius vector
+        /// </summary>
+        public List<double> InactiveElementInnerRadius = new();
+        /// <summary>
+        /// [m] Eccentricity vector
+        /// </summary>
+        public List<double> InactiveElementEccentricity = new();
+        /// <summary>
+        /// [m^2] Drillpipe outer area vector
+        /// </summary>
+        public List<double> InactiveElementOuterArea = new();
+        /// <summary>
+        /// [m^2] Drillpipe inner area vector
+        /// </summary>
+        public List<double> InactiveElementInnerArea = new();
+        /// <summary>
+        /// [m^2] Tool joint outer area vector
+        /// </summary>
+        public List<double> InactiveToolJointOuterArea = new();
+        /// <summary>
+        /// [m^2] Tool joint inner area vector
+        /// </summary>
+        public List<double> InactiveToolJointInnerArea = new();
 
-        // Inertial peroperties
-        public List<double> InactiveElementPolarInertia = new();                        // [m^4] Drillpipe polar moment of inertia vector
-        public List<double> InactiveElementArea = new();                        // [m^2] Drillpipe cross sectional area vector
-        public List<double> InactiveElementInertia = new();                        // [m^4] Drillpipe moment of inertia vector
+        // Inertial properties
+        /// <summary>
+        /// [m^4] Drillpipe polar moment of inertia vector
+        /// </summary>
+        public List<double> InactiveElementPolarInertia = new();
+        /// <summary>
+        /// [m^2] Drillpipe cross sectional area vector
+        /// </summary>
+        public List<double> InactiveElementArea = new();
+        /// <summary>
+        /// [m^4] Drillpipe moment of inertia vector
+        /// </summary>
+        public List<double> InactiveElementInertia = new();
 
-        public List<double> InactiveWeightCorrectionFactor = new();               // [-] Linear weight correction factor vector
-        public List<double> InactiveElementYoungModuli = new();                        // [Pa] Young's modulus vector
-        public List<double> InactiveElementShearModuli = new();                        // [Pa] Shear modulus vector
-        public List<double> InactiveElementFluidAddedMass = new();                       // [kg] Added fluid mass
-        public List<double> InactiveElementEccentricMass = new();                      // [kg] Eccentric mass
+        /// <summary>
+        /// [-] Linear weight correction factor vector
+        /// </summary>
+        public List<double> InactiveWeightCorrectionFactor = new();
+        /// <summary>
+        /// [Pa] Young's modulus vector
+        /// </summary>
+        public List<double> InactiveElementYoungModuli = new();
+        /// <summary>
+        /// [Pa] Shear modulus vector
+        /// </summary>
+        public List<double> InactiveElementShearModuli = new();
+        /// <summary>
+        /// [kg] Added fluid mass
+        /// </summary>
+        public List<double> InactiveElementFluidAddedMass = new();
+        /// <summary>
+        /// [kg] Eccentric mass
+        /// </summary>
+        public List<double> InactiveElementEccentricMass = new();
 
                                                        
 
         // Sleeves - to be configured
-        public Vector<double> SleeveDistancesFromBit;  // Example data
-
+        /// <summary>
+        /// [m] Distances from bit to each sleeve
+        /// </summary>
+        public Vector<double> SleeveDistancesFromBit;
 
         // Sleeves - calculated
-        public int TotalSleeveNumber;                                  // Total number of sleeves
-        public Vector<double> SleeveIndexPosition;                       // Index of sleeves in lumped nodes
-        public double SleeveMassMomentOfInertia;                              // [kg.m^2] Sleeve mass moment of inertia
-        public Vector<double> SleeveTorsionalDamping;                     // [N.s/rad] Sleeve torsional damping coefficient
+        /// <summary>
+        /// Total number of sleeves
+        /// </summary>
+        public int TotalSleeveNumber;
+        /// <summary>
+        /// Index of sleeves in lumped nodes
+        /// </summary>
+        public List<int> SleeveIndexPosition;
+        /// <summary>
+        /// [kg.m^2] Sleeve mass moment of inertia
+        /// </summary>
+        public double SleeveMassMomentOfInertia;
+        /// <summary>
+        /// [N.s/rad] Sleeve torsional damping coefficient
+        /// </summary>
+        public Vector<double> SleeveTorsionalDamping;
 
-        public double TorsionalDampingFactor = 1.0;                  //[N.m.s/rad] Torsional damping 
-        public double AxialDampingFactor = 1.0;                  //[N.s/m] Axial damping
-        public double LateralDampingFactor = 0.0;                  //[N.s/m] Lateral damping
+        /// <summary>
+        /// [N.m.s/rad] Torsional damping
+        /// </summary>
+        public double TorsionalDampingFactor = 1.0;
+        /// <summary>
+        /// [N.s/m] Axial damping
+        /// </summary>
+        public double AxialDampingFactor = 1.0;
+        /// <summary>
+        /// [N.s/m] Lateral damping
+        /// </summary>
+        public double LateralDampingFactor = 0.0;
 
-        // Structureal damping - calculated
+        // Structural damping - calculated
         public double CalculatedTorsionalDamping;
         public double CalculatedAxialDamping;
         public double CalculateLateralDamping;
-        // 
         public double TotalLength;
-        
-        public double CharacteristicDrillPipeImpedance;                           // Characteristic drill pipe impedance
 
-        //IMU sensors -  configure
-        public double SensorDistanceFromBit = 63;       // [m] axial distance(relative to bit depth) of an IMU measuring downhole RPM and accelerations
-        public readonly double SensorMisalignmentPolarAngle = 0 * Math.PI / 180; // polar angle of the accelerometer misalignment[rad]
-        public readonly double SensorMisalignmentAzimuthAngle = 0 * Math.PI / 180; // azimuth angle of the accelerometer misalignment[rad]
-        public readonly Vector<double> SensorDisplacementsInLocalFrame = Vector<double>.Build.Dense(3, 0); // radial, tangential and axial displacements in the local frame of the accelerometer
+        /// <summary>
+        /// Characteristic drill pipe impedance
+        /// </summary>
+        public double CharacteristicDrillPipeImpedance;
 
-        //IMU sensors -  to be calculated
+        //IMU sensors - configure
+        /// <summary>
+        /// [m] Axial distance (relative to bit depth) of an IMU measuring downhole RPM and accelerations
+        /// </summary>
+        public double SensorDistanceFromBit = 63;
+        /// <summary>
+        /// [rad] Polar angle of the accelerometer misalignment
+        /// </summary>
+        public readonly double SensorMisalignmentPolarAngle = 0 * Math.PI / 180;
+        /// <summary>
+        /// [rad] Azimuth angle of the accelerometer misalignment
+        /// </summary>
+        public readonly double SensorMisalignmentAzimuthAngle = 0 * Math.PI / 180;
+        /// <summary>
+        /// Radial, tangential and axial displacements in the local frame of the accelerometer
+        /// </summary>
+        public readonly Vector<double> SensorDisplacementsInLocalFrame = Vector<double>.Build.Dense(3, 0);
+
+        //IMU sensors - to be calculated
         public int IndexSensor;
-        public double SensorRadialDistance; // [m] radial distance from centerline of the tool to the accelerometer
+        /// <summary>
+        /// [m] Radial distance from centerline of the tool to the accelerometer
+        /// </summary>
+        public double SensorRadialDistance;
 
 
         private List<double> mergedComponentLength = new List<double> { 0.0 };            
@@ -126,27 +296,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private List<double> mergedComponentYoungsModulus = new List<double> { 0.0 };
         private List<double> mergedComponentShearModulus = new List<double> { 0.0 };     
         private List<double> mergedComponentDensity = new List<double> { 0.0 };    
-
-        public SimulatorDrillString(LumpedCells lumpedCells, 
-                           DrillString drillString,
-                           double fluidDensity,
-                           double MD, 
-                           double Rb, 
-                           double sensorDistanceFromBit, 
-                           Vector<double> sleeveDistancesFromBit, 
-                           double sleepDampingFactor, 
-                           double torsionalDampingFactor,
-                           double axialDampingFactor,
-                           double lateralDampingFactor)
+        
+        
+        public SimulatorDrillString(Configuration configuration)
         {
-            this.SensorDistanceFromBit = sensorDistanceFromBit;
-            this.SleeveDistancesFromBit = sleeveDistancesFromBit;
-            this.SleeveTorsionalDampingCoefficient = sleepDampingFactor;
-            this.TorsionalDampingFactor = torsionalDampingFactor;
-            this.AxialDampingFactor = axialDampingFactor;
-            this.LateralDampingFactor = lateralDampingFactor;
-            this.BitRadius = Rb;
-    #region Drill-String simplification
+            double expectedElementLength = configuration.ElementLength;
+            DrillString drillString = configuration.DrillString;
+            double fluidDensity = configuration.FluidDensity;                               
+            double bitDepth = configuration.BitDepth;
+            BitRadius = configuration.BitRadius;
+            SensorDistanceFromBit = configuration.SensorDistanceFromBit; 
+            SleeveDistancesFromBit = configuration.SleeveDistancesFromBit;
+            SleeveTorsionalDampingCoefficient = configuration.SleeveDamping;
+            TorsionalDampingFactor = configuration.TorsionalDamping;
+            AxialDampingFactor = configuration.AxialDamping;
+            LateralDampingFactor = configuration.LateralDamping;
+            #region Drill-String simplification
             // Simplify geometry by merging similar components 
             List<DrillStringComponentTypes> componentTypeList = new List<DrillStringComponentTypes>
                                                 {
@@ -166,7 +331,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     {
                         //  Check if the last element is the same type as the previous.
                         // If so, merge them.
-                        if (componentTypeList[componentTypeList.Count] == component.Type)
+                        if (componentTypeList[componentTypeList.Count - 1] == component.Type)
                         {
                             mergedComponentLength[mergedComponentLength.Count - 1] += sectionRepetitions * part.TotalLength;
                             //      Elements in here are to be averaged based on the length. 
@@ -182,8 +347,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                             double outerArea = part.CrossSectionArea - innerArea;
                             mergedComponentInnerArea[mergedComponentInnerArea.Count - 1] += sectionRepetitions * part.TotalLength * innerArea;
                             mergedComponentOuterArea[mergedComponentOuterArea.Count - 1] += sectionRepetitions * part.TotalLength * outerArea;
-                            mergedComponentInnerRadius[mergedComponentInnerRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.InnerDiameter;
-                       
+                            mergedComponentInnerRadius[mergedComponentInnerRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.InnerDiameter;                        
                         }
                         else
                         {
@@ -250,7 +414,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             //       - divide the section in equally spaced elements
             // II - the merged component length < 2 * Expected Element Length
             //       - Use a single element
-            double expectedElementLength = lumpedCells.ElementLength;
             //   The drill-string used for the simulation case might 
             // be smaller than the one provided through the microservice.
             // In this case, there will most likely be unused drill-pipe sections.
@@ -269,10 +432,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 int numberOfElementsInSection = Math.Max((int) Math.Floor(mergedComponentLength[i] / expectedElementLength - 1), 0) + 1;
                 for (int j = 0; j < numberOfElementsInSection; j++ )
                 {
-                    if (lastElementPosition <= lumpedCells.CumulativeElementLength[lumpedCells.CumulativeElementLength.Count - 1])
-                    {  
+                    if (lastElementPosition <= bitDepth)
+                    {                          
                         // Divide by the number of elements
                         ElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
+                        //The Element depth starts at the bit position
+                        if (ElementDepth.Count < 1)
+                        {
+                            ElementDepth.Add(bitDepth);
+                        }
+                        else
+                        {                            
+                            // Substract the current element from the last
+                            ElementDepth.Add(
+                                ElementDepth[ElementDepth.Count-1] - ElementLength[ElementLength.Count-1]
+                            );
+                        }                                     
+
                         //  Those properties do not need to be divided, 
                         // as they have been averaged by the length beforehand:
                         ElementDensity.Add( mergedComponentDensity[i] );                        
@@ -284,8 +460,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         ElementInnerRadius.Add( mergedComponentInnerRadius[i] );
                         ElementInnerArea.Add( mergedComponentInnerArea[i] );
                         ElementOuterArea.Add( mergedComponentOuterArea[i] );
-                        double mass = mergedComponentDensity[i] * mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
-                        ElementEccentricMass.Add( mass );
+                        double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection; 
+                        ElementFluidAddedMass.Add( fluidDensity * volume );
+                        ElementEccentricMass.Add( mergedComponentDensity[i] * volume );
                         ElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i]);
                     }
                     else 
@@ -306,14 +483,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         InactiveElementInnerRadius.Add( mergedComponentInnerRadius[i] );
                         InactiveElementInnerArea.Add( mergedComponentInnerArea[i] );
                         InactiveElementOuterArea.Add( mergedComponentOuterArea[i] );
-                        double mass = mergedComponentDensity[i] * mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
-                        InactiveElementEccentricMass.Add( mass );
+                        double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection; 
+                        InactiveElementFluidAddedMass.Add( fluidDensity * volume );
+                        InactiveElementEccentricMass.Add( mergedComponentDensity[i] * volume );
                         InactiveElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i] );                          
                     }
                     lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
                 }     
             }
-            NumberOfElements = ElementArea.Count;            
             #endregion
 
             // The lists always starts from the bit. However, the rest of the simulator uses from top-first
@@ -329,6 +506,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementOuterArea.Reverse();
             ElementEccentricMass.Reverse();
             ElementEccentricity.Reverse();
+            ElementDepth.Reverse();
 
             InactiveElementLength.Reverse();
             InactiveElementDensity.Reverse();
@@ -342,6 +520,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementOuterArea.Reverse();
             InactiveElementEccentricMass.Reverse();
             InactiveElementEccentricity.Reverse();
+
+            IndexSensor = Enumerable.Range(0, ElementDepth.Count)
+                .MinBy(i => Math.Abs(ElementDepth[i] - SensorDistanceFromBit));
+
+            SleeveIndexPosition = SleeveDistancesFromBit
+                .Select(sleeveDepth => Enumerable.Range(0, ElementDepth.Count)
+                    .MinBy(i => Math.Abs(ElementDepth[i] - sleeveDepth)))
+                .ToList();
+            SleeveMassMomentOfInertia = Math.PI / 2.0 * SteelDensity * SleeveLength
+                * (Math.Pow(SleeveOuterRadius, 4) - Math.Pow(SleeveInnerRadius, 4)); // [kg.m^2]
         }
     }
 }
