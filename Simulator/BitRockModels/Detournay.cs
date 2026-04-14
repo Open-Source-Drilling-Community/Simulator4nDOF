@@ -1,57 +1,73 @@
-using MathNet.Numerics.LinearAlgebra;
+
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
-using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 {
     public class Detournay : IBitRock
-    {
+    {        
         /// <summary>
         /// [-] Bit - rock friction coefficient(used in both Detournay and MSE model)
         /// </summary>
-        public double Mu = 0.9;                        
+        private double Mu = 0.9;                        
         //todo flytte bitEfficiencyfactor til drillstring?
-        public double AlphaROP;                                // ROP filter weight
+        private double AlphaROP;                                // ROP filter weight
         /// <summary>
         /// [N] Frictional component of weight on bit (Detournay model)
         /// </summary>
-        public double WeightOnBitFrictionComponent;
+        private double WeightOnBitFrictionComponent;
         /// <summary>
         /// [N.m] Frictional component of torque on bit (Detournay model)
         /// </summary>
-        public double TorqueFrictionComponent;
+        private double TorqueFrictionComponent;
         /// <summary>
         /// [Pa] Rock strength parameter (used in both Detournay model)
         /// </summary>
-        public readonly double epsilon = 100e6;
+        private readonly double RockStrength = 100e6;
         /// <summary>
         /// [-] Ratio of vertical to horizontal cutting forces (Detournay model)
         /// </summary>
-        public readonly double zeta = .8;
+        private readonly double zeta = .8;
         /// <summary>
         /// [Pa] Bit - rock contact stress (Detournay model)
         /// </summary>
-        public readonly double sigma = 60e6;
+        private readonly double sigma = 60e6;
         /// <summary>
         /// [m] Wear flat length (Detournay model)
         /// </summary>
-        public readonly double l = 5e-3;
+        private readonly double l = 5e-3;
         /// <summary>
         /// [-] Bit geometry parameter (Detournay model)
         /// </summary>
-        public readonly double gamma = 1;
+        private readonly double gamma = 1;
         /// <summary>
         /// [-] Number of blades of the PDC bit (Detournay model)
         /// </summary>
-        public readonly double N = 5;        
-        
-        
+        private readonly double N = 5;                
+
+        private double torqueOnBit;
+        private double weightOnBit;
+        private double angularVelocity;
+        private double bitStrain;
+
+        private double previousDepthOfCut;
+        private double diffDepthOfCut;
+        private double lastElement;
+        private double maxValue;
+        private double epsilon;
+       
+        private double d;
+        private double reg;
+        private double cuttingWeightOnBit;
+        private double cuttingTorque;
+        private double ga;
+        private double weightOnBitFriction;
+        private double torqueFriction;
         public Detournay(
             in SimulatorDrillString drillString,
             in Configuration configuration
             )
         {
-            epsilon = configuration.RockStrengthEpsilon;
+            RockStrength = configuration.RockStrengthEpsilon;
             l = configuration.BitWearLength;
             Mu = configuration.BitRockFrictionCoeff;
             N = configuration.PdcBladeNo;
@@ -66,59 +82,49 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             //AlphaROP = 2 * Math.PI * dtTemp * fc_ROP / (2 * Math.PI * dtTemp * fc_ROP + 1); // ROP filter weight
         } 
 
-        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters)
+        public void CalculateInteractionForce(State state, in SimulationParameters parameters, in BitInternalForces bitInternalForces)
         {
-            double tb;
-            double wb;
-            double angularVelocity = state.BitVelocity / simulationParameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius 
-            double bitDisplacement = state.ZDisplacement[state.ZDisplacement.Count - 1]; // Assuming the last element corresponds to the bit
+            angularVelocity = state.BitVelocity / parameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius 
+            bitStrain = (state.ZDisplacement[state.ZDisplacement.Count - 1] - state.ZDisplacement[state.ZDisplacement.Count - 2]) / parameters.Drillstring.ElementLength[parameters.Drillstring.ElementLength.Count - 1]; // Assuming the last element corresponds to the bit
             if (state.BitOnBotton)
             {
-                double previousDepthOfCut;
-                double diffDepthOfCut;
-                double lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
-                double maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
-                double d = this.N * maxValue; // Compute d
-                double epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
-                double reg = angularVelocity / Math.Sqrt(Math.Pow(angularVelocity, 2) + Math.Pow(epsilon, 2));
-                double wc = d * simulationParameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
-                double tc = d * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
-                double ga = 1.0;
-                double wf = WeightOnBitFrictionComponent * ga;
-                double tf = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
+                lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
+                maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
+                d = this.N * maxValue; // Compute d
+                epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
+                reg = angularVelocity / Math.Sqrt(Math.Pow(angularVelocity, 2) + Math.Pow(epsilon, 2));
+                cuttingWeightOnBit = d * parameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
+                cuttingTorque = d * Math.Pow(parameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
+                ga = 1.0;
+                weightOnBitFriction = WeightOnBitFrictionComponent * ga;
+                torqueFriction = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
                 //double g_tt = torsionalModel.DownwardWave[torsionalModel.DownwardWave.Count - 1] * 
                 //                simulationParameters.Drillstring.PipePolarMoment.Last() 
-                //                * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
-                /* In the lumped parameter implementation */
-                double g_tt = bitDisplacement * simulationParameters.Drillstring.ElementPolarInertia.Last() 
-                                            * simulationParameters.Drillstring.ElementShearModuli.Last() 
-                                            / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;
-                
+                //                * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;                            
+                double totalBitTorque = bitInternalForces.ElasticTorque - cuttingTorque - torqueFriction;                
+                totalBitTorque = (angularVelocity < 0.1) ? Math.Min(totalBitTorque, 0) : 0;              
 
-                g_tt = (angularVelocity < 0.1) ? Math.Min(g_tt, 0) : 0;                        
-                double g_wt = bitDisplacement * simulationParameters.Drillstring.ElementArea.Last() 
-                                              * simulationParameters.Drillstring.ElementYoungModuli.Last() 
-                                              / simulationParameters.Drillstring.AxialWaveSpeed - wc - wf;
-                g_wt = (Math.Abs(g_tt) > 1e-3) ? g_wt : 0;
+                double totalWeightOnBit = bitInternalForces.ElasticAxialForce - cuttingWeightOnBit - weightOnBitFriction;
+                totalWeightOnBit = (Math.Abs(totalBitTorque) > 1e-3) ? totalWeightOnBit : 0;
             
                 // Calculate torque on bit and weight on bit
-                tb = tc + tf + g_tt;
-                wb = wc + wf + g_wt;
-                double constant = Math.Max(angularVelocity, 0) * N / (2 * Math.PI/simulationParameters.dxl);
+                torqueOnBit = cuttingTorque + torqueFriction + totalBitTorque;
+                weightOnBit = cuttingWeightOnBit + weightOnBitFriction + totalWeightOnBit;
+                double constant = Math.Max(angularVelocity, 0) * N / (2 * Math.PI/parameters.dxl);
                 for (int i = 0; i < state.DepthOfCut.Count; i++)
                 {
                     previousDepthOfCut = i == 0 ? 0:state.DepthOfCut[i-1];
                     diffDepthOfCut = state.DepthOfCut[i] - previousDepthOfCut;
-                    state.DepthOfCut[i] -= simulationParameters.InnerLoopTimeStep * ( constant * diffDepthOfCut - state.BitVelocity);        
+                    state.DepthOfCut[i] -= parameters.InnerLoopTimeStep * ( constant * diffDepthOfCut - state.BitVelocity);        
                 }
             }
             else
             {
-                tb = 0;
-                wb = 0;
+                torqueOnBit = 0;
+                weightOnBit = 0;
             }    
-            state.TorqueOnBit = tb; 
-            state.WeightOnBit = wb;    
+            state.TorqueOnBit = torqueOnBit; 
+            state.WeightOnBit = weightOnBit;    
             
             return;
         }           

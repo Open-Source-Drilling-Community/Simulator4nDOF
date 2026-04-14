@@ -45,7 +45,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 BitRockModelEnum.MSE => new MSE(),
                 _ => throw new ArgumentException($"Unknown BitRockModelEnum: {configuration.BitRockModelEnum}")
             };
-            drillStringModel = new LumpedElementModel(in simulationParameters, in simulationParameters.DrillString, in bitRockModel);
+            drillStringModel = new LumpedElementModel(in simulationParameters, in bitRockModel);
           
             //Create an instance of the selected ODE solver
             solverODE = simulationParameters.SolverType switch
@@ -245,7 +245,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
-            double dtTemp = simulationParameters.DistributedCells.ElementLength / Math.Max(simulationParameters.Drillstring.TorsionalWaveSpeed, simulationParameters.Drillstring.AxialWaveSpeed) * 0.8;  // As per the CFL condition for the axial / torsional wave equations - change to 0.80 for better stability
+            double dtTemp = 1e-4;  // Needs to be calculated
             // Wave equations are transformed into their Riemann invariants
             drillStringModel.PrepareModel(state, simulationParameters);
             // Solve lumped and distributed equations

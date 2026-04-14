@@ -6,8 +6,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 {
     public interface IBitRock
     {                  
-        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters){}
-        public void ManageStickingOnBottom(State state, in SimulationParameters parameters)
+        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters, in BitInternalForces bitInternalForces)
+        {
+            
+        }
+        public void ManageStickingOnBottom(State state, in SimulationParameters parameters, in BitInternalForces bitInternalForces)
         {
            // manage the bit sticking off bottom condition
             if (!state.BitOnBotton)
@@ -17,8 +20,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 {
                     int lastIndex = parameters.Drillstring.ElementShearModuli.Count - 1;             
                     // Can be recovered from the speed and strain data from the models!
-                    state.TorqueOnBit = parameters.Drillstring.ElementPolarInertia[lastIndex] * parameters.Drillstring.ElementShearModuli[lastIndex] * (state.AngularDisplacement[state.AngularDisplacement.Count-1] - state.AngularDisplacement[state.AngularDisplacement.Count-2]);
-                    state.WeightOnBit = parameters.Drillstring.ElementArea[lastIndex] * parameters.Drillstring.ElementYoungModuli[lastIndex]  * (state.ZDisplacement[state.AngularDisplacement.Count-1] - state.ZDisplacement[state.AngularDisplacement.Count-2]);
+                    state.TorqueOnBit = bitInternalForces.ElasticTorque;
+                    state.WeightOnBit = bitInternalForces.ElasticAxialForce;
                 }
                 else
                 {

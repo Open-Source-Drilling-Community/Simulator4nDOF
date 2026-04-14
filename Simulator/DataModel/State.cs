@@ -91,83 +91,84 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double ConnectionStartTime;                     // Connection start time [s]
         public double TopDriveStartupTime;                     // Top drive startup time [s]
 
-        public State(in SimulationParameters simulationParameters)
+        private int numberOfElements;
+        public State(in SimulationParameters parameters)
         {
-            
+            numberOfElements = parameters.Drillstring.NumberOfElements;
             
 
             // Initialize lumped element whirl angle
-            WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            WhirlAngle = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element radial displacement
-            RadialDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            RadialDisplacement = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element radial velocity
-            RadialVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            RadialVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element whirl velocity
-            WhirlVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            WhirlVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize top drive angular velocity
             TopDrive = new TopDriveAndDrawworkState()
             {
-                TopDriveAngularVelocity = simulationParameters.TopDriveDrawwork.SurfaceRotation,
-                TopDriveMotorTorque = simulationParameters.TopDriveDrawwork.TopDriveMotorTorque,
-                MaximumTopDriveTorque = simulationParameters.TopDriveDrawwork.MaximumTopDriveTorque,
-                TopDriveRPMSetPoint = simulationParameters.TopDriveDrawwork.TopDriveRPMSetPoint
+                TopDriveAngularVelocity = parameters.TopDriveDrawwork.SurfaceRotation,
+                TopDriveMotorTorque = parameters.TopDriveDrawwork.TopDriveMotorTorque,
+                MaximumTopDriveTorque = parameters.TopDriveDrawwork.MaximumTopDriveTorque,
+                TopDriveRPMSetPoint = parameters.TopDriveDrawwork.TopDriveRPMSetPoint
             };
             // Initialize lumped element angular displacement
-            AngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            AngularDisplacement = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element angular velocity
-            AngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            AngularVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element angular acceleration
-            AngularAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            AngularAcceleration = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element axial displacement
-            ZDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            for (int i = 0; i < simulationParameters.LumpedCells.NumberOfLumpedElements; i++)
+            ZDisplacement = Vector<double>.Build.Dense(numberOfElements);
+            for (int i = 0; i < numberOfElements; i++)
             {
-                ZDisplacement[i] = simulationParameters.LumpedCells.CumulativeElementLength[i];
+                ZDisplacement[i] = parameters.LumpedCells.CumulativeElementLength[i];
             }
             // Initialize lumped element axial velocity
-            ZVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            ZVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element axial acceleration
-            ZAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            ZAcceleration = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element lateral displacement in x-direction
-            XDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            XDisplacement = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element lateral velocity in x-direction
-            XVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            XVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element lateral acceleration in x-direction
-            XAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            XAcceleration = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element lateral displacement in y-direction
-            YDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            YDisplacement = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element lateral velocity in y-direction
-            YVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            YVelocity = Vector<double>.Build.Dense(numberOfElements);
             // Initialize lumped element lateral acceleration in y-direction
-            YAcceleration = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            YAcceleration = Vector<double>.Build.Dense(numberOfElements);
             // Initialize sleeve angular displacement
-            SleeveAngularDisplacement = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
+            SleeveAngularDisplacement = Vector<double>.Build.Dense(parameters.Drillstring.TotalSleeveNumber);
             // Initialize sleeve angular velocity
-            SleeveAngularVelocity = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
+            SleeveAngularVelocity = Vector<double>.Build.Dense(parameters.Drillstring.TotalSleeveNumber);
             // Initialize sleeve angular acceleration
-            SleeveAngularAcceleration = Vector<double>.Build.Dense(simulationParameters.Drillstring.TotalSleeveNumber);
+            SleeveAngularAcceleration = Vector<double>.Build.Dense(parameters.Drillstring.TotalSleeveNumber);
             // Initialize depth of cut
-            DepthOfCut = Vector<double>.Build.Dense(simulationParameters.DistributedCells.CellsInDepthOfCut);
+            DepthOfCut = Vector<double>.Build.Dense(parameters.DistributedCells.CellsInDepthOfCut);
             // Initialize sleeve forces
-            SleeveForces = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            SleeveForces = Vector<double>.Build.Dense(numberOfElements);
             TopOfStringRelativeAxialPosition = 0;
             TopOfStringRelativeRotation = 0;
 
             // Initialize slip condition
-            SlipCondition = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            BendingMomentX = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            BendingMomentY = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            NormalCollisionForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements + 1);        
-            SoftStringNormalForce = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements + 1);
-            Tension = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements + 1);
-            Torque = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements + 1);
+            SlipCondition = Vector<double>.Build.Dense(numberOfElements);
+            BendingMomentX = Vector<double>.Build.Dense(numberOfElements);
+            BendingMomentY = Vector<double>.Build.Dense(numberOfElements);
+            NormalCollisionForce = Vector<double>.Build.Dense(numberOfElements + 1);        
+            SoftStringNormalForce = Vector<double>.Build.Dense(numberOfElements + 1);
+            Tension = Vector<double>.Build.Dense(numberOfElements + 1);
+            Torque = Vector<double>.Build.Dense(numberOfElements + 1);
             MudTorque = 0;
           
             // Initialize sleeve to lumped index mapping
             SleeveToLumpedIndex = new List<int>();
-            for (int i = 0; i < simulationParameters.LumpedCells.NumberOfLumpedElements; i++)
+            for (int i = 0; i < numberOfElements; i++)
             {
-                SleeveToLumpedIndex.Add(simulationParameters.Drillstring.SleeveIndexPosition.Contains(i) ? i : -1);
+                SleeveToLumpedIndex.Add(parameters.Drillstring.SleeveIndexPosition.Contains(i) ? i : -1);
             }
             // Add 1 to every positive number in SleeveToLumpedIndex
             for (int i = 0; i < SleeveToLumpedIndex.Count; i++)
@@ -181,11 +182,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             MudStatorAngularVelocity = 0;
             MudRotorAngularVelocity = 0;
 
-            this.BitDepth = simulationParameters.Input.InitialBitDepth;                               // Initial values set in SimulationParameters - to be moved
-            PreviousCalculatedBitDepth = simulationParameters.Input.InitialBitDepth;
-            this.HoleDepth = simulationParameters.Input.InitialHoleDepth;
-            this.TopOfStringPosition = simulationParameters.Input.InitialTopOfStringPosition;
-            this. ZVelocity[0] = simulationParameters.Input.InitialTopOfStringVelocity;
+            this.BitDepth = parameters.Input.InitialBitDepth;                               // Initial values set in SimulationParameters - to be moved
+            PreviousCalculatedBitDepth = parameters.Input.InitialBitDepth;
+            this.HoleDepth = parameters.Input.InitialHoleDepth;
+            this.TopOfStringPosition = parameters.Input.InitialTopOfStringPosition;
+            this. ZVelocity[0] = parameters.Input.InitialTopOfStringVelocity;
             BitOnBotton = false;
 
             MakeConnection = false;

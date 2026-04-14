@@ -9,8 +9,19 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
+    /// <summary>
+    /// SimulatorDrillString is used to convert a DrillString object from the DrillString Microservice 
+    /// onto a simulation ready format. This 
+    /// implies that each similar consecutive part of the drill-string will have an 
+    /// averaged behaviour with all of the material properties. This is implemented as
+    /// a separete class as it can be imported in the future for other models. 
+    /// 
+    ///     Element description must not contain method-related variables (e.g.: stiffness values).
+    /// Those are expected to be calculated at the model's constructor level. 
+    /// </summary>
     public class SimulatorDrillString
     {
+
         //Default values
         public double BitRadius = .2159 / 2;                   // [m] Bit radius(used in both Detournay and MSE model)
         public readonly double SteelDensity = 7850;              // [kg / m3] Density of steel
@@ -25,53 +36,51 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public readonly double AddedFluidMassCoefficient = 1.7;              // Added fluid mass coefficient
         public readonly double MassImbalancePercentage = .05; //percent (fraction?) of mass imbalance compared to total mass -  todo rename?
 
-        public List<double> ElementLength;                       
-        public List<double> ElementDensity;                       
-        public List<double> ElementOuterRadius;                       // [m] Outer radius vector
-        public List<double> ElementInnerRadius;                       // [m] Inner radius vector
-        public List<double> ElementEccentricity;                        // [m] Eccentricity vector
-        public List<double> ElementOuterArea;                       // [m^2] Drillpipe outer area vector
-        public List<double> ElementInnerArea;                       // [m^2] Drillpipe inner area vector
-        public List<double> ToolJointOuterArea;                     // [m^2] Tool joint outer area vector
-        public List<double> ToolJointInnerArea;                     // [m^2] Tool joint inner area vector
+        public int NumberOfElements;
+        public List<double> ElementLength = new();
+        public List<double> ElementDensity = new();
+        public List<double> ElementOuterRadius = new();                       // [m] Outer radius vector
+        public List<double> ElementInnerRadius = new();                       // [m] Inner radius vector
+        public List<double> ElementEccentricity = new();                        // [m] Eccentricity vector
+        public List<double> ElementOuterArea = new();                       // [m^2] Drillpipe outer area vector
+        public List<double> ElementInnerArea = new();                       // [m^2] Drillpipe inner area vector
+        public List<double> ToolJointOuterArea = new();                     // [m^2] Tool joint outer area vector
+        public List<double> ToolJointInnerArea = new();                     // [m^2] Tool joint inner area vector
 
-        // Inertial peroperties                         
-        public List<double> ElementPolarInertia;                        // [m^4] Drillpipe polar moment of inertia vector
-        public List<double> ElementArea;                        // [m^2] Drillpipe cross sectional area vector
-        public List<double> ElementInertia;                        // [m^4] Drillpipe moment of inertia vector
+        // Inertial peroperties
+        public List<double> ElementPolarInertia = new();                        // [m^4] Drillpipe polar moment of inertia vector
+        public List<double> ElementArea = new();                        // [m^2] Drillpipe cross sectional area vector
+        public List<double> ElementInertia = new();                        // [m^4] Drillpipe moment of inertia vector
 
-        public List<double> WeightCorrectionFactor;               // [-] Linear weight correction factor vector
-        public List<double> ElementYoungModuli;                        // [Pa] Young's modulus vector
-        public List<double> ElementShearModuli;                        // [Pa] Shear modulus vector
-        public List<double> ElementFluidAddedMass;                       // [kg] Added fluid mass
-        public List<double> ElementEccentricMass;                      // [kg] Eccentric mass
+        public List<double> WeightCorrectionFactor = new();               // [-] Linear weight correction factor vector
+        public List<double> ElementYoungModuli = new();                        // [Pa] Young's modulus vector
+        public List<double> ElementShearModuli = new();                        // [Pa] Shear modulus vector
+        public List<double> ElementFluidAddedMass = new();                       // [kg] Added fluid mass
+        public List<double> ElementEccentricMass = new();                      // [kg] Eccentric mass
 
-        public List<double> InactiveElementLength;                       // [m] Outer radius vector
-        public List<double> InactiveElementDensity;                       // [m] Outer radius vector
-        
-        public List<double> InactiveElementOuterRadius;                       // [m] Outer radius vector
-        public List<double> InactiveElementInnerRadius;                       // [m] Inner radius vector
-        public List<double> InactiveElementEccentricity;                        // [m] Eccentricity vector
-        public List<double> InactiveElementOuterArea;                       // [m^2] Drillpipe outer area vector
-        public List<double> InactiveElementInnerArea;                       // [m^2] Drillpipe inner area vector
-        public List<double> InactiveToolJointOuterArea;                     // [m^2] Tool joint outer area vector
-        public List<double> InactiveToolJointInnerArea;                     // [m^2] Tool joint inner area vector
+        public List<double> InactiveElementLength = new();                       // [m] Outer radius vector
+        public List<double> InactiveElementDensity = new();                       // [m] Outer radius vector
 
-        // Inertial peroperties                         
-        public List<double> InactiveElementPolarInertia;                        // [m^4] Drillpipe polar moment of inertia vector
-        public List<double> InactiveElementArea;                        // [m^2] Drillpipe cross sectional area vector
-        public List<double> InactiveElementInertia;                        // [m^4] Drillpipe moment of inertia vector
+        public List<double> InactiveElementOuterRadius = new();                       // [m] Outer radius vector
+        public List<double> InactiveElementInnerRadius = new();                       // [m] Inner radius vector
+        public List<double> InactiveElementEccentricity = new();                        // [m] Eccentricity vector
+        public List<double> InactiveElementOuterArea = new();                       // [m^2] Drillpipe outer area vector
+        public List<double> InactiveElementInnerArea = new();                       // [m^2] Drillpipe inner area vector
+        public List<double> InactiveToolJointOuterArea = new();                     // [m^2] Tool joint outer area vector
+        public List<double> InactiveToolJointInnerArea = new();                     // [m^2] Tool joint inner area vector
 
-        public List<double> InactiveWeightCorrectionFactor;               // [-] Linear weight correction factor vector
-        public List<double> InactiveElementYoungModuli;                        // [Pa] Young's modulus vector
-        public List<double> InactiveElementShearModuli;                        // [Pa] Shear modulus vector
-        public List<double> InactiveElementFluidAddedMass;                       // [kg] Added fluid mass
-        public List<double> InactiveElementEccentricMass;                      // [kg] Eccentric mass
+        // Inertial peroperties
+        public List<double> InactiveElementPolarInertia = new();                        // [m^4] Drillpipe polar moment of inertia vector
+        public List<double> InactiveElementArea = new();                        // [m^2] Drillpipe cross sectional area vector
+        public List<double> InactiveElementInertia = new();                        // [m^4] Drillpipe moment of inertia vector
 
-        //public Vector<double> LumpedElementMomentOfInertia;                      // [kg.m^2] Lumped element mass moment of inertia
-        //public Vector<double> LumpedElementMass;                      // [kg] Lumped element mass
-        //public Vector<double> LumpedElementMassMomentOfInertia;                      // [kg.m^2] Lumped element mass moment of inertia
-                                                        
+        public List<double> InactiveWeightCorrectionFactor = new();               // [-] Linear weight correction factor vector
+        public List<double> InactiveElementYoungModuli = new();                        // [Pa] Young's modulus vector
+        public List<double> InactiveElementShearModuli = new();                        // [Pa] Shear modulus vector
+        public List<double> InactiveElementFluidAddedMass = new();                       // [kg] Added fluid mass
+        public List<double> InactiveElementEccentricMass = new();                      // [kg] Eccentric mass
+
+                                                       
 
         // Sleeves - to be configured
         public Vector<double> SleeveDistancesFromBit;  // Example data
@@ -93,7 +102,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double CalculateLateralDamping;
         // 
         public double TotalLength;
-        public Vector<double> BendingStiffness;                       // [N/m] Bending stiffness
         
         public double CharacteristicDrillPipeImpedance;                           // Characteristic drill pipe impedance
 
@@ -218,10 +226,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             }
             //  If the drill-string starts with drill-pipes, 
             // then it must be reverted to a Bit/BHA-first order
-            if (
-                componentTypeList[0] == DrillStringComponentTypes.DrillPipe ||
-                componentTypeList[0] == DrillStringComponentTypes.HeavyWeightDrillPipe
-            )
+            bool drillPipesFirst = componentTypeList[0] == DrillStringComponentTypes.DrillPipe ||componentTypeList[0] == DrillStringComponentTypes.HeavyWeightDrillPipe;            
+            if (drillPipesFirst)
             {
                 componentTypeList.Reverse();
                 mergedComponentLength.Reverse();
@@ -231,9 +237,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 mergedComponentYoungsModulus.Reverse();
                 mergedComponentShearModulus.Reverse();
                 mergedComponentDensity.Reverse();
+                mergedComponentInnerArea.Reverse();
+                mergedComponentOuterArea.Reverse();
+                mergedComponentInnerRadius.Reverse();
+            
             }
             #endregion
-            #region Lumped Element Discretization
+            #region Element Discretization
             //  In here the lumped elements are discretized. There are 
             // two expected circumstances:
             //  I - the merged component length > 2 * Expected Element Length
@@ -270,14 +280,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         ElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
                         ElementShearModuli.Add( mergedComponentShearModulus[i] );
                         ElementInertia.Add( mergedComponentInertia[i] );
-                        ElementArea.Add( mergedComponentArea[i] );
-                        
+                        ElementArea.Add( mergedComponentArea[i] );                        
                         ElementInnerRadius.Add( mergedComponentInnerRadius[i] );
                         ElementInnerArea.Add( mergedComponentInnerArea[i] );
                         ElementOuterArea.Add( mergedComponentOuterArea[i] );
                         double mass = mergedComponentDensity[i] * mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
                         ElementEccentricMass.Add( mass );
-                        ElementEccentricity.Add( MassImbalancePercentage );
+                        ElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i]);
                     }
                     else 
                     {
@@ -299,13 +308,40 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         InactiveElementOuterArea.Add( mergedComponentOuterArea[i] );
                         double mass = mergedComponentDensity[i] * mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
                         InactiveElementEccentricMass.Add( mass );
-                        InactiveElementEccentricity.Add( MassImbalancePercentage );                          
+                        InactiveElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i] );                          
                     }
                     lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
                 }     
-            }            
+            }
+            NumberOfElements = ElementArea.Count;            
             #endregion
-           
+
+            // The lists always starts from the bit. However, the rest of the simulator uses from top-first
+            ElementLength.Reverse();
+            ElementDensity.Reverse();
+            ElementOuterRadius.Reverse();
+            ElementYoungModuli.Reverse();
+            ElementShearModuli.Reverse();
+            ElementInertia.Reverse();
+            ElementArea.Reverse();
+            ElementInnerRadius.Reverse();
+            ElementInnerArea.Reverse();
+            ElementOuterArea.Reverse();
+            ElementEccentricMass.Reverse();
+            ElementEccentricity.Reverse();
+
+            InactiveElementLength.Reverse();
+            InactiveElementDensity.Reverse();
+            InactiveElementOuterRadius.Reverse();
+            InactiveElementYoungModuli.Reverse();
+            InactiveElementShearModuli.Reverse();
+            InactiveElementInertia.Reverse();
+            InactiveElementArea.Reverse();
+            InactiveElementInnerRadius.Reverse();
+            InactiveElementInnerArea.Reverse();
+            InactiveElementOuterArea.Reverse();
+            InactiveElementEccentricMass.Reverse();
+            InactiveElementEccentricity.Reverse();
         }
     }
 }

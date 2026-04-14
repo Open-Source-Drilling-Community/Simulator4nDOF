@@ -33,7 +33,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         /// [-] Efficiency factor (MSE model)
         /// </summary>
         public readonly double BitEfficiencyFactor = 0.35;      
-        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters)
+        public void CalculateInteractionForce(State state, in SimulationParameters simulationParameters, in BitInternalForces bitInternalForces)
         {
             double tb = 0.0;
             double wb = 0.0;

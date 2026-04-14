@@ -47,6 +47,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private Vector<double> bendingStiffness;
         // Bit-rock interaction related variables
         private IBitRock bitRockModel;        
+        private BitInternalForces bitInternalForces;
         // Pre-stress forces in the normal and binormal direction, used for calculating the contact forces in the friction model. These are calculated in the PrepareModel step and then used in the CalculateAccelerations step.
         private Vector<double> preStressNormalForce;
         private Vector<double> preStressBinormalForce;                  
@@ -116,6 +117,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         {
             // Initialize the bit-rock model
             this.bitRockModel = bitRockModel;
+            bitInternalForces = new BitInternalForces();
             // Create a simplifiefd drill-string form the input
             NumberOfElements = parameters.Drillstring.ElementLength.Count;            
             #region Mass and stiffness matrices
@@ -381,10 +383,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
 
             /* For the addition - The axial and shear strains must be calculated for the bit-rock interaction */
             #region Bit - rock interaction
-            //  Calculate interaction forces on bit based on selected bit-rock model 
-            // and update the state accordingly                
-            bitRockModel.CalculateInteractionForce(state, in parameters);
-            bitRockModel.ManageStickingOnBottom(state, in parameters);
             #endregion
 
             #region Mud motors properties            
@@ -401,8 +399,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     state.MudTorque = -parameters.MudMotor.P0_motor * parameters.MudMotor.V_motor * (speedRatio - 1);                
             }
             #endregion
-
-
             // =============================== Main loop for calculating forces and accelerations in the lateral model ===============================
             for (int i = 0; i < state.XDisplacement.Count; i++)
             {                
@@ -439,7 +435,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //lateral elements.
                 //If it is the last element, use the torque on bit
                 // ------------------ Axial Elastic Forces Calculation --------------------       
-                elasticForceZ = CalculateAxialElasticForce(i, state);
+                elasticForceZ = CalculateAxialElasticForce(i, state);                
                 // ------------------ Torsional Elastic Forces Calculation --------------------
                 elasticForcePhi = CalculateTorsionalElasticForce(i, state);
                 // ------------------ Lateral Elastic Forces Calculation ------------------
@@ -618,7 +614,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     state.PhiDdotNoSlipSensor = 0.0;
                     state.ThetaDotNoSlipSensor = 0.0;
                 }                            
-                #endregion                   
+                #endregion     
+                #region Bit-Rock Interaction
+                if (i == NumberOfElements)
+                {
+                    // Populate the bit internal forces accordingly
+                    bitInternalForces.ElasticAxialForce = elasticForceZ;
+                    bitInternalForces.ElasticTorque = elasticForcePhi;                               
+                    //  Calculate interaction forces on bit based on selected bit-rock model 
+                    // and update the state accordingly                
+                    bitRockModel.CalculateInteractionForce(state, in parameters, in bitInternalForces);
+                    bitRockModel.ManageStickingOnBottom(state, in parameters, in bitInternalForces);           
+                }
+                #endregion
                 #region Accelerations                              
                 if (hasSleeve)
                 {                    
