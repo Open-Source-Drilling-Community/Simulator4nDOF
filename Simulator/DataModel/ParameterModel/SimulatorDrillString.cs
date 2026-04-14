@@ -121,7 +121,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// <summary>
         /// [-] Linear weight correction factor vector
         /// </summary>
-        public List<double> WeightCorrectionFactor = new();
+        public List<double> ElementWeightCorrectionFactor = new();
         /// <summary>
         /// [Pa] Young's modulus vector
         /// </summary>
@@ -197,7 +197,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// <summary>
         /// [-] Linear weight correction factor vector
         /// </summary>
-        public List<double> InactiveWeightCorrectionFactor = new();
+        public List<double> InactiveElementWeightCorrectionFactor = new();
         /// <summary>
         /// [Pa] Young's modulus vector
         /// </summary>
@@ -478,6 +478,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         ElementFluidAddedMass.Add( fluidDensity * volume );
                         ElementEccentricMass.Add( mergedComponentDensity[i] * volume );
                         ElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i]);
+                        ElementWeightCorrectionFactor.Add(1.0);
                     }
                     else 
                     {
@@ -503,7 +504,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
                         InactiveElementFluidAddedMass.Add( fluidDensity * volume );
                         InactiveElementEccentricMass.Add( mergedComponentDensity[i] * volume );
-                        InactiveElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i] );                          
+                        InactiveElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i] );        
+                        InactiveElementWeightCorrectionFactor.Add(1.0);
+                  
                     }
                     lastElementPosition += mergedComponentLength[i] / (double) numberOfElementsInSection;
                 }     
@@ -526,6 +529,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementEccentricMass.Reverse();
             ElementEccentricity.Reverse();
             ElementDepth.Reverse();
+            ElementWeightCorrectionFactor.Reverse();
 
             InactiveElementLength.Reverse();
             InactiveElementDensity.Reverse();
@@ -541,6 +545,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementToolJointInnerArea.Reverse();
             InactiveElementEccentricMass.Reverse();
             InactiveElementEccentricity.Reverse();
+            InactiveElementWeightCorrectionFactor.Reverse();
 
             IndexSensor = Enumerable.Range(0, ElementDepth.Count)
                 .MinBy(i => Math.Abs(ElementDepth[i] - SensorDistanceFromBit));

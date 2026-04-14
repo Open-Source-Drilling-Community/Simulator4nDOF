@@ -19,13 +19,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
     /// </summary>
     public class LumpedElementModel : IModel<LumpedElementModel>
     {       
-        public int NumberOfElements; // Number of elements is one less than the number of nodes
+        private int numberOfElements; // Number of elements is one less than the number of nodes
         private Vector<double> tension;
-        private Vector<double> torque;
-        // Bore hole properties
-        private double wallStiffness = 5e7;
-        private double wallDamping = 5e4;
-        
+        private Vector<double> torque;        
         // Structural properties
         private Matrix<double> lateralStiffnessMatrix;
         private Matrix<double> axialStiffnessMatrix;
@@ -119,33 +115,33 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             this.bitRockModel = bitRockModel;
             bitInternalForces = new BitInternalForces();
             // Create a simplifiefd drill-string form the input
-            NumberOfElements = parameters.Drillstring.ElementLength.Count;            
+            numberOfElements = parameters.Drillstring.ElementLength.Count;            
             #region Mass and stiffness matrices
             // In here, the global and element mass and stiffness matrices are created
             // After I populate the matrices, I want to split into 3 vector:
             // left of diagonal, diagonal and right of diagonal for all DoF.
-            lateralStiffnessLeft = new double[NumberOfElements + 1];
-            lateralStiffnessMid = new double[NumberOfElements + 1];
-            lateralStiffnessRight = new double[NumberOfElements + 1];            
+            lateralStiffnessLeft = new double[numberOfElements + 1];
+            lateralStiffnessMid = new double[numberOfElements + 1];
+            lateralStiffnessRight = new double[numberOfElements + 1];            
             lateralStiffnessLeft[0] = 0.0;
-            lateralStiffnessRight[NumberOfElements] = 0.0;
+            lateralStiffnessRight[numberOfElements] = 0.0;
 
-            axialStiffnessLeft = new double[NumberOfElements + 1];
-            axialStiffnessMid = new double[NumberOfElements + 1];
-            axialStiffnessRight = new double[NumberOfElements + 1];
+            axialStiffnessLeft = new double[numberOfElements + 1];
+            axialStiffnessMid = new double[numberOfElements + 1];
+            axialStiffnessRight = new double[numberOfElements + 1];
             
-            torsionalStiffnessLeft = new double[NumberOfElements + 1];
-            torsionalStiffnessMid = new double[NumberOfElements + 1];
-            torsionalStiffnessRight = new double[NumberOfElements + 1];
+            torsionalStiffnessLeft = new double[numberOfElements + 1];
+            torsionalStiffnessMid = new double[numberOfElements + 1];
+            torsionalStiffnessRight = new double[numberOfElements + 1];
 
-            axialLumpedMass = new double[NumberOfElements + 1];
-            lateralLumpedMass = new double[NumberOfElements + 1];
-            torsionalLumpedInertia = new double[NumberOfElements + 1];
+            axialLumpedMass = new double[numberOfElements + 1];
+            lateralLumpedMass = new double[numberOfElements + 1];
+            torsionalLumpedInertia = new double[numberOfElements + 1];
             // CHANGE TO SPARSE MATRICES??            
-            lateralStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements + 1, NumberOfElements + 1);
-            axialStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements+ 1, NumberOfElements + 1);
-            torsionalStiffnessMatrix = Matrix<double>.Build.Dense(NumberOfElements + 1, NumberOfElements + 1);
-            for (int i = 0; i < NumberOfElements; i++)
+            lateralStiffnessMatrix = Matrix<double>.Build.Dense(numberOfElements + 1, numberOfElements + 1);
+            axialStiffnessMatrix = Matrix<double>.Build.Dense(numberOfElements+ 1, numberOfElements + 1);
+            torsionalStiffnessMatrix = Matrix<double>.Build.Dense(numberOfElements + 1, numberOfElements + 1);
+            for (int i = 0; i < numberOfElements; i++)
             {
                 //  The equivalent mass for each DoF is dependent on the assumed mode shape. Axial and Torsional modes use a linear element, which is
                 //compatible to a rigid body motion. The calculation can be foundEach element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx. 
@@ -204,14 +200,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             #endregion
             // Allocate main variables for the model.
             //NumberOfElements = simulationParameters.NumberOfElements;
-            bendingStiffness = Vector<double>.Build.Dense(NumberOfElements+1);
-            preStressNormalForce = Vector<double>.Build.Dense(NumberOfElements);
-            preStressBinormalForce = Vector<double>.Build.Dense(NumberOfElements);
+            bendingStiffness = Vector<double>.Build.Dense(numberOfElements+1);
+            preStressNormalForce = Vector<double>.Build.Dense(numberOfElements);
+            preStressBinormalForce = Vector<double>.Build.Dense(numberOfElements);
       
-            toolFaceAngle = Vector<double>.Build.Dense(NumberOfElements);
-            tensionIntegral = Vector<double>.Build.Dense(NumberOfElements);
-            tension = Vector<double>.Build.Dense(NumberOfElements + 1);
-            torque = Vector<double>.Build.Dense(NumberOfElements + 1);
+            toolFaceAngle = Vector<double>.Build.Dense(numberOfElements);
+            tensionIntegral = Vector<double>.Build.Dense(numberOfElements);
+            tension = Vector<double>.Build.Dense(numberOfElements + 1);
+            torque = Vector<double>.Build.Dense(numberOfElements + 1);
             
         }
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
@@ -275,10 +271,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 isFirst = i == 0;
                 int offPhaseIndex = isFirst ? 0 : i - 1;
                 // Calculate the axial elastic force: E * A 
-                double ZiMinus1 = (i == 0) ? 0.0 : state.ZDisplacement[i - 1];
-                double ZiPlus1 = (i == state.ZDisplacement.Count - 1) ? 0.0 : state.ZDisplacement[i + 1];            
-                axialForce = CalculateAxialElasticForce(i, state) ;
-               
+                axialForce = CalculateAxialElasticForce(i, state) ;               
                 // Get the current property and repeat the fist as a boundary condition
                 differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
                 differentialTrajectoryTheta = parameters.Trajectory.DiffThetaInterpolated[offPhaseIndex];    
@@ -326,7 +319,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double signToolFace;
             double dotProduct;  
             // Loop to compute the pre-stresses
-            for (int i = 0; i < NumberOfElements; i++)
+            for (int i = 0; i < numberOfElements; i++)
             {     
                 isFirst = i == 0;
                 // Normal force components in Frenet-Serret coordinate system
@@ -370,13 +363,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double CalculateAxialElasticForce(int i, State state)
         {
             double ZiMinus1 = (i == 0) ? state.TopOfStringRelativeAxialPosition : state.ZDisplacement[i - 1];
-            double ZiPlus1 = (i == state.ZDisplacement.Count - 1) ? 0.0 : state.ZDisplacement[i + 1];            
+            double ZiPlus1 = (i == numberOfElements - 2) ? 0.0 : state.ZDisplacement[i + 1];            
             return - ( axialStiffnessLeft[i] * ZiMinus1  + axialStiffnessMid[i] * state.ZDisplacement[i] + axialStiffnessRight[i] * ZiPlus1 );
         }
         private double CalculateTorsionalElasticForce(int i, State state)
         {
             double PhiMinus1 = (i == 0) ? 0.0 : state.AngularDisplacement[i - 1];
-            double PhiPlus1 = (i == state.AngularDisplacement.Count - 1) ? 0.0 : state.AngularDisplacement[i + 1];                                                
+            double PhiPlus1 = (i == numberOfElements - 2) ? 0.0 : state.AngularDisplacement[i + 1];                                                
             return - ( torsionalStiffnessLeft[i] * PhiMinus1  + torsionalStiffnessMid[i] * state.AngularDisplacement[i] + torsionalStiffnessRight[i] * PhiPlus1 );
         }
 
@@ -402,7 +395,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             }
             #endregion
             // =============================== Main loop for calculating forces and accelerations in the lateral model ===============================
-            for (int i = 0; i < state.XDisplacement.Count; i++)
+            for (int i = 0; i < numberOfElements; i++)
             {                
                 #region Polar Coordinates Conversion
                 // Get the radial displacement 
@@ -618,7 +611,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }                            
                 #endregion     
                 #region Bit-Rock Interaction
-                if (i == NumberOfElements)
+                if (i == numberOfElements)
                 {
                     // Populate the bit internal forces accordingly
                     bitInternalForces.ElasticAxialForce = elasticForceZ;
@@ -636,7 +629,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     state.SleeveAngularAcceleration[sleeveIndex] = parameters.InnerLoopTimeStep * (sleeveBrakeForce * parameters.Drillstring.SleeveInnerRadius - parameters.Drillstring.SleeveOuterRadius * state.SleeveForces[i]) / parameters.Drillstring.SleeveMassMomentOfInertia;;
                 }
                 // The torque on bit only apply on the last element
-                torqueOnBit = (i == NumberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
+                torqueOnBit = (i == numberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
                 // Topdrive Torque only applies to the first element                
                 topDriveTorque = (i == 0) ? state.TopDrive.TopDriveMotorTorque : 0.0;
                 sumTorque = elasticForcePhi  + topDriveTorque + torqueOnBit - parameters.Drillstring.CalculatedTorsionalDamping * rotationSpeed

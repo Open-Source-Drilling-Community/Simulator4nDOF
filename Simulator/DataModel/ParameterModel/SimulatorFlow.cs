@@ -707,7 +707,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                                 * buoyancyFactor
                                                 * drillString.SteelDensity
                                                 * pipeElementArea
-                                                * drillString.WeightCorrectionFactor[i];
+                                                * drillString.ElementWeightCorrectionFactor[i];
 
                     // Hydrostatic pressures at the current and previous nodes
                     double hydrostaticAnnularCurrent = HydrostaticAnnulusPressure[i];
@@ -734,7 +734,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     // --- Explicit fluid-volume method ---
                     // Buoyant weight accounts for the displaced annulus fluid and the interior string fluid
                     // over the element length, split between tool-joint and plain-pipe sections.
-                    MassPerLength = drillString.SteelDensity * pipeElementArea * drillString.WeightCorrectionFactor[i];
+                    MassPerLength = drillString.SteelDensity * pipeElementArea * drillString.ElementWeightCorrectionFactor[i];
 
                     BuoyantWeightPerLength[i] = (MassPerLength +
                         (  toolJointElementInnerArea * drillString.ToolJointLength                                    * StringDensity[i]

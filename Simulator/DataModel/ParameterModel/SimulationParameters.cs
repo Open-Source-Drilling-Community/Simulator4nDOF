@@ -100,7 +100,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Drillstring.ElementPolarInertia.Insert(0, Drillstring.InactiveElementPolarInertia[0]);
             Drillstring.ElementArea.Insert(0, Drillstring.InactiveElementArea[0]);
             Drillstring.ElementInertia.Insert(0, Drillstring.InactiveElementInertia[0]);
-            Drillstring.WeightCorrectionFactor.Insert(0, Drillstring.InactiveWeightCorrectionFactor[0]);
+            Drillstring.ElementWeightCorrectionFactor.Insert(0, Drillstring.InactiveElementWeightCorrectionFactor[0]);
             Drillstring.ElementYoungModuli.Insert(0, Drillstring.InactiveElementYoungModuli[0]);
             Drillstring.ElementShearModuli.Insert(0, Drillstring.InactiveElementShearModuli[0]);
             Drillstring.ElementFluidAddedMass.Insert(0, Drillstring.InactiveElementFluidAddedMass[0]);
@@ -119,7 +119,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (Drillstring.InactiveElementPolarInertia.Count > 1) Drillstring.InactiveElementPolarInertia.RemoveAt(0);
             if (Drillstring.InactiveElementArea.Count > 1) Drillstring.InactiveElementArea.RemoveAt(0);
             if (Drillstring.InactiveElementInertia.Count > 1) Drillstring.InactiveElementInertia.RemoveAt(0);
-            if (Drillstring.InactiveWeightCorrectionFactor.Count > 1) Drillstring.InactiveWeightCorrectionFactor.RemoveAt(0);
+            if (Drillstring.InactiveElementWeightCorrectionFactor.Count > 1) Drillstring.InactiveElementWeightCorrectionFactor.RemoveAt(0);
             if (Drillstring.InactiveElementYoungModuli.Count > 1) Drillstring.InactiveElementYoungModuli.RemoveAt(0);
             if (Drillstring.InactiveElementShearModuli.Count > 1) Drillstring.InactiveElementShearModuli.RemoveAt(0);
             if (Drillstring.InactiveElementFluidAddedMass.Count > 1) Drillstring.InactiveElementFluidAddedMass.RemoveAt(0);
