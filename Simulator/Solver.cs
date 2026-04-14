@@ -69,7 +69,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             if (setPoints.StribeckCriticalVelocity > 0)
             {
                 parameters.Input.StribeckCriticalVelocity = setPoints.StribeckCriticalVelocity;
-                parameters.Friction.stribeck = 1.0 / parameters.Input.StribeckCriticalVelocity;
+                parameters.Friction.Stribeck = 1.0 / parameters.Input.StribeckCriticalVelocity;
             }
             if (parameters.Friction.StaticFrictionCoefficient.Count == parameters.Friction.KinematicFrictionCoefficient.Count)
             {
@@ -92,7 +92,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (Math.Abs(state.BitDepth - state.PreviousCalculatedBitDepth) > 1.0)
                 {
                     parameters.Trajectory.UpdateTrajectory(parameters.Drillstring);
-                    parameters.Flow.UpdateBuoyancy(parameters.LumpedCells, parameters.Trajectory, parameters.Drillstring, parameters.UseBuoyancyFactor);
+                    parameters.Flow.UpdateBuoyancy(parameters.Trajectory, parameters.Drillstring, parameters.UseBuoyancyFactor);
                     parameters.Wellbore.UpdateWellbore(parameters.Drillstring);
                     state.PreviousCalculatedBitDepth = state.BitDepth;
                 }
@@ -104,7 +104,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 {
                     AddNewLumpedElement();
                     parameters.Trajectory.UpdateTrajectory(parameters.Drillstring);
-                    parameters.Flow.UpdateBuoyancy(parameters.LumpedCells, parameters.Trajectory, parameters.Drillstring, parameters.UseBuoyancyFactor);
+                    parameters.Flow.UpdateBuoyancy(parameters.Trajectory, parameters.Drillstring, parameters.UseBuoyancyFactor);
                     parameters.Wellbore.UpdateWellbore(parameters.Drillstring);
                     parameters.Drillstring.IndexSensor = parameters.Drillstring.IndexSensor + 1;
                 }

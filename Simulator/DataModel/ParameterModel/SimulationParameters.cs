@@ -16,7 +16,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public IBitRock BitRock;
         public MudMotor MudMotor;
         public SimulatorTrajectory Trajectory;
-        public LumpedCells LumpedCells;
         public SimulatorWellbore Wellbore;
         public SimulatorDrillString Drillstring;
         public SimulatorFlow Flow;
@@ -51,15 +50,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 InitialTopOfStringPosition = configuration.TopOfStringPosition,
                 InitialTopOfStringVelocity = configuration.TopOfStringVelocity
             };
-            LumpedCells = new LumpedCells(configuration.BitDepth, configuration.ElementLength);
             Drillstring = new SimulatorDrillString(configuration);
 
             NumberOfElements = Drillstring.ElementLength.Count;
             Wellbore = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
             Trajectory = new SimulatorTrajectory(Drillstring, configuration.Trajectory);
-            Flow = new SimulatorFlow(configuration, LumpedCells, Trajectory, Drillstring);
+            Flow = new SimulatorFlow(configuration, Trajectory, Drillstring);
             MudMotor = new MudMotor();
-            Friction = new Friction(LumpedCells, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
+            Friction = new Friction(NumberOfElements, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
             DrillStringLength = configuration.BitDepth - configuration.TopOfStringPosition;
             TopDriveDrawwork = new TopDriveDrawwork()
             {
@@ -132,8 +130,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             // Fields without Inactive counterparts
             Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient);
             Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient);
-            LumpedCells.CumulativeElementLength = ExtendVectorStart(0, LumpedCells.CumulativeElementLength);
-            LumpedCells.NumberOfLumpedElements = LumpedCells.NumberOfLumpedElements + 1;
             if (Drillstring.SleeveIndexPosition.Count > 0)
             {
                 for (int i = 0; i < Drillstring.SleeveIndexPosition.Count; i++)

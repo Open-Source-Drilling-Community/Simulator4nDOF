@@ -1143,14 +1143,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return config;
         }
 
-        private Profiles CreateProfile(double time, Output output, State state, SimulationParameters parameters, Input u, Simulator.DataModel.Configuration config)
+        private Profiles CreateProfile(double time, Output output, State state, SimulationParameters parameters, Input input, Configuration config)
         {
             return new Profiles
             {
                 Time = time,
                 Depth = output.Depth.ToList(),
                 DepthAll = output.Depth.ToList(),
-                SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.LumpedCells.CumulativeElementLength[(int)index]).ToList(),
+                SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.Drillstring.ElementDepth[(int)index]).ToList(),
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor

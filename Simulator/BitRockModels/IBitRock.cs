@@ -41,7 +41,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                         else
                         {
                             //Commented unnecessary regularization
-                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / parameters.Friction.v_c)) * v_ / Math.Sqrt(v_ * v_);// + 0.001 * 0.001);                        
+                            double Ff_ = (Fc_ + (Fs_ - Fc_) * Math.Exp(-va_ / parameters.Friction.VelocityTransitionThreshold)) * v_ / Math.Sqrt(v_ * v_);// + 0.001 * 0.001);                        
                             state.TorqueOnBit = Ff_ * (ro_ * ro_ * omega_) / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
                             state.WeightOnBit = Ff_ * va_ / Math.Sqrt(va_ * va_ + ro_ * ro_ * omega_ * omega_);
                         }

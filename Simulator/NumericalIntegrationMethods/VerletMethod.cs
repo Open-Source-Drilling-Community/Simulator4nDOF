@@ -40,27 +40,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         
         
 
-        public VerletMethod(SimulationParameters simulationParameters)
+        public VerletMethod(SimulationParameters parameters)
         {
-            sleeveAngularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);            
-            angularDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            xDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            yDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            zDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            sleeveAngularDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);            
+            angularDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            xDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            yDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            zDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
             
-            AngularVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            xVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            yVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            zVelocity = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);                
+            AngularVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            xVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            yVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            zVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);                
             
-            sleeveAngularDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            angularDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            xDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            yDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            zDisplacementMinus1 = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            sleeveAngularDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            angularDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            xDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            yDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            zDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
             
-            timeStep = simulationParameters.InnerLoopTimeStep;
-            timeStepSquared = simulationParameters.InnerLoopTimeStep * simulationParameters.InnerLoopTimeStep;
+            timeStep = parameters.InnerLoopTimeStep;
+            timeStepSquared = parameters.InnerLoopTimeStep * parameters.InnerLoopTimeStep;
 
 
             topOfStringRelativeAxialPosition = 0.0;

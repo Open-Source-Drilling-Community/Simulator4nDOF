@@ -66,22 +66,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         private int queueSize;
 
         public bool SimulationHealthy;
-        public Output(in SimulationParameters simulationParameters, in Configuration config)
+        public Output(in SimulationParameters parameters, in Configuration config)
         {
-            NormalForceProfileStiffString = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            NormalForceProfileSoftString = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            TensionProfile = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements + 1);
-            BendingMomentX = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            BendingMomentY = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            TangentialForceProfile = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            Depth = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            RadialDisplacement = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            WhirlAngle = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            WhirlSpeed = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            BendingMoment = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
-            Torque = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements);
+            NormalForceProfileStiffString = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            NormalForceProfileSoftString = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            TensionProfile = Vector<double>.Build.Dense(parameters.NumberOfElements + 1);
+            BendingMomentX = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            BendingMomentY = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            TangentialForceProfile = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            Depth = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            RadialDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            WhirlAngle = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            WhirlSpeed = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            BendingMoment = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            Torque = Vector<double>.Build.Dense(parameters.NumberOfElements);
 
-            queueSize = config.SSIWindowSize * (int)Math.Round(1 / simulationParameters.OuterLoopTimeStep);
+            queueSize = config.SSIWindowSize * (int)Math.Round(1 / parameters.OuterLoopTimeStep);
             BitRPMQueue = new Queue<double>(queueSize);
             SurfaceRPMQueue = new Queue<double>(queueSize);
             CummulativeStickSlipIndex = 0.0;
