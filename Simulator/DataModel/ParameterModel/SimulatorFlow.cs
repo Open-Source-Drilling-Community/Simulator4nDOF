@@ -430,8 +430,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 elementInnerArea = i == 0 ? drillString.ElementInnerArea[0] : drillString.ElementInnerArea[i - 1];
                 elementOuterArea = i == 0 ? drillString.ElementOuterArea[0] : drillString.ElementOuterArea[i - 1];
                 pipeElementArea = i == 0 ? drillString.ElementArea[0] : drillString.ElementArea[i - 1];
-                toolJointElementInnerArea = i == 0 ? drillString.ToolJointInnerArea[0] : drillString.ToolJointInnerArea[i - 1];
-                toolJointElementOuterArea = i == 0 ? drillString.ToolJointOuterArea[0] : drillString.ToolJointOuterArea[i - 1];                    
+                toolJointElementInnerArea = i == 0 ? drillString.ElementToolJointInnerArea[0] : drillString.ElementToolJointInnerArea[i - 1];
+                toolJointElementOuterArea = i == 0 ? drillString.ElementToolJointOuterArea[0] : drillString.ElementToolJointOuterArea[i - 1];                    
                 // Stress variation
                 interpolatedTheta = (i == 0) ? 0 : trajectory.InterpolatedTheta[i - 1];
                 dSigmaDx[i] = BuoyantWeightPerLength[i] * Math.Cos(interpolatedTheta);            
@@ -448,8 +448,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     double hydrostaticAnnularPrev = i == 0 ? 0 : HydrostaticAnnulusPressure[i - 1];
                     double hydrostaticStringPrev = i == 0 ? 0 : HydrostaticStringPressure[i - 1];
                     // out-of-phase tool-joint areas
-                    double AtjoPrev = i == 0 ? 0 : drillString.ToolJointOuterArea[i - 1];
-                    double AtjiPrev = i == 0 ? 0 : drillString.ToolJointInnerArea[i - 1];
+                    double AtjoPrev = i == 0 ? 0 : drillString.ElementToolJointOuterArea[i - 1];
+                    double AtjiPrev = i == 0 ? 0 : drillString.ElementToolJointInnerArea[i - 1];
                     //populate matrices
                     AxialBuoyancyForceChangeOfDiameters[i] = elementOuterArea * hydrostaticAnnularCurrent
                                                              - AtjoPrev * hydrostaticAnnularPrev

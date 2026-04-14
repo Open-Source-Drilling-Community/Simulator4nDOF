@@ -94,13 +94,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// </summary>
         public List<double> ElementInnerArea = new();
         /// <summary>
-        /// [m^2] Tool joint outer area vector
+        /// [m^2] Tool joint cross-sectional area vector, computed from the maximum OuterDiameter
+        /// and minimum InnerDiameter within each merged component
         /// </summary>
-        public List<double> ToolJointOuterArea = new();
+        public List<double> ElementToolJointOuterArea = new();
         /// <summary>
-        /// [m^2] Tool joint inner area vector
+        /// [m^2] Tool joint inner area vector, computed from the minimum InnerDiameter
+        /// within each merged component
         /// </summary>
-        public List<double> ToolJointInnerArea = new();
+        public List<double> ElementToolJointInnerArea = new();
 
         // Inertial properties
         /// <summary>
@@ -166,14 +168,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// [m^2] Drillpipe inner area vector
         /// </summary>
         public List<double> InactiveElementInnerArea = new();
+
         /// <summary>
-        /// [m^2] Tool joint outer area vector
+        /// [m^2] Tool joint cross-sectional area vector, computed from the maximum OuterDiameter
+        /// and minimum InnerDiameter within each merged component
         /// </summary>
-        public List<double> InactiveToolJointOuterArea = new();
+        public List<double> InactiveElementToolJointOuterArea = new();
         /// <summary>
-        /// [m^2] Tool joint inner area vector
+        /// [m^2] Tool joint inner area vector, computed from the minimum InnerDiameter
+        /// within each merged component
         /// </summary>
-        public List<double> InactiveToolJointInnerArea = new();
+        public List<double> InactiveElementToolJointInnerArea = new();
 
         // Inertial properties
         /// <summary>
@@ -286,7 +291,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double SensorRadialDistance;
 
 
-        private List<double> mergedComponentLength = new List<double> { 0.0 };            
+        private List<double> mergedComponentLength = new List<double> { 0.0 };
         private List<double> mergedComponentOuterRadius = new List<double> { 0.0 };
         private List<double> mergedComponentArea = new List<double> { 0.0 };
         private List<double> mergedComponentInnerArea = new List<double> { 0.0 };
@@ -294,8 +299,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private List<double> mergedComponentInnerRadius = new List<double> { 0.0 };
         private List<double> mergedComponentInertia = new List<double> { 0.0 };
         private List<double> mergedComponentYoungsModulus = new List<double> { 0.0 };
-        private List<double> mergedComponentShearModulus = new List<double> { 0.0 };     
-        private List<double> mergedComponentDensity = new List<double> { 0.0 };    
+        private List<double> mergedComponentShearModulus = new List<double> { 0.0 };
+        private List<double> mergedComponentDensity = new List<double> { 0.0 };
+        private List<double> mergedComponentToolJointMaxOuterDiameter = new List<double> { 0.0 };
+        private List<double> mergedComponentToolJointMinInnerDiameter = new List<double> { double.MaxValue };
         
         
         public SimulatorDrillString(Configuration configuration)
@@ -334,11 +341,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         if (componentTypeList[componentTypeList.Count - 1] == component.Type)
                         {
                             mergedComponentLength[mergedComponentLength.Count - 1] += sectionRepetitions * part.TotalLength;
-                            //      Elements in here are to be averaged based on the length. 
+                            //      Elements in here are to be averaged based on the length.
                             // They will be divided by the mergedComponent length later on
                             mergedComponentYoungsModulus[mergedComponentYoungsModulus.Count - 1] += sectionRepetitions * part.TotalLength * part.YoungModulus;
                             mergedComponentShearModulus[mergedComponentShearModulus.Count - 1] += sectionRepetitions * part.TotalLength
-                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ); 
+                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) );
                             mergedComponentInertia[mergedComponentInertia.Count - 1] += sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia;
                             mergedComponentOuterRadius[mergedComponentOuterRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter;
                             mergedComponentArea[mergedComponentArea.Count - 1] += sectionRepetitions * part.TotalLength * part.CrossSectionArea;
@@ -347,29 +354,32 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                             double outerArea = part.CrossSectionArea - innerArea;
                             mergedComponentInnerArea[mergedComponentInnerArea.Count - 1] += sectionRepetitions * part.TotalLength * innerArea;
                             mergedComponentOuterArea[mergedComponentOuterArea.Count - 1] += sectionRepetitions * part.TotalLength * outerArea;
-                            mergedComponentInnerRadius[mergedComponentInnerRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.InnerDiameter;                        
+                            mergedComponentInnerRadius[mergedComponentInnerRadius.Count - 1] += 0.5 * sectionRepetitions * part.TotalLength * part.InnerDiameter;
+                            mergedComponentToolJointMaxOuterDiameter[mergedComponentToolJointMaxOuterDiameter.Count - 1] = Math.Max(mergedComponentToolJointMaxOuterDiameter[mergedComponentToolJointMaxOuterDiameter.Count - 1], part.OuterDiameter);
+                            mergedComponentToolJointMinInnerDiameter[mergedComponentToolJointMinInnerDiameter.Count - 1] = Math.Min(mergedComponentToolJointMinInnerDiameter[mergedComponentToolJointMinInnerDiameter.Count - 1], part.InnerDiameter);
                         }
                         else
                         {
-                            //      If the element type is different, 
+                            //      If the element type is different,
                             // then add one item and start anew.
                             componentTypeList.Add(component.Type);
                             mergedComponentLength.Add(sectionRepetitions * part.TotalLength);
-                            //      Elements in here are to be averaged based on the length. 
+                            //      Elements in here are to be averaged based on the length.
                             // They will be divided by the mergedComponent length later on
                             mergedComponentYoungsModulus.Add(sectionRepetitions * part.TotalLength * part.YoungModulus);
                             mergedComponentShearModulus.Add( sectionRepetitions * part.TotalLength
-                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ) ); 
+                                    * part.YoungModulus / ( 2.0* ( 1.0 + part.PoissonRatio ) ) );
                             mergedComponentInertia.Add(sectionRepetitions * part.TotalLength * part.FirstCrossSectionTorsionalInertia);
                             mergedComponentOuterRadius.Add(0.5 * sectionRepetitions * part.TotalLength * part.OuterDiameter);
-                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);       
-                            mergedComponentDensity.Add(sectionRepetitions * part.TotalLength * part.MaterialDensity);           
+                            mergedComponentArea.Add(sectionRepetitions * part.TotalLength * part.CrossSectionArea);
+                            mergedComponentDensity.Add(sectionRepetitions * part.TotalLength * part.MaterialDensity);
                             double innerArea = 0.25 * part.InnerDiameter * part.InnerDiameter * Math.PI;
                             double outerArea = part.CrossSectionArea - innerArea;
                             mergedComponentInnerArea.Add(sectionRepetitions * part.TotalLength * innerArea);
                             mergedComponentOuterArea.Add(sectionRepetitions * part.TotalLength * outerArea);
                             mergedComponentInnerRadius.Add(0.5 * sectionRepetitions * part.TotalLength * part.InnerDiameter);
-                             
+                            mergedComponentToolJointMaxOuterDiameter.Add(part.OuterDiameter);
+                            mergedComponentToolJointMinInnerDiameter.Add(part.InnerDiameter);
                         }
                     }
                 }
@@ -404,7 +414,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 mergedComponentInnerArea.Reverse();
                 mergedComponentOuterArea.Reverse();
                 mergedComponentInnerRadius.Reverse();
-            
+                mergedComponentToolJointMaxOuterDiameter.Reverse();
+                mergedComponentToolJointMinInnerDiameter.Reverse();
+
             }
             #endregion
             #region Element Discretization
@@ -460,7 +472,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         ElementInnerRadius.Add( mergedComponentInnerRadius[i] );
                         ElementInnerArea.Add( mergedComponentInnerArea[i] );
                         ElementOuterArea.Add( mergedComponentOuterArea[i] );
-                        double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection; 
+                        ElementToolJointOuterArea.Add( Math.PI / 4.0 * mergedComponentToolJointMaxOuterDiameter[i] * mergedComponentToolJointMaxOuterDiameter[i] );
+                        ElementToolJointInnerArea.Add( Math.PI / 4.0 * mergedComponentToolJointMinInnerDiameter[i] * mergedComponentToolJointMinInnerDiameter[i] );
+                        double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
                         ElementFluidAddedMass.Add( fluidDensity * volume );
                         ElementEccentricMass.Add( mergedComponentDensity[i] * volume );
                         ElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i]);
@@ -483,7 +497,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         InactiveElementInnerRadius.Add( mergedComponentInnerRadius[i] );
                         InactiveElementInnerArea.Add( mergedComponentInnerArea[i] );
                         InactiveElementOuterArea.Add( mergedComponentOuterArea[i] );
-                        double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection; 
+                        InactiveElementToolJointOuterArea.Add( Math.PI / 4.0 * (mergedComponentToolJointMaxOuterDiameter[i] * mergedComponentToolJointMaxOuterDiameter[i]
+                            - mergedComponentToolJointMinInnerDiameter[i] * mergedComponentToolJointMinInnerDiameter[i]) );
+                        InactiveElementToolJointInnerArea.Add( Math.PI / 4.0 * mergedComponentToolJointMinInnerDiameter[i] * mergedComponentToolJointMinInnerDiameter[i] );
+                        double volume = mergedComponentArea[i] * mergedComponentLength[i] / (double) numberOfElementsInSection;
                         InactiveElementFluidAddedMass.Add( fluidDensity * volume );
                         InactiveElementEccentricMass.Add( mergedComponentDensity[i] * volume );
                         InactiveElementEccentricity.Add( MassImbalancePercentage * mergedComponentOuterRadius[i] );                          
@@ -504,6 +521,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementInnerRadius.Reverse();
             ElementInnerArea.Reverse();
             ElementOuterArea.Reverse();
+            ElementToolJointOuterArea.Reverse();
+            ElementToolJointInnerArea.Reverse();
             ElementEccentricMass.Reverse();
             ElementEccentricity.Reverse();
             ElementDepth.Reverse();
@@ -518,6 +537,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementInnerRadius.Reverse();
             InactiveElementInnerArea.Reverse();
             InactiveElementOuterArea.Reverse();
+            InactiveElementToolJointOuterArea.Reverse();
+            InactiveElementToolJointInnerArea.Reverse();
             InactiveElementEccentricMass.Reverse();
             InactiveElementEccentricity.Reverse();
 

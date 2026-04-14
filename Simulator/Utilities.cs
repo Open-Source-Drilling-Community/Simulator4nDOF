@@ -220,10 +220,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> derivative = Vector<double>.Build.Dense(n);
             for (int i = 1; i < n - 1; i++)
             {
-                derivative[i] = (values[i + 1] - values[i - 1]) / (2 * dx[i]);
+                derivative[i] = (values[i + 1] - values[i - 1]) / (2 * dx[i + 1]);
             }
             derivative[0] = (values[1] - values[0]) / dx[0];
-            derivative[n - 1] = (values[n - 1] - values[n - 2]) / dx[n-1];
+            derivative[n - 1] = (values[n - 1] - values[n - 2]) / dx[n];
             return derivative;
         }
 
@@ -250,10 +250,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Vector<double> secondDerivative = Vector<double>.Build.Dense(n);
             for (int i = 1; i < n - 1; i++)
             {
-                secondDerivative[i] = (values[i + 1] - 2 * values[i] + values[i - 1]) / (dx[i] * dx[i]);                
+                secondDerivative[i] = (values[i + 1] - 2 * values[i] + values[i - 1]) / (dx[i + 1] * dx[i + 1]);                
             }
             secondDerivative[0] = secondDerivative[1];
-            secondDerivative[n - 1] = (-values[n - 1] + values[n - 2]) / (dx[n - 1] * dx[n - 1]);
+            secondDerivative[n - 1] = (-values[n - 1] + values[n - 2]) / (dx[n] * dx[n]);
             return secondDerivative;
         
         }

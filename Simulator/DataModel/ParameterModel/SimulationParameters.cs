@@ -97,8 +97,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Drillstring.ElementEccentricity.Insert(0, Drillstring.InactiveElementEccentricity[0]);
             Drillstring.ElementOuterArea.Insert(0, Drillstring.InactiveElementOuterArea[0]);
             Drillstring.ElementInnerArea.Insert(0, Drillstring.InactiveElementInnerArea[0]);
-            Drillstring.ToolJointOuterArea.Insert(0, Drillstring.InactiveToolJointOuterArea[0]);
-            Drillstring.ToolJointInnerArea.Insert(0, Drillstring.InactiveToolJointInnerArea[0]);
+            Drillstring.ElementToolJointOuterArea.Insert(0, Drillstring.InactiveElementToolJointOuterArea[0]);
+            Drillstring.ElementToolJointInnerArea.Insert(0, Drillstring.InactiveElementToolJointInnerArea[0]);
             Drillstring.ElementPolarInertia.Insert(0, Drillstring.InactiveElementPolarInertia[0]);
             Drillstring.ElementArea.Insert(0, Drillstring.InactiveElementArea[0]);
             Drillstring.ElementInertia.Insert(0, Drillstring.InactiveElementInertia[0]);
@@ -116,8 +116,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (Drillstring.InactiveElementEccentricity.Count > 1) Drillstring.InactiveElementEccentricity.RemoveAt(0);
             if (Drillstring.InactiveElementOuterArea.Count > 1) Drillstring.InactiveElementOuterArea.RemoveAt(0);
             if (Drillstring.InactiveElementInnerArea.Count > 1) Drillstring.InactiveElementInnerArea.RemoveAt(0);
-            if (Drillstring.InactiveToolJointOuterArea.Count > 1) Drillstring.InactiveToolJointOuterArea.RemoveAt(0);
-            if (Drillstring.InactiveToolJointInnerArea.Count > 1) Drillstring.InactiveToolJointInnerArea.RemoveAt(0);
+            if (Drillstring.InactiveElementToolJointOuterArea.Count > 1) Drillstring.InactiveElementToolJointOuterArea.RemoveAt(0);
+            if (Drillstring.InactiveElementToolJointInnerArea.Count > 1) Drillstring.InactiveElementToolJointInnerArea.RemoveAt(0);
             if (Drillstring.InactiveElementPolarInertia.Count > 1) Drillstring.InactiveElementPolarInertia.RemoveAt(0);
             if (Drillstring.InactiveElementArea.Count > 1) Drillstring.InactiveElementArea.RemoveAt(0);
             if (Drillstring.InactiveElementInertia.Count > 1) Drillstring.InactiveElementInertia.RemoveAt(0);
