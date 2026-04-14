@@ -65,7 +65,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         }
         public void UpdateTrajectory(in SimulatorDrillString drillString)
         {
-            Vector<double> vectorWithoutFirstElement = Vector<double>.Build.Dense(drillString.ElementLength.Count - 1); //CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
+            Vector<double> vectorWithoutFirstElement = Vector<double>.Build.Dense(drillString.ElementDepth.Count); //CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
             vectorWithoutFirstElement[0] = drillString.ElementLength[1];
             for (int i = 1; i < drillString.ElementLength.Count - 1; i++)
             {

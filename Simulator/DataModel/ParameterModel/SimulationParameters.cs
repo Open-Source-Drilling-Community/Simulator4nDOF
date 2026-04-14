@@ -24,6 +24,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public TopDriveDrawwork TopDriveDrawwork;
         // Discretization properties
         public int NumberOfElements;
+        public int NumberOfNodes; 
         public double DrillStringLength;
         // 
         public int CellsInDepthOfCut = 5;
@@ -53,11 +54,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             Drillstring = new SimulatorDrillString(configuration);
 
             NumberOfElements = Drillstring.ElementLength.Count;
+            NumberOfNodes = Drillstring.ElementLength.Count + 1;
             Wellbore = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
             Trajectory = new SimulatorTrajectory(Drillstring, configuration.Trajectory);
             Flow = new SimulatorFlow(configuration, Trajectory, Drillstring);
             MudMotor = new MudMotor();
-            Friction = new Friction(NumberOfElements, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
+            Friction = new Friction(NumberOfNodes, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
             DrillStringLength = configuration.BitDepth - configuration.TopOfStringPosition;
             TopDriveDrawwork = new TopDriveDrawwork()
             {

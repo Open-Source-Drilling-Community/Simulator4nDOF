@@ -42,22 +42,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 
         public VerletMethod(SimulationParameters parameters)
         {
-            sleeveAngularDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);            
-            angularDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            xDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            yDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            zDisplacement = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            sleeveAngularDisplacement = Vector<double>.Build.Dense(parameters.NumberOfNodes);            
+            angularDisplacement = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            xDisplacement = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            yDisplacement = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            zDisplacement = Vector<double>.Build.Dense(parameters.NumberOfNodes);
             
-            AngularVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            xVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            yVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            zVelocity = Vector<double>.Build.Dense(parameters.NumberOfElements);                
+            AngularVelocity = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            xVelocity = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            yVelocity = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            zVelocity = Vector<double>.Build.Dense(parameters.NumberOfNodes);                
             
-            sleeveAngularDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            angularDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            xDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            yDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            zDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            sleeveAngularDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            angularDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            xDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            yDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfNodes);
+            zDisplacementMinus1 = Vector<double>.Build.Dense(parameters.NumberOfNodes);
             
             timeStep = parameters.InnerLoopTimeStep;
             timeStepSquared = parameters.InnerLoopTimeStep * parameters.InnerLoopTimeStep;
@@ -73,7 +73,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             return double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]);
         }
         
-        public void InitializeVerletMethod(State state, in SimulationParameters simulationParameters)
+        public void InitializeVerletMethod(in State state)
         {
 
             for (int i = 0; i < state.XDisplacement.Count; i++)
@@ -102,7 +102,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             // If it is the first step, initialize the minus one values                        
             if (firstStep)
             {
-                InitializeVerletMethod(state, in simulationParameters);                             
+                InitializeVerletMethod(in state);                             
             }
             //Integrate time steps using Verlet method
             for (int i = 0; i < state.XDisplacement.Count; i++)

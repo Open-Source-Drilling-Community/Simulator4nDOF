@@ -35,23 +35,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Vector<double> WhirlVelocity;                  // Lumped element whirl velocity (angular velocity)        
         public Vector<double> RadialDisplacement;             // Lumped element radial displacement
         public Vector<double> RadialVelocity;                 // Lumped element radial velocity
-        //Torsional Axial variables
-        //public Vector<double> DownwardTorsionalWave; // Downward traveling wave, torsional
-        //public Vector<double> UpwardTorsionalWave; // Upward traveling wave, torsional
-        //public Vector<double> DownwardAxialWave; // Downward traveling wave, axial
-        //public Vector<double> UpwardAxialWave; // Upward traveling wave, axial
-        //public Vector<double> DownwardTorsionalWaveLeftBoundary;
-        //public Vector<double> UpwardTorsionalWaveRightBoundary;
-        //public Vector<double> DownwardAxialWaveLeftBoundary;
-        //public Vector<double> UpwardAxialWaveRightBoundary;
         // Bit interaction generalized forces        
         public double WeightOnBit;
         public double TorqueOnBit;
         // Top Drive state variables
         public TopDriveAndDrawworkState TopDrive;
-        //public double TopDriveAngularVelocity;                // Top drive angular velocity        
-        //public double TopDriveMotorTorque;                           // Top drive motor torque
-        //public double TopDriveRPMSetPoint;
         public Vector<double> SleeveForces;                   // Sleeve forces
         public List<int> SleeveToLumpedIndex;                // Mapping from sleeve indices to lumped element indices
         public Vector<double> SlipCondition;                 // Slip condition evaluated at each lumped element
@@ -84,9 +72,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double OnBottomStart;                      // Start index of on-bottom in results array
         public bool BitOnBotton;                                 // Flag indicating if on bottom
         public int Step;                                      // Simulation step counter
-
-
-
         // Timestamps
         public double ConnectionStartTime;                     // Connection start time [s]
         public double TopDriveStartupTime;                     // Top drive startup time [s]
@@ -95,7 +80,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public State(in SimulationParameters parameters)
         {
             numberOfElements = parameters.NumberOfElements;      
-            numberOfNodes = numberOfElements + 1;      
+            numberOfNodes = parameters.NumberOfNodes;      
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element radial displacement
