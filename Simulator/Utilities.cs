@@ -180,7 +180,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             var yInterpolated = xTarget.Map(xNew => interpolator.Interpolate(xNew));
             return yInterpolated;
         }
-
+        
 
         // Manual fast linear interpolation
         public static double LinearInterpolate2(double[] x, double[] y, double xTarget)
