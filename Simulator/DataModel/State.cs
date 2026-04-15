@@ -134,7 +134,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize depth of cut
             DepthOfCut = Vector<double>.Build.Dense(parameters.CellsInDepthOfCut);
             // Initialize sleeve forces
-            SleeveForces = Vector<double>.Build.Dense(numberOfElements);
+            SleeveForces = Vector<double>.Build.Dense(numberOfNodes);
             TopOfStringRelativeAxialPosition = 0;
             TopOfStringRelativeRotation = 0;
 

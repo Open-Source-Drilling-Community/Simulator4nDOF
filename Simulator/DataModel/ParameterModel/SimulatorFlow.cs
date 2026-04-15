@@ -681,7 +681,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             // --- Pass 2: compute buoyant weight and area-change buoyancy forces ---
             for (int i = 0; i < numberOfElements; i++)
             {
-                // For the first node, replicate the properties of the first element, otherwise, use the average to estimate the node properties
+                //  For the first node, replicate the properties of the first element, otherwise, use the average to estimate the node properties.
+                // This is a different approach from the node area, which would use the biggest value. 
                 nodeInnerArea          = i == 0 ? drillString.ElementInnerArea[0] : 0.5 * (drillString.ElementInnerArea[i - 1] + drillString.ElementInnerArea[i]);
                 nodeOuterArea          = i == 0 ? drillString.ElementOuterArea[0] : 0.5 * (drillString.ElementOuterArea[i - 1] + drillString.ElementOuterArea[i]);
                 nodeCrossSectionArea           = i == 0 ? drillString.ElementArea[0]               : 0.5 * (drillString.ElementArea[i - 1] + drillString.ElementArea[i]);

@@ -253,11 +253,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 state.TopDrive.TopDriveAngularVelocity = state.AngularVelocity[0]; 
                 // Calculate lateral accelerations                    
                 output.SimulationHealthy = solverODE.IntegrationStep(state, drillStringModel, in parameters);
-                output.SimulationHealthy = solverODE.IntegrationSleeve(state, drillStringModel, in parameters);
-                output.SimulationHealthy = solverODE.IntegrationSurfacePosition(state, drillStringModel, in parameters);
+                bool sleeveHealth = solverODE.IntegrationSleeve(state, drillStringModel, in parameters);
+                bool topDriveHealth = solverODE.IntegrationSurfacePosition(state, drillStringModel, in parameters);
                 
                 //Abort simulation in case of divergence
-                if (!output.SimulationHealthy)
+                if (!output.SimulationHealthy || !sleeveHealth || !topDriveHealth)
                 {                    
                     return;
                 }
