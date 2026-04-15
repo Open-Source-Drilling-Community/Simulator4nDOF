@@ -48,6 +48,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double[] torsionalStiffnessRight;
         private double[] lateralLumpedMass;
         private double[] axialLumpedMass;
+        private double[] nodeEccentricity;        
+        private double[] addedLateralFluidMass;        
         private double[] torsionalLumpedInertia;
         
         // Active drill-string elements
@@ -158,9 +160,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             axialLumpedMass = new double[parameters.NumberOfElements + 1];
             lateralLumpedMass = new double[parameters.NumberOfElements + 1];
             torsionalLumpedInertia = new double[parameters.NumberOfElements + 1];
-
+            addedLateralFluidMass =  new double[parameters.NumberOfElements + 1];
 
             axialForceDistribution = new double[parameters.NumberOfElements + 1];
+            nodeEccentricity = new double[parameters.NumberOfElements + 1];
             // CHANGE TO SPARSE MATRICES??            
             lateralStiffnessMatrix = Matrix<double>.Build.Dense(parameters.NumberOfElements + 1, parameters.NumberOfElements + 1);
             axialStiffnessMatrix = Matrix<double>.Build.Dense(parameters.NumberOfElements+ 1, parameters.NumberOfElements + 1);
@@ -182,7 +185,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 double lateralInternalPressureStiffness =  (4.0 - 8.0 * poissonRatio) 
                                                     * parameters.Drillstring.ElementInnerArea[i] 
                                                     * (parameters.Flow.StringPressure[i] - parameters.Flow.HydrostaticStringPressure[i]);
-                                                    
+                addedLateralFluidMass[i] = (i == 0) ? parameters.Drillstring.ElementFluidAddedMass[0] : parameters.Drillstring.ElementFluidAddedMass[i - 1]; 
+                nodeEccentricity[i] = (i == 0) ? parameters.Drillstring.ElementEccentricity[0] * parameters.Drillstring.ElementEccentricMass[0] : 
+                                                 parameters.Drillstring.ElementEccentricity[i - 1] * parameters.Drillstring.ElementEccentricMass[i - 1];
                 axialLumpedMass[i] += axialMass; 
                 lateralLumpedMass[i] += lateralMass;
                 torsionalLumpedInertia[i] += torsionalMass;
@@ -409,8 +414,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // ========== Update relevant model variables ==========
                 toolFaceAngle[i] = Math.Acos(dotProduct) * signToolFace;
                 //This is equivalent of integrating with the trapezoidal rule and then getting the difference.                    
-                preStressNormalForce[i] = 0.5 * (oldNormalForce + normalForce) * parameters.Drillstring.ElementLength[i];
-                preStressBinormalForce[i] = 0.5 * (oldBinormalForce + binormalForce) * parameters.Drillstring.ElementLength[i];
+                preStressNormalForce[i] = isFirst ? 0.0 : 0.5 * (oldNormalForce + normalForce) * parameters.Drillstring.ElementLength[i - 1];
+                preStressBinormalForce[i] = isFirst ? 0.0 : 0.5 * (oldBinormalForce + binormalForce) * parameters.Drillstring.ElementLength[i - 1];
                 //Update normal and binormal values from the 
                 oldNormalForce = normalForce;
                 oldBinormalForce = binormalForce;     
@@ -558,21 +563,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // The speed comes from the torsional model, which is more detailed. Thus, the converted index must me used
                 rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocity[i];                            
                 rotationSpeedSquared = rotationSpeed * rotationSpeed;
-                fluidDampingCoefficient = parameters.Flow.FluidDampingCoefficient / parameters.Drillstring.ElementFluidAddedMass[i];                    
-                fluidForceX = - parameters.Drillstring.ElementFluidAddedMass[i] * 
-                                    (
-                                        fluidDampingCoefficient * state.XVelocity[i]
-                                        - 0.25 * rotationSpeedSquared * state.XDisplacement[i]
-                                        + rotationSpeed * state.YVelocity[i]
-                                        + 0.5 * fluidDampingCoefficient * rotationSpeed * state.YDisplacement[i]
-                                    );
-                fluidForceY = - parameters.Drillstring.ElementFluidAddedMass[i] * 
-                                    (
-                                        fluidDampingCoefficient * state.YVelocity[i]
-                                        - 0.25 * rotationSpeedSquared * state.YDisplacement[i]
-                                        - rotationSpeed * state.XVelocity[i]
-                                        - 0.5 * fluidDampingCoefficient * rotationSpeed * state.XDisplacement[i]
-                                    );
+                fluidDampingCoefficient = parameters.Flow.FluidDampingCoefficient / addedLateralFluidMass[i];                    
+                fluidForceX = - addedLateralFluidMass[i] * 
+                                (
+                                    fluidDampingCoefficient * state.XVelocity[i]
+                                    - 0.25 * rotationSpeedSquared * state.XDisplacement[i]
+                                    + rotationSpeed * state.YVelocity[i]
+                                    + 0.5 * fluidDampingCoefficient * rotationSpeed * state.YDisplacement[i]
+                                );
+                fluidForceY = - addedLateralFluidMass[i] * 
+                                (
+                                    fluidDampingCoefficient * state.YVelocity[i]
+                                    - 0.25 * rotationSpeedSquared * state.YDisplacement[i]
+                                    - rotationSpeed * state.XVelocity[i]
+                                    - 0.5 * fluidDampingCoefficient * rotationSpeed * state.XDisplacement[i]
+                                );
                 #endregion
                 // Sleeve braking force
                 sleeveBrakeForce = hasSleeve ? parameters.Drillstring.SleeveTorsionalDamping[sleeveIndex] * (rotationSpeed - state.SleeveAngularVelocity[sleeveIndex]) : 0;
@@ -582,12 +587,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // which causes a lateral force and a torque as the pipe is displaced                
                 rotationAngle = hasSleeve ? state.SleeveAngularDisplacement[sleeveIndex] : state.AngularDisplacement[i];                                        
                 rotationAcceleration = hasSleeve ? state.SleeveAngularAcceleration[sleeveIndex] : state.AngularAcceleration[i];                                        
-                unbalanceForceX = parameters.Drillstring.ElementEccentricMass[i] * parameters.Drillstring.ElementEccentricity[i]*
+                unbalanceForceX = nodeEccentricity[i] *
                     (
                         rotationSpeedSquared * Math.Cos(rotationAngle)
                         + state.AngularAcceleration[i] * Math.Sin(rotationAngle)
                     );
-                unbalanceForceY = parameters.Drillstring.ElementEccentricMass[i] * parameters.Drillstring.ElementEccentricity[i]* 
+                unbalanceForceY = nodeEccentricity[i] * 
                     (
                         rotationSpeedSquared * Math.Sin(rotationAngle)
                         - rotationAcceleration * Math.Cos(rotationAngle)
@@ -597,7 +602,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Axial velocity
                 axialVelocity = state.ZVelocity[i];
                 // "Masks" sleeve or non-sleeve variables if hasSleeve = true
-                outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : parameters.Drillstring.ElementOuterRadius[i];
+                outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : parameters.Drillstring.NodeOuterRadius[i];
                 //double innerRadius = hasSleeve ? parameters.Drillstring.SleeveInnerRadius : parameters.Drillstring.OuterRadius[i];  
                 inertia = hasSleeve ? parameters.Drillstring.SleeveMassMomentOfInertia : parameters.Drillstring.ElementInertia[i];
                 // The total normal force is the sum of elastic, pre-stress, fluid, unbalance forces, damping and colission forces                        

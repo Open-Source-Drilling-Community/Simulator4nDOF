@@ -72,8 +72,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             }
             for (int i = 0; i < drillString.RelativeNodeDepth.Count; i++)
             {
-                double nodeRadius = i == 0 ? drillString.ElementOuterRadius[0] : drillString.ElementOuterRadius[i - 1];
-                double outerRadius = drillString.SleeveIndexPosition.Contains(i) ? drillString.SleeveOuterRadius : nodeRadius;
+                double outerRadius = drillString.SleeveIndexPosition.Contains(i) ? drillString.SleeveOuterRadius : drillString.NodeOuterRadius[i];
                 DrillStringClearance[i] = boreholeRadius[i] - outerRadius;                
             }        
         }

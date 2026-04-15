@@ -28,7 +28,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                     double normalForce_ = parameters.Input.BottomExtraNormalForce;
                     if (normalForce_ > 0)
                     {
-                        double ro_ = parameters.Drillstring.ElementOuterRadius[parameters.Drillstring.ElementOuterRadius.Count - 1];
+                        double ro_ = parameters.Drillstring.NodeOuterRadius[parameters.Drillstring.NodeOuterRadius.Count - 1];
                         double Fs_ = normalForce_ * 1.0; //Static force
                         double Fc_ = normalForce_ * 0.5; //Kinematic force
                         double va_ = state.ZVelocity[state.ZVelocity.Count - 1]; //Axial velocity

@@ -303,7 +303,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                
                 if (!parameters.Drillstring.SleeveIndexPosition.Contains(parameters.Drillstring.IndexSensor))
                 {
-                    r0_sensor = 0.5 * (parameters.Drillstring.ElementInnerRadius[parameters.Drillstring.IndexSensor] + parameters.Drillstring.ElementOuterRadius[parameters.Drillstring.IndexSensor]); // radial position of accelerometer relative to pipe centerline
+                    r0_sensor = 0.5 * (parameters.Drillstring.NodeInnerRadius[parameters.Drillstring.IndexSensor] + parameters.Drillstring.NodeOuterRadius[parameters.Drillstring.IndexSensor]); // radial position of accelerometer relative to pipe centerline
                     theta_ddot = state.SlipCondition[parameters.Drillstring.IndexSensor] * state.AngularAcceleration[parameters.Drillstring.IndexSensor] + (1 - state.SlipCondition[parameters.Drillstring.IndexSensor]) * state.ThetaDotNoSlipSensor;
                     u_x = state.XDisplacement[parameters.Drillstring.IndexSensor] + r0_sensor * Math.Cos(state.AngularDisplacement[parameters.Drillstring.IndexSensor]) - phi0_sensor * Math.Sin(state.AngularDisplacement[parameters.Drillstring.IndexSensor]);
                     u_y = state.YDisplacement[parameters.Drillstring.IndexSensor] + phi0_sensor * Math.Cos(state.AngularDisplacement[parameters.Drillstring.IndexSensor]) + r0_sensor * Math.Sin(state.AngularDisplacement[parameters.Drillstring.IndexSensor]);
@@ -329,7 +329,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 }
                 if (!parameters.Drillstring.SleeveIndexPosition.Contains(parameters.Drillstring.IndexSensor - 1))
                 {
-                    r0_sensor = 0.5 * (parameters.Drillstring.ElementInnerRadius[parameters.Drillstring.IndexSensor - 1] + parameters.Drillstring.ElementOuterRadius[parameters.Drillstring.IndexSensor - 1]);
+                    r0_sensor = 0.5 * (parameters.Drillstring.NodeInnerRadius[parameters.Drillstring.IndexSensor - 1] + parameters.Drillstring.NodeOuterRadius[parameters.Drillstring.IndexSensor - 1]);
                     u_x_iMinus1 = state.XDisplacement[parameters.Drillstring.IndexSensor - 1] + r0_sensor * Math.Cos(state.AngularDisplacement[parameters.Drillstring.IndexSensor - 1]) - phi0_sensor * Math.Sin(state.AngularDisplacement[parameters.Drillstring.IndexSensor - 1]);
                     u_y_iMinus1 = state.YDisplacement[parameters.Drillstring.IndexSensor - 1] + phi0_sensor * Math.Cos(state.AngularDisplacement[parameters.Drillstring.IndexSensor - 1]) + r0_sensor * Math.Sin(state.AngularDisplacement[parameters.Drillstring.IndexSensor - 1]);
                     u_x_ddot_iMinus1 = state.XAcceleration[parameters.Drillstring.IndexSensor - 1] + r0_sensor * (-Math.Pow(state.WhirlVelocity[parameters.Drillstring.IndexSensor - 1], 2) * Math.Cos(state.AngularDisplacement[parameters.Drillstring.IndexSensor - 1]) -
