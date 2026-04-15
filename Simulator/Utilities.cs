@@ -216,14 +216,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         }
         public static Vector<double> ComputeDerivative(Vector<double> values, List<double> dx)
         {
+            // Adapted to non-uniform grids
             int n = values.Count;
             Vector<double> derivative = Vector<double>.Build.Dense(n);
+            double step1;
+            double step2;
             for (int i = 1; i < n - 1; i++)
             {
-                derivative[i] = (values[i + 1] - values[i - 1]) / (2 * dx[i + 1]);
+                step1 = dx[i - 1];
+                step2 = dx[i];
+                derivative[i] = (values[i + 1] - values[i - 1]) / (step1 + step2);
             }
+            // Use first order approximation at the boundaries
             derivative[0] = (values[1] - values[0]) / dx[0];
-            derivative[n - 1] = (values[n - 1] - values[n - 2]) / dx[n];
+            derivative[n - 1] = (values[n - 1] - values[n - 2]) / dx[n - 2];
             return derivative;
         }
 
@@ -246,16 +252,30 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         }
         public static Vector<double> ComputeSecondDerivative(Vector<double> values, List<double> dx)
         {
+            // Adapted to non-uniform grids            
             int n = values.Count;
             Vector<double> secondDerivative = Vector<double>.Build.Dense(n);
+            double step1;
+            double step2;
+            double weight;
             for (int i = 1; i < n - 1; i++)
-            {
-                secondDerivative[i] = (values[i + 1] - 2 * values[i] + values[i - 1]) / (dx[i + 1] * dx[i + 1]);                
+            {   
+                step1 = dx[i - 1];
+                step2 = dx[i];
+                weight = step1 + step2;
+                secondDerivative[i] = (step2 * values[i + 1] - weight * values[i] + step1 * values[i - 1]) / (step2 * step1 * weight);                
             }
-            secondDerivative[0] = secondDerivative[1];
-            secondDerivative[n - 1] = (-values[n - 1] + values[n - 2]) / (dx[n] * dx[n]);
-            return secondDerivative;
-        
+            //Use the second order forward
+            step1 = dx[0];
+            step2 = dx[1];
+            weight = step1 + step2;                
+            secondDerivative[0] = (step2 * values[2]  - weight * values[1] + step1 * values[0]) / (step2 * step1 * weight);
+            //Use the second order backward
+            step1 = dx[n - 3];
+            step2 = dx[n - 2];
+            weight = step1 + step2;        
+            secondDerivative[n - 1] = (step2 * values[n - 1] - weight * values[n - 2] + step1 * values[n - 3]) / (step2 * step1 * weight);          
+            return secondDerivative;        
         }
 
         public static double[] ComputeSecondDerivative(double[] values, double dx)

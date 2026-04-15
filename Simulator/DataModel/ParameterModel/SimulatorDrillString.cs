@@ -1,5 +1,6 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
+using SharpYaml.Events;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 {
     /// <summary>
@@ -62,6 +63,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// </summary>
         public readonly double MassImbalancePercentage = .05;
 
+        public List<double> RelativeNodeDepth = new();
         public List<double> ElementDepth = new();
         public List<double> ElementLength = new();
         public List<double> ElementDensity = new();
@@ -295,7 +297,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private List<double> mergedComponentDensity = new List<double> { 0.0 };
         private List<double> mergedComponentToolJointMaxOuterDiameter = new List<double> { 0.0 };
         private List<double> mergedComponentToolJointMinInnerDiameter = new List<double> { double.MaxValue };
-        
+        private double topOfString;
         
         public SimulatorDrillString(Configuration configuration)
         {
@@ -303,6 +305,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             DrillString drillString = configuration.DrillString;
             double fluidDensity = configuration.FluidDensity;                               
             double bitDepth = configuration.BitDepth;
+            topOfString = configuration.TopOfStringPosition;
             BitRadius = configuration.BitRadius;
             SensorDistanceFromBit = configuration.SensorDistanceFromBit; 
             SleeveDistancesFromBit = configuration.SleeveDistancesFromBit;
@@ -426,6 +429,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             //  Current position of the last elemebt in relation to the drill-string
             // length (from the bit)
             double lastElementPosition = 0;
+            RelativeNodeDepth.Add(bitDepth);
             // Loop through all drill-string length                        
             for (int i = 0; i < mergedComponentLength.Count; i++)
             {
@@ -436,23 +440,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 int numberOfElementsInSection = Math.Max((int) Math.Floor(mergedComponentLength[i] / expectedElementLength - 1), 0) + 1;
                 for (int j = 0; j < numberOfElementsInSection; j++ )
                 {
-                    if (lastElementPosition <= bitDepth)
+                    // Check if the last node is still within the expected range
+                    if (RelativeNodeDepth[RelativeNodeDepth.Count-1] >= topOfString)
                     {                          
                         // Divide by the number of elements
                         ElementLength.Add( mergedComponentLength[i] / (double) numberOfElementsInSection );
-                        //The Element depth starts at the bit position
-                        if (ElementDepth.Count < 1)
-                        {
-                            ElementDepth.Add(bitDepth);
-                        }
-                        else
-                        {                            
-                            // Substract the current element from the last
-                            ElementDepth.Add(
-                                ElementDepth[ElementDepth.Count-1] - ElementLength[ElementLength.Count-1]
+                        //The Element depth is always in-between nodes
+                        ElementDepth.Add(RelativeNodeDepth[RelativeNodeDepth.Count-1] - 0.5 * ElementLength[ElementLength.Count-1]);
+                        // The node depth
+                        RelativeNodeDepth.Add(
+                                RelativeNodeDepth[ElementDepth.Count-1] - ElementLength[ElementLength.Count-1]
                             );
-                        }                                     
-
                         //  Those properties do not need to be divided, 
                         // as they have been averaged by the length beforehand:
                         ElementDensity.Add( mergedComponentDensity[i] );                        
@@ -522,6 +520,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementEccentricity.Reverse();
             ElementDepth.Reverse();
             ElementWeightCorrectionFactor.Reverse();
+            RelativeNodeDepth.Reverse();
 
             InactiveElementLength.Reverse();
             InactiveElementDensity.Reverse();
@@ -539,15 +538,65 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementEccentricity.Reverse();
             InactiveElementWeightCorrectionFactor.Reverse();
 
-            IndexSensor = Enumerable.Range(0, ElementDepth.Count)
-                .MinBy(i => Math.Abs(ElementDepth[i] - SensorDistanceFromBit));
+            IndexSensor = Enumerable.Range(0, RelativeNodeDepth.Count)
+                .MinBy(i => Math.Abs(RelativeNodeDepth[i] - SensorDistanceFromBit));
 
             SleeveIndexPosition = SleeveDistancesFromBit
                 .Select(sleeveDepth => Enumerable.Range(0, ElementDepth.Count)
-                    .MinBy(i => Math.Abs(ElementDepth[i] - sleeveDepth)))
+                    .MinBy(i => Math.Abs(RelativeNodeDepth[i] - sleeveDepth)))
                 .ToList();
             SleeveMassMomentOfInertia = Math.PI / 2.0 * SteelDensity * SleeveLength
                 * (Math.Pow(SleeveOuterRadius, 4) - Math.Pow(SleeveInnerRadius, 4)); // [kg.m^2]
+        }
+        public void ActivateElements()
+        {
+             // Insert first inactive element at the top of each active list
+            ElementLength.Insert(0, InactiveElementLength[0]);
+            ElementDensity.Insert(0, InactiveElementDensity[0]);
+            ElementOuterRadius.Insert(0, InactiveElementOuterRadius[0]);
+            ElementInnerRadius.Insert(0, InactiveElementInnerRadius[0]);
+            ElementEccentricity.Insert(0, InactiveElementEccentricity[0]);
+            ElementOuterArea.Insert(0, InactiveElementOuterArea[0]);
+            ElementInnerArea.Insert(0, InactiveElementInnerArea[0]);
+            ElementToolJointOuterArea.Insert(0, InactiveElementToolJointOuterArea[0]);
+            ElementToolJointInnerArea.Insert(0, InactiveElementToolJointInnerArea[0]);
+            ElementPolarInertia.Insert(0, InactiveElementPolarInertia[0]);
+            ElementArea.Insert(0, InactiveElementArea[0]);
+            ElementInertia.Insert(0, InactiveElementInertia[0]);
+            ElementWeightCorrectionFactor.Insert(0, InactiveElementWeightCorrectionFactor[0]);
+            ElementYoungModuli.Insert(0, InactiveElementYoungModuli[0]);
+            ElementShearModuli.Insert(0, InactiveElementShearModuli[0]);
+            ElementFluidAddedMass.Insert(0, InactiveElementFluidAddedMass[0]);
+            ElementEccentricMass.Insert(0, InactiveElementEccentricMass[0]);
+            RelativeNodeDepth.Insert(0, topOfString);
+            // Add the length of the new element to all the depth nodes
+            for (int i = 1; i < RelativeNodeDepth.Count; i++)
+            {
+                RelativeNodeDepth[i] += ElementLength[0];
+            }
+
+            // Remove the first element from each inactive list, only if it has more than 1 element
+            if (InactiveElementLength.Count > 1) InactiveElementLength.RemoveAt(0);
+            if (InactiveElementDensity.Count > 1) InactiveElementDensity.RemoveAt(0);
+            if (InactiveElementOuterRadius.Count > 1) InactiveElementOuterRadius.RemoveAt(0);
+            if (InactiveElementInnerRadius.Count > 1) InactiveElementInnerRadius.RemoveAt(0);
+            if (InactiveElementEccentricity.Count > 1) InactiveElementEccentricity.RemoveAt(0);
+            if (InactiveElementOuterArea.Count > 1) InactiveElementOuterArea.RemoveAt(0);
+            if (InactiveElementInnerArea.Count > 1) InactiveElementInnerArea.RemoveAt(0);
+            if (InactiveElementToolJointOuterArea.Count > 1) InactiveElementToolJointOuterArea.RemoveAt(0);
+            if (InactiveElementToolJointInnerArea.Count > 1) InactiveElementToolJointInnerArea.RemoveAt(0);
+            if (InactiveElementPolarInertia.Count > 1) InactiveElementPolarInertia.RemoveAt(0);
+            if (InactiveElementArea.Count > 1) InactiveElementArea.RemoveAt(0);
+            if (InactiveElementInertia.Count > 1) InactiveElementInertia.RemoveAt(0);
+            if (InactiveElementWeightCorrectionFactor.Count > 1) InactiveElementWeightCorrectionFactor.RemoveAt(0);
+            if (InactiveElementYoungModuli.Count > 1) InactiveElementYoungModuli.RemoveAt(0);
+            if (InactiveElementShearModuli.Count > 1) InactiveElementShearModuli.RemoveAt(0);
+            if (InactiveElementFluidAddedMass.Count > 1) InactiveElementFluidAddedMass.RemoveAt(0);
+            if (InactiveElementEccentricMass.Count > 1) InactiveElementEccentricMass.RemoveAt(0);
+            
+
+
+
         }
     }
 }

@@ -48,34 +48,34 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 } 
             }
             BoreHoleSizes = boreHoleSizes;
-            DrillStringClearance = Vector<double>.Build.Dense(drillString.ElementOuterRadius.Count);
+            DrillStringClearance = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
 
             UpdateWellbore(drillString);
         }
         
         public void UpdateWellbore(in SimulatorDrillString drillString)
         {
-            // Wellbore radius calculation
-            boreholeRadius = Vector<double>.Build.Dense(drillString.ElementOuterRadius.Count);
+            // Wellbore radius calculation at each node
+            boreholeRadius = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
             int index = 0;
             double localRadius;
-            for (int i = 1; i < drillString.ElementOuterRadius.Count; i++)
+            for (int i = 0; i < drillString.RelativeNodeDepth.Count; i++)
             {
 
-                // If the element depth is greater than the borehole, go to the next one
+                // If the node depth is greater than the borehole, go to the next one
                 if (index < BoreHoleSizes.Count)
-                    index += (drillString.ElementDepth[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
+                    index += (drillString.RelativeNodeDepth[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
                 // Switch between borehole radius and bit radius
                 localRadius = index < BoreHoleSizes.Count ? 0.5 * BoreHoleSizes[index].Diameter : drillString.BitRadius;
                 //Update radius list
-                boreholeRadius[i - 1] = localRadius;            
+                boreholeRadius[i] = localRadius;            
             }
-            for (int i = 0; i < drillString.ElementOuterRadius.Count; i++)
+            for (int i = 0; i < drillString.RelativeNodeDepth.Count; i++)
             {
-                DrillStringClearance[i] = drillString.SleeveIndexPosition.Contains(i) ? 
-                    boreholeRadius[i] - drillString.SleeveOuterRadius:boreholeRadius[i] - drillString.ElementOuterRadius[i];
-            }
-        
+                double nodeRadius = i == 0 ? drillString.ElementOuterRadius[0] : drillString.ElementOuterRadius[i - 1];
+                double outerRadius = drillString.SleeveIndexPosition.Contains(i) ? drillString.SleeveOuterRadius : nodeRadius;
+                DrillStringClearance[i] = boreholeRadius[i] - outerRadius;                
+            }        
         }
     }
 }

@@ -65,11 +65,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         }
         public void UpdateTrajectory(in SimulatorDrillString drillString)
         {
-            Vector<double> vectorWithoutFirstElement = Vector<double>.Build.Dense(drillString.ElementDepth.Count); //CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
-            vectorWithoutFirstElement[0] = drillString.ElementLength[1];
+            Vector<double> vectorWithoutFirstElement = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count); //CumulativeElementLength.SubVector(1, lumpedCells.CumulativeElementLength.Count() - 1);
+            vectorWithoutFirstElement[0] = drillString.RelativeNodeDepth[1];
             for (int i = 1; i < drillString.ElementLength.Count - 1; i++)
             {
-                vectorWithoutFirstElement[i] = vectorWithoutFirstElement[i - 1] + drillString.ElementLength[i + 1];
+                vectorWithoutFirstElement[i] = drillString.RelativeNodeDepth[i + 1];
             }
             InterpolatedVerticalDepth = LinearInterpolate(MeasuredDepthProfile, VerticalDepthProfile, vectorWithoutFirstElement);
             InterpolatedTheta = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, InclinationProfile, vectorWithoutFirstElement);

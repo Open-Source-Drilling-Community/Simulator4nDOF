@@ -421,7 +421,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
         public void AddNewLumpedElement() // TODO sjekk
         {
-            parameters.AddNewLumpedElement();
+            parameters.AddNewElement();
 
             state.AddNewLumpedElement();
 

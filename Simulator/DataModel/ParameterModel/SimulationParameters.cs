@@ -87,46 +87,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             SolverType = configuration.SolverType;
         }
 
-        public void AddNewLumpedElement()
+        public void AddNewElement()
         {
             // Insert first inactive element at the top of each active list
-            Drillstring.ElementLength.Insert(0, Drillstring.InactiveElementLength[0]);
-            Drillstring.ElementDensity.Insert(0, Drillstring.InactiveElementDensity[0]);
-            Drillstring.ElementOuterRadius.Insert(0, Drillstring.InactiveElementOuterRadius[0]);
-            Drillstring.ElementInnerRadius.Insert(0, Drillstring.InactiveElementInnerRadius[0]);
-            Drillstring.ElementEccentricity.Insert(0, Drillstring.InactiveElementEccentricity[0]);
-            Drillstring.ElementOuterArea.Insert(0, Drillstring.InactiveElementOuterArea[0]);
-            Drillstring.ElementInnerArea.Insert(0, Drillstring.InactiveElementInnerArea[0]);
-            Drillstring.ElementToolJointOuterArea.Insert(0, Drillstring.InactiveElementToolJointOuterArea[0]);
-            Drillstring.ElementToolJointInnerArea.Insert(0, Drillstring.InactiveElementToolJointInnerArea[0]);
-            Drillstring.ElementPolarInertia.Insert(0, Drillstring.InactiveElementPolarInertia[0]);
-            Drillstring.ElementArea.Insert(0, Drillstring.InactiveElementArea[0]);
-            Drillstring.ElementInertia.Insert(0, Drillstring.InactiveElementInertia[0]);
-            Drillstring.ElementWeightCorrectionFactor.Insert(0, Drillstring.InactiveElementWeightCorrectionFactor[0]);
-            Drillstring.ElementYoungModuli.Insert(0, Drillstring.InactiveElementYoungModuli[0]);
-            Drillstring.ElementShearModuli.Insert(0, Drillstring.InactiveElementShearModuli[0]);
-            Drillstring.ElementFluidAddedMass.Insert(0, Drillstring.InactiveElementFluidAddedMass[0]);
-            Drillstring.ElementEccentricMass.Insert(0, Drillstring.InactiveElementEccentricMass[0]);
-
-            // Remove the first element from each inactive list, only if it has more than 1 element
-            if (Drillstring.InactiveElementLength.Count > 1) Drillstring.InactiveElementLength.RemoveAt(0);
-            if (Drillstring.InactiveElementDensity.Count > 1) Drillstring.InactiveElementDensity.RemoveAt(0);
-            if (Drillstring.InactiveElementOuterRadius.Count > 1) Drillstring.InactiveElementOuterRadius.RemoveAt(0);
-            if (Drillstring.InactiveElementInnerRadius.Count > 1) Drillstring.InactiveElementInnerRadius.RemoveAt(0);
-            if (Drillstring.InactiveElementEccentricity.Count > 1) Drillstring.InactiveElementEccentricity.RemoveAt(0);
-            if (Drillstring.InactiveElementOuterArea.Count > 1) Drillstring.InactiveElementOuterArea.RemoveAt(0);
-            if (Drillstring.InactiveElementInnerArea.Count > 1) Drillstring.InactiveElementInnerArea.RemoveAt(0);
-            if (Drillstring.InactiveElementToolJointOuterArea.Count > 1) Drillstring.InactiveElementToolJointOuterArea.RemoveAt(0);
-            if (Drillstring.InactiveElementToolJointInnerArea.Count > 1) Drillstring.InactiveElementToolJointInnerArea.RemoveAt(0);
-            if (Drillstring.InactiveElementPolarInertia.Count > 1) Drillstring.InactiveElementPolarInertia.RemoveAt(0);
-            if (Drillstring.InactiveElementArea.Count > 1) Drillstring.InactiveElementArea.RemoveAt(0);
-            if (Drillstring.InactiveElementInertia.Count > 1) Drillstring.InactiveElementInertia.RemoveAt(0);
-            if (Drillstring.InactiveElementWeightCorrectionFactor.Count > 1) Drillstring.InactiveElementWeightCorrectionFactor.RemoveAt(0);
-            if (Drillstring.InactiveElementYoungModuli.Count > 1) Drillstring.InactiveElementYoungModuli.RemoveAt(0);
-            if (Drillstring.InactiveElementShearModuli.Count > 1) Drillstring.InactiveElementShearModuli.RemoveAt(0);
-            if (Drillstring.InactiveElementFluidAddedMass.Count > 1) Drillstring.InactiveElementFluidAddedMass.RemoveAt(0);
-            if (Drillstring.InactiveElementEccentricMass.Count > 1) Drillstring.InactiveElementEccentricMass.RemoveAt(0);
-            
+            Drillstring.ActivateElements();
+           
 
             NumberOfElements = Drillstring.ElementLength.Count;
             // Fields without Inactive counterparts

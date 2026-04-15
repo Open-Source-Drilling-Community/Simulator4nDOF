@@ -237,7 +237,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 drillingFluidDescription.ReferenceTemperature.GaussianValue.Mean,
                 wellheadPressure,
                 pumpPressure,
-                drillString.ElementDepth);
+                drillString.RelativeNodeDepth);
 
             // --- Compute initial buoyancy distribution ---
             UpdateBuoyancy(trajectory, drillString, useBuoyancyFactor);

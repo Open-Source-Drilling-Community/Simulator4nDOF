@@ -327,6 +327,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Index for reverse loop
                 revIdx = i == parameters.NumberOfElements ? 0 : parameters.NumberOfElements - i - 1;                
                 Tension = tensionIntegral[revIdx] + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i] - axialForce;
+                /*
                 softStringTempTerm1 = (Tension + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i]) * differentialTrajectoryTheta - parameters.Flow.BuoyantWeightPerLength[i] * Math.Cos(trajectoryTheta); 
                 softStringTempTerm2 = (Tension + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i]) * differentialTrajectoryPhi - parameters.Flow.BuoyantWeightPerLength[i] * Math.Sin(trajectoryTheta); 
                 differentialNormalForceSoftString = Math.Sqrt(softStringTempTerm1 * softStringTempTerm1 + softStringTempTerm2 * softStringTempTerm2);
@@ -337,6 +338,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 // Update the normal force
                 normalForceSoftString += 0.5 * (differentialNormalForceSoftString + differentialNormalForceSoftString) * parameters.Drillstring.ElementLength[i];
+                */
                 Tension += (1 - 2 * parameters.Drillstring.PoissonRatio) * 
                             (
                                 outerArea * (parameters.Flow.AnnulusPressure[i] - parameters.Flow.HydrostaticAnnulusPressure[i])
@@ -348,7 +350,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (parameters.Drillstring.ElementLength[i]), 0.0);            
                 torque[i] = CalculateTorsionalElasticForce(i, state);
                 //Roll over for integration
-                oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;
+                /*
+                oldDifferencialNormalForceSoftString = differentialNormalForceSoftString;*/
             }
             //bendingStiffness[0] = bendingStiffness[1];
             //torque[0] = torque[1];
