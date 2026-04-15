@@ -389,8 +389,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 mergedComponentOuterRadius[i] /= mergedComponentLength[i];
                 mergedComponentArea[i] /= mergedComponentLength[i];
                 mergedComponentDensity[i] /= mergedComponentLength[i];
-                mergedComponentInnerArea[i] /= mergedComponentInnerArea[i];
-                mergedComponentOuterArea[i] /= mergedComponentOuterArea[i];
+                mergedComponentInnerArea[i] /= mergedComponentLength[i];
+                mergedComponentOuterArea[i] /= mergedComponentLength[i];
                 mergedComponentInnerRadius[i] /= mergedComponentInnerRadius[i];
             }
             //  If the drill-string starts with drill-pipes, 

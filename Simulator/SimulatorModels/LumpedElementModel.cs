@@ -245,10 +245,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // Allocate main variables for the model.
             //NumberOfElements = simulationParameters.NumberOfElements;
             bendingStiffness = Vector<double>.Build.Dense(parameters.NumberOfElements+1);
-            preStressNormalForce = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            preStressBinormalForce = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            preStressNormalForce = Vector<double>.Build.Dense(parameters.NumberOfElements + 1);
+            preStressBinormalForce = Vector<double>.Build.Dense(parameters.NumberOfElements + 1);
       
-            toolFaceAngle = Vector<double>.Build.Dense(parameters.NumberOfElements);
+            toolFaceAngle = Vector<double>.Build.Dense(parameters.NumberOfElements + 1);
             tensionIntegral = Vector<double>.Build.Dense(parameters.NumberOfElements);
             tension = Vector<double>.Build.Dense(parameters.NumberOfElements + 1);
             torque = Vector<double>.Build.Dense(parameters.NumberOfElements + 1);
@@ -292,13 +292,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double trajectoryTheta;
             double Tension;
             double tensionIntegralTemp = 0;
-            double softStringTempTerm1;
-            double softStringTempTerm2;
-            double differentialNormalForceSoftString;
-            double normalForceSoftString = 0;
+            //double softStringTempTerm1;
+            //double softStringTempTerm2;
+            //double differentialNormalForceSoftString;
+            //double normalForceSoftString = 0;
+            //double oldDifferencialNormalForceSoftString = 0.0;
+            
             double innerArea;
             double outerArea;
-            double oldDifferencialNormalForceSoftString = 0.0;
             double localBendingStiffness;
             bool isFirst;
             int revIdx;
@@ -318,12 +319,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Calculate the axial elastic force: E * A 
                 axialForce = CalculateAxialElasticForce(i, state) ;               
                 // Get the current property and repeat the fist as a boundary condition
-                differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
-                differentialTrajectoryTheta = parameters.Trajectory.DiffThetaInterpolated[offPhaseIndex];    
-                trajectoryTheta = parameters.Trajectory.InterpolatedTheta[offPhaseIndex];
+                //differentialTrajectoryPhi = parameters.Trajectory.DiffPhiInterpolated[offPhaseIndex];
+                //differentialTrajectoryTheta = parameters.Trajectory.DiffThetaInterpolated[offPhaseIndex];    
+                //trajectoryTheta = parameters.Trajectory.InterpolatedTheta[offPhaseIndex];
                 innerArea = parameters.Drillstring.ElementInnerArea[offPhaseIndex];
                 outerArea = parameters.Drillstring.ElementOuterArea[offPhaseIndex];
-                localBendingStiffness = isFirst ? lateralStiffnessLeft[0] : lateralStiffnessMid[i-1];
+                //localBendingStiffness = isFirst ? lateralStiffnessLeft[0] : lateralStiffnessMid[i-1];
                 // Index for reverse loop
                 revIdx = i == parameters.NumberOfElements ? 0 : parameters.NumberOfElements - i - 1;                
                 Tension = tensionIntegral[revIdx] + parameters.Flow.AxialBuoyancyForceChangeOfDiameters[i] - axialForce;
@@ -347,7 +348,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // Update the model
                 tension[i] = Tension;
                 //This step checks if there is a negative element and sets to zero
-                bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (parameters.Drillstring.ElementLength[i]), 0.0);            
+                //bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (parameters.Drillstring.ElementLength[i]), 0.0);            
                 torque[i] = CalculateTorsionalElasticForce(i, state);
                 //Roll over for integration
                 /*
@@ -361,24 +362,31 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             double binormalForce;
             double oldNormalForce = 0;
             double oldBinormalForce = 0;
-            double differentialTorque;
+            double elasticTorqueDifferential;
             double InertiaTimesYoungModulus;
             double hVectorProductNormalDorProductTangent;
             double signToolFace;
             double dotProduct;  
             // Loop to compute the pre-stresses
-            for (int i = 0; i < parameters.NumberOfElements; i++)
+            for (int i = 0; i < parameters.NumberOfElements + 1; i++)
             {     
                 isFirst = i == 0;
                 // Normal force components in Frenet-Serret coordinate system
-                differentialTorque = isFirst ?  0 : (torque[i+1] - torque[i]) / parameters.Drillstring.ElementLength[i];
-                InertiaTimesYoungModulus = parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementInertia[i];
+                elasticTorqueDifferential = isFirst ?  0 : (torque[i] - torque[i-1]) / parameters.Drillstring.ElementLength[i - 1];
+                InertiaTimesYoungModulus = isFirst ? 
+                                parameters.Drillstring.ElementYoungModuli[0] * parameters.Drillstring.ElementInertia[0] : 
+                                parameters.Drillstring.ElementYoungModuli[i - 1] * parameters.Drillstring.ElementInertia[i - 1];
                 binormalForce = parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.bz[i] 
-                                + parameters.Trajectory.Curvature[i] * differentialTorque 
-                                + parameters.Trajectory.CurvatureDerivative[i] * torque[i+1] 
+                                + parameters.Trajectory.Curvature[i] * elasticTorqueDifferential 
+                                + parameters.Trajectory.CurvatureDerivative[i] * torque[i] 
                                 - 2 * InertiaTimesYoungModulus * parameters.Trajectory.CurvatureDerivative[i] * parameters.Trajectory.Torsion[i] 
                                 - InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * parameters.Trajectory.TorsionDerivative[i];
-                normalForce = parameters.Trajectory.Curvature[i] * (tension[i+1] + parameters.Flow.NormalBuoyancyForceChangeOfDiameters[i+1] - parameters.Trajectory.Torsion[i] * torque[i+1]) 
+                normalForce = parameters.Trajectory.Curvature[i] * 
+                                (
+                                    tension[i] 
+                                    + parameters.Flow.NormalBuoyancyForceChangeOfDiameters[i] 
+                                    - parameters.Trajectory.Torsion[i] * torque[i]
+                                ) 
                                 + parameters.Flow.BuoyantWeightPerLength[i] * parameters.Trajectory.nz[i] 
                                 - InertiaTimesYoungModulus * parameters.Trajectory.CurvatureSecondDerivative[i] 
                                 + InertiaTimesYoungModulus * parameters.Trajectory.Curvature[i] * (parameters.Trajectory.Torsion[i] * parameters.Trajectory.Torsion[i]);
@@ -427,7 +435,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 axialForceDistribution[i] = CalculateAxialElasticForce(i, state);
             }            
         }
-
+        private double NegativeStiffnessTreatment(double stiffness, bool centerElement)
+        {
+            if (centerElement)
+            {
+                //bendingStiffness[i] = - Math.Max(localBendingStiffness - Math.Pow(Math.PI, 2) * Tension / (parameters.Drillstring.ElementLength[i]), 0.0);   
+                return Math.Max(stiffness, 0);
+            }
+            else
+            {
+                return Math.Min(stiffness, 0);
+            }
+        }
         public void CalculateAccelerations(State state, in SimulationParameters parameters)
         {
 
@@ -516,10 +535,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 double FaMinus1 = (i == 0) ? 0.0 : axialForceDistribution[i - 1];
                 // Does the weight on bit goes here: double FaPlus1 = (i == state.XDisplacement.Count - 1) ? state.WeightOnBit : axialForceDistribution[i + 1];
                 double FaPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : axialForceDistribution[i + 1];
-                // Corrects the lateral stiffness with information from the pressure gradient and from the axial force distribution
-                double equivalentLeftStiffness = lateralStiffnessLeft[i] + FaMinus1 * lateralTensionInducedStiffnessLeft[i] + lateralPressureInducedStiffnessLeft[i];
-                double equivalentMidStiffness = lateralStiffnessMid[i] + axialForceDistribution[i] * lateralTensionInducedStiffnessMid[i] + lateralPressureInducedStiffnessMid[i];                
-                double equivalentRightStiffness = lateralStiffnessRight[i] + FaPlus1 * lateralTensionInducedStiffnessRight[i] + lateralPressureInducedStiffnessRight[i];
+                //  Corrects the lateral stiffness with information from the pressure gradient and from the axial force distribution
+                //The NegativeStiffnessTreatment function breakes the connection between elements in case of buckling, as in a string model
+                double equivalentLeftStiffness = NegativeStiffnessTreatment(lateralStiffnessLeft[i] + FaMinus1 * lateralTensionInducedStiffnessLeft[i] + lateralPressureInducedStiffnessLeft[i], centerElement: false);
+                double equivalentMidStiffness = NegativeStiffnessTreatment(lateralStiffnessMid[i] + axialForceDistribution[i] * lateralTensionInducedStiffnessMid[i] + lateralPressureInducedStiffnessMid[i], centerElement: true);                
+                double equivalentRightStiffness = NegativeStiffnessTreatment(lateralStiffnessRight[i] + FaPlus1 * lateralTensionInducedStiffnessRight[i] + lateralPressureInducedStiffnessRight[i], centerElement: false);
                 elasticForceX = - ( equivalentLeftStiffness * XiMinus1  + equivalentMidStiffness * state.XDisplacement[i] + equivalentRightStiffness * XiPlus1 );
                 elasticForceY = - ( equivalentLeftStiffness * YiMinus1  + equivalentMidStiffness * state.YDisplacement[i] + equivalentRightStiffness * YiPlus1 );
                 #endregion
