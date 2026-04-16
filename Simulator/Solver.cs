@@ -241,7 +241,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             else
                 output.BitRotationInRPM = state.MudRotorAngularVelocity;
 
-            double dtTemp = 1e-4;  // Needs to be calculated
             // Wave equations are transformed into their Riemann invariants
             drillStringModel.PrepareModel(state, parameters);
             // Solve lumped and distributed equations
