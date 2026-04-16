@@ -124,12 +124,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// within each merged component
         /// </summary>
         public List<double> ElementToolJointInnerArea = new();
-
-        // Inertial properties
-        /// <summary>
-        /// [m^4] Drillpipe polar moment of inertia vector
-        /// </summary>
-        public List<double> ElementPolarInertia = new();
         /// <summary>
         /// [m^2] Drillpipe cross sectional area vector
         /// </summary>
@@ -137,7 +131,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// <summary>
         /// [m^4] Drillpipe moment of inertia vector
         /// </summary>
-        public List<double> ElementInertia = new();
+        public List<double> ElementPolarInertia = new();
 
         /// <summary>
         /// [-] Linear weight correction factor vector
@@ -210,11 +204,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// [m^2] Drillpipe cross sectional area vector
         /// </summary>
         public List<double> InactiveElementArea = new();
-        /// <summary>
-        /// [m^4] Drillpipe moment of inertia vector
-        /// </summary>
-        public List<double> InactiveElementInertia = new();
-
         /// <summary>
         /// [-] Linear weight correction factor vector
         /// </summary>
@@ -421,7 +410,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 mergedComponentDensity[i] /= mergedComponentLength[i];
                 mergedComponentInnerArea[i] /= mergedComponentLength[i];
                 mergedComponentOuterArea[i] /= mergedComponentLength[i];
-                mergedComponentInnerRadius[i] /= mergedComponentInnerRadius[i];
+                mergedComponentInnerRadius[i] /= mergedComponentLength[i];
             }
             //  If the drill-string starts with drill-pipes, 
             // then it must be reverted to a Bit/BHA-first order
@@ -497,7 +486,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         ElementDensity.Add( mergedComponentDensity[i] );                        
                         ElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
                         ElementShearModuli.Add( mergedComponentShearModulus[i] );
-                        ElementInertia.Add( mergedComponentInertia[i] );
+                        ElementPolarInertia.Add( mergedComponentInertia[i] );
                         ElementArea.Add( mergedComponentArea[i] );                        
                         ElementInnerArea.Add( mergedComponentInnerArea[i] );
                         ElementOuterArea.Add( mergedComponentOuterArea[i] );
@@ -529,7 +518,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                 );
                         InactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
                         InactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
-                        InactiveElementInertia.Add( mergedComponentInertia[i] );
+                        InactiveElementPolarInertia.Add( mergedComponentInertia[i] );
                         InactiveElementArea.Add( mergedComponentArea[i] );  
                         InactiveElementInnerRadius.Add( mergedComponentInnerRadius[i] );
                         InactiveElementInnerArea.Add( mergedComponentInnerArea[i] );
@@ -555,7 +544,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementOuterRadius.Reverse();
             ElementYoungModuli.Reverse();
             ElementShearModuli.Reverse();
-            ElementInertia.Reverse();
+            ElementPolarInertia.Reverse();
             ElementFluidAddedMass.Reverse();
             ElementArea.Reverse();
             ElementInnerRadius.Reverse();
@@ -575,7 +564,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementOuterRadius.Reverse();
             InactiveElementYoungModuli.Reverse();
             InactiveElementShearModuli.Reverse();
-            InactiveElementInertia.Reverse();
+            InactiveElementPolarInertia.Reverse();
             InactiveElementFluidAddedMass.Reverse();
             InactiveElementArea.Reverse();
             InactiveElementInnerRadius.Reverse();
@@ -622,9 +611,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementInnerArea.Insert(0, InactiveElementInnerArea[0]);
             ElementToolJointOuterArea.Insert(0, InactiveElementToolJointOuterArea[0]);
             ElementToolJointInnerArea.Insert(0, InactiveElementToolJointInnerArea[0]);
-            ElementPolarInertia.Insert(0, InactiveElementPolarInertia[0]);
             ElementArea.Insert(0, InactiveElementArea[0]);
-            ElementInertia.Insert(0, InactiveElementInertia[0]);
+            ElementPolarInertia.Insert(0, InactiveElementPolarInertia[0]);
             ElementWeightCorrectionFactor.Insert(0, InactiveElementWeightCorrectionFactor[0]);
             ElementYoungModuli.Insert(0, InactiveElementYoungModuli[0]);
             ElementShearModuli.Insert(0, InactiveElementShearModuli[0]);
@@ -651,7 +639,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (InactiveElementToolJointInnerArea.Count > 1) InactiveElementToolJointInnerArea.RemoveAt(0);
             if (InactiveElementPolarInertia.Count > 1) InactiveElementPolarInertia.RemoveAt(0);
             if (InactiveElementArea.Count > 1) InactiveElementArea.RemoveAt(0);
-            if (InactiveElementInertia.Count > 1) InactiveElementInertia.RemoveAt(0);
             if (InactiveElementWeightCorrectionFactor.Count > 1) InactiveElementWeightCorrectionFactor.RemoveAt(0);
             if (InactiveElementYoungModuli.Count > 1) InactiveElementYoungModuli.RemoveAt(0);
             if (InactiveElementShearModuli.Count > 1) InactiveElementShearModuli.RemoveAt(0);
