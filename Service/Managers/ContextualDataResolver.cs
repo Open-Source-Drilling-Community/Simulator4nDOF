@@ -37,10 +37,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 contextualData.DrillingFluidDescriptionID,
                 "drilling fluid description",
                 id => APIUtils.ClientDrillingFluid.GetDrillingFluidDescriptionByIdAsync(id));
+           
             var trajectory = await LoadRequiredAsync(
                 contextualData.TrajectoryID,
                 "trajectory",
                 id => APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(id));
+           
             var rig = await LoadRigAsync(simulation);
 
             var wellBoreArchitecture = await LoadOptionalAsync(
@@ -186,8 +188,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             }
             return geothermalProperties;
         }
-
-
 
         private static CasingSection? ResolveCasingSection(WellBoreArchitecture? wellBoreArchitecture, int? casingID)
         {

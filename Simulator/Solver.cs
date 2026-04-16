@@ -118,7 +118,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public void UpdateDepths()
         {
             state.BitDepth = state.BitDepth + output.BitVelocity * parameters.OuterLoopTimeStep;
-            state.TopOfStringPosition = state.TopOfStringPosition - state.TopDrive.CalculateSurfaceAxialVelocity * parameters.OuterLoopTimeStep;
+            state.TopDrive.AxialPosition = state.TopDrive.AxialPosition - state.TopDrive.AxialVelocity * parameters.OuterLoopTimeStep;
 
             if (state.HoleDepth - state.BitDepth < 1E-3 && !state.BitOnBotton)
                 state.OnBottomStart = state.Step;
@@ -129,7 +129,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
          public void UpdateDepthInnerLoop()
         {
             state.BitDepth = state.BitDepth + state.BitVelocity * parameters.InnerLoopTimeStep;
-            state.TopOfStringPosition = state.TopOfStringPosition - state.TopDrive.CalculateSurfaceAxialVelocity * parameters.InnerLoopTimeStep;
+            state.TopDrive.AxialPosition = state.TopDrive.AxialPosition - state.TopDrive.AxialVelocity * parameters.InnerLoopTimeStep;
 
             if (state.HoleDepth < state.BitDepth && !state.BitOnBotton)
                 state.OnBottomStart = state.Step;
@@ -235,7 +235,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         public void InnerStep()
         {
             // Set these output values in the beginning to match matlab plotting
-            output.TopDriveRotationInRPM = state.TopDrive.TopDriveAngularVelocity;
+            output.TopDriveRotationInRPM = state.TopDrive.AngularVelocity;
             if (!parameters.UseMudMotor)
                 output.BitRotationInRPM = state.AngularVelocity[state.AngularVelocity.Count - 1];
             else
@@ -250,7 +250,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Update bit depth and top of string position based on current velocities for use in the bit-rock interaction model and top drive model within the inner loop
                 UpdateDepthInnerLoop();                                                                               
                 // Assuming the top drive is represented by the first element in the state vector for angular velocities
-                state.TopDrive.TopDriveAngularVelocity = state.AngularVelocity[0]; 
+                state.TopDrive.AngularVelocity = state.AngularVelocity[0]; 
                 // Calculate lateral accelerations                    
                 output.SimulationHealthy = solverODE.IntegrationStep(state, drillStringModel, in parameters);
                 bool sleeveHealth = solverODE.IntegrationSleeve(state, drillStringModel, in parameters);
@@ -357,7 +357,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 Theta_y_ddot = (u_x_ddot - u_x_ddot_iMinus1) / parameters.Drillstring.ElementLength[parameters.Drillstring.IndexSensor - 1]; // Bending angle second derivative y-component*/
             }
 
-            output.Depth[0] = state.ZDisplacement[0] + state.TopOfStringPosition;
+            output.Depth[0] = state.ZDisplacement[0] + state.TopDrive.AxialPosition;
             for (int i = 1; i < parameters.NumberOfElements; i ++)
             {
                 output.Depth[i] = output.Depth[i - 1] + state.ZDisplacement[i] + parameters.Drillstring.ElementLength[i-1];   
@@ -410,8 +410,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 output.SensorBendingAngleY = Theta_y; // bending angle y-component
                 output.SecondDerivativeSensorBendingAngleX = Theta_x_ddot; // bending angle second derivative x-component
                 output.SecondDerivativeSensorBendingAngleY = Theta_y_ddot; // bending angle second derivative y-component
-                output.SensorPipeInclination = parameters.Trajectory.InterpolatedTheta[parameters.Drillstring.IndexSensor];
-                output.SensorPipeAzimuthAt = parameters.Trajectory.InterpolatedPhi[parameters.Drillstring.IndexSensor];
+                output.SensorPipeInclination = parameters.Trajectory.InterpolatedThetaAtNode[parameters.Drillstring.IndexSensor];
+                output.SensorPipeAzimuthAt = parameters.Trajectory.InterpolatedPhiAtNode[parameters.Drillstring.IndexSensor];
                 output.SensorTension = state.Tension[parameters.Drillstring.IndexSensor];
                 output.SensorTorque = output.Torque[parameters.Drillstring.IndexSensor];
 

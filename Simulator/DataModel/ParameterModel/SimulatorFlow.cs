@@ -653,9 +653,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double tempStringPressure  = 0;
             double tempAnnulusPressure = 0;
             double buoyancyFactor;
-            double nodeInnerArea;
-            double nodeOuterArea;
-            double nodeCrossSectionArea;
             double toolJointElementOuterArea;
             double toolJointElementInnerArea;
             double depth;
@@ -663,12 +660,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             double interpolatedTheta;
 
             // Prepend a zero depth so that the trapezoidal integral starts from the surface
-            Vector<double> extendedDepth = ExtendVectorStart(0, trajectory.InterpolatedVerticalDepth);
+            Vector<double> extendedDepth = ExtendVectorStart(0, trajectory.InterpolatedVerticalDepthAtNode);
             int numberOfElements = drillString.ElementLength.Count;
             // --- Pass 1: integrate hydrostatic pressures using the trapezoidal rule ---
             for (int i = 1; i < numberOfElements; i++)
             {
-                depth = i == 0 ? 0 : trajectory.InterpolatedVerticalDepth[i - 1];
+                depth = i == 0 ? 0 : trajectory.InterpolatedVerticalDepthAtNode[i - 1];
 
                 // Trapezoidal increment: ΔP = 0.5 · g · (ρ_i + ρ_{i-1}) · Δz
                 tempStringPressure  += 0.5 * Constants.GravitationalAcceleration * (StringDensity[i]  + StringDensity[i - 1])  * (extendedDepth[i] - extendedDepth[i - 1]);
@@ -683,14 +680,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 //  For the first node, replicate the properties of the first element, otherwise, use the average to estimate the node properties.
                 // This is a different approach from the node area, which would use the biggest value. 
-                nodeInnerArea          = i == 0 ? drillString.ElementInnerArea[0] : 0.5 * (drillString.ElementInnerArea[i - 1] + drillString.ElementInnerArea[i]);
-                nodeOuterArea          = i == 0 ? drillString.ElementOuterArea[0] : 0.5 * (drillString.ElementOuterArea[i - 1] + drillString.ElementOuterArea[i]);
-                nodeCrossSectionArea           = i == 0 ? drillString.ElementArea[0]               : 0.5 * (drillString.ElementArea[i - 1] + drillString.ElementArea[i]);
-                toolJointElementInnerArea = i == 0 ? drillString.ElementToolJointInnerArea[0] : drillString.ElementToolJointInnerArea[i - 1];
-                toolJointElementOuterArea = i == 0 ? drillString.ElementToolJointOuterArea[0] : drillString.ElementToolJointOuterArea[i - 1];
+                toolJointElementInnerArea = drillString.ElementToolJointInnerArea[i];
+                toolJointElementOuterArea = drillString.ElementToolJointOuterArea[i];
 
-                // Inclination angle at the current node (zero at surface)
-                interpolatedTheta = (i == 0) ? 0 : trajectory.InterpolatedTheta[i - 1];
+                // Inclination angle at the center of current element. Note that InterpolatedTheta is a node-
+                //related variable
+                interpolatedTheta = 0.5 * (trajectory.InterpolatedThetaAtNode[i] + trajectory.InterpolatedThetaAtNode[i + 1]);
 
                 // Axial tension gradient: dσ/dx = w_b · cos(θ)
                 dSigmaDx[i] = BuoyantWeightPerLength[i] * Math.Cos(interpolatedTheta);
@@ -700,14 +695,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     // --- Buoyancy-factor method ---
                     // The buoyancy factor accounts for differential annulus/string pressures
                     // acting on the pipe cross-section, normalised to the pipe area.
-                    buoyancyFactor = (nodeOuterArea * (1 - AnnulusDensity[i] / drillString.SteelDensity) -
-                                      nodeInnerArea * (1 - StringDensity[i]  / drillString.SteelDensity)) /
-                                     (nodeOuterArea - nodeInnerArea);
+                    buoyancyFactor = (drillString.ElementOuterArea[i] * (1 - AnnulusDensity[i] / drillString.SteelDensity) -
+                                      drillString.ElementInnerArea[i] * (1 - StringDensity[i]  / drillString.SteelDensity)) /
+                                     (drillString.ElementOuterArea[i] - drillString.ElementInnerArea[i]);
 
                     BuoyantWeightPerLength[i] = Constants.GravitationalAcceleration
                                                 * buoyancyFactor
                                                 * drillString.SteelDensity
-                                                * nodeCrossSectionArea
+                                                * drillString.ElementArea[i]
                                                 * drillString.ElementWeightCorrectionFactor[i];
 
                     // Hydrostatic pressures at the current and previous nodes
@@ -722,9 +717,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
                     // Axial buoyancy force from area change:
                     // ΔF_axial = A_o·P_ann - A_o_prev·P_ann_prev - A_i·P_str + A_i_prev·P_str_prev
-                    AxialBuoyancyForceChangeOfDiameters[i] = nodeOuterArea          * hydrostaticAnnularCurrent
+                    AxialBuoyancyForceChangeOfDiameters[i] = drillString.ElementOuterArea[i]          * hydrostaticAnnularCurrent
                                                            - AtjoPrev                  * hydrostaticAnnularPrev
-                                                           - nodeInnerArea           * hydrostaticStringCurrent
+                                                           - drillString.ElementInnerArea[i]           * hydrostaticStringCurrent
                                                            + AtjiPrev                  * hydrostaticStringPrev;
 
                     // Normal (lateral) buoyancy force from area change at the tool-joint shoulder
@@ -735,13 +730,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                     // --- Explicit fluid-volume method ---
                     // Buoyant weight accounts for the displaced annulus fluid and the interior string fluid
                     // over the element length, split between tool-joint and plain-pipe sections.
-                    MassPerLength = drillString.SteelDensity * nodeCrossSectionArea * drillString.ElementWeightCorrectionFactor[i];
+                    MassPerLength = drillString.SteelDensity * drillString.ElementArea[i] * drillString.ElementWeightCorrectionFactor[i];
 
                     BuoyantWeightPerLength[i] = (MassPerLength +
                         (  toolJointElementInnerArea * drillString.ToolJointLength                                    * StringDensity[i]
-                         + nodeInnerArea           * (drillString.ElementLength[i] - drillString.ToolJointLength) * StringDensity[i]
+                         + drillString.ElementInnerArea[i]           * (drillString.ElementLength[i] - drillString.ToolJointLength) * StringDensity[i]
                          - toolJointElementOuterArea  * drillString.ToolJointLength                                    * AnnulusDensity[i]
-                         - nodeOuterArea            * (drillString.ElementLength[i] - drillString.ToolJointLength) * AnnulusDensity[i])
+                         - drillString.ElementOuterArea[i]            * (drillString.ElementLength[i] - drillString.ToolJointLength) * AnnulusDensity[i])
                         / drillString.ElementLength[i]) * Constants.GravitationalAcceleration;
 
                     // No area-change buoyancy forces in this method

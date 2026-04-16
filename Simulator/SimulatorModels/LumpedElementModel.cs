@@ -178,6 +178,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //compatible to a rigid body motion. The calculation can be foundEach element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx. 
                 // The lateral modes use a half-sine shape, which is compatible with a simply supported beam with C1 continuity. When the mass element is lumped, it falls
                 // back to the conventional 0.5 * rho * A * L for each node.
+                //  It needs to use element moment of area, so it preserves the different  
+                //                      ___________________________
+                // --------------------|                           |--------------------
+                //       1             |             2             |          3
+                // --------------------|___________________________|--------------------
+                //
+                // Inertia1(Radius1)   |      Inertia2(Radius2)    |   Inertia3(Radius3)    
+                //   Mass1(Radius1)    |        Mass2(Radius2)     |     Mass3(Radius3)
+                //
+                //
                 double axialMass = parameters.Drillstring.ElementDensity[i] * parameters.Drillstring.ElementArea[i] * parameters.Drillstring.ElementLength[i] / 2.0;
                 double torsionalMass = parameters.Drillstring.ElementDensity[i] * parameters.Drillstring.ElementInertia[i] * parameters.Drillstring.ElementLength[i];
                 double lateralMass = parameters.Drillstring.ElementDensity[i] * parameters.Drillstring.ElementArea[i] * parameters.Drillstring.ElementLength[i] / 2.0;                
@@ -208,7 +218,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                  
 
                 double axialStiffness = parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementArea[i] / parameters.Drillstring.ElementLength[i];
-                double lateralStiffness = Math.PI * Math.PI * Math.PI * parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementArea[i] 
+              
+                double lateralStiffness = Math.PI * Math.PI * Math.PI * parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementSecondMomentOfArea[i] 
                             / parameters.Drillstring.ElementLength[i];
                 // The torsional stiffness is calculated as 2 * G * J / L, where G is the shear modulus, 
                 // J is the polar moment of inertia and L is the length of the element. The polar moment of inertia is calculated as I * 2, 
@@ -441,7 +452,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         }
         private double CalculateAxialElasticForce(int i, State state)
         {
-            double ZiMinus1 = (i == 0) ? state.TopOfStringRelativeAxialPosition : state.ZDisplacement[i - 1];
+            double ZiMinus1 = (i == 0) ? state.TopDrive.RelativeAxialPosition : state.ZDisplacement[i - 1];
             double ZiPlus1 = (i == numberOfNodes - 1) ? 0.0 : state.ZDisplacement[i + 1];            
             return - ( axialStiffnessLeft[i] * ZiMinus1  + axialStiffnessMid[i] * state.ZDisplacement[i] + axialStiffnessRight[i] * ZiPlus1 );
         }
@@ -533,7 +544,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // ------------------ Torsional Elastic Forces Calculation --------------------
                 elasticForcePhi = CalculateTorsionalElasticForce(i, state);
                 #endregion 
-#               region Bit-Rock Interaction
+                #region Bit-Rock Interaction
                 if (i == parameters.NumberOfNodes - 1)
                 {
                     // Populate the bit internal forces accordingly
@@ -560,9 +571,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 double FaPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : axialForceDistribution[i + 1];
                 //  Corrects the lateral stiffness with information from the pressure gradient and from the axial force distribution
                 //The NegativeStiffnessTreatment function breakes the connection between elements in case of buckling, as in a string model
-                double equivalentLeftStiffness = NegativeStiffnessTreatment(lateralStiffnessLeft[i] + FaMinus1 * lateralTensionInducedStiffnessLeft[i] + lateralPressureInducedStiffnessLeft[i], centerElement: false);
-                double equivalentMidStiffness = NegativeStiffnessTreatment(lateralStiffnessMid[i] + axialForceDistribution[i] * lateralTensionInducedStiffnessMid[i] + lateralPressureInducedStiffnessMid[i], centerElement: true);                
-                double equivalentRightStiffness = NegativeStiffnessTreatment(lateralStiffnessRight[i] + FaPlus1 * lateralTensionInducedStiffnessRight[i] + lateralPressureInducedStiffnessRight[i], centerElement: false);
+                double equivalentLeftStiffness = NegativeStiffnessTreatment(lateralStiffnessLeft[i] + FaMinus1 * lateralTensionInducedStiffnessLeft[i] + 0*lateralPressureInducedStiffnessLeft[i], centerElement: false);
+                double equivalentMidStiffness = NegativeStiffnessTreatment(lateralStiffnessMid[i] + axialForceDistribution[i] * lateralTensionInducedStiffnessMid[i] + 0*lateralPressureInducedStiffnessMid[i], centerElement: true);                
+                double equivalentRightStiffness = NegativeStiffnessTreatment(lateralStiffnessRight[i] + FaPlus1 * lateralTensionInducedStiffnessRight[i] + 0*lateralPressureInducedStiffnessRight[i], centerElement: false);
                 elasticForceX = - ( equivalentLeftStiffness * XiMinus1  + equivalentMidStiffness * state.XDisplacement[i] + equivalentRightStiffness * XiPlus1 );
                 elasticForceY = - ( equivalentLeftStiffness * YiMinus1  + equivalentMidStiffness * state.YDisplacement[i] + equivalentRightStiffness * YiPlus1 );
                 #endregion

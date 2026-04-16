@@ -12,6 +12,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
     /// 
     ///     Element description must not contain method-related variables (e.g.: stiffness values).
     /// Those are expected to be calculated at the model's constructor level. 
+    ///     To make model consistency easier to mantain, the public variables are split into element-
+    /// wise and node-wise. For instance, some properties, such as mass and inertia are from the element  
+    ///                       ___________________________
+    ///  --------------------|                           |--------------------
+    ///        1             |             2             |          3
+    ///  --------------------|___________________________|--------------------
+    /// 
+    ///  Inertia1(Radius1)   |      Inertia2(Radius2)    |   Inertia3(Radius3)    
+    ///    Mass1(Radius1)    |        Mass2(Radius2)     |     Mass3(Radius3)
+    /// 
+    /// However, other relevant properties require the node. For instance, the clearance is computed
+    /// at the node, thus, node-wise external radius must be available. Note that node-wise radius will
+    /// contain the largest value among the node, given the discontinuity. Element-wise radius is not
+    /// ambiguous though.
+    /// 
     /// </summary>
     public class SimulatorDrillString
     {
@@ -75,15 +90,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// [m] Inner radius vector
         /// </summary>
         public List<double> NodeInnerRadius = new();
-        
+        /// <summary>
+        /// [m⁴] Second moment of area
+        /// </summary>
+        public List<double> ElementSecondMomentOfArea = new();                
         /// <summary>
         /// [m] Outer radius vector
         /// </summary>
-        private List<double> elementOuterRadius = new();
+        public List<double> ElementOuterRadius = new();
         /// <summary>
         /// [m] Inner radius vector
         /// </summary>
-        private List<double> elementInnerRadius = new();
+        public List<double> ElementInnerRadius = new();
         /// <summary>
         /// [m] Eccentricity vector
         /// </summary>
@@ -217,7 +235,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// [kg] Eccentric mass
         /// </summary>
         public List<double> InactiveElementEccentricMass = new();
-
+        /// <summary>
+        /// [m⁴] Inactive second moment of area
+        /// </summary>        
+        public List<double> InactiveElementSecondMomentOfArea = new();
                                                        
 
         // Sleeves - to be configured
@@ -462,8 +483,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                                 RelativeNodeDepth[ElementDepth.Count-1] - ElementLength[ElementLength.Count-1]
                             );
 
-                        elementOuterRadius.Add( mergedComponentOuterRadius[i] );
-                        elementInnerRadius.Add( mergedComponentInnerRadius[i] );                                                  
+                        ElementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        ElementInnerRadius.Add( mergedComponentInnerRadius[i] );                                                  
+                        ElementSecondMomentOfArea.Add(
+                                0.25 * Math.PI * 
+                                    (
+                                        Math.Pow(mergedComponentOuterRadius[i], 4) - 
+                                        Math.Pow(mergedComponentInnerRadius[i], 4)
+                                    )
+                                );
                         //  Those properties do not need to be divided, 
                         // as they have been averaged by the length beforehand:
                         ElementDensity.Add( mergedComponentDensity[i] );                        
@@ -492,6 +520,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                         // as they have been averaged by the length beforehand:
                         InactiveElementDensity.Add( mergedComponentDensity[i] );                                              
                         InactiveElementOuterRadius.Add( mergedComponentOuterRadius[i] );
+                        InactiveElementSecondMomentOfArea.Add(
+                                0.25 * Math.PI * 
+                                    (
+                                        Math.Pow(mergedComponentOuterRadius[i], 4) - 
+                                        Math.Pow(mergedComponentInnerRadius[i], 4)
+                                    )
+                                );
                         InactiveElementYoungModuli.Add( mergedComponentYoungsModulus[i] );
                         InactiveElementShearModuli.Add( mergedComponentShearModulus[i] );
                         InactiveElementInertia.Add( mergedComponentInertia[i] );
@@ -517,12 +552,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             // The lists always starts from the bit. However, the rest of the simulator uses from top-first
             ElementLength.Reverse();
             ElementDensity.Reverse();
-            elementOuterRadius.Reverse();
+            ElementOuterRadius.Reverse();
             ElementYoungModuli.Reverse();
             ElementShearModuli.Reverse();
             ElementInertia.Reverse();
+            ElementFluidAddedMass.Reverse();
             ElementArea.Reverse();
-            elementInnerRadius.Reverse();
+            ElementInnerRadius.Reverse();
             ElementInnerArea.Reverse();
             ElementOuterArea.Reverse();
             ElementToolJointOuterArea.Reverse();
@@ -531,6 +567,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementEccentricity.Reverse();
             ElementDepth.Reverse();
             ElementWeightCorrectionFactor.Reverse();
+            ElementSecondMomentOfArea.Reverse();
             RelativeNodeDepth.Reverse();
 
             InactiveElementLength.Reverse();
@@ -539,6 +576,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementYoungModuli.Reverse();
             InactiveElementShearModuli.Reverse();
             InactiveElementInertia.Reverse();
+            InactiveElementFluidAddedMass.Reverse();
             InactiveElementArea.Reverse();
             InactiveElementInnerRadius.Reverse();
             InactiveElementInnerArea.Reverse();
@@ -548,17 +586,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             InactiveElementEccentricMass.Reverse();
             InactiveElementEccentricity.Reverse();
             InactiveElementWeightCorrectionFactor.Reverse();
-
-            NodeOuterRadius.Add(elementOuterRadius[0]);
-            NodeInnerRadius.Add(elementInnerRadius[0]);
+            InactiveElementSecondMomentOfArea.Reverse();
             
-            for (int i = 1; i < elementOuterRadius.Count; i++)
+
+            NodeOuterRadius.Add(ElementOuterRadius[0]);
+            NodeInnerRadius.Add(ElementInnerRadius[0]);
+            
+            for (int i = 1; i < ElementOuterRadius.Count; i++)
             {
-                NodeOuterRadius.Add(Math.Max(elementOuterRadius[i], elementOuterRadius[i - 1]));                
-                NodeInnerRadius.Add(Math.Min(elementInnerRadius[i], elementInnerRadius[i - 1]));                
+                NodeOuterRadius.Add(Math.Max(ElementOuterRadius[i], ElementOuterRadius[i - 1]));                
+                NodeInnerRadius.Add(Math.Min(ElementInnerRadius[i], ElementInnerRadius[i - 1]));                
             }
-            NodeOuterRadius.Add(elementOuterRadius[elementOuterRadius.Count - 1]);                
-            NodeInnerRadius.Add(elementInnerRadius[elementInnerRadius.Count - 1]);    
+            NodeOuterRadius.Add(ElementOuterRadius[ElementOuterRadius.Count - 1]);                
+            NodeInnerRadius.Add(ElementInnerRadius[ElementInnerRadius.Count - 1]);    
 
             IndexSensor = Enumerable.Range(0, RelativeNodeDepth.Count)
                 .MinBy(i => Math.Abs(RelativeNodeDepth[i] - SensorDistanceFromBit));
@@ -590,6 +630,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             ElementShearModuli.Insert(0, InactiveElementShearModuli[0]);
             ElementFluidAddedMass.Insert(0, InactiveElementFluidAddedMass[0]);
             ElementEccentricMass.Insert(0, InactiveElementEccentricMass[0]);
+            ElementSecondMomentOfArea.Insert(0, ElementSecondMomentOfArea[0]);
+           
             RelativeNodeDepth.Insert(0, topOfString);
             // Add the length of the new element to all the depth nodes
             for (int i = 1; i < RelativeNodeDepth.Count; i++)
@@ -615,10 +657,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             if (InactiveElementShearModuli.Count > 1) InactiveElementShearModuli.RemoveAt(0);
             if (InactiveElementFluidAddedMass.Count > 1) InactiveElementFluidAddedMass.RemoveAt(0);
             if (InactiveElementEccentricMass.Count > 1) InactiveElementEccentricMass.RemoveAt(0);
-            
-
-
-
+            if (InactiveElementSecondMomentOfArea.Count > 1) InactiveElementSecondMomentOfArea.RemoveAt(0);        
         }
     }
 }

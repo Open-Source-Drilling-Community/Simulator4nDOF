@@ -23,10 +23,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Vector<double> ZDisplacement;                  // Lumped element lateral acceleration in x-direction        
         public Vector<double> ZVelocity;                        // Lumped element axial velocity
         public Vector<double> ZAcceleration;                    // Lumped element axial acceleration
-        public double TopOfStringRelativeAxialPosition;               // Top of string relative position
-        public double TopOfStringRelativeRotation;               // Top of string relative rotation
-        
-
         public Vector<double> AngularDisplacement;            // Lumped element angular displacement        
         public Vector<double> AngularVelocity;                // Lumped element angular velocity
         public Vector<double> AngularAcceleration;            // Lumped element angular acceleration
@@ -52,7 +48,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         // Depths and positions
         public double BitDepth;                               // Bit depth
         public double HoleDepth;                              // Hole depth
-        public double TopOfStringPosition;                    // Top of string position
         public double BitVelocity;                            // Bit velocity
         // State outputs for reconstruction
         public Vector<double> BendingMomentX;
@@ -92,10 +87,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize top drive angular velocity
             TopDrive = new TopDriveAndDrawworkState()
             {
-                TopDriveAngularVelocity = parameters.TopDriveDrawwork.SurfaceRotation,
+                AngularVelocity = parameters.TopDriveDrawwork.SurfaceRotation,
                 TopDriveMotorTorque = parameters.TopDriveDrawwork.TopDriveMotorTorque,
                 MaximumTopDriveTorque = parameters.TopDriveDrawwork.MaximumTopDriveTorque,
-                TopDriveRPMSetPoint = parameters.TopDriveDrawwork.TopDriveRPMSetPoint
+                TopDriveRPMSetPoint = parameters.TopDriveDrawwork.TopDriveRPMSetPoint,
+                RotationAngle = 0,
+                RelativeAxialPosition = 0,
+                AxialPosition = parameters.Input.InitialTopOfStringPosition
             };
             // Initialize lumped element angular displacement
             AngularDisplacement = Vector<double>.Build.Dense(numberOfNodes);
@@ -134,10 +132,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Initialize depth of cut
             DepthOfCut = Vector<double>.Build.Dense(parameters.CellsInDepthOfCut);
             // Initialize sleeve forces
-            SleeveForces = Vector<double>.Build.Dense(numberOfNodes);
-            TopOfStringRelativeAxialPosition = 0;
-            TopOfStringRelativeRotation = 0;
-
+            SleeveForces = Vector<double>.Build.Dense(numberOfNodes);            
             // Initialize slip condition
             SlipCondition = Vector<double>.Build.Dense(numberOfNodes);
             BendingMomentX = Vector<double>.Build.Dense(numberOfNodes);
@@ -169,7 +164,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             this.BitDepth = parameters.Input.InitialBitDepth;                               // Initial values set in SimulationParameters - to be moved
             PreviousCalculatedBitDepth = parameters.Input.InitialBitDepth;
             this.HoleDepth = parameters.Input.InitialHoleDepth;
-            this.TopOfStringPosition = parameters.Input.InitialTopOfStringPosition;
             this. ZVelocity[0] = parameters.Input.InitialTopOfStringVelocity;
             BitOnBotton = false;
 

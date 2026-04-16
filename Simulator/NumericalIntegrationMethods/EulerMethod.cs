@@ -64,8 +64,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         public bool IntegrationSurfacePosition(State state, LumpedElementModel model, in SimulationParameters simulationParameters)
         {
             //Calculate the top of string position based on the calculated speed        
-            state.TopOfStringRelativeAxialPosition = state.TopOfStringRelativeAxialPosition + state.TopDrive.CalculateSurfaceAxialVelocity * timeStep;         
-            return !double.IsNaN(state.TopOfStringRelativeAxialPosition);
+            state.TopDrive.RelativeAxialPosition = state.TopDrive.RelativeAxialPosition + state.TopDrive.AxialVelocity * timeStep;     
+            state.TopDrive.RotationAngle = state.TopDrive.RotationAngle + state.TopDrive.AngularVelocity * timeStep;     
+            return !double.IsNaN(state.TopDrive.RelativeAxialPosition);
         }
 
         public void AddNewLumpedElement()

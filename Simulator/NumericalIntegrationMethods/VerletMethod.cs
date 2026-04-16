@@ -23,6 +23,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         private Vector<double> yDisplacementMinus1;
         private Vector<double> zDisplacementMinus1;
         private double topOfStringRelativeAxialPositionMinus1;
+        private double topDriveRotationAngleMinus1;
+        
         private double timeStepSquared;
         private double timeStep;       
 
@@ -32,6 +34,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         private Vector<double> yDisplacement;
         private Vector<double> zDisplacement;
         private double topOfStringRelativeAxialPosition;
+        private double topDriveRotationAngle;
+        
         
         public Vector<double> AngularVelocity;        
         public Vector<double> xVelocity;                
@@ -169,18 +173,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             //Initialize properly
             if (firstSurfaceStep)
             {
-                topOfStringRelativeAxialPosition = state.TopOfStringRelativeAxialPosition;
-                topOfStringRelativeAxialPositionMinus1 = topOfStringRelativeAxialPosition - state.TopDrive.CalculateSurfaceAxialVelocity * timeStep;            
+                topOfStringRelativeAxialPosition = state.TopDrive.RelativeAxialPosition;
+                topOfStringRelativeAxialPositionMinus1 = topOfStringRelativeAxialPosition - state.TopDrive.AxialVelocity * timeStep;            
+
+                topDriveRotationAngle = state.TopDrive.RotationAngle;
+                topDriveRotationAngleMinus1 = topDriveRotationAngle - state.TopDrive.AngularVelocity * timeStep;            
+                
                 firstSurfaceStep = false;
+            
             }
-            // Integrate the top of string position
-            state.TopOfStringRelativeAxialPosition = topOfStringRelativeAxialPositionMinus1 + timeStep * state.TopDrive.CalculateSurfaceAxialVelocity;            
+            // Integrate the top of string position and rotation angle
+            state.TopDrive.RelativeAxialPosition = topOfStringRelativeAxialPositionMinus1 + timeStep * state.TopDrive.AxialVelocity;  
+            state.TopDrive.RotationAngle = topDriveRotationAngleMinus1 + timeStep * state.TopDrive.AngularVelocity;
             // Rollover top of string relative axial position for next iteration
             topOfStringRelativeAxialPositionMinus1 = topOfStringRelativeAxialPosition;
+            topDriveRotationAngleMinus1 = topDriveRotationAngle;
             // Rollover top of string relative axial position for next iteration
-            topOfStringRelativeAxialPosition = state.TopOfStringRelativeAxialPosition;
+            topOfStringRelativeAxialPosition = state.TopDrive.RelativeAxialPosition;
+            topDriveRotationAngle = state.TopDrive.RotationAngle;
             // Return true is simulation is healthy
-            return !double.IsNaN(state.TopOfStringRelativeAxialPosition);
+            return !double.IsNaN(state.TopDrive.RelativeAxialPosition);
         }
 
         public void AddNewLumpedElement()

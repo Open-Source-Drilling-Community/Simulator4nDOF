@@ -11,13 +11,13 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> InclinationProfile;     // [degrees] Inclination orig
         private Vector<double> AzimuthProfile;     // [degrees] Azimuth orig
         private Vector<double> VerticalDepthProfile;     // [m] TVD orig
-        public Vector<double> InterpolatedVerticalDepth;        // [m] TVD interpolated
-        public Vector<double> InterpolatedTheta;      // [deg] Theta interpolated
-        public Vector<double> InterpolatedPhi;        // [deg] Phi  interpolated
-        public Vector<double> DiffThetaInterpolated;
-        public Vector<double> DiffPhiInterpolated;
-        public Vector<double> DiffDiffThetaInterpolated;
-        public Vector<double> DiffDiffPhiInterpolated;
+        public Vector<double> InterpolatedVerticalDepthAtNode;        // [m] TVD interpolated
+        public Vector<double> InterpolatedThetaAtNode;      // [deg] Theta interpolated
+        public Vector<double> InterpolatedPhiAtNode;        // [deg] Phi  interpolated
+        public Vector<double> DiffThetaInterpolatedAtNode;
+        public Vector<double> DiffPhiInterpolatedAtNode;
+        public Vector<double> DiffDiffThetaInterpolatedAtNode;
+        public Vector<double> DiffDiffPhiInterpolatedAtNode;
         public Vector<double> Curvature;
         public Vector<double> Torsion;
         public Vector<double> CurvatureDerivative;
@@ -41,7 +41,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         {
             
 
-            List<SurveyPoint> surveyPoints = trajectory.InterpolatedTrajectory.ToList();
+            List<SurveyStation> surveyPoints = trajectory.SurveyStationList.ToList();
             int rows = surveyPoints.Count;
             MeasuredDepthProfile = Vector<double>.Build.Dense(rows);
             InclinationProfile = Vector<double>.Build.Dense(rows);
@@ -71,34 +71,34 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 nodeDepthVector[i] = drillString.RelativeNodeDepth[i];
             }
-            InterpolatedVerticalDepth = LinearInterpolate(MeasuredDepthProfile, VerticalDepthProfile, nodeDepthVector);
-            InterpolatedTheta = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, InclinationProfile, nodeDepthVector);
-            InterpolatedPhi = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, AzimuthProfile, nodeDepthVector);
+            InterpolatedVerticalDepthAtNode = LinearInterpolate(MeasuredDepthProfile, VerticalDepthProfile, nodeDepthVector);
+            InterpolatedThetaAtNode = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, InclinationProfile, nodeDepthVector);
+            InterpolatedPhiAtNode = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, AzimuthProfile, nodeDepthVector);
 
-            int n = InterpolatedTheta.Count();
-            DiffThetaInterpolated = ComputeDerivative(InterpolatedTheta, drillString.ElementLength);
-            DiffPhiInterpolated = ComputeDerivative(InterpolatedPhi, drillString.ElementLength);
-            DiffDiffThetaInterpolated = ComputeSecondDerivative(InterpolatedTheta, drillString.ElementLength);
-            DiffDiffPhiInterpolated = ComputeSecondDerivative(InterpolatedPhi, drillString.ElementLength);
+            int n = InterpolatedThetaAtNode.Count();
+            DiffThetaInterpolatedAtNode = ComputeDerivative(InterpolatedThetaAtNode, drillString.ElementLength);
+            DiffPhiInterpolatedAtNode = ComputeDerivative(InterpolatedPhiAtNode, drillString.ElementLength);
+            DiffDiffThetaInterpolatedAtNode = ComputeSecondDerivative(InterpolatedThetaAtNode, drillString.ElementLength);
+            DiffDiffPhiInterpolatedAtNode = ComputeSecondDerivative(InterpolatedPhiAtNode, drillString.ElementLength);
 
-            Curvature = Vector<double>.Build.Dense(DiffThetaInterpolated.Count);
-            for (int i = 0; i < DiffThetaInterpolated.Count(); i++)
+            Curvature = Vector<double>.Build.Dense(DiffThetaInterpolatedAtNode.Count);
+            for (int i = 0; i < DiffThetaInterpolatedAtNode.Count(); i++)
             {
                 Curvature[i] = Math.Sqrt(
-                    Math.Pow(DiffThetaInterpolated[i], 2) +
-                    Math.Pow(DiffPhiInterpolated[i], 2) * Math.Pow(Math.Sin(InterpolatedTheta[i]), 2)
+                    Math.Pow(DiffThetaInterpolatedAtNode[i], 2) +
+                    Math.Pow(DiffPhiInterpolatedAtNode[i], 2) * Math.Pow(Math.Sin(InterpolatedThetaAtNode[i]), 2)
                 );  
             }
 
             // Compute torsion using element-wise operations
-            Torsion = Vector<double>.Build.Dense(DiffThetaInterpolated.Count);
+            Torsion = Vector<double>.Build.Dense(DiffThetaInterpolatedAtNode.Count);
 
             for (int i = 0; i < Torsion.Count; i++)
             {
-                double num1 = DiffThetaInterpolated[i] * DiffDiffPhiInterpolated[i] - DiffDiffThetaInterpolated[i] * DiffPhiInterpolated[i];
+                double num1 = DiffThetaInterpolatedAtNode[i] * DiffDiffPhiInterpolatedAtNode[i] - DiffDiffThetaInterpolatedAtNode[i] * DiffPhiInterpolatedAtNode[i];
                 double denom = Math.Pow(Curvature[i], 2);
-                double term1 = num1 / denom * Math.Sin(InterpolatedTheta[i]);
-                double term2 = DiffPhiInterpolated[i] * (1 + Math.Pow(DiffThetaInterpolated[i], 2) / denom) * Math.Cos(InterpolatedTheta[i]);
+                double term1 = num1 / denom * Math.Sin(InterpolatedThetaAtNode[i]);
+                double term2 = DiffPhiInterpolatedAtNode[i] * (1 + Math.Pow(DiffThetaInterpolatedAtNode[i], 2) / denom) * Math.Cos(InterpolatedThetaAtNode[i]);
 
                 if (denom > 0)
                     Torsion[i] = term1 + term2;
@@ -114,9 +114,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             foreach (int index in idxZeroCurvature)
                 Torsion[index] = 0;
 
-            tx = InterpolatedTheta.PointwiseSin().PointwiseMultiply(InterpolatedPhi.PointwiseCos());
-            ty = InterpolatedTheta.PointwiseSin().PointwiseMultiply(InterpolatedPhi.PointwiseSin());
-            tz = InterpolatedTheta.PointwiseCos();
+            tx = InterpolatedThetaAtNode.PointwiseSin().PointwiseMultiply(InterpolatedPhiAtNode.PointwiseCos());
+            ty = InterpolatedThetaAtNode.PointwiseSin().PointwiseMultiply(InterpolatedPhiAtNode.PointwiseSin());
+            tz = InterpolatedThetaAtNode.PointwiseCos();
 
             nx = Vector<double>.Build.Dense(n);
             ny = Vector<double>.Build.Dense(n);
@@ -127,15 +127,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 if (Curvature[i] != 0)
                 {
-                    nx[i] = (Math.Cos(InterpolatedTheta[i]) * Math.Cos(InterpolatedPhi[i]) * DiffThetaInterpolated[i] -
-                             Math.Sin(InterpolatedTheta[i]) * Math.Sin(InterpolatedPhi[i]) * DiffPhiInterpolated[i]) / Curvature[i];
+                    nx[i] = (Math.Cos(InterpolatedThetaAtNode[i]) * Math.Cos(InterpolatedPhiAtNode[i]) * DiffThetaInterpolatedAtNode[i] -
+                             Math.Sin(InterpolatedThetaAtNode[i]) * Math.Sin(InterpolatedPhiAtNode[i]) * DiffPhiInterpolatedAtNode[i]) / Curvature[i];
 
-                    ny[i] = (Math.Cos(InterpolatedTheta[i]) * Math.Sin(InterpolatedPhi[i]) * DiffThetaInterpolated[i] +
-                             Math.Sin(InterpolatedTheta[i]) * Math.Cos(InterpolatedPhi[i]) * DiffPhiInterpolated[i]) / Curvature[i];
+                    ny[i] = (Math.Cos(InterpolatedThetaAtNode[i]) * Math.Sin(InterpolatedPhiAtNode[i]) * DiffThetaInterpolatedAtNode[i] +
+                             Math.Sin(InterpolatedThetaAtNode[i]) * Math.Cos(InterpolatedPhiAtNode[i]) * DiffPhiInterpolatedAtNode[i]) / Curvature[i];
 
-                    nz[i] = -DiffThetaInterpolated[i] * Math.Sin(InterpolatedTheta[i]) / Curvature[i];
+                    nz[i] = -DiffThetaInterpolatedAtNode[i] * Math.Sin(InterpolatedThetaAtNode[i]) / Curvature[i];
 
-                    bz[i] = DiffPhiInterpolated[i] * Math.Pow(Math.Sin(InterpolatedTheta[i]), 2) / Curvature[i];
+                    bz[i] = DiffPhiInterpolatedAtNode[i] * Math.Pow(Math.Sin(InterpolatedThetaAtNode[i]), 2) / Curvature[i];
                 }
             }
 
@@ -144,19 +144,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             {
                 if (Curvature[i] == 0)
                 {
-                    nx[i] = Math.Cos(InterpolatedTheta[i]) * Math.Cos(InterpolatedPhi[i]);
-                    ny[i] = Math.Cos(InterpolatedTheta[i]) * Math.Sin(InterpolatedPhi[i]);
-                    nz[i] = -Math.Sin(InterpolatedTheta[i]);
+                    nx[i] = Math.Cos(InterpolatedThetaAtNode[i]) * Math.Cos(InterpolatedPhiAtNode[i]);
+                    ny[i] = Math.Cos(InterpolatedThetaAtNode[i]) * Math.Sin(InterpolatedPhiAtNode[i]);
+                    nz[i] = -Math.Sin(InterpolatedThetaAtNode[i]);
                     bz[i] = 0;
                 }
             }
 
-            hx = InterpolatedTheta.PointwiseCos().PointwiseMultiply(InterpolatedPhi.PointwiseCos());
-            hy = InterpolatedTheta.PointwiseCos().PointwiseMultiply(InterpolatedPhi.PointwiseSin());
-            hz = -InterpolatedTheta.PointwiseSin();
+            hx = InterpolatedThetaAtNode.PointwiseCos().PointwiseMultiply(InterpolatedPhiAtNode.PointwiseCos());
+            hy = InterpolatedThetaAtNode.PointwiseCos().PointwiseMultiply(InterpolatedPhiAtNode.PointwiseSin());
+            hz = -InterpolatedThetaAtNode.PointwiseSin();
 
-            vx = -InterpolatedPhi.PointwiseSin();
-            vy = InterpolatedPhi.PointwiseCos();
+            vx = -InterpolatedPhiAtNode.PointwiseSin();
+            vy = InterpolatedPhiAtNode.PointwiseCos();
             vz = Vector<double>.Build.Dense(n);
         }
     }

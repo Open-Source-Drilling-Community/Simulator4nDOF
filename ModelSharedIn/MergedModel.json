@@ -4153,6 +4153,254 @@
         }
       }
     },
+    "/InterpolatedTrajectory": {
+      "get": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "GetAllInterpolatedTrajectoryId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "PostInterpolatedTrajectory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpolatedTrajectory"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpolatedTrajectory"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpolatedTrajectory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/InterpolatedTrajectory/MetaInfo": {
+      "get": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "GetAllInterpolatedTrajectoryMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/InterpolatedTrajectory/{id}": {
+      "get": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "GetInterpolatedTrajectoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterpolatedTrajectory"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "PutInterpolatedTrajectoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpolatedTrajectory"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpolatedTrajectory"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpolatedTrajectory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "DeleteInterpolatedTrajectoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/InterpolatedTrajectory/Trajectory/{trajectoryId}": {
+      "get": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "GetInterpolatedTrajectoryByTrajectoryId",
+        "parameters": [
+          {
+            "name": "trajectoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterpolatedTrajectory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/InterpolatedTrajectory/LightData": {
+      "get": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "GetAllInterpolatedTrajectoryLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InterpolatedTrajectoryLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/InterpolatedTrajectory/HeavyData": {
+      "get": {
+        "tags": [
+          "InterpolatedTrajectory"
+        ],
+        "operationId": "GetAllInterpolatedTrajectory",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InterpolatedTrajectory"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Trajectory": {
       "get": {
         "tags": [
@@ -4330,6 +4578,40 @@
           "Trajectory"
         ],
         "operationId": "GetAllTrajectoryLight",
+        "parameters": [
+          {
+            "name": "fieldId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clusterId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "wellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "wellBoreId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -4353,6 +4635,40 @@
           "Trajectory"
         ],
         "operationId": "GetAllTrajectory",
+        "parameters": [
+          {
+            "name": "fieldId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clusterId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "wellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "wellBoreId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -12224,6 +12540,130 @@
       "ParticleSwarmSolverOptions": {
         "type": "object"
       },
+      "AnnotatedAbscissa": {
+        "type": "object",
+        "properties": {
+          "Abscissa": {
+            "type": "number",
+            "format": "double"
+          },
+          "Annotation": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InterpolatedTrajectory": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "TrajectoryID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "SurveyStationList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyStation"
+            },
+            "nullable": true
+          },
+          "InterpolationStep": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "InterpolationReferenceDepth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaximumChordArcDistance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "IncludeFirstSurvey": {
+            "type": "boolean"
+          },
+          "IncludeLastSurvey": {
+            "type": "boolean"
+          },
+          "InterpolateAtCasingAndLinerShoeDepths": {
+            "type": "boolean"
+          },
+          "InterpolateAtLinerHangerDepths": {
+            "type": "boolean"
+          },
+          "InterpolateAtCasingChangeOfDiameter": {
+            "type": "boolean"
+          },
+          "AdditionalAbscissaList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnnotatedAbscissa"
+            },
+            "nullable": true
+          },
+          "InternalAdditionalAbscissaList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnnotatedAbscissa"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "InterpolatedTrajectoryLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "TrajectoryID": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "Trajectory": {
         "type": "object",
         "properties": {
@@ -12794,6 +13234,14 @@
             "nullable": true
           }
         }
+      },
+      "TrajectoryCalculationType": {
+        "enum": [
+          "MinimumCurvatureMethod",
+          "ConstantBuildAndTurnMethod",
+          "ConstantCurvatureAndToolfaceMethod"
+        ],
+        "type": "string"
       },
       "Matrix3x3": {
         "type": "object",

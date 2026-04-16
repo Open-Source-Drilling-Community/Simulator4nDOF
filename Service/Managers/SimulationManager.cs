@@ -1154,8 +1154,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor
-                    ? Utilities.ExtendVectorStart(state.TopDrive.TopDriveAngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
-                    : Utilities.ExtendVectorStart(state.TopDrive.TopDriveAngularVelocity,
+                    ? Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
+                    : Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity,
                         Utilities.ToVector(state.AngularVelocity.SubVector(1, state.AngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
                 SleevesAngularVelocity = state.SleeveAngularVelocity.ToList(),
                 RadialClearance = parameters.Wellbore.DrillStringClearance.Append(0).ToList(),
@@ -1163,12 +1163,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.ZVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.AxialVelocity, state.ZVelocity).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
-                Inclination = parameters.Trajectory.InterpolatedTheta.Append(parameters.Trajectory.InterpolatedTheta.LastOrDefault<double>()).ToList(),
-                Azimuth = parameters.Trajectory.InterpolatedPhi.Append(parameters.Trajectory.InterpolatedPhi.LastOrDefault<double>()).ToList(),
+                Inclination = parameters.Trajectory.InterpolatedThetaAtNode.Append(parameters.Trajectory.InterpolatedThetaAtNode.LastOrDefault<double>()).ToList(),
+                Azimuth = parameters.Trajectory.InterpolatedPhiAtNode.Append(parameters.Trajectory.InterpolatedPhiAtNode.LastOrDefault<double>()).ToList(),
                 Curvature = parameters.Trajectory.Curvature.Append(parameters.Trajectory.Curvature.LastOrDefault<double>()).ToList(),
-                BuildUpRate = parameters.Trajectory.DiffThetaInterpolated.Append(parameters.Trajectory.DiffThetaInterpolated.LastOrDefault<double>()).ToList()
+                BuildUpRate = parameters.Trajectory.DiffThetaInterpolatedAtNode.Append(parameters.Trajectory.DiffThetaInterpolatedAtNode.LastOrDefault<double>()).ToList()
             };
         }
 
@@ -1184,7 +1184,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             scalars.HoleDepth.Add(state.HoleDepth);
             scalars.SurfaceTorque.Add(state.TopDrive.TopDriveMotorTorque);
             scalars.BitTorque.Add(output.TorqueOnBit);
-            scalars.TopOfStringAxialVelocity.Add(state.TopDrive.CalculateSurfaceAxialVelocity);
+            scalars.TopOfStringAxialVelocity.Add(state.TopDrive.AxialVelocity);
             scalars.BitAxialVelocity.Add(output.BitVelocity);
             scalars.WOB.Add(output.WeightOnBit);
             scalars.SSI.Add(output.SSI);
