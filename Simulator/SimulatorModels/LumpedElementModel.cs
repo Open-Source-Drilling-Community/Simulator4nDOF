@@ -108,7 +108,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double PreStressForceX;
         private double PreStressForceY;        
         // Fluid force-related variables
-        private double fluidDampingCoefficient;
         private double fluidForceX;
         private double fluidForceY;
         // Unbalance force-related variables
@@ -577,14 +576,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             //Update axial elastic forces beforehand - Needed for the equivalent stiffness
             CalculateAxialForceAxialDistribution(state);
             // Topdrive Torque only applies to the first element
-            state.TopDrive.AngularAcceleration = (
-                                                    state.TopDrive.TopDriveMotorTorque 
-                                                    + torsionalStiffnessRight[0] * state.AngularDisplacement[1] - torsionalStiffnessMid[0] * state.TopDrive.AngularDisplacement  
-                                                    + inertiaProportionalDampingTorsional[1] *  state.AngularVelocity[1] - inertiaProportionalDampingTorsional[0] * state.TopDrive.AngularVelocity  
-                                                ) / parameters.TopDriveDrawwork.TopDriveInertia;
+            topDriveTorque = (
+                                state.TopDrive.TopDriveMotorTorque 
+                                - torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) 
+                            );
+            state.TopDrive.AngularAcceleration = topDriveTorque / parameters.TopDriveDrawwork.TopDriveInertia;
             // Apply boundary conditions from the top-drive
-            state.AngularVelocity[0] = state.TopDrive.AngularVelocity;
-            state.AngularDisplacement[0] = state.TopDrive.AngularDisplacement;            
+            //state.AngularVelocity[0] = state.TopDrive.AngularVelocity;
+            //state.AngularDisplacement[0] = state.TopDrive.AngularDisplacement;            
             //state.ZDisplacement[0] = state.TopDrive.AxialPosition;
             //state.ZVelocity[0] = state.TopDrive.AxialVelocity;                
             // =============================== Main loop for calculating forces and accelerations in the lateral model ===============================
@@ -836,9 +835,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 // The torque on bit only apply on the last element
                 torqueOnBit = (i == parameters.NumberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
-                
+                double boundaryTorque = (i == 0) ? 
+                    + torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) : 0;
                 // Sets a boundary-condition like fot the displacement                
-                sumTorque =  elasticForcePhi  + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;
+                sumTorque =  elasticForcePhi + boundaryTorque + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;
                 // Variables are generated locally to facilitate debugging only.
                 angularAcceleration = sumTorque / torsionalLumpedInertia[i];      
                 xAcceleration = sumForcesX / (lateralLumpedMass[i] + addedLateralFluidMass[i]);

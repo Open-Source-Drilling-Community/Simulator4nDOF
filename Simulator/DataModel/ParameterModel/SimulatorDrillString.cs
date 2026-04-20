@@ -273,11 +273,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         public double CalculateLateralDamping;
         public double TotalLength;
 
-        /// <summary>
-        /// Characteristic drill pipe impedance
-        /// </summary>
-        public double CharacteristicDrillPipeImpedance;
-
         //IMU sensors - configure
         /// <summary>
         /// [m] Axial distance (relative to bit depth) of an IMU measuring downhole RPM and accelerations
@@ -599,7 +594,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             SleeveMassMomentOfInertia = Math.PI / 2.0 * SteelDensity * SleeveLength
                 * (Math.Pow(SleeveOuterRadius, 4) - Math.Pow(SleeveInnerRadius, 4)); // [kg.m^2]
 
-            CharacteristicDrillPipeImpedance = ElementPolarInertia[0] / (ElementShearModuli[0] * ElementDensity[0]);
         }
         public void ActivateElements()
         {

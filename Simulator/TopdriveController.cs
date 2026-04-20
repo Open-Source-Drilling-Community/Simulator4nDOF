@@ -43,7 +43,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private bool makeConnection = false;
         private bool pullOutOfHoleBeforeConnectionBoolean = false;
 
-       
+        private double DrillStringImpedance;
         public TopdriveController(in DataModel.Configuration configuration, in SimulationParameters simulationParameters)
         {
             KpSoftTorqueSpeed = configuration.KpSoftTorqueSpeed;
@@ -59,23 +59,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             TorqueTuningFactor = configuration.AdditionalTuningFactorZTorque;
             IntertiaCorrectionFactor = configuration.InertiaCorrectionFactorZTorque;
 
+            DrillStringImpedance = simulationParameters.Drillstring.ElementPolarInertia[0] 
+                / Math.Sqrt(simulationParameters.Drillstring.ElementShearModuli[0] * simulationParameters.Drillstring.ElementDensity[0]);
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 2)
             {
                 //Tuned PI controller simulationParameters
                 InertiaCompensation = KiSoftTorqueSpeed * simulationParameters.TopDriveDrawwork.TopDriveInertia; // [kg.m ^ 2] inertia compensation
-                KpFactor = KpSoftTorqueSpeed * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // top drive controller P gain
+                KpFactor = KpSoftTorqueSpeed * DrillStringImpedance; // top drive controller P gain
                 KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.TopDriveDrawwork.TopDriveInertia - InertiaCompensation); // top drive controller I gain
             }
             else
             {    // Stiff PI controller simulationParameters
-                KpFactor = KpFactor * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance;
+                KpFactor = KpFactor * DrillStringImpedance;
                 KiFactor = KiFactor * simulationParameters.TopDriveDrawwork.TopDriveInertia;
             }
 
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 3)
             {
                 //TODO move
-                TorqueFactor = 1.0 / simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // ZTorque factor
+                TorqueFactor = 1.0 / DrillStringImpedance; // ZTorque factor
             }
 
             Omega0Torque = 0.0;

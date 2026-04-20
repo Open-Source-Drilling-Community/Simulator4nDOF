@@ -176,8 +176,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                             ReferenceGeothermalProperties = geothermalProperties,
                             InterpolationStep = defaultStep
                         };                 
+                        // Send interpolation order
                         await APIUtils.ClientGeothermalProperties.PostGeothermalPropertiesCompletionOrderAsync(completedGeothermal);
+                        // Load interpolation order
                         completedGeothermal = await APIUtils.ClientGeothermalProperties.GetGeothermalPropertiesCompletionOrderByIdAsync(completedID);
+                        // Delete old interpolation from database
+                        await APIUtils.ClientGeothermalProperties.DeleteGeothermalPropertiesByIdAsync(completedGeothermal.CompletedGeothermalProperties.MetaInfo.ID);
                         return completedGeothermal.CompletedGeothermalProperties;
                     }   
                     catch 
