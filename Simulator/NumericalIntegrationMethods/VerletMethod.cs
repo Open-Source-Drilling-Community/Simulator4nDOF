@@ -176,21 +176,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
                 topOfStringRelativeAxialPosition = state.TopDrive.RelativeAxialPosition;
                 topOfStringRelativeAxialPositionMinus1 = topOfStringRelativeAxialPosition - state.TopDrive.AxialVelocity * timeStep;            
 
-                topDriveRotationAngle = state.TopDrive.RotationAngle;
-                topDriveRotationAngleMinus1 = topDriveRotationAngle - state.TopDrive.AngularVelocity * timeStep;            
+                topDriveRotationAngle = state.TopDrive.AngularDisplacement;
+                topDriveRotationAngleMinus1 = topDriveRotationAngle - state.TopDrive.AngularVelocity * timeStep + 0.5 * timeStepSquared * state.TopDrive.AngularAcceleration;            
                 
                 firstSurfaceStep = false;
             
             }
             // Integrate the top of string position and rotation angle
             state.TopDrive.RelativeAxialPosition = topOfStringRelativeAxialPositionMinus1 + timeStep * state.TopDrive.AxialVelocity;  
-            state.TopDrive.RotationAngle = topDriveRotationAngleMinus1 + timeStep * state.TopDrive.AngularVelocity;
+            state.TopDrive.AngularDisplacement = 2 * topDriveRotationAngle - topDriveRotationAngleMinus1 + timeStepSquared * state.TopDrive.AngularAcceleration;
+            state.TopDrive.AngularVelocity = 0.5 * (state.TopDrive.AngularDisplacement - topDriveRotationAngleMinus1) / timeStep;
             // Rollover top of string relative axial position for next iteration
             topOfStringRelativeAxialPositionMinus1 = topOfStringRelativeAxialPosition;
             topDriveRotationAngleMinus1 = topDriveRotationAngle;
             // Rollover top of string relative axial position for next iteration
             topOfStringRelativeAxialPosition = state.TopDrive.RelativeAxialPosition;
-            topDriveRotationAngle = state.TopDrive.RotationAngle;
+            topDriveRotationAngle = state.TopDrive.AngularDisplacement;
             // Return true is simulation is healthy
             return !double.IsNaN(state.TopDrive.RelativeAxialPosition);
         }

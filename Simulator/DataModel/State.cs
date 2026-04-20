@@ -91,7 +91,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
                 TopDriveMotorTorque = parameters.TopDriveDrawwork.TopDriveMotorTorque,
                 MaximumTopDriveTorque = parameters.TopDriveDrawwork.MaximumTopDriveTorque,
                 TopDriveRPMSetPoint = parameters.TopDriveDrawwork.TopDriveRPMSetPoint,
-                RotationAngle = 0,
+                AngularDisplacement = 0,
                 RelativeAxialPosition = 0,
                 AxialPosition = parameters.Input.InitialTopOfStringPosition
             };

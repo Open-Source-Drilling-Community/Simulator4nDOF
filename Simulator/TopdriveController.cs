@@ -179,7 +179,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             state.TopDrive.TopDriveMotorTorque = Math.Min(state.TopDrive.TopDriveMotorTorque, state.TopDrive.MaximumTopDriveTorque);
             state.TopDrive.TopDriveMotorTorque = Math.Max(state.TopDrive.TopDriveMotorTorque, 0);
-
+            
             IntegralError = IntegralError + simulationParameters.OuterLoopTimeStep * e_PI; // if configuration.dt is too large, controller may be too aggressive
         }
     }

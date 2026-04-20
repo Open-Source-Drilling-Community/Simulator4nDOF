@@ -65,7 +65,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         {
             //Calculate the top of string position based on the calculated speed        
             state.TopDrive.RelativeAxialPosition = state.TopDrive.RelativeAxialPosition + state.TopDrive.AxialVelocity * timeStep;     
-            state.TopDrive.RotationAngle = state.TopDrive.RotationAngle + state.TopDrive.AngularVelocity * timeStep;     
+            state.TopDrive.AngularDisplacement = state.TopDrive.AngularDisplacement + state.TopDrive.AngularVelocity * timeStep;     
             return !double.IsNaN(state.TopDrive.RelativeAxialPosition);
         }
 

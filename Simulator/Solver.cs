@@ -249,7 +249,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 // Update bit depth and top of string position based on current velocities for use in the bit-rock interaction model and top drive model within the inner loop
                 UpdateDepthInnerLoop();                                                                               
                 // Assuming the top drive is represented by the first element in the state vector for angular velocities
-                state.TopDrive.AngularVelocity = state.AngularVelocity[0]; 
+                //state.TopDrive.AngularVelocity = state.AngularVelocity[0]; 
                 // Calculate lateral accelerations                    
                 output.SimulationHealthy = solverODE.IntegrationStep(state, drillStringModel, in parameters);
                 bool sleeveHealth = solverODE.IntegrationSleeve(state, drillStringModel, in parameters);

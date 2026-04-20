@@ -483,8 +483,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         /// <returns>Net torsional elastic torque [N·m] at node <paramref name="i"/>.</returns>
         private double CalculateTorsionalElasticForce(int i, State state)
         {
-            //state.TopDrive.RotationAngle
-            double PhiMinus1 = (i == 0) ? state.TopDrive.RotationAngle : state.AngularDisplacement[i - 1];
+            //There is no element at i = -1. StiffnessLeft should aready be at 0.
+            double PhiMinus1 = (i == 0) ? 0.0 : state.AngularDisplacement[i - 1];
+            //There is no element at i = numberOfNodes. StiffnessRight should aready be at 0.
             double PhiPlus1 = (i == numberOfNodes - 1) ? 0.0 : state.AngularDisplacement[i + 1];                                                
             return - ( torsionalStiffnessLeft[i] * PhiMinus1  + torsionalStiffnessMid[i] * state.AngularDisplacement[i] + torsionalStiffnessRight[i] * PhiPlus1 );
         }
@@ -575,6 +576,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             #endregion
             //Update axial elastic forces beforehand - Needed for the equivalent stiffness
             CalculateAxialForceAxialDistribution(state);
+            // Topdrive Torque only applies to the first element
+            state.TopDrive.AngularAcceleration = (
+                                                    state.TopDrive.TopDriveMotorTorque 
+                                                    - torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[1]) 
+                                                    - inertiaProportionalDampingTorsional[0] * (state.TopDrive.AngularVelocity - state.AngularVelocity[1])  
+                                                ) / parameters.TopDriveDrawwork.TopDriveInertia;
+            // Apply boundary conditions from the top-drive
+            state.AngularVelocity[0] = state.TopDrive.AngularVelocity;
+            state.AngularDisplacement[0] = state.TopDrive.AngularDisplacement;            
+            //state.ZDisplacement[0] = state.TopDrive.AxialPosition;
+            //state.ZVelocity[0] = state.TopDrive.AxialVelocity;                
             // =============================== Main loop for calculating forces and accelerations in the lateral model ===============================
             for (int i = 0; i < numberOfNodes; i++)
             {                
@@ -824,9 +836,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 // The torque on bit only apply on the last element
                 torqueOnBit = (i == parameters.NumberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
-                // Topdrive Torque only applies to the first element                
-                topDriveTorque = (i == 0) ? state.TopDrive.TopDriveMotorTorque : 0.0;
-                sumTorque = elasticForcePhi  + topDriveTorque + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;
+                
+                // Sets a boundary-condition like fot the displacement                
+                sumTorque =  elasticForcePhi  + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;
                 // Variables are generated locally to facilitate debugging only.
                 angularAcceleration = sumTorque / torsionalLumpedInertia[i];      
                 xAcceleration = sumForcesX / (lateralLumpedMass[i] + addedLateralFluidMass[i]);
@@ -845,10 +857,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 state.Tension[i+1] = tension[i];
                 state.Torque[i+1] = torque[i];                
                 #endregion
-                if (Math.Abs(topDriveTorque) > 1E-10 )
-                {
-                    int debug = 0;
-                }
+
                 
                 #region  Debbugging Outputs                
                 //===============================================================================================

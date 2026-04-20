@@ -7,8 +7,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
     public class TopDriveAndDrawworkState
     {
         // Top Drive state variables
-        public double AngularVelocity;                // Top drive angular velocity        
-        public double RotationAngle;
+        public double AngularVelocity;                // Top drive angular velocity
+        public double AngularAcceleration;        
+        public double AngularDisplacement;
         public double TopDriveMotorTorque;                           // Top drive motor torque
         public double TopDriveRPMSetPoint;
         public double MaximumTopDriveTorque;                        // [N.m] maximum available top drive torque
