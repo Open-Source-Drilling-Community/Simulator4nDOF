@@ -2,127 +2,205 @@
 @inject ILogger<SimulationEdit> logger
 @inject ISnackbar Snackbar
 
-<!-- Full-width container for simulation content -->
-@if (SimulationList == null)
+@if (currentLightSimulation == null)
 {
-    <p><em>Loading...</em></p>
+    <MudPaper Class="pa-6" Elevation="1">
+        <MudText Typo="Typo.body1" Class="mb-3" Color="Color.Secondary">Loading simulation...</MudText>
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Rounded="true" Size="Size.Small" />
+    </MudPaper>
 }
-else if (currentLightSimulation != null)
+else
 {
-    <MudPaper Class="pa-4">
-        <MudGrid AlignItems="Center" GutterSize="16px">
-            <!-- Buttons Row -->
-            <MudItem xs="12">
-                <div style="display: flex; gap: 12px;">
-                    <MudButton OnClick="@GetCurrentSimulationHeavy"
-                               IconColor="Color.Primary"
-                               Size="Size.Medium"
-                               Style="border-radius: 8px;"
-                               Variant="Variant.Filled"
-                               StartIcon="@Icons.Material.Filled.Refresh">
-                        Get simulation results
-                    </MudButton>
-                    @if (currentSimulation != null && _sequenceNumber >= 0)
-                    {
-                        <MudTooltip Text="Sequence number of the last fetched results">
-                            <MudChip T="int" Color="Color.Info">@_sequenceNumber</MudChip>
-                        </MudTooltip>
-                    }
-                    @if (currentSimulation != null && _sequenceNumber < 0)
-                    {
-                        <MudButton OnClick="@ReRunSimulations"
-                                   IconColor="Color.Secondary"
-                                   Size="Size.Medium"
-                                   Style="border-radius: 8px;"
-                                   Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Filled.RunCircle">
-                            Re-run simulations
-                        </MudButton>
-                    }
-                    <MudButton OnClick="@CloseViewSimulationPanelOnClick"
-                               Color="Color.Error"
-                               Class="add-item-btn"
-                               StartIcon="@Icons.Material.Filled.ArrowBackIosNew">
-                        Back
-                    </MudButton>
-                </div>
-            </MudItem>
+    <MudPaper Elevation="1" Class="pa-0">
+        <!-- Toolbar -->
+        <MudToolBar Dense="false" Class="pa-3" Style="gap:8px; flex-wrap:wrap;">
+            <MudButton OnClick="@CloseViewSimulationPanelOnClick"
+                       Variant="Variant.Outlined"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.ArrowBackIosNew"
+                       Size="Size.Medium">
+                Back
+            </MudButton>
+            <MudDivider Vertical="true" FlexItem="true" Class="mx-1" />
+            <MudButton OnClick="@GetCurrentSimulationHeavy"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Medium"
+                       StartIcon="@Icons.Material.Filled.Refresh">
+                Load Results
+            </MudButton>
+            @if (currentSimulation != null && _sequenceNumber >= 0)
+            {
+                <MudTooltip Text="Sequence number of the last fetched chunk">
+                    <MudChip T="int" Color="Color.Info" Size="Size.Small"
+                             Icon="@Icons.Material.Filled.DataObject">
+                        Chunk @_sequenceNumber
+                    </MudChip>
+                </MudTooltip>
+            }
+            @if (currentSimulation != null && _sequenceNumber < 0)
+            {
+                <MudButton OnClick="@ReRunSimulations"
+                           Variant="Variant.Filled"
+                           Color="Color.Secondary"
+                           Size="Size.Medium"
+                           StartIcon="@Icons.Material.Filled.RunCircle">
+                    Re-run
+                </MudButton>
+            }
+            <MudSpacer />
+            <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)"
+                     Size="Size.Small" Variant="Variant.Filled"
+                     Icon="@Icons.Material.Filled.Speed">
+                @($"{currentLightSimulation.Progress:P0}")
+            </MudChip>
+            <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)"
+                     Size="Size.Small" Variant="Variant.Filled">
+                @GetTerminationStateLabel(currentLightSimulation.TerminationState)
+            </MudChip>
+        </MudToolBar>
+        <MudDivider />
 
-            <!-- Simulation Details -->
-            <MudItem xs="4" sm="4" lg="2" xl="2">
-                <MudTextField @bind-Value=currentLightSimulation.Name ReadOnly="@(currentSimulation == null)" Label="Name" Variant="Variant.Text"></MudTextField>
-            </MudItem>
-
-            <MudItem xs="8" sm="8" lg="4" xl="4">
-                <MudTextField @bind-Value=currentLightSimulation.Description ReadOnly="@(currentSimulation == null)" Label="Description" Variant="Variant.Text"></MudTextField>
-            </MudItem>
-            <MudItem xs="8" sm="4" lg="2" xl="2">
-                <MudTextField @bind-Value=currentLightSimulation.CreationDate ReadOnly="true" Label="Creation Date" Variant="Variant.Text"></MudTextField>
-            </MudItem>
-            <MudItem xs="8" sm="4" lg="2" xl="2">
-                <MudTextField @bind-Value=currentLightSimulation.LastModificationDate ReadOnly="true" Label="Modification Date" Variant="Variant.Text"></MudTextField>
-            </MudItem>
-            <MudItem xs="8" sm="2" lg="1" xl="1">
-                <MudText Typo="Typo.body1"><b>Progress:</b></MudText>
-                <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)" Class="ml-0">
-                    @($"{currentLightSimulation.Progress:P2}")
-                </MudChip>
-            </MudItem>
-            <MudItem xs="8" sm="2" lg="1" xl="1">
-                <MudText Typo="Typo.body1"><b>Status:</b></MudText>
-                <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)" Class="ml-0">
-                    @GetTerminationStateLabel(currentLightSimulation.TerminationState)
-                </MudChip>
-            </MudItem>
-        </MudGrid>
+        <!-- Simulation metadata -->
+        <div Class="pa-4">
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="4" md="3">
+                    <MudTextField @bind-Value=currentLightSimulation.Name
+                                  ReadOnly="@(currentSimulation == null)"
+                                  Label="Name" Variant="Variant.Outlined"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Label" />
+                </MudItem>
+                <MudItem xs="12" sm="8" md="5">
+                    <MudTextField @bind-Value=currentLightSimulation.Description
+                                  ReadOnly="@(currentSimulation == null)"
+                                  Label="Description" Variant="Variant.Outlined"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Notes" />
+                </MudItem>
+                <MudItem xs="6" sm="4" md="2">
+                    <MudTextField @bind-Value=currentLightSimulation.CreationDate
+                                  ReadOnly="true" Label="Created" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6" sm="4" md="2">
+                    <MudTextField @bind-Value=currentLightSimulation.LastModificationDate
+                                  ReadOnly="true" Label="Modified" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+        </div>
     </MudPaper>
     @if (currentSimulation != null)
     {
-        <MudExpansionPanels Class="mt-4 mb-4">
-            @if (currentSimulation.ContextualData != null)
-            {
-                <MudExpansionPanel Text="Contextual Data">
-                    <SimulationContextualData 
-                        Simulation="@currentSimulation" 
-                        Fields="@Fields" 
-                        Clusters="@Clusters" 
-                        Wells="@Wells" 
-                        WellBores="@WellBores" 
-                        DrillStrings="@DrillStrings" 
-                        Rigs="@Rigs" 
-                        Trajectories="@Trajectories" 
-                        WellBoreArchitectures="@WellBoreArchitectures" 
-                        FluidDescriptions="@FluidDescriptions"
-                        GeothermalProperties="@GeothermalProperties"/>
-                </MudExpansionPanel>
-            }
-            @if (currentSimulation.Config != null)
-            {
-                <MudExpansionPanel Text="Configuration">
-                    <SimulationConfiguration Simulation="@currentSimulation" />
-                </MudExpansionPanel>
-            }
-            @if (currentSimulation.InitialValues != null)
-            {
-                <MudExpansionPanel Text="Initial values">
-                    <SimulationInitialValues Simulation="@currentSimulation" />
-                </MudExpansionPanel>
-            }
-            @if (currentSimulation.SetPointsList != null)
-            {
-                <MudExpansionPanel Text="Set Points">
-                    <SetPointsEditor Simulation="@currentSimulation" />
+        @if (results == null)
+        {
+            <!-- No results yet: classic stacked expansion panels -->
+            <MudExpansionPanels Class="mt-4 mb-4">
+                @if (currentSimulation.ContextualData != null)
+                {
+                    <MudExpansionPanel Text="Contextual Data">
+                        <SimulationContextualData
+                            Simulation="@currentSimulation"
+                            Fields="@Fields"
+                            Clusters="@Clusters"
+                            Wells="@Wells"
+                            WellBores="@WellBores"
+                            DrillStrings="@DrillStrings"
+                            Rigs="@Rigs"
+                            Trajectories="@Trajectories"
+                            WellBoreArchitectures="@WellBoreArchitectures"
+                            FluidDescriptions="@FluidDescriptions"
+                            GeothermalProperties="@GeothermalProperties"/>
+                    </MudExpansionPanel>
+                }
+                @if (currentSimulation.Config != null)
+                {
+                    <MudExpansionPanel Text="Configuration">
+                        <SimulationConfiguration Simulation="@currentSimulation" />
+                    </MudExpansionPanel>
+                }
+                @if (currentSimulation.InitialValues != null)
+                {
+                    <MudExpansionPanel Text="Initial values">
+                        <SimulationInitialValues Simulation="@currentSimulation" />
+                    </MudExpansionPanel>
+                }
+                @if (currentSimulation.SetPointsList != null)
+                {
+                    <MudExpansionPanel Text="Set Points">
+                        <SetPointsEditor Simulation="@currentSimulation" />
+                        <MudButton OnClick="@AddSetPoint"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Size="Size.Small"
+                                   Class="mt-2">
+                            Add row
+                        </MudButton>
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        }
+        else
+        {
+            <!-- Results loaded: results on the left, config sidebar on the right -->
+            <div style="display:flex; gap:12px; align-items:flex-start; margin-top:16px; margin-bottom:16px;">
 
-                    <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
-                </MudExpansionPanel>
-            }
-            @if (results != null)
-            {
-                <MudExpansionPanel Text="Results" Expanded="true">
+                <!-- Main results area -->
+                <div style="flex:1; min-width:0;">
                     <SimulationResultsPanel @ref="resultsPanelRef" Results="@results" Simulation="@currentSimulation" />
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
+                </div>
+
+                <!-- Right config sidebar (sticky so it stays visible while scrolling charts) -->
+                <div style="flex:0 0 320px; width:320px; position:sticky; top:0; max-height:100vh; overflow-y:auto;">
+                    <MudExpansionPanels Elevation="1">
+                        @if (currentSimulation.ContextualData != null)
+                        {
+                            <MudExpansionPanel Text="Contextual Data">
+                                <SimulationContextualData
+                                    Simulation="@currentSimulation"
+                                    Fields="@Fields"
+                                    Clusters="@Clusters"
+                                    Wells="@Wells"
+                                    WellBores="@WellBores"
+                                    DrillStrings="@DrillStrings"
+                                    Rigs="@Rigs"
+                                    Trajectories="@Trajectories"
+                                    WellBoreArchitectures="@WellBoreArchitectures"
+                                    FluidDescriptions="@FluidDescriptions"
+                                    GeothermalProperties="@GeothermalProperties"/>
+                            </MudExpansionPanel>
+                        }
+                        @if (currentSimulation.Config != null)
+                        {
+                            <MudExpansionPanel Text="Configuration">
+                                <SimulationConfiguration Simulation="@currentSimulation" />
+                            </MudExpansionPanel>
+                        }
+                        @if (currentSimulation.InitialValues != null)
+                        {
+                            <MudExpansionPanel Text="Initial values">
+                                <SimulationInitialValues Simulation="@currentSimulation" />
+                            </MudExpansionPanel>
+                        }
+                        @if (currentSimulation.SetPointsList != null)
+                        {
+                            <MudExpansionPanel Text="Set Points">
+                                <SetPointsEditor Simulation="@currentSimulation" />
+                                <MudButton OnClick="@AddSetPoint"
+                                           Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           Size="Size.Small"
+                                           Class="mt-2">
+                                    Add row
+                                </MudButton>
+                            </MudExpansionPanel>
+                        }
+                    </MudExpansionPanels>
+                </div>
+
+            </div>
+        }
     }
 }
 

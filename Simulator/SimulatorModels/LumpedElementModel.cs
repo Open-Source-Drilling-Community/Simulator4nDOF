@@ -622,7 +622,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 elasticForcePhi = CalculateTorsionalElasticForce(i, state);
                 #endregion 
                 #region Bit-Rock Interaction
-                if (i == parameters.NumberOfNodes - 1)
+                if (i == numberOfNodes - 1)
                 {
                     // Populate the bit internal forces accordingly
                     bitInternalForces.ElasticAxialForce = elasticForceZ;
@@ -828,6 +828,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 // The torque on bit only apply on the last element
                 torqueOnBit = (i == parameters.NumberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
+                weightOnBit = (i == parameters.NumberOfElements) ? ( state.WeightOnBit   )    :   0.0   ;
                 // Sets a boundary-condition like for the angular displacement                                                
                 double boundaryTorque = (i == 0) ? 
                     + torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) : 0;

@@ -10,56 +10,107 @@
                               UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
     @if (SimulationList == null)
     {
-        <p><em>Loading...</em></p>
+        <MudPaper Class="pa-6" Elevation="1">
+            <MudText Typo="Typo.body1" Class="mb-3" Color="Color.Secondary">Loading simulations...</MudText>
+            <MudProgressLinear Indeterminate="true" Color="Color.Primary" Rounded="true" Size="Size.Small" />
+        </MudPaper>
     }
     else
     {
         @if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.MainVisible)
         {
-            <MudPaper Class="pa-4">
-                <MudButton OnClick="@AddSimulation" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add simulation </MudButton>
-                <br>
-                <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true" ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked">
-                    <Columns>
-                        <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 20%;" Sortable="true" Editable="false" />
-                        <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 35%;" Sortable="true" Editable="false" />
-                        <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Creation date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
-                        <PropertyColumn Property="x => x.LastModificationDate.ToString()" Title="Last modification date" CellStyle="width: 15%;" Sortable="true" Editable="false" />
+            <MudPaper Elevation="1" Class="pa-0">
+                <MudToolBar Dense="false" Class="pa-3" Style="gap:8px;">
+                    <MudText Typo="Typo.h6" Style="font-weight:500;">Simulations</MudText>
+                    <MudSpacer />
+                    @if (_mainPanelLogic.AutoUpdate)
+                    {
+                        <MudTooltip Text="Auto-refreshing while a simulation is running">
+                            <MudChip T="string" Color="Color.Info" Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.Sync">Live</MudChip>
+                        </MudTooltip>
+                    }
+                    <MudButton OnClick="@AddSimulation"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               Size="Size.Medium">
+                        New Simulation
+                    </MudButton>
+                </MudToolBar>
+                <MudDivider />
+                @if (SimulationList.Count == 0)
+                {
+                    <div class="d-flex flex-column align-center justify-center pa-10">
+                        <MudIcon Icon="@Icons.Material.Outlined.Science" Style="font-size:4rem; opacity:0.25;" />
+                        <MudText Typo="Typo.h6" Class="mt-3" Color="Color.Secondary">No simulations yet</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">Create your first simulation to get started.</MudText>
+                        <MudButton OnClick="@AddSimulation"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add">
+                            New Simulation
+                        </MudButton>
+                    </div>
+                }
+                else
+                {
+                    <MudDataGrid T="SimulationLight" MultiSelection="false" Items="@SimulationList" ReadOnly="true"
+                                 ColumnResizeMode="ResizeMode.Column" Elevation="0" RowClick="@RowClicked"
+                                 Hover="true" Striped="false" Dense="false">
+                        <Columns>
+                            <PropertyColumn Property="x => x.Name" Title="Name" CellStyle="width: 18%;" Sortable="true" Editable="false" />
+                            <PropertyColumn Property="x => x.Description" Title="Description" CellStyle="width: 32%;" Sortable="true" Editable="false" />
+                            <PropertyColumn Property="x => x.CreationDate.ToString()" Title="Created" CellStyle="width: 14%;" Sortable="true" Editable="false" />
+                            <PropertyColumn Property="x => x.LastModificationDate.ToString()" Title="Modified" CellStyle="width: 14%;" Sortable="true" Editable="false" />
 
-                        <TemplateColumn Title="Progress" CellStyle="width: 10%;">
-                            <CellTemplate Context="context">
-                                @($"{context.Item.Progress:P2}")
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <TemplateColumn Title="Termination State" CellStyle="width: 10%;">
-                            <CellTemplate Context="context">
-                                <MudChip Color="@GetTerminationColor(context.Item.TerminationState)">
-                                    @GetTerminationStateLabel(context.Item.TerminationState)
-                                </MudChip>
-                            </CellTemplate>
-                        </TemplateColumn>
+                            <TemplateColumn Title="Progress" CellStyle="width: 12%;" SortBy="x => x.Progress">
+                                <CellTemplate Context="context">
+                                    <div style="display:flex; align-items:center; gap:8px; min-width:100px;">
+                                        <MudProgressLinear Value="@(context.Item.Progress * 100)"
+                                                           Color="@GetProgressColor(context.Item.Progress)"
+                                                           Rounded="true" Size="Size.Small"
+                                                           Style="flex:1;" />
+                                        <MudText Typo="Typo.caption" Style="white-space:nowrap;">
+                                            @($"{context.Item.Progress:P0}")
+                                        </MudText>
+                                    </div>
+                                </CellTemplate>
+                            </TemplateColumn>
 
-                        <TemplateColumn Title="Actions" CellStyle="width: 5%;">
-                            <CellTemplate Context="context">
-                                <MudIconButton Icon="@Icons.Material.Outlined.Delete"
-                                               Size="Size.Small"
-                                               Color="Color.Error"
-                                               OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
-                                <MudIconButton Icon="@Icons.Material.Outlined.Visibility"
-                                               Size="Size.Small"
-                                               Color="Color.Success"
-                                               OnClick="() => ViewSimulation(context.Item.MetaInfo.ID)" />
-                            </CellTemplate>
+                            <TemplateColumn Title="Status" CellStyle="width: 10%;" SortBy="x => x.TerminationState">
+                                <CellTemplate Context="context">
+                                    <MudChip T="string" Color="@GetTerminationColor(context.Item.TerminationState)"
+                                             Size="Size.Small" Variant="Variant.Filled">
+                                        @GetTerminationStateLabel(context.Item.TerminationState)
+                                    </MudChip>
+                                </CellTemplate>
+                            </TemplateColumn>
 
-                        </TemplateColumn>
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="SimulationLight" />
-                    </PagerContent>
-                </MudDataGrid>
-
-                <MudButton OnClick="@AddSimulation" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add simulation </MudButton>
-                <br>
+                            <TemplateColumn Title="Actions" CellStyle="width: 8%;" Sortable="false">
+                                <CellTemplate Context="context">
+                                    <div style="display:flex; gap:2px;">
+                                        <MudTooltip Text="Open simulation">
+                                            <MudIconButton Icon="@Icons.Material.Outlined.OpenInFull"
+                                                           Size="Size.Small"
+                                                           Color="Color.Primary"
+                                                           OnClick="() => ViewSimulation(context.Item.MetaInfo.ID)" />
+                                        </MudTooltip>
+                                        <MudTooltip Text="Delete simulation">
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                                           Size="Size.Small"
+                                                           Color="Color.Error"
+                                                           OnClick="() => DeleteSimulation(context.Item.MetaInfo.ID)" />
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="SimulationLight" />
+                        </PagerContent>
+                    </MudDataGrid>
+                }
             </MudPaper>
         }
         else if (_mainPanelLogic != null && _mainPanelLogic.PanelState == PanelState.NewSimulationVisible)

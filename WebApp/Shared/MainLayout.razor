@@ -1,6 +1,6 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="_theme" />
 <MudPopoverProvider />
 <MudDialogProvider FullWidth="true"
                    MaxWidth="MaxWidth.ExtraExtraLarge"
@@ -11,24 +11,55 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Drilling Simulator 4n Degrees of Freedom</MudText>
+    <MudAppBar Elevation="2" Dense="false">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudIcon Icon="@Icons.Material.Filled.Cyclone" Color="Color.Inherit" Class="ml-2 mr-1" Style="font-size:1.5rem;" />
+        <MudText Typo="Typo.h6" Class="ml-1" Style="font-weight:500; letter-spacing:0.3px;">Drilling Simulator 4nDOF</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
-    @*<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Variant="DrawerVariant.Temporary">
+        <MudDrawerHeader Class="d-flex align-center" Style="gap:8px;">
+            <MudIcon Icon="@Icons.Material.Filled.Cyclone" Color="Color.Primary" />
+            <MudText Typo="Typo.subtitle1" Style="font-weight:600;">4nDOF Simulator</MudText>
+        </MudDrawerHeader>
+        <MudDivider />
         <NavMenu />
-    </MudDrawer>*@
+    </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pt-4 pb-6">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#1565C0",
+            PrimaryDarken = "#0D47A1",
+            PrimaryLighten = "#1E88E5",
+            Secondary = "#E65100",
+            AppbarBackground = "#0D2240",
+            AppbarText = "#FFFFFF",
+            DrawerBackground = "#F5F7FA",
+            DrawerText = "#0D2240",
+            DrawerIcon = "#1565C0",
+            Background = "#F0F2F5",
+            Surface = "#FFFFFF",
+            Success = "#2E7D32",
+            Info = "#0277BD",
+            Warning = "#F57C00",
+            Error = "#C62828",
+            TextPrimary = "#1A1A2E",
+            TextSecondary = "#546E7A",
+            ActionDefault = "#546E7A",
+            Divider = "#E0E0E0",
+        }
+    };
+
+    bool _drawerOpen = false;
 
     void DrawerToggle()
     {

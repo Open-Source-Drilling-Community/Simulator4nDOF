@@ -1,67 +1,95 @@
-﻿@using NORCE.Drilling.Simulator4nDOF.WebApp
+@using NORCE.Drilling.Simulator4nDOF.WebApp
 @inject ILogger<SimulationNew> logger
 @inject ISnackbar Snackbar
 
 @if (Simulation != null)
 {
-    <MudPaper Class="pa-4">
-        <MudCollapse Expanded=true>
-            <MudText Typo="Typo.h5">Edit new simulation </MudText>
-            <MudToolBar>
-                <MudButton OnClick="@AddSimulation" IconColor="Color.Success" Class="add-item-btn" StartIcon="@Icons.Material.Filled.Check">Add simulation</MudButton>
-                <MudButton OnClick="@CloseViewSimulationPanelOnClick" Color="Color.Error" Class="add-item-btn" StartIcon="@Icons.Material.Filled.ArrowBackIosNew">Back</MudButton>
-            </MudToolBar>
-            <MudPaper Class="pa-4">
-                <MudGrid RowSpacing="0" Style="margin-top:-0px;">
-                    <MudItem xs="2">
-                        <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Text"></MudTextField>
-                    </MudItem>
-                    <MudItem xs="2">
-                        <MudTextField @bind-Value=Simulation.Description Label="Description" Variant="Variant.Text"></MudTextField>
-                    </MudItem>
-                </MudGrid>
-                @if (Simulation?.ContextualData != null)
-                {
-                    <br>
-                    <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Contextual data </MudText>
-                    <SimulationContextualData 
-                        Simulation="@Simulation" 
-                        Fields="@Fields" 
-                        Clusters="@Clusters" 
-                        Wells="@Wells" 
-                        WellBores="@WellBores" 
-                        DrillStrings="@DrillStrings" 
-                        Rigs="@Rigs"
-                        Trajectories="@Trajectories" 
-                        WellBoreArchitectures="@WellBoreArchitectures"
-                        FluidDescriptions="@FluidDescriptions"
-                        GeothermalProperties="@GeothermalProperties"/>
-                }
-                @if (Simulation?.Config != null)
-                {
-                    <br>
-                    <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;">Configuration </MudText>
-                    <SimulationConfiguration Simulation="@Simulation" />
-                }
-                @if (Simulation?.InitialValues != null)
-                {
-                    <br>
-                    <MudText Typo="Typo.h6" Style="margin-bottom:-12px; margin-top: 12px;" MudText>Initial values </MudText>
-                    <SimulationInitialValues Simulation="@Simulation" />
-                }
-                @if (Simulation?.SetPointsList != null)
-                {
-                    <br>
-                    <MudText Typo="Typo.h6">Set points</MudText>
+    <MudPaper Elevation="1" Class="pa-0">
+        <!-- Header toolbar -->
+        <MudToolBar Dense="false" Class="pa-3" Style="gap:8px;">
+            <MudIcon Icon="@Icons.Material.Filled.Science" Color="Color.Primary" Class="mr-1" />
+            <MudText Typo="Typo.h6" Style="font-weight:500;">New Simulation</MudText>
+            <MudSpacer />
+            <MudButton OnClick="@CloseViewSimulationPanelOnClick"
+                       Variant="Variant.Outlined"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.ArrowBackIosNew"
+                       Size="Size.Medium">
+                Back
+            </MudButton>
+            <MudButton OnClick="@AddSimulation"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.RocketLaunch"
+                       Size="Size.Medium">
+                Run Simulation
+            </MudButton>
+        </MudToolBar>
+        <MudDivider />
 
-                    <SetPointsEditor Simulation="@Simulation" />
+        <div Class="pa-4">
+            <!-- Name & Description -->
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="4" md="3">
+                    <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Outlined"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Label" />
+                </MudItem>
+                <MudItem xs="12" sm="8" md="9">
+                    <MudTextField @bind-Value=Simulation.Description Label="Description" Variant="Variant.Outlined"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Notes" />
+                </MudItem>
+            </MudGrid>
 
-                    <MudButton OnClick="@AddSetPoint" IconColor="Color.Success" StartIcon="@Icons.Material.Filled.Add">Add set points </MudButton>
-                } 
-            </MudPaper>
-        </MudCollapse>
+            @if (Simulation?.ContextualData != null)
+            {
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight:600;">Contextual Data</MudText>
+                <SimulationContextualData
+                    Simulation="@Simulation"
+                    Fields="@Fields"
+                    Clusters="@Clusters"
+                    Wells="@Wells"
+                    WellBores="@WellBores"
+                    DrillStrings="@DrillStrings"
+                    Rigs="@Rigs"
+                    Trajectories="@Trajectories"
+                    WellBoreArchitectures="@WellBoreArchitectures"
+                    FluidDescriptions="@FluidDescriptions"
+                    GeothermalProperties="@GeothermalProperties"/>
+            }
+
+            @if (Simulation?.Config != null)
+            {
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight:600;">Configuration</MudText>
+                <SimulationConfiguration Simulation="@Simulation" />
+            }
+
+            @if (Simulation?.InitialValues != null)
+            {
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight:600;">Initial Values</MudText>
+                <SimulationInitialValues Simulation="@Simulation" />
+            }
+
+            @if (Simulation?.SetPointsList != null)
+            {
+                <MudDivider Class="my-4" />
+                <div class="d-flex align-center mb-3" style="gap:8px;">
+                    <MudText Typo="Typo.subtitle1" Style="font-weight:600;">Set Points</MudText>
+                    <MudSpacer />
+                    <MudButton OnClick="@AddSetPoint"
+                               Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               Size="Size.Small">
+                        Add row
+                    </MudButton>
+                </div>
+                <SetPointsEditor Simulation="@Simulation" />
+            }
+        </div>
     </MudPaper>
-
 }
 
 @code {
@@ -92,16 +120,11 @@
     [Parameter]
     public List<GeothermalProperties>? GeothermalProperties { get; set; } = null;
 
-
-
     [Parameter]
     public MainPanelLogic? MainPanelLogic { get; set; } = null;
 
     [Parameter]
     public EventCallback OnRefresh { get; set; }
-
-
-
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
@@ -110,47 +133,7 @@
     {
         DataUtils.UnitAndReferenceParameters.UnitSystemName = (string)val;
     }
-    private async Task<bool> CheckSimulationInputs()
-    {
-        string errorMessage = "";
-        bool simulationReady = true;
-        if (Simulation != null)
-        {
-            if (Simulation.ContextualData.DrillStringID == null || Simulation.ContextualData.DrillStringID == Guid.Empty)
-            {
-                errorMessage += "\nt- Please select a Drill String";
-                simulationReady = false;
-            }
-            if (Simulation.ContextualData.TrajectoryID == null || Simulation.ContextualData.TrajectoryID == Guid.Empty)
-            {
-                errorMessage = "\n\t- Please select a Trajectory";
-                simulationReady = false;
-            }
-            if (RequiresRigSelection() && (Simulation.ContextualData.RigID == null || Simulation.ContextualData.RigID == Guid.Empty))
-            {
-                errorMessage = "\n\t- Please select a Rig for a non-fixed platform cluster"; 
-                simulationReady = false;
-            }
-            if (Simulation.ContextualData.DrillingFluidDescriptionID == null || Simulation.ContextualData.DrillStringID == Guid.Empty)
-            {
-                errorMessage = "\n\t- Please select a drilling fluid"; 
-                simulationReady = false;
-            }
-            if (!simulationReady)
-            {
-                 Snackbar.Add(errorMessage, Severity.Warning);
-            }
-            //Return true if the simulation is ready
-            return simulationReady;
-        }
-        else 
-        {
-            simulationReady = false;
-            return simulationReady;
-        }
-        
-        
-    }
+
     private async Task AddSimulation()
     {
         if (Simulation != null)
@@ -236,5 +219,4 @@
         var cluster = Clusters.FirstOrDefault(x => x.MetaInfo?.ID == well.ClusterID);
         return cluster != null && !cluster.IsFixedPlatform;
     }
-
 }
