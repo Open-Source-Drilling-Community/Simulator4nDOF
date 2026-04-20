@@ -359,7 +359,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             output.Depth[0] = state.ZDisplacement[0] + state.TopDrive.AxialPosition;
             for (int i = 1; i < parameters.NumberOfElements; i ++)
             {
-                output.Depth[i] = output.Depth[i - 1] + state.ZDisplacement[i] + parameters.Drillstring.ElementLength[i-1];   
+                output.Depth[i] = state.ZDisplacement[i] + parameters.Drillstring.RelativeNodeDepth[i];   
             }
             output.BitVelocity = state.BitVelocity;//Bit Velocity
             // Parse outputs

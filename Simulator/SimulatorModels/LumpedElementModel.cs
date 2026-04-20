@@ -54,7 +54,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double[] addedLateralFluidMass; // Lumped mass is diagonal. So can be represented as a vector        
         private double[] torsionalLumpedInertia; // Lumped mass is diagonal. So can be represented as a vector
         private double[] secondMomentOfArea; // Lumped mass is diagonal. So can be represented as a vector
-        private double[] quasiStaticPressureDifference; // Quasi-static pressure induced-force due to inner/outer pressure difference 
         
         private IBitRock bitRockModel;  // Bit-rock interaction model      
         private BitInternalForces bitInternalForces; // Class to input bit internal forces
@@ -76,8 +75,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double zAcceleration;
         private double rotationSpeed;
         private double rotationSpeedSquared;
-        private double rotationAngle;
-        private double rotationAcceleration;
         private double axialVelocity;   
         // Axial and torsional data for coupling.           
         private double torqueOnBit;
@@ -309,7 +306,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             for (int i = 1; i < state.XDisplacement.Count - 1; i++)
             {
                 invElementLengthSquared = 1.0 / (simulationParameters.Drillstring.ElementLength[i] * simulationParameters.Drillstring.ElementLength[i]);
-
                 //XiMinus1 = (i == 0) ? 0.0 : state.XDisplacement[i - 1];
                 //YiMinus1 = (i == 0) ? 0.0 : state.YDisplacement[i - 1];
                 //XiPlus1 = (i == state.XDisplacement.Count - 1) ? 0.0 : state.XDisplacement[i + 1];
@@ -323,8 +319,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                          * d2Xdz2; // Bending moment x-component
                 momentY = simulationParameters.Drillstring.ElementYoungModuli[i]
                          * simulationParameters.Drillstring.ElementPolarInertia[i]
-                         * d2Ydz2; //
-                
+                         * d2Ydz2; //                
                 state.BendingMomentX[i] =  momentX;
                 state.BendingMomentY[i] =  momentY;
             }
@@ -696,8 +691,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // lateral forces due to mass imbalance
                 // The imbalance force comes from the assumption that the pipe element center of mass i slocated at a distance from its geometric center, 
                 // which causes a lateral force and a torque as the pipe is displaced                
-                rotationAngle = hasSleeve ? state.SleeveAngularDisplacement[sleeveIndex] : state.AngularDisplacement[i];                                        
-                rotationAcceleration = hasSleeve ? state.SleeveAngularAcceleration[sleeveIndex] : state.AngularAcceleration[i]; 
                 // The unbalance uses the pipe properties, not the sleeve. This is because the pipe is still rotating withing the sleeve.                                       
                 unbalanceForceX = nodeEccentricity[i] *
                     (
@@ -835,11 +828,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 // The torque on bit only apply on the last element
                 torqueOnBit = (i == parameters.NumberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
+                // Sets a boundary-condition like for the angular displacement                                                
                 double boundaryTorque = (i == 0) ? 
                     + torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) : 0;
-                // Sets a boundary-condition like fot the displacement                
-                sumTorque =  elasticForcePhi + boundaryTorque + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;
-                // Variables are generated locally to facilitate debugging only.
+                sumTorque =  elasticForcePhi + boundaryTorque + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;                
+                double boundaryAxial = (i == 0) ? 
+                    + axialStiffnessMid[0] * (state.TopDrive.RelativeAxialPosition - state.ZDisplacement[0]) : 0;
+                sumForcesZ += boundaryAxial;                   
+                // Variables are generated locally to facilitate debugging only.          
                 angularAcceleration = sumTorque / torsionalLumpedInertia[i];      
                 xAcceleration = sumForcesX / (lateralLumpedMass[i] + addedLateralFluidMass[i]);
                 yAcceleration = sumForcesY / (lateralLumpedMass[i] + addedLateralFluidMass[i]);

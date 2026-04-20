@@ -90,7 +90,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             SimulationHealthy = true;
             this.configuration = config;
         }
-
+        public void UpdateOutputs()
+        {
+            
+        }
         private void AddSurfaceRPM(double value)
         {
             if (SurfaceRPMQueue.Count >= queueSize)
