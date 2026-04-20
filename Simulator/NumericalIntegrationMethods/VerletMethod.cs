@@ -183,7 +183,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             
             }
             // Integrate the top of string position and rotation angle
-            state.TopDrive.RelativeAxialPosition = topOfStringRelativeAxialPositionMinus1 + timeStep * state.TopDrive.AxialVelocity;  
+            state.TopDrive.RelativeAxialPosition = topOfStringRelativeAxialPositionMinus1 + 2 * timeStep * state.TopDrive.AxialVelocity;  
             state.TopDrive.AngularDisplacement = 2 * topDriveRotationAngle - topDriveRotationAngleMinus1 + timeStepSquared * state.TopDrive.AngularAcceleration;
             state.TopDrive.AngularVelocity = 0.5 * (state.TopDrive.AngularDisplacement - topDriveRotationAngleMinus1) / timeStep;
             // Rollover top of string relative axial position for next iteration

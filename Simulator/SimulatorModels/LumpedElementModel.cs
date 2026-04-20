@@ -833,7 +833,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     + torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) : 0;
                 sumTorque =  elasticForcePhi + boundaryTorque + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;                
                 double boundaryAxial = (i == 0) ? 
-                    + 2 * axialStiffnessMid[0] * (state.TopDrive.RelativeAxialPosition - state.ZDisplacement[0])
+                    + axialStiffnessMid[0] * (state.TopDrive.RelativeAxialPosition - state.ZDisplacement[0])
                     : 0;
                 sumForcesZ += boundaryAxial;                   
                 // Variables are generated locally to facilitate debugging only.          
