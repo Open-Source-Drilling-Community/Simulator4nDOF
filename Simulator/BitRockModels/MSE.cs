@@ -37,15 +37,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         {
             double tb = 0.0;
             double wb = 0.0;
-            double angularVelocity = state.BitVelocity / simulationParameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius
+            double tangentialVelocity = state.AngularVelocity[state.AngularVelocity.Count - 1] / simulationParameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius
             if (state.BitOnBotton)
             {
                 // Update the last element of l
                 int lastIndex = state.DepthOfCut.Count - 1;
-                state.DepthOfCut[lastIndex] = (1 - AlphaROP) * state.DepthOfCut[lastIndex] + AlphaROP * 2 * Math.PI * state.BitVelocity / angularVelocity * (angularVelocity > 0.5 ? 1 : 0);
+                state.DepthOfCut[lastIndex] = (1 - AlphaROP) * state.DepthOfCut[lastIndex] + AlphaROP * 2 * Math.PI * state.ZVelocity[state.ZVelocity.Count - 1] / tangentialVelocity * (tangentialVelocity > 0.5 ? 1 : 0);
                 state.DepthOfCut[lastIndex] = Math.Max(state.DepthOfCut[lastIndex], 0);
                 // Calculate mu_b
-                double mu_b = Mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * angularVelocity / (2.0 * Math.PI)));
+                double mu_b = Mu * 0.5 * (1 + Math.Exp(- BitRockFrictionExponent * tangentialVelocity / (2.0 * Math.PI)));
                 // Calculate wb
                 wb = Math.PI * Math.Pow(simulationParameters.Drillstring.BitRadius, 2) * CCS / BitEfficiencyFactor / (1 + 2 * mu_b * simulationParameters.Drillstring.BitRadius / (3 * state.DepthOfCut[lastIndex]));
                 wb = Math.Max(wb, 0);

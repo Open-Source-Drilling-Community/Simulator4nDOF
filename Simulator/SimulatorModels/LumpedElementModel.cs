@@ -78,6 +78,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         private double axialVelocity;   
         // Axial and torsional data for coupling.           
         private double torqueOnBit;
+        private double weightOnBit;
         double topDriveTorque;
         // Normal force variables
         private double heavesideStep;
@@ -621,18 +622,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // ------------------ Torsional Elastic Forces Calculation --------------------
                 elasticForcePhi = CalculateTorsionalElasticForce(i, state);
                 #endregion 
-                #region Bit-Rock Interaction
-                if (i == numberOfNodes - 1)
-                {
-                    // Populate the bit internal forces accordingly
-                    bitInternalForces.ElasticAxialForce = elasticForceZ;
-                    bitInternalForces.ElasticTorque = elasticForcePhi;                               
-                    //  Calculate interaction forces on bit based on selected bit-rock model 
-                    // and update the state accordingly                
-                    bitRockModel.CalculateInteractionForce(state, in parameters, in bitInternalForces);
-                    bitRockModel.ManageStickingOnBottom(state, in parameters, in bitInternalForces);           
-                }
-                #endregion                
+                          
                 #region Elastic Forces Calculation                
                 // ------------------ Lateral Elastic Forces Calculation ------------------
                 // If it is the first element, get the pinned boundary condition
@@ -826,9 +816,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     // Why is there a TimeStep in here?                    
                     state.SleeveAngularAcceleration[sleeveIndex] = parameters.InnerLoopTimeStep * (sleeveBrakeForce * parameters.Drillstring.SleeveInnerRadius - parameters.Drillstring.SleeveOuterRadius * state.SleeveForces[i]) / parameters.Drillstring.SleeveMassMomentOfInertia;;
                 }
-                // The torque on bit only apply on the last element
-                torqueOnBit = (i == parameters.NumberOfElements) ? (   parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit   )    :   0.0   ;
-                weightOnBit = (i == parameters.NumberOfElements) ? ( state.WeightOnBit   )    :   0.0   ;
+
+                #region Bit-Rock Interaction
+                if (i == numberOfNodes - 1)
+                {
+                    // Populate the bit internal forces accordingly
+                    bitInternalForces.ElasticAxialForce = elasticForceZ;
+                    bitInternalForces.ElasticTorque = elasticForcePhi;                               
+                    //  Calculate interaction forces on bit based on selected bit-rock model 
+                    // and update the state accordingly                
+                    bitRockModel.CalculateInteractionForce(state, in parameters, in bitInternalForces);
+                    bitRockModel.ManageStickingOnBottom(state, in parameters, in bitInternalForces);       
+                    // The torque on bit only apply on the last element
+                    torqueOnBit =  parameters.UseMudMotor ? state.MudTorque : state.TorqueOnBit;
+                    weightOnBit =  state.WeightOnBit ;                                   
+                }
+                else
+                {
+                    torqueOnBit = 0.0;
+                    weightOnBit = 0.0;                    
+                }
+                #endregion      
                 // Sets a boundary-condition like for the angular displacement                                                
                 double boundaryTorque = (i == 0) ? 
                     + torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) : 0;

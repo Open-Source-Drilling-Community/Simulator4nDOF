@@ -46,7 +46,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 
         private double torqueOnBit;
         private double weightOnBit;
-        private double angularVelocity;
+        private double tangentialVelocity;
         private double bitStrain;
 
         private double previousDepthOfCut;
@@ -59,7 +59,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         private double reg;
         private double cuttingWeightOnBit;
         private double cuttingTorque;
-        private double ga;
+        private double ga = 1;
         private double weightOnBitFriction;
         private double torqueFriction;
         public Detournay(
@@ -71,10 +71,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
             l = configuration.BitWearLength;
             Mu = configuration.BitRockFrictionCoeff;
             N = configuration.PdcBladeNo;
-
-            // Bit - rock interaction parameters
-            WeightOnBitFrictionComponent = drillString.BitRadius * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
-            TorqueFrictionComponent = gamma * Mu * drillString.BitRadius / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
+            
+            
             /* Alpha ROP is not used! */
             //double dtTemp = axialModel.ElementLength / 
             //    Math.Max(torsionalModel.WaveSpeed, axialModel.WaveSpeed) * 0.80; //As per the CFL condition for the axial / torsional wave equations
@@ -84,25 +82,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
 
         public void CalculateInteractionForce(State state, in SimulationParameters parameters, in BitInternalForces bitInternalForces)
         {
-            angularVelocity = state.BitVelocity / parameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius 
+            tangentialVelocity = state.AngularVelocity[state.AngularVelocity.Count - 1] / parameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius 
             bitStrain = (state.ZDisplacement[state.ZDisplacement.Count - 1] - state.ZDisplacement[state.ZDisplacement.Count - 2]) / parameters.Drillstring.ElementLength[parameters.Drillstring.ElementLength.Count - 1]; // Assuming the last element corresponds to the bit
             if (state.BitOnBotton)
             {
                 lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l
                 maxValue = Math.Max(lastElement, 0); // Compute max(l(end), 0)
-                d = this.N * maxValue; // Compute d
+                d = N * maxValue; // Compute d
                 epsilon = 2 * Math.PI * 0.2;  // regularization term to avoid numerical issues at zero bit velocity
-                reg = angularVelocity / Math.Sqrt(Math.Pow(angularVelocity, 2) + Math.Pow(epsilon, 2));
                 cuttingWeightOnBit = d * parameters.Drillstring.BitRadius * zeta * epsilon;   // Cutting component of weight on bit
                 cuttingTorque = d * Math.Pow(parameters.Drillstring.BitRadius, 2) * epsilon / 2.0 * Math.Pow(reg, 2); // Cutting component of bit torque
-                ga = 1.0;
+                // Bit - rock interaction parameters
+                WeightOnBitFrictionComponent = parameters.Drillstring.BitRadius * l * sigma;                             // [N] Frictional component of weight on bit(Detournay model)
+                TorqueFrictionComponent = gamma * Mu * parameters.Drillstring.BitRadius / 2 * WeightOnBitFrictionComponent;                   // [N.m] Frictional component of torque on bit(Detournay model)
                 weightOnBitFriction = WeightOnBitFrictionComponent * ga;
-                torqueFriction = 0.5 * (1 + Math.Exp(-Mu * angularVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
-                //double g_tt = torsionalModel.DownwardWave[torsionalModel.DownwardWave.Count - 1] * 
-                //                simulationParameters.Drillstring.PipePolarMoment.Last() 
-                //                * simulationParameters.Drillstring.ShearModuli.Last() / simulationParameters.Drillstring.TorsionalWaveSpeed - tc - tf;                            
+            
+                reg = tangentialVelocity / Math.Sqrt(Math.Pow(tangentialVelocity, 2) + Math.Pow(epsilon, 2));
+                torqueFriction = 0.5 * (1 + Math.Exp(-Mu * tangentialVelocity / (2.0 * Math.PI))) * TorqueFrictionComponent * ga;
+                
                 double totalBitTorque = bitInternalForces.ElasticTorque - cuttingTorque - torqueFriction;                
-                totalBitTorque = (angularVelocity < 0.1) ? Math.Min(totalBitTorque, 0) : 0;              
+                totalBitTorque = (tangentialVelocity < 0.1) ? Math.Min(totalBitTorque, 0) : 0;              
 
                 double totalWeightOnBit = bitInternalForces.ElasticAxialForce - cuttingWeightOnBit - weightOnBitFriction;
                 totalWeightOnBit = (Math.Abs(totalBitTorque) > 1e-3) ? totalWeightOnBit : 0;
@@ -110,12 +109,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
                 // Calculate torque on bit and weight on bit
                 torqueOnBit = cuttingTorque + torqueFriction + totalBitTorque;
                 weightOnBit = cuttingWeightOnBit + weightOnBitFriction + totalWeightOnBit;
-                double constant = Math.Max(angularVelocity, 0) * N / (2 * Math.PI/parameters.dxl);
+                double constant = Math.Max(tangentialVelocity, 0) * N / (2 * Math.PI/parameters.dxl);
                 for (int i = 0; i < state.DepthOfCut.Count; i++)
                 {
                     previousDepthOfCut = i == 0 ? 0:state.DepthOfCut[i-1];
                     diffDepthOfCut = state.DepthOfCut[i] - previousDepthOfCut;
-                    state.DepthOfCut[i] -= parameters.InnerLoopTimeStep * ( constant * diffDepthOfCut - state.BitVelocity);        
+                    state.DepthOfCut[i] -= parameters.InnerLoopTimeStep * ( constant * diffDepthOfCut - state.ZVelocity[state.ZVelocity.Count - 1]);        
                 }
             }
             else

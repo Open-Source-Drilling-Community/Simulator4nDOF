@@ -48,7 +48,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         // Depths and positions
         public double BitDepth;                               // Bit depth
         public double HoleDepth;                              // Hole depth
-        public double BitVelocity;                            // Bit velocity
         // State outputs for reconstruction
         public Vector<double> BendingMomentX;
         public Vector<double> BendingMomentY;
