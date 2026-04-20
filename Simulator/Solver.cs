@@ -111,7 +111,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
             InnerStep();
             output.UpdateSSI(state.Step * parameters.OuterLoopTimeStep);
-            state.Step = state.Step + 1;
+            state.Step += 1;
             return (state, output, parameters.Input);
         }
 
@@ -128,8 +128,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         }
          public void UpdateDepthInnerLoop()
         {
-            state.BitDepth = state.BitDepth + state.BitVelocity * parameters.InnerLoopTimeStep;
-            state.TopDrive.AxialPosition = state.TopDrive.AxialPosition - state.TopDrive.AxialVelocity * parameters.InnerLoopTimeStep;
+            state.BitDepth = parameters.Input.InitialBitDepth + state.ZDisplacement[state.ZDisplacement.Count - 1];
+            state.TopDrive.AxialPosition = parameters.Input.InitialTopOfStringPosition + state.TopDrive.RelativeAxialPosition;
 
             if (state.HoleDepth < state.BitDepth && !state.BitOnBotton)
                 state.OnBottomStart = state.Step;
@@ -243,9 +243,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             // Wave equations are transformed into their Riemann invariants
             drillStringModel.PrepareModel(state, parameters);
+            
             // Solve lumped and distributed equations
             for (int innerIterationNo = 0; innerIterationNo < parameters.InnerLoopIterations; innerIterationNo++)
             {
+                if (state.Step == 2 && innerIterationNo == parameters.InnerLoopIterations - 5)
+                {
+                    int debug = 0;
+                }
                 // Update bit depth and top of string position based on current velocities for use in the bit-rock interaction model and top drive model within the inner loop
                 UpdateDepthInnerLoop();                                                                               
                 // Assuming the top drive is represented by the first element in the state vector for angular velocities
@@ -361,7 +366,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             {
                 output.Depth[i] = state.ZDisplacement[i] + parameters.Drillstring.RelativeNodeDepth[i];   
             }
-            output.BitVelocity = state.BitVelocity;//Bit Velocity
+            output.BitVelocity = state.ZVelocity[state.ZVelocity.Count - 1];//Bit Velocity
             // Parse outputs
             output.NormalForceProfileStiffString = state.NormalCollisionForce; // Pipe shear strain 
             output.NormalForceProfileSoftString = state.SoftStringNormalForce;

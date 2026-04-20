@@ -72,7 +72,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 ConnectionTime = configuration.ConnectionTime
             };
            
-            double dtTemp = 1E-4;  // Needs to be changed
+            double dtTemp = 1E-5;  // Needs to be changed
             dxl = 1.0 / CellsInDepthOfCut;
             // That is the depth of cut minimum time-step
             dtl = dxl / (10.0 * TopDriveDrawwork.SurfaceRotation);  // The CFL condition here will use 10 times the top speed for the depth of cut PDE

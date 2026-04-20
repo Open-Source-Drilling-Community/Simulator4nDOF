@@ -244,7 +244,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                             / parameters.Drillstring.ElementLength[i];
                 // The torsional stiffness is calculated as G * J / L, where G is the shear modulus,                 
                 // where J = 2I is the area moment of inertia. Each element matrix can be found in /AxuiliarDevFiles/LumpedParameterMatrices.wxmx 
-                double torsionalStiffness = parameters.Drillstring.ElementShearModuli[i] * parameters.Drillstring.ElementPolarInertia[i] / parameters.Drillstring.ElementLength[i];;         
+                double torsionalStiffness = parameters.Drillstring.ElementShearModuli[i] * parameters.Drillstring.ElementPolarInertia[i] / parameters.Drillstring.ElementLength[i];         
                 //   Add the local elements to the global 
                 // element matrix.
                 // ---------- Lateral Stiffness -----------  
@@ -833,7 +833,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                     + torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[0]) : 0;
                 sumTorque =  elasticForcePhi + boundaryTorque + torqueOnBit - frictionTorque - inertiaProportionalDampingTorsional[i] * rotationSpeed;                
                 double boundaryAxial = (i == 0) ? 
-                    + axialStiffnessMid[0] * (state.TopDrive.RelativeAxialPosition - state.ZDisplacement[0]) : 0;
+                    + 2 * axialStiffnessMid[0] * (state.TopDrive.RelativeAxialPosition - state.ZDisplacement[0])
+                    : 0;
                 sumForcesZ += boundaryAxial;                   
                 // Variables are generated locally to facilitate debugging only.          
                 angularAcceleration = sumTorque / torsionalLumpedInertia[i];      
@@ -851,7 +852,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 state.YAcceleration[i] = yAcceleration;   
                 state.AngularAcceleration[i] = angularAcceleration;                       
                 state.Tension[i+1] = tension[i];
-                state.Torque[i+1] = torque[i];                
+                state.Torque[i+1] = torque[i];      
+                if (i == numberOfNodes - 1)
+                {
+                    int debug = 1;
+                }          
                 #endregion
 
                 
