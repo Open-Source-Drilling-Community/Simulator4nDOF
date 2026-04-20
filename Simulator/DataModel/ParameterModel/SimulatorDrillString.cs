@@ -598,6 +598,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 .ToList();
             SleeveMassMomentOfInertia = Math.PI / 2.0 * SteelDensity * SleeveLength
                 * (Math.Pow(SleeveOuterRadius, 4) - Math.Pow(SleeveInnerRadius, 4)); // [kg.m^2]
+
+            CharacteristicDrillPipeImpedance = ElementPolarInertia[0] / (ElementShearModuli[0] * ElementDensity[0]);
         }
         public void ActivateElements()
         {

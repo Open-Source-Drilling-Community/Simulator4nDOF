@@ -579,8 +579,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             // Topdrive Torque only applies to the first element
             state.TopDrive.AngularAcceleration = (
                                                     state.TopDrive.TopDriveMotorTorque 
-                                                    - torsionalStiffnessMid[0] * (state.TopDrive.AngularDisplacement - state.AngularDisplacement[1]) 
-                                                    - inertiaProportionalDampingTorsional[0] * (state.TopDrive.AngularVelocity - state.AngularVelocity[1])  
+                                                    + torsionalStiffnessRight[0] * state.AngularDisplacement[1] - torsionalStiffnessMid[0] * state.TopDrive.AngularDisplacement  
+                                                    + inertiaProportionalDampingTorsional[1] *  state.AngularVelocity[1] - inertiaProportionalDampingTorsional[0] * state.TopDrive.AngularVelocity  
                                                 ) / parameters.TopDriveDrawwork.TopDriveInertia;
             // Apply boundary conditions from the top-drive
             state.AngularVelocity[0] = state.TopDrive.AngularVelocity;
