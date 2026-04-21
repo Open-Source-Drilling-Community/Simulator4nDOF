@@ -1,5 +1,4 @@
 using MathNet.Numerics.LinearAlgebra;
-using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
@@ -19,102 +18,365 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
     /// </summary>
     public class LumpedElementModel : IModel<LumpedElementModel>
     {       
-        private int numberOfNodes; // Number of elements is one less than the number of nodes
+        /// <summary>
+        /// Number of elements is one less than the number of nodes
+        /// </summary>
+        private int numberOfNodes;
+        /// <summary>
+        /// Tension at each node, used for calculating the geometric stiffness
+        /// and the bit-rock interaction forces
+        /// </summary>
         private Vector<double> tension;
-        private Vector<double> torque;        
-        // Structural properties
-      
-        private double[] massProportionalDampingAxial; // Rayleigh proportional damping with mass-only coefficient
-        private double[] massProportionalDampingLateral; // Rayleigh proportional damping with mass-only coefficient
-        private double[] inertiaProportionalDampingTorsional; // Rayleigh proportional damping with mass-only coefficient
-        
-        private double[] lateralStiffnessLeft; // Stiffness matrix is quasi-diagonal. This is the term left to the diagonal
-        private double[] lateralStiffnessMid; // Stiffness matrix is quasi-diagonal. This is the term on the diagonal
-        private double[] lateralStiffnessRight; // Stiffness matrix is quasi-diagonal. This is the term right to the diagonal
+        /// <summary>
+        /// Torque at each node, used for calculating the geometric stiffness
+        /// and the bit-rock interaction forces
+        /// </summary>
+        private Vector<double> torque;
 
-        private double[] lateralTensionInducedStiffnessLeft; // Stiffness matrix is quasi-diagonal. This is the tension-induced geometric stiffness term left to the diagonal
-        private double[] lateralTensionInducedStiffnessMid; // Stiffness matrix is quasi-diagonal. This is the tension-induced geometric stiffness term on the diagonal
-        private double[] lateralTensionInducedStiffnessRight; // Stiffness matrix is quasi-diagonal. This is the tension-induced geometric stiffness term right to the diagonal
+        /// <summary>
+        /// Rayleigh proportional damping with mass-only coefficient
+        /// for the axial direction
+        /// </summary>
+        private double[] massProportionalDampingAxial;
+        /// <summary>
+        /// Rayleigh proportional damping with mass-only coefficient
+        /// for the lateral direction
+        /// </summary>
+        private double[] massProportionalDampingLateral;
+        /// <summary>
+        /// Rayleigh proportional damping with inertia-only coefficient
+        /// for the torsional direction
+        /// </summary>
+        private double[] inertiaProportionalDampingTorsional;
 
-        private double[] lateralPressureInducedStiffnessMid; // Stiffness matrix is quasi-diagonal. This is the pressure-induced geometric stiffness term on the diagonal
-        private double[] lateralPressureInducedStiffnessLeft; // Stiffness matrix is quasi-diagonal. This is the pressure-induced geometric stiffness term left to the diagonal
-        private double[] lateralPressureInducedStiffnessRight; // Stiffness matrix is quasi-diagonal. This is the pressure-induced geometric stiffness term right to the diagonal
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the lateral stiffness term left to the diagonal
+        /// </summary>
+        private double[] lateralStiffnessLeft;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the lateral stiffness term on the diagonal
+        /// </summary>
+        private double[] lateralStiffnessMid;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the lateral stiffness term right to the diagonal
+        /// </summary>
+        private double[] lateralStiffnessRight;
+
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal. This is the tension-induced
+        /// geometric stiffness term left to the diagonal
+        /// </summary>
+        private double[] lateralTensionInducedStiffnessLeft;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal. This is the tension-induced
+        /// geometric stiffness term on the diagonal
+        /// </summary>
+        private double[] lateralTensionInducedStiffnessMid;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal. This is the tension-induced
+        /// geometric stiffness term right to the diagonal
+        /// </summary>
+        private double[] lateralTensionInducedStiffnessRight;
+
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal. This is the pressure-induced
+        /// geometric stiffness term on the diagonal
+        /// </summary>
+        private double[] lateralPressureInducedStiffnessMid;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal. This is the pressure-induced
+        /// geometric stiffness term left to the diagonal
+        /// </summary>
+        private double[] lateralPressureInducedStiffnessLeft;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal. This is the pressure-induced
+        /// geometric stiffness term right to the diagonal
+        /// </summary>
+        private double[] lateralPressureInducedStiffnessRight;
+        /// <summary>
+        /// Axial force distribution along the drill-string, used for calculating
+        /// the axial force-induced geometric stiffness
+        /// </summary>
         private double[] axialForceDistribution;
 
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the axial stiffness term left to the diagonal
+        /// </summary>
+        private double[] axialStiffnessLeft;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the axial stiffness term on the diagonal
+        /// </summary>
+        private double[] axialStiffnessMid;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the axial stiffness term right to the diagonal
+        /// </summary>
+        private double[] axialStiffnessRight;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the torsional stiffness term left to the diagonal
+        /// </summary>
+        private double[] torsionalStiffnessLeft;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the torsional stiffness term on the diagonal
+        /// </summary>
+        private double[] torsionalStiffnessMid;
+        /// <summary>
+        /// Stiffness matrix is quasi-diagonal.
+        /// This is the torsional stiffness term right to the diagonal
+        /// </summary>
+        private double[] torsionalStiffnessRight;
+        /// <summary>
+        /// Lumped lateral mass; diagonal matrix represented as a vector
+        /// </summary>
+        private double[] lateralLumpedMass;
+        /// <summary>
+        /// Lumped axial mass; diagonal matrix represented as a vector
+        /// </summary>
+        private double[] axialLumpedMass;
+        /// <summary>
+        /// Node eccentricity (mass offset from geometric center);
+        /// diagonal matrix represented as a vector
+        /// </summary>
+        private double[] nodeEccentricity;
+        /// <summary>
+        /// Added lateral fluid mass from Fritz model;
+        /// diagonal matrix represented as a vector
+        /// </summary>
+        private double[] addedLateralFluidMass;
+        /// <summary>
+        /// Lumped torsional inertia; diagonal matrix represented as a vector
+        /// </summary>
+        private double[] torsionalLumpedInertia;
+        /// <summary>
+        /// Second moment of area at each node;
+        /// diagonal matrix represented as a vector
+        /// </summary>
+        private double[] secondMomentOfArea;
 
-        private double[] axialStiffnessLeft; // Stiffness matrix is quasi-diagonal. This is the term left to the diagonal
-        private double[] axialStiffnessMid; // Stiffness matrix is quasi-diagonal. This is the term on the diagonal
-        private double[] axialStiffnessRight; // Stiffness matrix is quasi-diagonal. This is the term right to the diagonal
-        private double[] torsionalStiffnessLeft; // Stiffness matrix is quasi-diagonal. This is the term left to the diagonal
-        private double[] torsionalStiffnessMid; // Stiffness matrix is quasi-diagonal. This is the term on the diagonal
-        private double[] torsionalStiffnessRight; // Stiffness matrix is quasi-diagonal. This is the term right to the diagonal
-        private double[] lateralLumpedMass; // Lumped mass is diagonal. So can be represented as a vector
-        private double[] axialLumpedMass; // Lumped mass is diagonal. So can be represented as a vector
-        private double[] nodeEccentricity; // Lumped mass is diagonal. So can be represented as a vector
-        private double[] addedLateralFluidMass; // Lumped mass is diagonal. So can be represented as a vector        
-        private double[] torsionalLumpedInertia; // Lumped mass is diagonal. So can be represented as a vector
-        private double[] secondMomentOfArea; // Lumped mass is diagonal. So can be represented as a vector
-        
-        private IBitRock bitRockModel;  // Bit-rock interaction model      
-        private BitInternalForces bitInternalForces; // Class to input bit internal forces
-        // Pre-stress forces in the normal and binormal direction, used for calculating the contact forces in the friction model. These are calculated in the PrepareModel step and then used in the CalculateAccelerations step.
+        /// <summary>
+        /// Bit-rock interaction model
+        /// </summary>
+        private IBitRock bitRockModel;
+        /// <summary>
+        /// Class used to pass internal bit forces to the bit-rock interaction model
+        /// </summary>
+        private BitInternalForces bitInternalForces;
+        /// <summary>
+        /// Pre-stress normal force, used for calculating pre-bending and contact forces.
+        /// Computed in PrepareModel and consumed in CalculateAccelerations
+        /// </summary>
         private Vector<double> preStressNormalForce;
-        private Vector<double> preStressBinormalForce;                  
-        private Vector<double> tensionIntegral;        
+        /// <summary>
+        /// Pre-stress binormal force, used for calculating pre-bending and contact forces.
+        /// Computed in PrepareModel and consumed in CalculateAccelerations
+        /// </summary>
+        private Vector<double> preStressBinormalForce;
+        /// <summary>
+        /// Integral of the tension; auxiliary vector preallocated for the tension
+        /// integral computation in PrepareModel and consumed in CalculateAccelerations
+        /// </summary>
+        private Vector<double> tensionIntegral;
+        /// <summary>
+        /// Tool-face angle at each node
+        /// </summary>
         private Vector<double> toolFaceAngle;
-        // State variables -> can be simplified but decided to leave for the sake of debugging and readability. Can be optimized later if needed.
-        private double radialDisplacement;
-        private double whirlAngle;
-        private double cosWhirlAngle;
-        private double sinWhirlAngle;
-        private double radialVelocity;
-        private double whirlVelocity;
-        private double angularAcceleration;
-        private double xAcceleration;
-        private double yAcceleration;
-        private double zAcceleration;
-        private double rotationSpeed;
-        private double rotationSpeedSquared;
-        private double axialVelocity;   
-        // Axial and torsional data for coupling.           
-        private double torqueOnBit;
-        private double weightOnBit;
-        double topDriveTorque;
-        // Normal force variables
-        private double heavesideStep;
-        private double normalCollisionForce;
-        // Friction variables
-        private double axialCoulombFrictionForce;
-        private double frictionTorque;
-        private double outerRadius;
-        private double sumForcesX;
-        private double sumForcesY;
-        private double sumForcesZ;
-        private double sumTorque;            
-        private double sleeveBrakeForce;            
-        //Elastic force-related variables
-        private double XiMinus1;
-        private double YiMinus1;
-        private double XiPlus1;
-        private double YiPlus1;
-        private double elasticForceX;
-        private double elasticForceY;
-        private double elasticForceZ;
-        private double elasticForcePhi;
-        
 
+        /// <summary>
+        /// Radial displacement of the current node in polar coordinates
+        /// </summary>
+        private double radialDisplacement;
+        /// <summary>
+        /// Whirl angle of the current node in polar coordinates
+        /// </summary>
+        private double whirlAngle;
+        /// <summary>
+        /// Cosine of the whirl angle; cached to avoid redundant trigonometric evaluations
+        /// </summary>
+        private double cosWhirlAngle;
+        /// <summary>
+        /// Sine of the whirl angle; cached to avoid redundant trigonometric evaluations
+        /// </summary>
+        private double sinWhirlAngle;
+        /// <summary>
+        /// Radial velocity of the current node in polar coordinates
+        /// </summary>
+        private double radialVelocity;
+        /// <summary>
+        /// Whirl (angular) velocity of the current node in polar coordinates
+        /// </summary>
+        private double whirlVelocity;
+        /// <summary>
+        /// Angular (torsional) acceleration of the current node
+        /// </summary>
+        private double angularAcceleration;
+        /// <summary>
+        /// Lateral acceleration of the current node in the x direction
+        /// </summary>
+        private double xAcceleration;
+        /// <summary>
+        /// Lateral acceleration of the current node in the y direction
+        /// </summary>
+        private double yAcceleration;
+        /// <summary>
+        /// Axial acceleration of the current node in the z direction
+        /// </summary>
+        private double zAcceleration;
+        /// <summary>
+        /// Rotation (torsional) speed of the current node
+        /// </summary>
+        private double rotationSpeed;
+        /// <summary>
+        /// Squared rotation speed of the current node; cached to avoid repeated multiplication
+        /// </summary>
+        private double rotationSpeedSquared;
+        /// <summary>
+        /// Axial velocity of the current node (z-velocity)
+        /// </summary>
+        private double axialVelocity;
+
+        /// <summary>
+        /// Torque on bit from the bit-rock interaction model,
+        /// used for calculating the torsional acceleration
+        /// </summary>
+        private double torqueOnBit;
+        /// <summary>
+        /// Weight on bit from the bit-rock interaction model,
+        /// used for calculating the axial acceleration
+        /// </summary>
+        private double weightOnBit;
+        /// <summary>
+        /// Torque applied by the top drive, used for calculating
+        /// the torsional acceleration and torsional boundary conditions
+        /// </summary>
+        double topDriveTorque;
+        /// <summary>
+        /// Heaviside step function for collision detection;
+        /// equals one when contact occurs, zero otherwise
+        /// </summary>
+        private double heavesideStep;
+        /// <summary>
+        /// Normal contact force from the collision model, used for calculating
+        /// the lateral accelerations during wellbore-wall contact
+        /// </summary>
+        private double normalCollisionForce;
+
+        /// <summary>
+        /// Coulomb friction force in the axial direction,
+        /// used for calculating the axial acceleration
+        /// </summary>
+        private double axialCoulombFrictionForce;
+        /// <summary>
+        /// Friction torque in the torsional direction,
+        /// used for calculating the torsional acceleration
+        /// </summary>
+        private double frictionTorque;
+        /// <summary>
+        /// External (outer) radius of the current node,
+        /// used for torque calculation in the friction model
+        /// </summary>
+        private double outerRadius;
+        /// <summary>
+        /// Summation of all forces acting on the current node in the x direction
+        /// </summary>
+        private double sumForcesX;
+        /// <summary>
+        /// Summation of all forces acting on the current node in the y direction
+        /// </summary>
+        private double sumForcesY;
+        /// <summary>
+        /// Summation of all forces acting on the current node in the z direction
+        /// </summary>
+        private double sumForcesZ;
+        /// <summary>
+        /// Summation of all torques acting on the current node
+        /// </summary>
+        private double sumTorque;
+        private double sleeveBrakeForce;
+
+        /// <summary>
+        /// X displacement of the previous node (i-1),
+        /// used for calculating the lateral elastic forces
+        /// </summary>
+        private double XiMinus1;
+        /// <summary>
+        /// Y displacement of the previous node (i-1),
+        /// used for calculating the lateral elastic forces
+        /// </summary>
+        private double YiMinus1;
+        /// <summary>
+        /// X displacement of the next node (i+1),
+        /// used for calculating the lateral elastic forces
+        /// </summary>
+        private double XiPlus1;
+        /// <summary>
+        /// Y displacement of the next node (i+1),
+        /// used for calculating the lateral elastic forces
+        /// </summary>
+        private double YiPlus1;
+        /// <summary>
+        /// Elastic force in the x direction, used for calculating
+        /// the Coulomb friction and lateral acceleration
+        /// </summary>
+        private double elasticForceX;
+        /// <summary>
+        /// Elastic force in the y direction, used for calculating
+        /// the Coulomb friction and lateral acceleration
+        /// </summary>
+        private double elasticForceY;
+        /// <summary>
+        /// Elastic force in the z direction, used for calculating
+        /// the friction and the lateral stiffness induced by axial forces
+        /// </summary>
+        private double elasticForceZ;
+        /// <summary>
+        /// Elastic torque in the torsional direction,
+        /// used for calculating the torsional acceleration
+        /// </summary>
+        private double elasticForcePhi;
+
+        /// <summary>
+        /// Pre-stress force component in the x direction
+        /// </summary>
         private double PreStressForceX;
-        private double PreStressForceY;        
-        // Fluid force-related variables
+        /// <summary>
+        /// Pre-stress force component in the y direction
+        /// </summary>
+        private double PreStressForceY;
+        /// <summary>
+        /// Fluid force in the x direction as computed by the Fritz model
+        /// </summary>
         private double fluidForceX;
+        /// <summary>
+        /// Fluid force in the y direction as computed by the Fritz model
+        /// </summary>
         private double fluidForceY;
-        // Unbalance force-related variables
+        /// <summary>
+        /// Unbalance force term in the x direction (excluding the acceleration component)
+        /// </summary>
         private double unbalanceForceX;
-        private double unbalanceForceY;   
-        // Friction related variables
+        /// <summary>
+        /// Unbalance force term in the y direction (excluding the acceleration component)
+        /// </summary>
+        private double unbalanceForceY;
+        /// <summary>
+        /// Coulomb friction force component in the x direction
+        /// </summary>
         private double coulombFrictionX;
-        private double coulombFrictionY;                    
-        private double coulombFrictionZ;    
+        /// <summary>
+        /// Coulomb friction force component in the y direction
+        /// </summary>
+        private double coulombFrictionY;
+        /// <summary>
+        /// Coulomb friction force component in the z (axial) direction
+        /// </summary>
+        private double coulombFrictionZ;
         
         /// <summary>
         /// Initializes a new instance of <see cref="LumpedElementModel"/> and assembles the
