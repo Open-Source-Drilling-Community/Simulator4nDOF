@@ -698,7 +698,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         }
                         else
                         {
-                            _logger.LogWarning("Background simulation failed");
+                            _logger.LogWarning("Background simulation failed: simulation diverged.");
+                            simulation.TerminationState = 2;
+                            FinalUpdateSimulatorById(simulation.MetaInfo.ID, simulation);
                         }
                     }
                     catch (Exception ex)
