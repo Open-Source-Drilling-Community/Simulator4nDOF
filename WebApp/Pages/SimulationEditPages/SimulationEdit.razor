@@ -6,7 +6,7 @@
 {
     <MudPaper Class="pa-6" Elevation="1">
         <MudText Typo="Typo.body1" Class="mb-3" Color="Color.Secondary">Loading simulation...</MudText>
-        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Rounded="true" Size="Size.Small" />
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Rounded="true" Size="Size.Medium" />
     </MudPaper>
 }
 else
@@ -32,7 +32,7 @@ else
             @if (currentSimulation != null && _sequenceNumber >= 0)
             {
                 <MudTooltip Text="Sequence number of the last fetched chunk">
-                    <MudChip T="int" Color="Color.Info" Size="Size.Small"
+                    <MudChip T="int" Color="Color.Info" Size="Size.Medium"
                              Icon="@Icons.Material.Filled.DataObject">
                         Chunk @_sequenceNumber
                     </MudChip>
@@ -50,12 +50,12 @@ else
             }
             <MudSpacer />
             <MudChip T="string" Color="@GetProgressColor(currentLightSimulation.Progress)"
-                     Size="Size.Small" Variant="Variant.Filled"
+                     Size="Size.Medium" Variant="Variant.Filled"
                      Icon="@Icons.Material.Filled.Speed">
                 @($"{currentLightSimulation.Progress:P0}")
             </MudChip>
             <MudChip T="string" Color="@GetTerminationColor(currentLightSimulation.TerminationState)"
-                     Size="Size.Small" Variant="Variant.Filled">
+                     Size="Size.Medium" Variant="Variant.Filled">
                 @GetTerminationStateLabel(currentLightSimulation.TerminationState)
             </MudChip>
         </MudToolBar>
@@ -132,7 +132,7 @@ else
                                    Variant="Variant.Outlined"
                                    Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Add"
-                                   Size="Size.Small"
+                                   Size="Size.Medium"
                                    Class="mt-2">
                             Add row
                         </MudButton>
@@ -190,7 +190,7 @@ else
                                            Variant="Variant.Outlined"
                                            Color="Color.Primary"
                                            StartIcon="@Icons.Material.Filled.Add"
-                                           Size="Size.Small"
+                                           Size="Size.Medium"
                                            Class="mt-2">
                                     Add row
                                 </MudButton>
@@ -474,45 +474,7 @@ else
                         }
                         _sequenceNumber = -1;
                     }
-                    results = currentSimulation.Results;
-                    /*
-                    if (results != null && results.Scalars != null)
-                    {
-                        using (StreamWriter writer = new StreamWriter("C:\\Users\\erca\\NORCE\\P102854_SFI DigiWells - Epic Automated Well Engineering External - Epic Automated Well Engineering External\\Studies\\HarbourEnergy\\JarFailure\\results.txt"))
-                        {
-                            var scalars = results.Scalars;
-                            int count = scalars.Time.Count;
-                            for (int i = 0; i < count; i++)
-                            {
-                                writer.WriteLine(scalars.Time.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.BitRPM.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SensorAngularVelocity.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SensorBendingMomentX.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SensorBendingMomentY.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SensorWhirlVelocity.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SurfaceRPM.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SurfaceTorque.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SensorTension.ElementAt<double>
-                                (i) + "\t" +
-                                scalars.SensorTorque.ElementAt<double>
-                                (i) + "\t" +
-                                Math.Sqrt(scalars.SensorBendingMomentX.ElementAt<double>
-                                (i) * scalars.SensorBendingMomentX.ElementAt<double>
-                                (i) + scalars.SensorBendingMomentY.ElementAt<double>
-                                (i) * scalars.SensorBendingMomentY.ElementAt<double>
-                                (i)));
-                                }
-                            }
-                        }
-                    */
+                    results = currentSimulation.Results;        
                     resultsPanelRef?.Refresh();
                     await InvokeAsync(() => { StateHasChanged(); });
                 }

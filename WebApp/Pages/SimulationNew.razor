@@ -20,75 +20,78 @@
             <MudButton OnClick="@AddSimulation"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.RocketLaunch"
                        Size="Size.Medium">
+                <img src="/images/BitIconContour.svg" style="height:20px;width:auto;margin-right:8px;filter:brightness(0) invert(1);vertical-align:middle;" />
                 Run Simulation
             </MudButton>
         </MudToolBar>
         <MudDivider />
 
-        <div Class="pa-4">
-            <!-- Name & Description -->
-            <MudGrid Spacing="3">
-                <MudItem xs="12" sm="4" md="3">
-                    <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Outlined"
-                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Label" />
-                </MudItem>
-                <MudItem xs="12" sm="8" md="9">
-                    <MudTextField @bind-Value=Simulation.Description Label="Description" Variant="Variant.Outlined"
-                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Notes" />
-                </MudItem>
-            </MudGrid>
+        <MudStepper NonLinear="true" Color="Color.Primary" Class="pa-2">
 
-            @if (Simulation?.ContextualData != null)
-            {
-                <MudDivider Class="my-4" />
-                <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight:600;">Contextual Data</MudText>
-                <SimulationContextualData
-                    Simulation="@Simulation"
-                    Fields="@Fields"
-                    Clusters="@Clusters"
-                    Wells="@Wells"
-                    WellBores="@WellBores"
-                    DrillStrings="@DrillStrings"
-                    Rigs="@Rigs"
-                    Trajectories="@Trajectories"
-                    WellBoreArchitectures="@WellBoreArchitectures"
-                    FluidDescriptions="@FluidDescriptions"
-                    GeothermalProperties="@GeothermalProperties"/>
-            }
+            <MudStep Title="General" Icon="@Icons.Material.Filled.Info">
+                <MudGrid Spacing="3" Class="mt-2">
+                    <MudItem xs="12" sm="4" md="3">
+                        <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Outlined"
+                                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Label" />
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="9">
+                        <MudTextField @bind-Value=Simulation.Description Label="Description" Variant="Variant.Outlined"
+                                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Notes" />
+                    </MudItem>
+                </MudGrid>
+            </MudStep>
 
-            @if (Simulation?.Config != null)
-            {
-                <MudDivider Class="my-4" />
-                <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight:600;">Configuration</MudText>
-                <SimulationConfiguration Simulation="@Simulation" />
-            }
+            <MudStep Title="Contextual Data" Icon="@Icons.Material.Filled.Dataset">
+                @if (Simulation?.ContextualData != null)
+                {
+                    <SimulationContextualData
+                        Simulation="@Simulation"
+                        Fields="@Fields"
+                        Clusters="@Clusters"
+                        Wells="@Wells"
+                        WellBores="@WellBores"
+                        DrillStrings="@DrillStrings"
+                        Rigs="@Rigs"
+                        Trajectories="@Trajectories"
+                        WellBoreArchitectures="@WellBoreArchitectures"
+                        FluidDescriptions="@FluidDescriptions"
+                        GeothermalProperties="@GeothermalProperties"/>
+                }
+            </MudStep>
 
-            @if (Simulation?.InitialValues != null)
-            {
-                <MudDivider Class="my-4" />
-                <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight:600;">Initial Values</MudText>
-                <SimulationInitialValues Simulation="@Simulation" />
-            }
+            <MudStep Title="Configuration" Icon="@Icons.Material.Filled.Settings">
+                @if (Simulation?.Config != null)
+                {
+                    <SimulationConfiguration Simulation="@Simulation" />
+                }
+            </MudStep>
 
-            @if (Simulation?.SetPointsList != null)
-            {
-                <MudDivider Class="my-4" />
-                <div class="d-flex align-center mb-3" style="gap:8px;">
-                    <MudText Typo="Typo.subtitle1" Style="font-weight:600;">Set Points</MudText>
-                    <MudSpacer />
-                    <MudButton OnClick="@AddSetPoint"
-                               Variant="Variant.Outlined"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.Add"
-                               Size="Size.Small">
-                        Add row
-                    </MudButton>
-                </div>
-                <SetPointsEditor Simulation="@Simulation" />
-            }
-        </div>
+            <MudStep Title="Initial Values" Icon="@Icons.Material.Filled.DataObject">
+                @if (Simulation?.InitialValues != null)
+                {
+                    <SimulationInitialValues Simulation="@Simulation" />
+                }
+            </MudStep>
+
+            <MudStep Title="Set Points" Icon="@Icons.Material.Filled.Timeline">
+                @if (Simulation?.SetPointsList != null)
+                {
+                    <div class="d-flex align-center mb-3" style="gap:8px;">
+                        <MudSpacer />
+                        <MudButton OnClick="@AddSetPoint"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Size="Size.Small">
+                            Add row
+                        </MudButton>
+                    </div>
+                    <SetPointsEditor Simulation="@Simulation" />
+                }
+            </MudStep>
+
+        </MudStepper>
     </MudPaper>
 }
 
