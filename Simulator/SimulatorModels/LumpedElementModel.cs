@@ -377,7 +377,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         /// Coulomb friction force component in the z (axial) direction
         /// </summary>
         private double coulombFrictionZ;
-        
+
         /// <summary>
         /// Initializes a new instance of <see cref="LumpedElementModel"/> and assembles the
         /// lumped-parameter mass, damping, and stiffness arrays for all degrees of freedom
@@ -405,48 +405,44 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             lateralStiffnessLeft = new double[parameters.NumberOfElements + 1];
             lateralStiffnessMid = new double[parameters.NumberOfElements + 1];
             lateralStiffnessRight = new double[parameters.NumberOfElements + 1];          
-            
+            // Term due to the tension            
             lateralTensionInducedStiffnessMid = new double[parameters.NumberOfElements + 1];
             lateralTensionInducedStiffnessLeft = new double[parameters.NumberOfElements + 1];
             lateralTensionInducedStiffnessRight = new double[parameters.NumberOfElements + 1];
-            
+            // Term due to the flow pressure differential
             lateralPressureInducedStiffnessMid = new double[parameters.NumberOfElements + 1];
             lateralPressureInducedStiffnessLeft = new double[parameters.NumberOfElements + 1];
             lateralPressureInducedStiffnessRight = new double[parameters.NumberOfElements + 1];
-
+            // Boundary conditions
             lateralStiffnessLeft[0] = 0.0;
-            lateralStiffnessRight[parameters.NumberOfElements] = 0.0;
-
+            lateralStiffnessRight[parameters.NumberOfElements] = 0.0;            
             lateralTensionInducedStiffnessLeft[0] = 0.0;
             lateralTensionInducedStiffnessLeft[parameters.NumberOfElements] = 0.0;
-
+            // Lateral mass 
+            lateralLumpedMass = new double[parameters.NumberOfElements + 1];
+            addedLateralFluidMass =  new double[parameters.NumberOfElements + 1];
+            // Unbalance
+            nodeEccentricity = new double[parameters.NumberOfElements + 1];
+            secondMomentOfArea = new double[parameters.NumberOfElements + 1];
+            // Damping
+            massProportionalDampingLateral = new double[parameters.NumberOfElements + 1];
+            // ========================================================== Axial and Torsional Terms ==============================================================            
+             // Axial Stiffness
             axialStiffnessLeft = new double[parameters.NumberOfElements + 1];
             axialStiffnessMid = new double[parameters.NumberOfElements + 1];
             axialStiffnessRight = new double[parameters.NumberOfElements + 1];
-            
+            // Torsional Stiffness
             torsionalStiffnessLeft = new double[parameters.NumberOfElements + 1];
             torsionalStiffnessMid = new double[parameters.NumberOfElements + 1];
             torsionalStiffnessRight = new double[parameters.NumberOfElements + 1];
-
+            // Lumped mass and inertia
             axialLumpedMass = new double[parameters.NumberOfElements + 1];
-            lateralLumpedMass = new double[parameters.NumberOfElements + 1];
             torsionalLumpedInertia = new double[parameters.NumberOfElements + 1];
-            addedLateralFluidMass =  new double[parameters.NumberOfElements + 1];
-
-            axialForceDistribution = new double[parameters.NumberOfElements + 1];
-            nodeEccentricity = new double[parameters.NumberOfElements + 1];
-            secondMomentOfArea = new double[parameters.NumberOfElements + 1];
-
-
+            // Damping
             massProportionalDampingAxial = new double[parameters.NumberOfElements + 1];
-            massProportionalDampingLateral = new double[parameters.NumberOfElements + 1];
             inertiaProportionalDampingTorsional = new double[parameters.NumberOfElements + 1];
-
-            // CHANGE TO SPARSE MATRICES??            
-            //lateralStiffnessMatrix = Matrix<double>.Build.Dense(parameters.NumberOfElements + 1, parameters.NumberOfElements + 1);
-            //axialStiffnessMatrix = Matrix<double>.Build.Dense(parameters.NumberOfElements+ 1, parameters.NumberOfElements + 1);
-            //torsionalStiffnessMatrix = Matrix<double>.Build.Dense(parameters.NumberOfElements + 1, parameters.NumberOfElements + 1);
-            
+            // Axial force distribution for geometric stiffness calculation
+            axialForceDistribution = new double[parameters.NumberOfElements + 1];
             for (int i = 0; i < parameters.NumberOfElements; i++)
             {
                 //  The equivalent mass for each DoF is dependent on the assumed mode shape. Axial and Torsional modes use a linear element, which is
@@ -479,27 +475,28 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 double addedFluidMass = 0.5 * ((i == 0) ? parameters.Drillstring.ElementFluidAddedMass[0] : parameters.Drillstring.ElementFluidAddedMass[i - 1]); 
                 double eccentricity = 0.5 * ((i == 0) ? parameters.Drillstring.ElementEccentricity[0] * parameters.Drillstring.ElementEccentricMass[0] : 
                                                  parameters.Drillstring.ElementEccentricity[i - 1] * parameters.Drillstring.ElementEccentricMass[i - 1]);
-                //Node i
-                axialLumpedMass[i] += axialMass; 
+                // ---------- Lateral Mass -----------
                 lateralLumpedMass[i] += lateralMass;
-                torsionalLumpedInertia[i] += torsionalInertia;
-                addedLateralFluidMass[i] += addedFluidMass;
-                nodeEccentricity[i] += eccentricity;
-                secondMomentOfArea[i] += 0.5 * parameters.Drillstring.ElementPolarInertia[i];
-                //Node i+1
-                axialLumpedMass[i + 1] += axialMass; 
                 lateralLumpedMass[i + 1] += lateralMass;
-                torsionalLumpedInertia[i + 1] += torsionalInertia;
-                addedLateralFluidMass[i + 1] += addedFluidMass;                
+                addedLateralFluidMass[i] += addedFluidMass;
+                addedLateralFluidMass[i + 1] += addedFluidMass;
+                nodeEccentricity[i] += eccentricity;
                 nodeEccentricity[i + 1] += eccentricity;
-                secondMomentOfArea[i + 1] += 0.5 * parameters.Drillstring.ElementPolarInertia[i];                 
+                secondMomentOfArea[i] += 0.5 * parameters.Drillstring.ElementPolarInertia[i];
+                secondMomentOfArea[i + 1] += 0.5 * parameters.Drillstring.ElementPolarInertia[i];
+                // ---------- Axial Mass -----------
+                axialLumpedMass[i] += axialMass;
+                axialLumpedMass[i + 1] += axialMass;
+                // ---------- Torsional Mass -----------
+                torsionalLumpedInertia[i] += torsionalInertia;
+                torsionalLumpedInertia[i + 1] += torsionalInertia;
                 // ========================================================== Damping Terms ==============================================================
+                massProportionalDampingLateral[i] += parameters.Drillstring.LateralDampingFactor * lateralMass;
+                massProportionalDampingLateral[i + 1] += parameters.Drillstring.LateralDampingFactor * lateralMass;
                 massProportionalDampingAxial[i] += parameters.Drillstring.AxialDampingFactor * axialMass;
                 massProportionalDampingAxial[i + 1] += parameters.Drillstring.AxialDampingFactor * axialMass;
                 inertiaProportionalDampingTorsional[i] += parameters.Drillstring.TorsionalDampingFactor * torsionalInertia;
                 inertiaProportionalDampingTorsional[i + 1] += parameters.Drillstring.TorsionalDampingFactor * torsionalInertia;
-                massProportionalDampingLateral[i] += parameters.Drillstring.LateralDampingFactor * lateralMass;
-                massProportionalDampingLateral[i + 1] += parameters.Drillstring.LateralDampingFactor * lateralMass;                                
                 // ========================================================= Stiffness Terms =============================================================
                 //Pre-calculations
                 double axialStiffness = parameters.Drillstring.ElementYoungModuli[i] * parameters.Drillstring.ElementArea[i] / parameters.Drillstring.ElementLength[i];              
