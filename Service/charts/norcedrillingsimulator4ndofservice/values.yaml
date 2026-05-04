@@ -1,19 +1,15 @@
 # Default values for norcedrillingsimulator4ndofservice.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
 replicaCount: 1
-
 image:
   repository: digiwells/norcedrillingsimulator4ndofservice
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "stable"
-
 imagePullSecrets: []
 nameOverride: "norcedrillingsimulator4ndofservice"
 fullnameOverride: "norcedrillingsimulator4ndofservice"
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -22,12 +18,9 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-
 podAnnotations: {}
-
 podSecurityContext: {}
   # fsGroup: 2000
-
 securityContext: {}
   # capabilities:
   #   drop:
@@ -35,35 +28,36 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
 service:
   type: ClusterIP
   port: 80
-
+  annotations:
+    description: "A microservice for handling simulator4ndof"
 ingress:
   enabled: true
-  className: ""
+  className: public
   annotations:
-    kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    # nginx-ingress: Enable regex path matching for case-insensitive routing
+    # This allows /SurveyInstrument/api to match the same route as /surveyinstrument/api
+    nginx.ingress.kubernetes.io/use-regex: "true"
   hosts:
     - host: localhost
       paths:
-        - path: /Simulator4nDOF/api
-          pathType: Prefix
+        # Regex pattern matches /surveyinstrument/api or /SurveyInstrument/api, etc.
+        - path: /(?i)simulator4ndof/api
+          pathType: ImplementationSpecific
     - host: dev.digiwells.no
       paths:
-        - path: /Simulator4nDOF/api
-          pathType: Prefix
+        - path: /(?i)simulator4ndof/api
+          pathType: ImplementationSpecific
     - host: app.digiwells.no
       paths:
-        - path: /Simulator4nDOF/api
-          pathType: Prefix
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
+        - path: /(?i)simulator4ndof/api
+          pathType: ImplementationSpecific
+    - host: awe.web.intra.norceresearch.no
+      paths:
+        - path: /(?i)simulator4ndof/api
+          pathType: ImplementationSpecific
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -75,19 +69,14 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
-
 probes:
   enabled: false
