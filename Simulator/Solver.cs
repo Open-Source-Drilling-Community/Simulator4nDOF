@@ -425,16 +425,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             }
         }
 
-        public void AddNewLumpedElement() // TODO sjekk
+        public void AddNewLumpedElement()
         {
             simulationParameters.AddNewLumpedElement();
 
             state.AddNewLumpedElement();
 
-            solverODELateral.AddNewLumpedElement();        
+            // Extend the flow per-element pressure/density/buoyancy profiles (they are
+            // read/written by the UpdateBuoyancy call that follows growth in OuterStep).
+            simulationParameters.Flow.AddNewLumpedElement();
 
-            //axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters, axialTorsionalModel);            
-            //lateralModel = new LateralModel(simulationParameters, state);
+            solverODELateral.AddNewLumpedElement();
+
+            // Rebuild the lateral model so its scratch per-element arrays
+            // (ToolFaceAngle / PreStressNormalForce / PreStressBinormalForce, sized to
+            // NumberOfLumpedElements) are re-allocated to the grown size. They are
+            // element-written by PrepareModel without re-allocation, so leaving the old
+            // instance threw ArgumentOutOfRangeException on the next PrepareModel.
+            // AxialTorsionalModel holds no per-element state, so it needs no rebuild.
+            lateralModel = new LateralModel(simulationParameters, state);
         }
     }
 }

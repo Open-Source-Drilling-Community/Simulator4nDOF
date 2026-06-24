@@ -475,6 +475,29 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             }
 
         }
+
+        // Extend the per-element pressure / density / buoyancy profiles when a new
+        // lumped element is born at the surface (column growth). They are sized to
+        // LumpedCells.ElementLength.Count at construction and are NOT recomputed by
+        // UpdateBuoyancy (which reads StringDensity / AnnulusDensity and the buoyant
+        // weight lag, and element-writes the hydrostatic / dSigmaDx / change-of-
+        // diameter profiles), so without this the growth-time UpdateBuoyancy throws
+        // ArgumentOutOfRangeException. Prepend the surface element (duplicate [0]).
+        public void AddNewLumpedElement()
+        {
+            StringPressure    = ExtendVectorStart(StringPressure[0], StringPressure);
+            StringDensity     = ExtendVectorStart(StringDensity[0], StringDensity);
+            StringTemperature = ExtendVectorStart(StringTemperature[0], StringTemperature);
+            HydrostaticStringPressure  = ExtendVectorStart(HydrostaticStringPressure[0], HydrostaticStringPressure);
+            HydrostaticAnnulusPressure = ExtendVectorStart(HydrostaticAnnulusPressure[0], HydrostaticAnnulusPressure);
+            BuoyantWeightPerLength = ExtendVectorStart(BuoyantWeightPerLength[0], BuoyantWeightPerLength);
+            dSigmaDx               = ExtendVectorStart(dSigmaDx[0], dSigmaDx);
+            AxialBuoyancyForceChangeOfDiameters  = ExtendVectorStart(AxialBuoyancyForceChangeOfDiameters[0], AxialBuoyancyForceChangeOfDiameters);
+            NormalBuoyancyForceChangeOfDiameters = ExtendVectorStart(NormalBuoyancyForceChangeOfDiameters[0], NormalBuoyancyForceChangeOfDiameters);
+            AnnulusDensity     = ExtendVectorStart(AnnulusDensity[0], AnnulusDensity);
+            AnnulusPressure    = ExtendVectorStart(AnnulusPressure[0], AnnulusPressure);
+            AnnulusTemperature = ExtendVectorStart(AnnulusTemperature[0], AnnulusTemperature);
+        }
     }
 }
 
