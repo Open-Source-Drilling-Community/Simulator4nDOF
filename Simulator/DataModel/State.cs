@@ -277,12 +277,49 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             // Extend slip_condition vector by prepending the first element
             SlipCondition = ExtendVectorStart(SlipCondition[0], SlipCondition);
 
-            // Extend SleeveForce vector by prepending the first element            
+            // Extend SleeveForce vector by prepending the first element
             SleeveForces = ExtendVectorStart(SleeveForces[0], SleeveForces);
+
+            // --- Fix (column growth): the Riemann-invariant wave matrices, their
+            // upwind-scheme diffs, the wave boundary vectors and the per-element
+            // reconstruction profiles were NOT extended here, yet PrepareModel /
+            // UpdateBoundaryConditions / UpwindScheme / CalculateAccelerations index
+            // them by the new NumberOfLumpedElements. The first step after a lumped
+            // element was born therefore threw ArgumentOutOfRangeException
+            // (PrepareModel hit it first, on DownwardTorsionalWave[i, N]).
+            // Extend them all consistently (prepend the surface column/element). ---
+            DownwardTorsionalWave = PrependFirstColumn(DownwardTorsionalWave);
+            UpwardTorsionalWave   = PrependFirstColumn(UpwardTorsionalWave);
+            DownwardAxialWave     = PrependFirstColumn(DownwardAxialWave);
+            UpwardAxialWave       = PrependFirstColumn(UpwardAxialWave);
+            DiffDownwardTorsionalWave = PrependFirstColumn(DiffDownwardTorsionalWave);
+            DiffUpwardTorsionalWave   = PrependFirstColumn(DiffUpwardTorsionalWave);
+            DiffDownwardAxialWave     = PrependFirstColumn(DiffDownwardAxialWave);
+            DiffUpwardAxialWave       = PrependFirstColumn(DiffUpwardAxialWave);
+            DownwardTorsionalWaveLeftBoundary = ExtendVectorStart(DownwardTorsionalWaveLeftBoundary[0], DownwardTorsionalWaveLeftBoundary);
+            UpwardTorsionalWaveRightBoundary  = ExtendVectorStart(UpwardTorsionalWaveRightBoundary[0], UpwardTorsionalWaveRightBoundary);
+            DownwardAxialWaveLeftBoundary     = ExtendVectorStart(DownwardAxialWaveLeftBoundary[0], DownwardAxialWaveLeftBoundary);
+            UpwardAxialWaveRightBoundary      = ExtendVectorStart(UpwardAxialWaveRightBoundary[0], UpwardAxialWaveRightBoundary);
+            NormalCollisionForce  = ExtendVectorStart(NormalCollisionForce[0], NormalCollisionForce);
+            SoftStringNormalForce = ExtendVectorStart(SoftStringNormalForce[0], SoftStringNormalForce);
+            Tension = ExtendVectorStart(Tension[0], Tension);
+            Torque  = ExtendVectorStart(Torque[0], Torque);
+            BendingMomentX = ExtendVectorStart(BendingMomentX[0], BendingMomentX);
+            BendingMomentY = ExtendVectorStart(BendingMomentY[0], BendingMomentY);
+
             // A new lumped element is prepended at the surface and carries no sleeve.
             // SleeveToLumpedIndex now stores sleeve ordinals, which are unaffected by the
             // insertion, so we only need to prepend -1 for the new element.
             SleeveToLumpedIndex.Insert(0, -1);
+        }
+
+        // Prepend a column to a [ratio x N] distributed matrix, filling the new
+        // surface column with the matrix's top-left value (same convention as the
+        // PipeShearStrain/... extensions above).
+        private static Matrix<double> PrependFirstColumn(Matrix<double> m)
+        {
+            var col0 = Vector<double>.Build.Dense(m.RowCount, m[0, 0]).ToColumnMatrix();
+            return col0.Append(m);
         }
     }
 

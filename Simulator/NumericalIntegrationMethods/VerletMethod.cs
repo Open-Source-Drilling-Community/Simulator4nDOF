@@ -144,6 +144,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             XVelocity = ExtendVectorStart(XVelocity[0], XVelocity);
             YVelocity = ExtendVectorStart(YVelocity[0], YVelocity);
             AxialVelocity = ExtendVectorStart(AxialVelocity[0], AxialVelocity);
+            // Fix (column growth): AxialAcceleration was NOT extended, yet
+            // IntegrationStep reads AxialAcceleration[i] up to the new
+            // NumberOfLumpedElements (velocity-Verlet a(t) term) ⇒ the next
+            // Verlet step threw ArgumentOutOfRangeException once a lumped element
+            // had been born.
+            AxialAcceleration = ExtendVectorStart(AxialAcceleration[0], AxialAcceleration);
         }
     }
 }
