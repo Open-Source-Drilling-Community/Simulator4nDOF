@@ -181,19 +181,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             Torque = Vector<double>.Build.Dense(simulationParameters.LumpedCells.NumberOfLumpedElements + 1);
             MudTorque = 0;
           
-            // Initialize sleeve to lumped index mapping
+            // Map each lumped element to the ORDINAL of its sleeve (0..TotalSleeveNumber-1),
+            // i.e. the index into the per-sleeve state arrays (SleeveAngularVelocity, ...),
+            // or -1 when the element carries no sleeve.
+            // (Previously this stored the lumped element index + 1, which is out of range
+            // for the sleeve arrays of length TotalSleeveNumber and crashed
+            // CalculateAccelerations as soon as any sleeve was configured.)
             SleeveToLumpedIndex = new List<int>();
+            List<int> sleeveLumpedPositions = simulationParameters.Drillstring.SleeveIndexPosition
+                .Select(x => (int)x).ToList();
             for (int i = 0; i < simulationParameters.LumpedCells.NumberOfLumpedElements; i++)
             {
-                SleeveToLumpedIndex.Add(simulationParameters.Drillstring.SleeveIndexPosition.Contains(i) ? i : -1);
-            }
-            // Add 1 to every positive number in SleeveToLumpedIndex
-            for (int i = 0; i < SleeveToLumpedIndex.Count; i++)
-            {
-                if (SleeveToLumpedIndex[i] > 0)
-                {
-                    SleeveToLumpedIndex[i] += 1;
-                }
+                SleeveToLumpedIndex.Add(sleeveLumpedPositions.IndexOf(i));
             }
 
             MudStatorAngularVelocity = 0;
@@ -280,18 +279,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 
             // Extend SleeveForce vector by prepending the first element            
             SleeveForces = ExtendVectorStart(SleeveForces[0], SleeveForces);
-            // Insert -1 at the beginning of SleeveToLumpedIndex to account for the new element
+            // A new lumped element is prepended at the surface and carries no sleeve.
+            // SleeveToLumpedIndex now stores sleeve ordinals, which are unaffected by the
+            // insertion, so we only need to prepend -1 for the new element.
             SleeveToLumpedIndex.Insert(0, -1);
-
-
-            // Add 1 to every positive number in SleeveToLumpedIndex to update indices after insertion
-            for (int i = 0; i < SleeveToLumpedIndex.Count; i++)
-            {
-                if (SleeveToLumpedIndex[i] > 0)
-                {
-                    SleeveToLumpedIndex[i] += 1;
-                }
-            }
         }
     }
 

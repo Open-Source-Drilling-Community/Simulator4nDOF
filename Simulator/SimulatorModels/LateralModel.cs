@@ -94,7 +94,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         public void UpdateBendingMoments(State state, SimulationParameters simulationParameters)
         {
             double XiMinus1, YiMinus1, XiPlus1, YiPlus1;
-            double invElementLengthSquared = 1.0 / (simulationParameters.LumpedCells.ElementLength * simulationParameters.LumpedCells.ElementLength);
+            // Central-difference bending uses the lumped element spacing squared.
+            // (ElementLength is a Vector; "ElementLength * ElementLength" was a MathNet
+            // dot product Sum(ElementLength[i]^2), not the local spacing dxL^2.)
+            double invElementLengthSquared = 1.0 / (simulationParameters.LumpedCells.DistanceBetweenElements * simulationParameters.LumpedCells.DistanceBetweenElements);
             double momentX, momentY;
             
             for (int i = 1; i < state.XDisplacement.Count - 1; i++)
@@ -460,9 +463,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 #endregion                   
                 #region Accelerations                              
                 if (hasSleeve)
-                {                    
-                    // Why is there a TimeStep in here?                    
-                    state.SleeveAngularAcceleration[sleeveIndex] = parameters.InnerLoopTimeStep * (sleeveBrakeForce * parameters.Drillstring.SleeveInnerRadius - parameters.Drillstring.SleeveOuterRadius * state.SleeveForces[i]) / parameters.Drillstring.SleeveMassMomentOfInertia;;
+                {
+                    // Angular acceleration = net torque / moment of inertia.
+                    // (Removed an erroneous *InnerLoopTimeStep factor that made this
+                    // dimensionally an angular velocity rather than an acceleration.)
+                    state.SleeveAngularAcceleration[sleeveIndex] = (sleeveBrakeForce * parameters.Drillstring.SleeveInnerRadius - parameters.Drillstring.SleeveOuterRadius * state.SleeveForces[i]) / parameters.Drillstring.SleeveMassMomentOfInertia;
                 }
                 //Used for debugging purposes
                 
@@ -473,8 +478,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                              - frictionTorque
                         )/inertia;      
                 // Variables are generated locally to facilitate debugging only.
-                XAcceleration = sumForcesX / parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i];
-                YAcceleration= sumForcesY / parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i];
+                // Fluid added mass augments the effective inertia, so it belongs in the
+                // denominator: a = F / (m + m_fluid). (Previously "+ FluidAddedMass" sat
+                // outside the division, adding a mass [kg] to an acceleration [m/s^2] and
+                // injecting a parasitic lateral acceleration even with zero net force.)
+                XAcceleration = sumForcesX / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
+                YAcceleration = sumForcesY / (parameters.Drillstring.LumpedElementMass[i] + parameters.Drillstring.FluidAddedMass[i]);
                 ZAcceleration = sumForcesZ / parameters.Drillstring.LumpedElementMass[i];                
 
                 //Update state
