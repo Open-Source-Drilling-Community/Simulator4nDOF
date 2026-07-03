@@ -1,13 +1,7 @@
-using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
-using OSDC.DotnetLibraries.General.Common;
-using System;
-using System.Reflection;
-using System.Reflection.Metadata;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
@@ -215,5 +209,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             yVelocity = ExtendVectorStart(yVelocity[0], yVelocity);
             zVelocity = ExtendVectorStart(zVelocity[0], zVelocity);
         }
-    }
+    }            
 }
+
