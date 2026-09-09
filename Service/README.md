@@ -20,6 +20,8 @@ https://dev.digiwells.no/Simulator4nDOF/api/Simulation
 
 https://app.digiwells.no/Simulator4nDOF/api/Simulation
 
+When simulation contextual data does not explicitly select a Rig, the resolver uses the latest chronological RigJob on the selected WellBore. An empty RigJob history is authoritative and reports that no rig is available; only a null legacy history falls back to the deprecated WellBore `RigID` and then the Well/Cluster association.
+
 # Funding
 
 The current work has been funded by the [Research Council of Norway](https://www.forskningsradet.no/) and [Industry partners](https://www.digiwells.no/about/board/) in the framework of the cent for research-based innovation [SFI Digiwells (2020-2028)](https://www.digiwells.no/) focused on Digitalization, Drilling Engineering and GeoSteering. 

@@ -85,6 +85,28 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 simulation.WellBoreID,
                 "wellbore",
                 id => APIUtils.ClientWellBore.GetWellBoreByIdAsync(id));
+
+            if (wellBore.RigJobs is not null)
+            {
+                RigJob? latestJob = wellBore.RigJobs.OrderBy(job => job.StartDate).LastOrDefault();
+                if (latestJob is null)
+                    throw new Exception($"Wellbore '{simulation.WellBoreID}' has an authoritative empty rig-job history.");
+                return await LoadRequiredAsync(
+                    latestJob.RigID,
+                    "rig",
+                    id => APIUtils.ClientRig.GetRigByIdAsync(id));
+            }
+
+#pragma warning disable CS0612
+            if (wellBore.RigID is Guid legacyRigId && legacyRigId != Guid.Empty)
+            {
+                return await LoadRequiredAsync(
+                    legacyRigId,
+                    "rig",
+                    id => APIUtils.ClientRig.GetRigByIdAsync(id));
+            }
+#pragma warning restore CS0612
+
             if (wellBore.WellID == null || wellBore.WellID == Guid.Empty)
             {
                 throw new Exception($"Wellbore '{simulation.WellBoreID}' has no WellID, so the rig cannot be tracked.");
