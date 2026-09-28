@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,7 +55,7 @@ builder.Services.AddLegacyMcpTool<PingMcpTool>();
 
 var app = builder.Build();
 
-var basePath = "/Simulator4nDOF/api";
+var basePath = "/simulator4ndof/api";
 var scheme = "http";
 
 app.UsePathBase(basePath);
@@ -124,3 +124,4 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
