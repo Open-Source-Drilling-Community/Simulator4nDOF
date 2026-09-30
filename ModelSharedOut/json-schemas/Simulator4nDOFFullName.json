@@ -366,6 +366,14 @@
             "format": "uuid",
             "nullable": true
           },
+          "SurveyRunID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TrajectoryCalculationType": {
+            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.ModelShared.TrajectoryCalculationType"
+          },
           "RigID": {
             "type": "string",
             "format": "uuid",
@@ -919,6 +927,14 @@
         "enum": [
           "EulerMethod",
           "VerletMethod"
+        ],
+        "type": "string"
+      },
+      "NORCE.Drilling.Simulator4nDOF.ModelShared.TrajectoryCalculationType": {
+        "enum": [
+          "MinimumCurvatureMethod",
+          "ConstantBuildAndTurnMethod",
+          "ConstantCurvatureAndToolfaceMethod"
         ],
         "type": "string"
       },

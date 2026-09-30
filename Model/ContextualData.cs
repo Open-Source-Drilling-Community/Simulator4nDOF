@@ -1,3 +1,4 @@
+using NORCE.Drilling.Simulator4nDOF.ModelShared;
 using System;
 
 namespace NORCE.Drilling.Simulator4nDOF.Model
@@ -8,6 +9,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public Guid? DrillingFluidDescriptionID { get; set; } = null;
         public Guid? WellBoreArchitectureID { get; set; } = null;
         public Guid? TrajectoryID { get; set; } = null;
+        public Guid? SurveyRunID { get; set; } = null;
+        public TrajectoryCalculationType TrajectoryCalculationType { get; set; } = TrajectoryCalculationType.MinimumCurvatureMethod;
         public Guid? RigID { get; set; } = null;
         public Guid? GeothermalPropertiesID { get; set; } = null;        
         public int? CasingID { get; set; } = null;

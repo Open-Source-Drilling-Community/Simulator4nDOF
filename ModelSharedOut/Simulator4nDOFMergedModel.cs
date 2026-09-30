@@ -61129,6 +61129,13 @@ namespace NORCE.Drilling.Simulator4nDOF.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("TrajectoryID")]
         public System.Guid? TrajectoryID { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("SurveyRunID")]
+        public System.Guid? SurveyRunID { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("TrajectoryCalculationType")]
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<TrajectoryCalculationType>))]
+        public TrajectoryCalculationType TrajectoryCalculationType { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("RigID")]
         public System.Guid? RigID { get; set; }
 

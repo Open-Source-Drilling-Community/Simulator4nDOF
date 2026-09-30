@@ -67,7 +67,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required double TopOfStringPosition;
         public required double SurfaceRPM;
         public required double TopOfStringVelocity;
-        public required ModelShared.Trajectory Trajectory;
+        public ModelShared.Trajectory? Trajectory;
+        public ModelShared.SurveyRun? SurveyRun;
         public required ModelShared.DrillString DrillString;
         public required ModelShared.DrillingFluidDescription DrillingFluidDescription;        
         public ModelShared.CasingSection CasingSection;

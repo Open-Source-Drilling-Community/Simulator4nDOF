@@ -96,8 +96,8 @@
             </MudSelect>
         </MudItem>
 
-        <MudItem xs="12">
-            <MudSelect T="Trajectory" Label="Trajectory source" @bind-Value="SelectedTrajectory" Variant="Variant.Text">
+        <MudItem xs="4">
+            <MudSelect T="Trajectory" Label="Trajectory source" Value="SelectedTrajectory" ValueChanged="OnTrajectoryChangedAsync" Variant="Variant.Text">
                 @if (Trajectories != null)
                 {
                     @foreach (Trajectory trajectory in Trajectories)
@@ -107,6 +107,26 @@
                             <MudSelectItem Value="@trajectory">@trajectory.Name</MudSelectItem>
                         }
                     }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="4">
+            <MudSelect T="SurveyRunLight" Label="Survey run (optional)" @bind-Value="SelectedSurveyRun" Variant="Variant.Text"
+                       Clearable="true" Placeholder="Use trajectory" Disabled="@(SelectedTrajectory == null)"
+                       ToStringFunc="@(s => s?.Name)"
+                       HelperText="If selected, the survey run is used instead of the trajectory">
+                @foreach (SurveyRunLight surveyRun in FilteredSurveyRuns)
+                {
+                    <MudSelectItem Value="@surveyRun">@surveyRun.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="4">
+            <MudSelect T="TrajectoryCalculationType" Label="Trajectory calculation method" @bind-Value="Simulation.ContextualData.TrajectoryCalculationType" Variant="Variant.Text"
+                       HelperText="Recalculated if the stored trajectory or survey run uses a different method">
+                @foreach (TrajectoryCalculationType calculationType in Enum.GetValues<TrajectoryCalculationType>())
+                {
+                    <MudSelectItem Value="@calculationType">@calculationType</MudSelectItem>
                 }
             </MudSelect>
         </MudItem>
@@ -355,6 +375,71 @@
             }
         }
     }
+    private List<SurveyRunLight> FilteredSurveyRuns { get; set; } = new List<SurveyRunLight>();
+    private SurveyRunLight? _selectedSurveyRun = null;
+    private SurveyRunLight? SelectedSurveyRun
+    {
+        get
+        {
+            return _selectedSurveyRun;
+        }
+        set
+        {
+            _selectedSurveyRun = value;
+            if (Simulation?.ContextualData != null)
+            {
+                Simulation.ContextualData.SurveyRunID = _selectedSurveyRun?.MetaInfo?.ID;
+            }
+        }
+    }
+
+    private async Task OnTrajectoryChangedAsync(Trajectory? trajectory)
+    {
+        SelectedTrajectory = trajectory;
+        // The previous survey run may not belong to the new trajectory
+        SelectedSurveyRun = null;
+        await LoadFilteredSurveyRunsAsync();
+    }
+
+    /// <summary>
+    /// Lists the survey runs referenced by the sections of the selected trajectory. Returns false if loading failed.
+    /// </summary>
+    private async Task<bool> LoadFilteredSurveyRunsAsync()
+    {
+        FilteredSurveyRuns = new List<SurveyRunLight>();
+        var trajectory = _selectedTrajectory;
+        if (trajectory?.MetaInfo == null)
+        {
+            return true;
+        }
+        try
+        {
+            var sections = trajectory.SurveyRunSectionList;
+            if (sections == null)
+            {
+                sections = (await APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(trajectory.MetaInfo.ID))?.SurveyRunSectionList;
+            }
+            if (sections == null || sections.Count == 0)
+            {
+                return true;
+            }
+            var orderedIDs = sections.OrderBy(section => section.StartAbscissa).Select(section => section.SurveyRunID).Distinct().ToList();
+            var surveyRuns = await APIUtils.ClientTrajectory.GetAllSurveyRunLightAsync(wellBoreId: trajectory.WellBoreID);
+            FilteredSurveyRuns = orderedIDs
+                .Select(id => surveyRuns?.FirstOrDefault(surveyRun => surveyRun.MetaInfo?.ID == id))
+                .Where(surveyRun => surveyRun != null)
+                .Select(surveyRun => surveyRun!)
+                .ToList();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem loading the survey runs of the selected trajectory");
+            Snackbar.Add("Problem loading the survey runs of the selected trajectory", Severity.Error);
+            return false;
+        }
+    }
+
     private DrillingFluidDescription? _selectedFluid = null;
     private DrillingFluidDescription? SelectedFluid 
     {
@@ -598,6 +683,12 @@
             if (Simulation?.ContextualData?.TrajectoryID != null && Trajectories != null)
             {
                 _selectedTrajectory = Trajectories.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.TrajectoryID);
+                bool surveyRunsLoaded = await LoadFilteredSurveyRunsAsync();
+                if (surveyRunsLoaded && Simulation.ContextualData.SurveyRunID != null)
+                {
+                    // Clears the saved survey run if it no longer belongs to the trajectory
+                    SelectedSurveyRun = FilteredSurveyRuns.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.SurveyRunID);
+                }
             }
             if (Simulation?.ContextualData?.GeothermalPropertiesID != null && GeothermalProperties != null)
             {

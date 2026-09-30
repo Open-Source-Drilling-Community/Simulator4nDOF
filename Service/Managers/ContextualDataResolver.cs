@@ -12,7 +12,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
     {
         public required DrillString DrillString { get; init; }
         public required DrillingFluidDescription DrillingFluidDescription { get; init; }
-        public required Trajectory Trajectory { get; init; }
+        public Trajectory? Trajectory { get; init; }
+        public SurveyRun? SurveyRun { get; init; }
         public required Rig Rig { get; init; }
         public GeothermalProperties? GeothermalProperties { get; init; }
         public required double FluidDensity { get; init; }
@@ -38,7 +39,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 "drilling fluid description",
                 id => APIUtils.ClientDrillingFluid.GetDrillingFluidDescriptionByIdAsync(id));
            
-            var trajectory = await LoadCalculatedTrajectoryAsync(contextualData.TrajectoryID);
+            var (trajectory, surveyRun) = await ResolveTrajectorySourceAsync(contextualData);
 
             var rig = await LoadRigAsync(simulation);
 
@@ -57,6 +58,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 DrillString = drillString,
                 DrillingFluidDescription = drillingFluidDescription,
                 Trajectory = trajectory,
+                SurveyRun = surveyRun,
                 Rig = rig,
                 CasingSection = casingSection,
                 FluidDensity = fluidDensity,
@@ -169,20 +171,40 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         private static readonly TimeSpan TrajectoryCalculationPollInterval = TimeSpan.FromMilliseconds(500);
         private static readonly TimeSpan TrajectoryCalculationTimeout = TimeSpan.FromMinutes(2);
 
-        private static async Task<Trajectory> LoadCalculatedTrajectoryAsync(Guid? id)
+        /// <summary>
+        /// A trajectory is always required. If a survey run of that trajectory is selected, it takes priority.
+        /// Exactly one of the returned values is not null.
+        /// </summary>
+        private static async Task<(Trajectory? Trajectory, SurveyRun? SurveyRun)> ResolveTrajectorySourceAsync(ContextualData contextualData)
         {
+            var calculationType = contextualData.TrajectoryCalculationType;
             var trajectory = await LoadRequiredAsync(
-                id,
+                contextualData.TrajectoryID,
                 "trajectory",
                 trajectoryID => APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(trajectoryID, includeCalculatedStations: true));
-            if (trajectory.SurveyStationList != null && trajectory.SurveyStationList.Count > 0)
+
+            if (contextualData.SurveyRunID is Guid surveyRunID && surveyRunID != Guid.Empty)
+            {
+                if (trajectory.SurveyRunSectionList == null || !trajectory.SurveyRunSectionList.Any(section => section.SurveyRunID == surveyRunID))
+                {
+                    throw new Exception($"Survey run '{surveyRunID}' does not belong to trajectory '{contextualData.TrajectoryID}'.");
+                }
+                return (null, await LoadCalculatedSurveyRunAsync(surveyRunID, calculationType));
+            }
+
+            return (await LoadCalculatedTrajectoryAsync(trajectory, calculationType), null);
+        }
+
+        private static async Task<Trajectory> LoadCalculatedTrajectoryAsync(Trajectory trajectory, TrajectoryCalculationType calculationType)
+        {
+            if (HasStations(trajectory.SurveyStationList) && trajectory.CalculationType == calculationType)
             {
                 return trajectory;
             }
 
             try
             {
-                var surveyStations = await ConcatenateSurveyRunStationsAsync(trajectory);
+                var surveyStations = await ConcatenateSurveyRunStationsAsync(trajectory, calculationType);
 
                 Guid calculatedID = Guid.NewGuid();
                 Trajectory calculatedTrajectory = new Trajectory
@@ -200,13 +222,18 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                     SurveyRunSectionList = trajectory.SurveyRunSectionList,
                     SurveyStationList = surveyStations,
                     TieInPoint = trajectory.TieInPoint ?? surveyStations[0],
-                    CalculationType = TrajectoryCalculationType.MinimumCurvatureMethod,
+                    CalculationType = calculationType,
                     MDStep = trajectory.MDStep
                 };
                 // Send calculation request
                 await APIUtils.ClientTrajectory.PostTrajectoryAsync(calculatedTrajectory);
                 // Load calculated trajectory
-                calculatedTrajectory = await WaitForTrajectoryCalculationAsync(calculatedID);
+                calculatedTrajectory = await WaitForCalculationAsync(
+                    () => APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(calculatedID, includeCalculatedStations: true),
+                    result => result.CalculationState,
+                    result => result.CalculationMessage,
+                    result => HasStations(result.SurveyStationList),
+                    $"trajectory '{calculatedID}'");
                 // Delete temporary trajectory from database
                 if (calculatedTrajectory.LastModificationDate != null)
                 {
@@ -220,25 +247,83 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             }
         }
 
-        private static async Task<List<SurveyStation>> ConcatenateSurveyRunStationsAsync(Trajectory trajectory)
+        private static async Task<SurveyRun> LoadCalculatedSurveyRunAsync(Guid surveyRunID, TrajectoryCalculationType calculationType)
+        {
+            var surveyRun = await LoadRequiredAsync(
+                surveyRunID,
+                "survey run",
+                id => APIUtils.ClientTrajectory.GetSurveyRunByIdAsync(id, includeCalculatedStations: true));
+            if (HasStations(surveyRun.SurveyStationList) && surveyRun.CalculationType == calculationType)
+            {
+                return surveyRun;
+            }
+
+            try
+            {
+                var surveyRunWithMeasurements = await LoadRequiredAsync(
+                    surveyRunID,
+                    "survey run",
+                    id => APIUtils.ClientTrajectory.GetSurveyRunByIdAsync(id, includeMeasurements: true));
+                if (surveyRunWithMeasurements.SurveyMeasurementList == null || surveyRunWithMeasurements.SurveyMeasurementList.Count == 0)
+                {
+                    throw new Exception($"Survey run '{surveyRunID}' has neither survey stations calculated with {calculationType} nor survey measurements to calculate them from.");
+                }
+
+                Guid calculatedID = Guid.NewGuid();
+                SurveyRun calculatedSurveyRun = new SurveyRun
+                {
+                    MetaInfo = new MetaInfo { ID = calculatedID },
+                    Name = "Calculated for simulation",
+                    Description = surveyRunWithMeasurements.Description,
+                    CreationDate = DateTimeOffset.UtcNow,
+                    LastModificationDate = DateTimeOffset.UtcNow,
+                    FieldID = surveyRunWithMeasurements.FieldID,
+                    ClusterID = surveyRunWithMeasurements.ClusterID,
+                    WellID = surveyRunWithMeasurements.WellID,
+                    WellBoreID = surveyRunWithMeasurements.WellBoreID,
+                    SurveyInstrumentID = surveyRunWithMeasurements.SurveyInstrumentID,
+                    SurveyRunType = surveyRunWithMeasurements.SurveyRunType,
+                    ParentSurveyRunID = surveyRunWithMeasurements.ParentSurveyRunID,
+                    TieInPoint = surveyRunWithMeasurements.TieInPoint,
+                    SurveyMeasurementList = surveyRunWithMeasurements.SurveyMeasurementList,
+                    SurveyStationList = null,
+                    CalculationType = calculationType
+                };
+                // Send calculation request
+                await APIUtils.ClientTrajectory.PostSurveyRunAsync(calculatedSurveyRun);
+                // Load calculated survey run
+                calculatedSurveyRun = await WaitForCalculationAsync(
+                    () => APIUtils.ClientTrajectory.GetSurveyRunByIdAsync(calculatedID, includeCalculatedStations: true),
+                    result => result.CalculationState,
+                    result => result.CalculationMessage,
+                    result => HasStations(result.SurveyStationList),
+                    $"survey run '{calculatedID}'");
+                // Delete temporary survey run from database
+                if (calculatedSurveyRun.LastModificationDate != null)
+                {
+                    await APIUtils.ClientTrajectory.DeleteSurveyRunByIdAsync(calculatedID, calculatedSurveyRun.LastModificationDate.Value);
+                }
+                return calculatedSurveyRun;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to build calculated survey run: {ex.Message}", ex);
+            }
+        }
+
+        private static async Task<List<SurveyStation>> ConcatenateSurveyRunStationsAsync(Trajectory trajectory, TrajectoryCalculationType calculationType)
         {
             if (trajectory.SurveyRunSectionList == null || trajectory.SurveyRunSectionList.Count == 0)
             {
-                throw new Exception($"Trajectory '{trajectory.MetaInfo?.ID}' has no survey station list and no survey run sections.");
+                throw new Exception($"Trajectory '{trajectory.MetaInfo?.ID}' has no survey run sections to calculate its survey stations from.");
             }
 
             var sections = trajectory.SurveyRunSectionList.OrderBy(section => section.StartAbscissa).ToList();
             var surveyStations = new List<SurveyStation>();
             for (int i = 0; i < sections.Count; i++)
             {
-                var surveyRun = await LoadRequiredAsync(
-                    sections[i].SurveyRunID,
-                    "survey run",
-                    surveyRunID => APIUtils.ClientTrajectory.GetSurveyRunByIdAsync(surveyRunID, includeCalculatedStations: true));
-                if (surveyRun.SurveyStationList == null || surveyRun.SurveyStationList.Count == 0)
-                {
-                    throw new Exception($"Survey run '{sections[i].SurveyRunID}' has no survey stations.");
-                }
+                // Each survey run is recalculated if needed, so that all stations use the requested calculation type
+                var surveyRun = await LoadCalculatedSurveyRunAsync(sections[i].SurveyRunID, calculationType);
 
                 double startAbscissa = sections[i].StartAbscissa;
                 double endAbscissa = i + 1 < sections.Count ? sections[i + 1].StartAbscissa : double.PositiveInfinity;
@@ -264,36 +349,47 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return surveyStations;
         }
 
+        private static bool HasStations(ICollection<SurveyStation>? stations)
+        {
+            return stations != null && stations.Count > 0;
+        }
+
         private static double? GetStationAbscissa(SurveyStation station)
         {
             return station.Abscissa ?? station.MD;
         }
 
-        private static async Task<Trajectory> WaitForTrajectoryCalculationAsync(Guid id)
+        private static async Task<T> WaitForCalculationAsync<T>(
+            Func<Task<T>> reload,
+            Func<T, CalculationState> state,
+            Func<T, string?> message,
+            Func<T, bool> hasStations,
+            string label) where T : class
         {
             DateTime deadline = DateTime.UtcNow + TrajectoryCalculationTimeout;
             while (true)
             {
-                var trajectory = await APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(id, includeCalculatedStations: true);
-                if (trajectory == null)
+                var result = await reload();
+                if (result == null)
                 {
-                    throw new Exception($"Calculated trajectory '{id}' could not be loaded from its microservice.");
+                    throw new Exception($"Calculated {label} could not be loaded from its microservice.");
                 }
-                if (trajectory.CalculationState == CalculationState.Failed)
+                var currentState = state(result);
+                if (currentState == CalculationState.Failed)
                 {
-                    throw new Exception($"Trajectory calculation failed: {trajectory.CalculationMessage}");
+                    throw new Exception($"Calculation of {label} failed: {message(result)}");
                 }
-                if (trajectory.CalculationState == CalculationState.Completed)
+                if (currentState == CalculationState.Completed)
                 {
-                    if (trajectory.SurveyStationList == null || trajectory.SurveyStationList.Count == 0)
+                    if (!hasStations(result))
                     {
-                        throw new Exception($"Calculated trajectory '{id}' has no survey stations.");
+                        throw new Exception($"Calculated {label} has no survey stations.");
                     }
-                    return trajectory;
+                    return result;
                 }
                 if (DateTime.UtcNow > deadline)
                 {
-                    throw new TimeoutException($"Trajectory calculation '{id}' did not complete within {TrajectoryCalculationTimeout.TotalSeconds} s (state: {trajectory.CalculationState}).");
+                    throw new TimeoutException($"Calculation of {label} did not complete within {TrajectoryCalculationTimeout.TotalSeconds} s (state: {currentState}).");
                 }
                 await Task.Delay(TrajectoryCalculationPollInterval);
             }

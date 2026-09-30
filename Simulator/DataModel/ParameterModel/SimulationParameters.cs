@@ -56,7 +56,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             NumberOfElements  = Drillstring.ElementLength.Count;
             NumberOfNodes     = Drillstring.ElementLength.Count + 1;
             Wellbore          = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
-            Trajectory        = new SimulatorTrajectory(Drillstring, configuration.Trajectory);
+            Trajectory        = configuration.SurveyRun != null
+                ? new SimulatorTrajectory(Drillstring, configuration.SurveyRun)
+                : configuration.Trajectory != null
+                    ? new SimulatorTrajectory(Drillstring, configuration.Trajectory)
+                    : throw new ArgumentException("The configuration needs either a Trajectory or a SurveyRun.");
             Flow              = new SimulatorFlow(configuration, Trajectory, Drillstring);
             MudMotor          = new MudMotor();
             Friction          = new Friction(NumberOfNodes, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);

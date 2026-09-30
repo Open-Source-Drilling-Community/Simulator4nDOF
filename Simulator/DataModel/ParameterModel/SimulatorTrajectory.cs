@@ -39,28 +39,44 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
         public SimulatorTrajectory(in SimulatorDrillString drillString, in Trajectory trajectory)
         {
-            
+            InitializeFromSurveyStations(drillString, trajectory.SurveyStationList, null);
+        }
 
-            List<SurveyStation> surveyPoints = trajectory.SurveyStationList.ToList();
+        public SimulatorTrajectory(in SimulatorDrillString drillString, in SurveyRun surveyRun)
+        {
+            InitializeFromSurveyStations(drillString, surveyRun.SurveyStationList, surveyRun.TieInPoint);
+        }
+
+        private void InitializeFromSurveyStations(in SimulatorDrillString drillString, IEnumerable<SurveyStation>? stations, SurveyStation? tieInPoint)
+        {
+            if (stations == null)
+            {
+                throw new ArgumentException("The trajectory source has no survey stations.");
+            }
+            List<SurveyStation> surveyPoints = stations.Where(station => station.MD != null).OrderBy(station => station.MD).ToList();
+            // Start the profile at the tie-in point when it lies above the first survey station
+            if (tieInPoint?.MD != null && surveyPoints.Count > 0 && tieInPoint.MD < surveyPoints[0].MD)
+            {
+                surveyPoints.Insert(0, tieInPoint);
+            }
+            if (surveyPoints.Count < 2)
+            {
+                throw new ArgumentException("At least two survey stations with a measured depth are required to build the trajectory.");
+            }
             int rows = surveyPoints.Count;
             MeasuredDepthProfile = Vector<double>.Build.Dense(rows);
-            InclinationProfile = Vector<double>.Build.Dense(rows);
-            AzimuthProfile = Vector<double>.Build.Dense(rows);
+            InclinationProfile   = Vector<double>.Build.Dense(rows);
+            AzimuthProfile       = Vector<double>.Build.Dense(rows);
             VerticalDepthProfile = Vector<double>.Build.Dense(rows);            
             for (int i = 0; i < rows; i++)
             {
                 MeasuredDepthProfile[i] = surveyPoints[i].MD ?? 0;
-                InclinationProfile[i] = surveyPoints[i].Inclination ?? 0;
-                AzimuthProfile[i] = surveyPoints[i].Azimuth ?? 0;
+                InclinationProfile[i]   = surveyPoints[i].Inclination ?? 0;
+                AzimuthProfile[i]       = surveyPoints[i].Azimuth ?? 0;
                 VerticalDepthProfile[i] = surveyPoints[i].TVD ?? 0;
             }
 
-
-            Vector<double> azimuthProfileInRadians = Math.PI / 180 * AzimuthProfile;
-            Vector<double> unwrappedRadians = Unwrap(azimuthProfileInRadians, 1.9 * Math.PI);
-
-            AzimuthProfile = 180 / Math.PI * unwrappedRadians;
-
+            Vector<double> unwrappedRadians = Unwrap(AzimuthProfile, Math.PI);
             UpdateTrajectory(in drillString);
         }
         public void UpdateTrajectory(in SimulatorDrillString drillString)
@@ -72,8 +88,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 nodeDepthVector[i] = drillString.RelativeNodeDepth[i];
             }
             InterpolatedVerticalDepthAtNode = LinearInterpolate(MeasuredDepthProfile, VerticalDepthProfile, nodeDepthVector);
-            InterpolatedThetaAtNode = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, InclinationProfile, nodeDepthVector);
-            InterpolatedPhiAtNode = Math.PI / 180 * LinearInterpolate(MeasuredDepthProfile, AzimuthProfile, nodeDepthVector);
+            InterpolatedThetaAtNode         = LinearInterpolate(MeasuredDepthProfile, InclinationProfile, nodeDepthVector);
+            InterpolatedPhiAtNode           = LinearInterpolate(MeasuredDepthProfile, AzimuthProfile, nodeDepthVector);
 
             int n = InterpolatedThetaAtNode.Count();
             DiffThetaInterpolatedAtNode = ComputeDerivative(InterpolatedThetaAtNode, drillString.ElementLength);

@@ -1103,6 +1103,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             {
                 DrillingFluidDescription = resolvedContext.DrillingFluidDescription,
                 Trajectory = resolvedContext.Trajectory,
+                SurveyRun = resolvedContext.SurveyRun,
                 DrillString = resolvedContext.DrillString,
                 PumpPressure = contextualData.SurfacePipePressure,
                 BitDepth = simulation.InitialValues.BitDepth,                             // [m]

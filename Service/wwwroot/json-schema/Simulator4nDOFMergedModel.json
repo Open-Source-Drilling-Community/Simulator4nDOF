@@ -37572,6 +37572,14 @@
             "format": "uuid",
             "nullable": true
           },
+          "SurveyRunID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TrajectoryCalculationType": {
+            "$ref": "#/components/schemas/TrajectoryCalculationType"
+          },
           "RigID": {
             "type": "string",
             "format": "uuid",
