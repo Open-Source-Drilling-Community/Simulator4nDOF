@@ -53,15 +53,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             };
             Drillstring = new SimulatorDrillString(configuration);
 
-            NumberOfElements = Drillstring.ElementLength.Count;
-            NumberOfNodes = Drillstring.ElementLength.Count + 1;
-            Wellbore = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
-            Trajectory = new SimulatorTrajectory(Drillstring, configuration.Trajectory);
-            Flow = new SimulatorFlow(configuration, Trajectory, Drillstring);
-            MudMotor = new MudMotor();
-            Friction = new Friction(NumberOfNodes, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
+            NumberOfElements  = Drillstring.ElementLength.Count;
+            NumberOfNodes     = Drillstring.ElementLength.Count + 1;
+            Wellbore          = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
+            Trajectory        = new SimulatorTrajectory(Drillstring, configuration.Trajectory);
+            Flow              = new SimulatorFlow(configuration, Trajectory, Drillstring);
+            MudMotor          = new MudMotor();
+            Friction          = new Friction(NumberOfNodes, configuration.CoulombStaticFriction, configuration.CoulombKineticFriction, configuration.Stribeck);
             DrillStringLength = configuration.BitDepth - configuration.TopOfStringPosition;
-            TopDriveDrawwork = new TopDriveDrawwork()
+            TopDriveDrawwork  = new TopDriveDrawwork()
             {
                 SurfaceRotation = configuration.SurfaceRPM,
                 SurfaceAxialVelocity = configuration.TopOfStringVelocity,

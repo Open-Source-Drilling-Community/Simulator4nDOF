@@ -38,11 +38,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 "drilling fluid description",
                 id => APIUtils.ClientDrillingFluid.GetDrillingFluidDescriptionByIdAsync(id));
            
-            var trajectory = await LoadRequiredAsync(
-                contextualData.TrajectoryID,
-                "trajectory",
-                id => APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(id));
-           
+            var trajectory = await LoadCalculatedTrajectoryAsync(contextualData.TrajectoryID);
+
             var rig = await LoadRigAsync(simulation);
 
             var wellBoreArchitecture = await LoadOptionalAsync(
@@ -169,6 +166,139 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
 
             return await loader(id.Value);
         }
+        private static readonly TimeSpan TrajectoryCalculationPollInterval = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan TrajectoryCalculationTimeout = TimeSpan.FromMinutes(2);
+
+        private static async Task<Trajectory> LoadCalculatedTrajectoryAsync(Guid? id)
+        {
+            var trajectory = await LoadRequiredAsync(
+                id,
+                "trajectory",
+                trajectoryID => APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(trajectoryID, includeCalculatedStations: true));
+            if (trajectory.SurveyStationList != null && trajectory.SurveyStationList.Count > 0)
+            {
+                return trajectory;
+            }
+
+            try
+            {
+                var surveyStations = await ConcatenateSurveyRunStationsAsync(trajectory);
+
+                Guid calculatedID = Guid.NewGuid();
+                Trajectory calculatedTrajectory = new Trajectory
+                {
+                    MetaInfo = new MetaInfo { ID = calculatedID },
+                    Name = "Calculated for simulation",
+                    Description = trajectory.Description,
+                    CreationDate = DateTimeOffset.UtcNow,
+                    LastModificationDate = DateTimeOffset.UtcNow,
+                    FieldID = trajectory.FieldID,
+                    ClusterID = trajectory.ClusterID,
+                    WellID = trajectory.WellID,
+                    WellBoreID = trajectory.WellBoreID,
+                    TrajectoryType = trajectory.TrajectoryType,
+                    SurveyRunSectionList = trajectory.SurveyRunSectionList,
+                    SurveyStationList = surveyStations,
+                    TieInPoint = trajectory.TieInPoint ?? surveyStations[0],
+                    CalculationType = TrajectoryCalculationType.MinimumCurvatureMethod,
+                    MDStep = trajectory.MDStep
+                };
+                // Send calculation request
+                await APIUtils.ClientTrajectory.PostTrajectoryAsync(calculatedTrajectory);
+                // Load calculated trajectory
+                calculatedTrajectory = await WaitForTrajectoryCalculationAsync(calculatedID);
+                // Delete temporary trajectory from database
+                if (calculatedTrajectory.LastModificationDate != null)
+                {
+                    await APIUtils.ClientTrajectory.DeleteTrajectoryByIdAsync(calculatedID, calculatedTrajectory.LastModificationDate.Value);
+                }
+                return calculatedTrajectory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to build calculated trajectory: {ex.Message}", ex);
+            }
+        }
+
+        private static async Task<List<SurveyStation>> ConcatenateSurveyRunStationsAsync(Trajectory trajectory)
+        {
+            if (trajectory.SurveyRunSectionList == null || trajectory.SurveyRunSectionList.Count == 0)
+            {
+                throw new Exception($"Trajectory '{trajectory.MetaInfo?.ID}' has no survey station list and no survey run sections.");
+            }
+
+            var sections = trajectory.SurveyRunSectionList.OrderBy(section => section.StartAbscissa).ToList();
+            var surveyStations = new List<SurveyStation>();
+            for (int i = 0; i < sections.Count; i++)
+            {
+                var surveyRun = await LoadRequiredAsync(
+                    sections[i].SurveyRunID,
+                    "survey run",
+                    surveyRunID => APIUtils.ClientTrajectory.GetSurveyRunByIdAsync(surveyRunID, includeCalculatedStations: true));
+                if (surveyRun.SurveyStationList == null || surveyRun.SurveyStationList.Count == 0)
+                {
+                    throw new Exception($"Survey run '{sections[i].SurveyRunID}' has no survey stations.");
+                }
+
+                double startAbscissa = sections[i].StartAbscissa;
+                double endAbscissa = i + 1 < sections.Count ? sections[i + 1].StartAbscissa : double.PositiveInfinity;
+                var sectionStations = surveyRun.SurveyStationList
+                    .Where(station => GetStationAbscissa(station) != null)
+                    .Where(station => GetStationAbscissa(station) >= startAbscissa && GetStationAbscissa(station) < endAbscissa)
+                    .OrderBy(station => GetStationAbscissa(station));
+                foreach (var station in sectionStations)
+                {
+                    // Skip duplicated stations at section boundaries
+                    if (surveyStations.Count > 0 && Math.Abs(GetStationAbscissa(surveyStations[^1])!.Value - GetStationAbscissa(station)!.Value) < 1e-6)
+                    {
+                        continue;
+                    }
+                    surveyStations.Add(station);
+                }
+            }
+
+            if (surveyStations.Count == 0)
+            {
+                throw new Exception($"No survey stations could be collected from the survey runs of trajectory '{trajectory.MetaInfo?.ID}'.");
+            }
+            return surveyStations;
+        }
+
+        private static double? GetStationAbscissa(SurveyStation station)
+        {
+            return station.Abscissa ?? station.MD;
+        }
+
+        private static async Task<Trajectory> WaitForTrajectoryCalculationAsync(Guid id)
+        {
+            DateTime deadline = DateTime.UtcNow + TrajectoryCalculationTimeout;
+            while (true)
+            {
+                var trajectory = await APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(id, includeCalculatedStations: true);
+                if (trajectory == null)
+                {
+                    throw new Exception($"Calculated trajectory '{id}' could not be loaded from its microservice.");
+                }
+                if (trajectory.CalculationState == CalculationState.Failed)
+                {
+                    throw new Exception($"Trajectory calculation failed: {trajectory.CalculationMessage}");
+                }
+                if (trajectory.CalculationState == CalculationState.Completed)
+                {
+                    if (trajectory.SurveyStationList == null || trajectory.SurveyStationList.Count == 0)
+                    {
+                        throw new Exception($"Calculated trajectory '{id}' has no survey stations.");
+                    }
+                    return trajectory;
+                }
+                if (DateTime.UtcNow > deadline)
+                {
+                    throw new TimeoutException($"Trajectory calculation '{id}' did not complete within {TrajectoryCalculationTimeout.TotalSeconds} s (state: {trajectory.CalculationState}).");
+                }
+                await Task.Delay(TrajectoryCalculationPollInterval);
+            }
+        }
+
         private static async Task<GeothermalProperties?> LoadInterpolatedGeothermalProperties(Guid? id, Config? config) 
         {
             if (id == null || id == Guid.Empty)
