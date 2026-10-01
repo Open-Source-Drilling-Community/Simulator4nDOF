@@ -1,4 +1,4 @@
-
+﻿
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
@@ -83,7 +83,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.BitRockModels
         public void CalculateInteractionForce(State state, in SimulationParameters parameters, in BitInternalForces bitInternalForces)
         {
             tangentialVelocity = state.AngularVelocity[state.AngularVelocity.Count - 1] / parameters.Drillstring.BitRadius; // Convert bit linear velocity to angular velocity using bit radius 
-            bitStrain = (state.ZDisplacement[state.ZDisplacement.Count - 1] - state.ZDisplacement[state.ZDisplacement.Count - 2]) / parameters.Drillstring.ElementLength[parameters.Drillstring.ElementLength.Count - 1]; // Assuming the last element corresponds to the bit
+            bitStrain = (state.ZDisplacement[state.ZDisplacement.Count - 1] - state.ZDisplacement[state.ZDisplacement.Count - 2]) / parameters.Drillstring.AxialElementLength[parameters.Drillstring.AxialElementLength.Count - 1]; // The last axial-torsional element corresponds to the bit
             if (state.BitOnBotton)
             {
                 lastElement = state.DepthOfCut[state.DepthOfCut.Count - 1]; // Get the last element of l

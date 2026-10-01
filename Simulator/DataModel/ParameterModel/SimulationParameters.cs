@@ -22,9 +22,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         // DrillString from the microservice. It is used as an input for model
         public Friction Friction;
         public TopDriveDrawwork TopDriveDrawwork;
-        // Discretization properties
+        // Discretization properties - NumberOfElements and NumberOfNodes refer to the lateral grid
         public int NumberOfElements;
         public int NumberOfNodes; 
+        public int NumberOfAxialElements;
+        public int NumberOfAxialNodes;
         public double DrillStringLength;
         // 
         public int CellsInDepthOfCut = 5;
@@ -55,6 +57,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
 
             NumberOfElements  = Drillstring.ElementLength.Count;
             NumberOfNodes     = Drillstring.ElementLength.Count + 1;
+            NumberOfAxialElements = Drillstring.AxialElementLength.Count;
+            NumberOfAxialNodes    = Drillstring.AxialElementLength.Count + 1;
             Wellbore          = new SimulatorWellbore(in Drillstring, in configuration.CasingSection);
             Trajectory        = configuration.SurveyRun != null
                 ? new SimulatorTrajectory(Drillstring, configuration.SurveyRun)
@@ -91,23 +95,31 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
             SolverType = configuration.SolverType;
         }
 
-        public void AddNewElement()
+        /// <summary>
+        /// Activates a new axial-torsional element, and its lateral elements, at the top of the string.
+        /// </summary>
+        /// <returns>The number of lateral elements added and the length of the new axial-torsional element.</returns>
+        public (int LateralElementsAdded, double AddedLength) AddNewElement()
         {
-            // Insert first inactive element at the top of each active list
-            Drillstring.ActivateElements();
-           
+            // Insert the first inactive axial-torsional element at the top of each active list
+            (int lateralElementsAdded, double addedLength) = Drillstring.ActivateAxialElement();
+            if (lateralElementsAdded == 0)
+                return (0, 0.0);
 
             NumberOfElements = Drillstring.ElementLength.Count;
+            NumberOfNodes = NumberOfElements + 1;
+            NumberOfAxialElements = Drillstring.AxialElementLength.Count;
+            NumberOfAxialNodes = NumberOfAxialElements + 1;
             // Fields without Inactive counterparts
-            Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient);
-            Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient);
-            if (Drillstring.SleeveIndexPosition.Count > 0)
+            Friction.StaticFrictionCoefficient = ExtendVectorStart(Friction.StaticFrictionCoefficient[0], Friction.StaticFrictionCoefficient, lateralElementsAdded);
+            Friction.KinematicFrictionCoefficient = ExtendVectorStart(Friction.KinematicFrictionCoefficient[0], Friction.KinematicFrictionCoefficient, lateralElementsAdded);
+            Flow.AddNewNodes(lateralElementsAdded);
+            for (int i = 0; i < Drillstring.SleeveIndexPosition.Count; i++)
             {
-                for (int i = 0; i < Drillstring.SleeveIndexPosition.Count; i++)
-                {
-                    Drillstring.SleeveIndexPosition[i] += 1;
-                }
+                Drillstring.SleeveIndexPosition[i] += lateralElementsAdded;
             }
+            Drillstring.IndexSensor += lateralElementsAdded;
+            return (lateralElementsAdded, addedLength);
         }
     }
 }

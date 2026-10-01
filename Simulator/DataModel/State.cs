@@ -20,12 +20,20 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public Vector<double> YDisplacement;                  // Lumped element lateral displacement in y-direction
         public Vector<double> YVelocity;                      // Lumped element lateral velocity in y-direction
         public Vector<double> YAcceleration;                  // Lumped element lateral acceleration in y-direction
-        public Vector<double> ZDisplacement;                  // Lumped element lateral acceleration in x-direction        
-        public Vector<double> ZVelocity;                        // Lumped element axial velocity
-        public Vector<double> ZAcceleration;                    // Lumped element axial acceleration
-        public Vector<double> AngularDisplacement;            // Lumped element angular displacement        
-        public Vector<double> AngularVelocity;                // Lumped element angular velocity
-        public Vector<double> AngularAcceleration;            // Lumped element angular acceleration
+        // Axial-torsional state variables, defined at the axial-torsional nodes
+        public Vector<double> ZDisplacement;                  // Axial-torsional node axial displacement
+        public Vector<double> ZVelocity;                        // Axial-torsional node axial velocity
+        public Vector<double> ZAcceleration;                    // Axial-torsional node axial acceleration
+        public Vector<double> AngularDisplacement;            // Axial-torsional node angular displacement        
+        public Vector<double> AngularVelocity;                // Axial-torsional node angular velocity
+        public Vector<double> AngularAcceleration;            // Axial-torsional node angular acceleration
+        // Axial-torsional state variables linearly interpolated to the lateral nodes
+        public Vector<double> ZDisplacementL;                 // Axial displacement at the lateral nodes
+        public Vector<double> ZVelocityL;                     // Axial velocity at the lateral nodes
+        public Vector<double> ZAccelerationL;                 // Axial acceleration at the lateral nodes
+        public Vector<double> AngularDisplacementL;           // Angular displacement at the lateral nodes
+        public Vector<double> AngularVelocityL;               // Angular velocity at the lateral nodes
+        public Vector<double> AngularAccelerationL;           // Angular acceleration at the lateral nodes
         // Auxiliar state variables
         public Vector<double> WhirlAngle;                     // Lumped element whirl angle (angular displacement)
         public Vector<double> WhirlVelocity;                  // Lumped element whirl velocity (angular velocity)        
@@ -71,10 +79,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double TopDriveStartupTime;                     // Top drive startup time [s]
         private int numberOfNodes;
         private int numberOfElements;
+        private int numberOfAxialNodes;
         public State(in SimulationParameters parameters)
         {
             numberOfElements = parameters.NumberOfElements;      
             numberOfNodes = parameters.NumberOfNodes;      
+            numberOfAxialNodes = parameters.NumberOfAxialNodes;
             // Initialize lumped element whirl angle
             WhirlAngle = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element radial displacement
@@ -96,21 +106,27 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
                 AxialVelocity = parameters.Input.InitialTopOfStringVelocity
             };
             // Initialize lumped element angular displacement
-            AngularDisplacement = Vector<double>.Build.Dense(numberOfNodes);
+            AngularDisplacement = Vector<double>.Build.Dense(numberOfAxialNodes);
+            AngularDisplacementL = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element angular velocity
-            AngularVelocity = Vector<double>.Build.Dense(numberOfNodes);
+            AngularVelocity = Vector<double>.Build.Dense(numberOfAxialNodes);
+            AngularVelocityL = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element angular acceleration
-            AngularAcceleration = Vector<double>.Build.Dense(numberOfNodes);
+            AngularAcceleration = Vector<double>.Build.Dense(numberOfAxialNodes);
+            AngularAccelerationL = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element axial displacement
-            ZDisplacement = Vector<double>.Build.Dense(numberOfNodes);
+            ZDisplacement = Vector<double>.Build.Dense(numberOfAxialNodes);
+            ZDisplacementL = Vector<double>.Build.Dense(numberOfNodes);
             //for (int i = 0; i < numberOfElements; i++)
             //{
             //    ZDisplacement[i] = parameters.LumpedCells.CumulativeElementLength[i];
             //}
             // Initialize lumped element axial velocity
-            ZVelocity = Vector<double>.Build.Dense(numberOfNodes);
+            ZVelocity = Vector<double>.Build.Dense(numberOfAxialNodes);
+            ZVelocityL = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element axial acceleration
-            ZAcceleration = Vector<double>.Build.Dense(numberOfNodes);
+            ZAcceleration = Vector<double>.Build.Dense(numberOfAxialNodes);
+            ZAccelerationL = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element lateral displacement in x-direction
             XDisplacement = Vector<double>.Build.Dense(numberOfNodes);
             // Initialize lumped element lateral velocity in x-direction
@@ -173,69 +189,65 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
             TopDriveStartupTime = 0;
             OnBottomStart = -1;
           }
-        public void AddNewLumpedElement()
+        /// <summary>
+        /// Adds one axial-torsional node and <paramref name="lateralNodesAdded"/> lateral nodes at the top of the string,
+        /// repeating the values of the current top node. The new element shifts the reference position of every node
+        /// down by <paramref name="addedLength"/>, so the axial displacements are reduced by the same amount to keep
+        /// the physical positions.
+        /// </summary>
+        public void AddNewLumpedElement(int lateralNodesAdded, double addedLength)
         {
-            numberOfElements += 1;
-            // Extend AngularDisplacement vector by prepending the first element
+            numberOfElements += lateralNodesAdded;
+            numberOfNodes += lateralNodesAdded;
+            numberOfAxialNodes += 1;
+            // Axial-torsional nodes
             AngularDisplacement = ExtendVectorStart(AngularDisplacement[0], AngularDisplacement);
-
-            // Extend AngularVelocity vector by prepending the first element
             AngularVelocity = ExtendVectorStart(AngularVelocity[0], AngularVelocity);
-
-            // Extend AngularAcceleration vector by prepending the first element
             AngularAcceleration = ExtendVectorStart(AngularAcceleration[0], AngularAcceleration);
-
-            // Extend AxialVelocity vector by prepending the first element
+            ZDisplacement = ExtendVectorStart(ZDisplacement[0], ZDisplacement);
             ZVelocity = ExtendVectorStart(ZVelocity[0], ZVelocity);
-
-            // Extend AxialAcceleration vector by prepending the first element
             ZAcceleration = ExtendVectorStart(ZAcceleration[0], ZAcceleration);
-
-            // Extend XDisplacement vector by prepending the first element
-            XDisplacement = ExtendVectorStart(XDisplacement[0], XDisplacement);
-
-            // Extend XVelocity vector by prepending the first element
-            XVelocity = ExtendVectorStart(XVelocity[0], XVelocity);
-
-            // Extend XAcceleration vector by prepending the first element
-            XAcceleration = ExtendVectorStart(XAcceleration[0], XAcceleration);
-
-            // Extend YDisplacement vector by prepending the first element
-            YDisplacement = ExtendVectorStart(YDisplacement[0], YDisplacement);
-
-            // Extend YVelocity vector by prepending the first element
-            YVelocity = ExtendVectorStart(YVelocity[0], YVelocity);
-
-            // Extend YAcceleration vector by prepending the first element
-            YAcceleration = ExtendVectorStart(YAcceleration[0], YAcceleration);
-
-            // Extend WhirlAngle vector by prepending the first element
-            WhirlAngle = ExtendVectorStart(WhirlAngle[0], WhirlAngle);
-
-            // Extend WhirlVelocity vector by prepending the first element
-            WhirlVelocity = ExtendVectorStart(WhirlVelocity[0], WhirlVelocity);
-
-            // Extend RadialDisplacement vector by prepending the first element
-            RadialDisplacement = ExtendVectorStart(RadialDisplacement[0], RadialDisplacement);
-
-            // Extend RadialVelocity vector by prepending the first element
-            RadialVelocity = ExtendVectorStart(RadialVelocity[0], RadialVelocity);
-
-            // Extend slip_condition vector by prepending the first element
-            SlipCondition = ExtendVectorStart(SlipCondition[0], SlipCondition);
-
-            // Extend SleeveForce vector by prepending the first element            
-            SleeveForces = ExtendVectorStart(SleeveForces[0], SleeveForces);
-            // Insert -1 at the beginning of SleeveToLumpedIndex to account for the new element
-            SleeveToLumpedIndex.Insert(0, -1);
-
-
-            // Add 1 to every positive number in SleeveToLumpedIndex to update indices after insertion
+            for (int i = 0; i < ZDisplacement.Count; i++)
+            {
+                ZDisplacement[i] -= addedLength;
+            }
+            TopDrive.RelativeAxialPosition -= addedLength;
+            // Lateral nodes
+            ZDisplacementL = ExtendVectorStart(ZDisplacementL[0], ZDisplacementL, lateralNodesAdded);
+            ZVelocityL = ExtendVectorStart(ZVelocityL[0], ZVelocityL, lateralNodesAdded);
+            ZAccelerationL = ExtendVectorStart(ZAccelerationL[0], ZAccelerationL, lateralNodesAdded);
+            AngularDisplacementL = ExtendVectorStart(AngularDisplacementL[0], AngularDisplacementL, lateralNodesAdded);
+            AngularVelocityL = ExtendVectorStart(AngularVelocityL[0], AngularVelocityL, lateralNodesAdded);
+            AngularAccelerationL = ExtendVectorStart(AngularAccelerationL[0], AngularAccelerationL, lateralNodesAdded);
+            XDisplacement = ExtendVectorStart(XDisplacement[0], XDisplacement, lateralNodesAdded);
+            XVelocity = ExtendVectorStart(XVelocity[0], XVelocity, lateralNodesAdded);
+            XAcceleration = ExtendVectorStart(XAcceleration[0], XAcceleration, lateralNodesAdded);
+            YDisplacement = ExtendVectorStart(YDisplacement[0], YDisplacement, lateralNodesAdded);
+            YVelocity = ExtendVectorStart(YVelocity[0], YVelocity, lateralNodesAdded);
+            YAcceleration = ExtendVectorStart(YAcceleration[0], YAcceleration, lateralNodesAdded);
+            WhirlAngle = ExtendVectorStart(WhirlAngle[0], WhirlAngle, lateralNodesAdded);
+            WhirlVelocity = ExtendVectorStart(WhirlVelocity[0], WhirlVelocity, lateralNodesAdded);
+            RadialDisplacement = ExtendVectorStart(RadialDisplacement[0], RadialDisplacement, lateralNodesAdded);
+            RadialVelocity = ExtendVectorStart(RadialVelocity[0], RadialVelocity, lateralNodesAdded);
+            SlipCondition = ExtendVectorStart(SlipCondition[0], SlipCondition, lateralNodesAdded);
+            SleeveForces = ExtendVectorStart(SleeveForces[0], SleeveForces, lateralNodesAdded);
+            BendingMomentX = ExtendVectorStart(BendingMomentX[0], BendingMomentX, lateralNodesAdded);
+            BendingMomentY = ExtendVectorStart(BendingMomentY[0], BendingMomentY, lateralNodesAdded);
+            NormalCollisionForce = ExtendVectorStart(NormalCollisionForce[0], NormalCollisionForce, lateralNodesAdded);
+            SoftStringNormalForce = ExtendVectorStart(SoftStringNormalForce[0], SoftStringNormalForce, lateralNodesAdded);
+            Tension = ExtendVectorStart(Tension[0], Tension, lateralNodesAdded);
+            Torque = ExtendVectorStart(Torque[0], Torque, lateralNodesAdded);
+            // Insert -1 at the beginning of SleeveToLumpedIndex to account for the new elements
+            for (int i = 0; i < lateralNodesAdded; i++)
+            {
+                SleeveToLumpedIndex.Insert(0, -1);
+            }
+            // Shift every positive number in SleeveToLumpedIndex to update indices after insertion
             for (int i = 0; i < SleeveToLumpedIndex.Count; i++)
             {
                 if (SleeveToLumpedIndex[i] > 0)
                 {
-                    SleeveToLumpedIndex[i] += 1;
+                    SleeveToLumpedIndex[i] += lateralNodesAdded;
                 }
             }
         }

@@ -1,4 +1,4 @@
-using MathNet.Numerics.LinearAlgebra;
+﻿using MathNet.Numerics.LinearAlgebra;
 using NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods;
 using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.ModelShared;
@@ -648,6 +648,26 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         /// When <c>true</c>, uses the buoyancy-factor method; otherwise uses the explicit
         /// fluid-volume method that accounts for tool-joint geometry.
         /// </param>
+        /// <summary>
+        /// Prepends <paramref name="count"/> nodes at the top of the string, repeating the values of the
+        /// current top node. Hydrostatic and buoyancy terms are recomputed by <see cref="UpdateBuoyancy"/>.
+        /// </summary>
+        public void AddNewNodes(int count)
+        {
+            StringPressure    = ExtendVectorStart(StringPressure[0], StringPressure, count);
+            StringDensity     = ExtendVectorStart(StringDensity[0], StringDensity, count);
+            StringTemperature = ExtendVectorStart(StringTemperature[0], StringTemperature, count);
+            AnnulusPressure    = ExtendVectorStart(AnnulusPressure[0], AnnulusPressure, count);
+            AnnulusDensity     = ExtendVectorStart(AnnulusDensity[0], AnnulusDensity, count);
+            AnnulusTemperature = ExtendVectorStart(AnnulusTemperature[0], AnnulusTemperature, count);
+            HydrostaticStringPressure  = ExtendVectorStart(HydrostaticStringPressure[0], HydrostaticStringPressure, count);
+            HydrostaticAnnulusPressure = ExtendVectorStart(HydrostaticAnnulusPressure[0], HydrostaticAnnulusPressure, count);
+            BuoyantWeightPerLength = ExtendVectorStart(BuoyantWeightPerLength[0], BuoyantWeightPerLength, count);
+            dSigmaDx = ExtendVectorStart(dSigmaDx[0], dSigmaDx, count);
+            AxialBuoyancyForceChangeOfDiameters  = ExtendVectorStart(AxialBuoyancyForceChangeOfDiameters[0], AxialBuoyancyForceChangeOfDiameters, count);
+            NormalBuoyancyForceChangeOfDiameters = ExtendVectorStart(NormalBuoyancyForceChangeOfDiameters[0], NormalBuoyancyForceChangeOfDiameters, count);
+        }
+
         public void UpdateBuoyancy(in SimulatorTrajectory trajectory, in SimulatorDrillString drillString, bool useBuoyancyFactor)
         {
             double tempStringPressure  = 0;

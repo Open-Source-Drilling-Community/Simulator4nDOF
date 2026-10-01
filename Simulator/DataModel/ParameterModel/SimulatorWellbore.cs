@@ -57,6 +57,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         {
             // Wellbore radius calculation at each node
             boreholeRadius = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
+            if (DrillStringClearance == null || DrillStringClearance.Count != drillString.RelativeNodeDepth.Count)
+                DrillStringClearance = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
             int index = 0;
             double localRadius;
             for (int i = 0; i < drillString.RelativeNodeDepth.Count; i++)

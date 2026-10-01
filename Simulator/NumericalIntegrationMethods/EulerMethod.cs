@@ -1,4 +1,4 @@
-using MathNet.Numerics.Distributions;
+﻿using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
@@ -18,29 +18,42 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         {
             timeStep = simulationParameters.InnerLoopTimeStep;
         }
-         public bool SimulationDivergedCheck(in State state, in int i)
+        public bool SimulationDivergedCheck(in State state, in int i)
         {         
-            return double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]);
+            return double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]);
+        }
+        public bool LateralSimulationDivergedCheck(in State state, in int i)
+        {         
+            return double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]);
         }
         public bool IntegrationStep(State state, LumpedElementModel drillStringModel, in SimulationParameters simulationParameters)
         {   
             // Use the lateral model instance to estimate the accelerations
             drillStringModel.CalculateAccelerations(state, simulationParameters);
-            for (int i = 0; i < state.XDisplacement.Count; i++)
+            // Axial-torsional nodes
+            for (int i = 0; i < state.ZDisplacement.Count; i++)
             {
                 //Angular DoF
                 state.AngularDisplacement[i] = state.AngularDisplacement[i] + state.AngularVelocity[i] * timeStep; 
                 state.AngularVelocity[i]     = state.AngularVelocity[i]     + state.AngularAcceleration[i] * timeStep;                           
+                //Axial DoF
+                state.ZDisplacement[i] = state.ZDisplacement[i] + state.ZVelocity[i] * timeStep;
+                state.ZVelocity[i] = state.ZVelocity[i] + state.ZAcceleration[i] * timeStep;
+                if (SimulationDivergedCheck(in state, in i))
+                {
+                    return false;
+                }      
+            }
+            // Lateral nodes
+            for (int i = 0; i < state.XDisplacement.Count; i++)
+            {
                 //X DoF
                 state.XDisplacement[i] = state.XDisplacement[i] + state.XVelocity[i] * timeStep;
                 state.XVelocity[i]     = state.XVelocity[i] + state.XAcceleration[i] * timeStep;
                 //Y DoF
                 state.YDisplacement[i] = state.YDisplacement[i] + state.YVelocity[i] * timeStep;
                 state.YVelocity[i]     = state.YVelocity[i] + state.YAcceleration[i] * timeStep;    
-                //Axial DoF
-                state.ZDisplacement[i] = state.ZDisplacement[i] + state.ZVelocity[i] * timeStep;
-                state.ZVelocity[i] = state.ZVelocity[i] + state.ZAcceleration[i] * timeStep;
-                if (SimulationDivergedCheck(in state, in i))
+                if (LateralSimulationDivergedCheck(in state, in i))
                 {
                     return false;
                 }      
@@ -69,9 +82,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             return !double.IsNaN(state.TopDrive.RelativeAxialPosition);
         }
 
-        public void AddNewLumpedElement()
+        public void AddNewLumpedElement(int lateralNodesAdded, double addedLength)
         {
-
+            // Euler method has no history to extend
         }
     }
 }

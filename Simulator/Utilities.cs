@@ -45,6 +45,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             return Vector<double>.Build.DenseOfArray(new double[] { scalar }.Concat(array).ToArray());
         }
 
+        /// <summary>
+        /// Prepends <paramref name="count"/> copies of <paramref name="scalar"/> to <paramref name="array"/>.
+        /// </summary>
+        public static Vector<double> ExtendVectorStart(double scalar, Vector<double> array, int count)
+        {
+            double[] extended = new double[array.Count + count];
+            for (int i = 0; i < count; i++)
+                extended[i] = scalar;
+            for (int i = 0; i < array.Count; i++)
+                extended[count + i] = array[i];
+            return Vector<double>.Build.DenseOfArray(extended);
+        }
+
         public static double[] MaxArray(double[] array, double minValue)
         {
             return array.Select(x => Math.Max(x, minValue)).ToArray();

@@ -25,6 +25,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double PdcBladeNo = 5;                       // [-] Number of blades of the PDC bit(Detournay model), br.N
 
         public double ElementLength = 5;      // [m] Length between two lumped elements, lc.dxL. 5 originally, may becompe unstable if increased to 30
+        public int LateralElementsPerAxialElement = 5; // [-] Number of lateral elements per axial-torsional element (1 - same discretization for all DoF)
 
         public required double SensorDistanceFromBit = 63;  // [m] axial distance(relative to bit depth) of an IMU measuring downhole RPM and accelerations
         public required Vector<double> SleeveDistancesFromBit; // [m] Sleeve distances from bit

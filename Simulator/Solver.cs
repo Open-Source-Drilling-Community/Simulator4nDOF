@@ -27,6 +27,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         private TopdriveController topdriveController;
         
         private LumpedElementModel drillStringModel;
+        private IBitRock bitRockModel;
 
         private ISolverODE<LumpedElementModel> solverODE; 
 
@@ -38,7 +39,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             state = new State(in simulationParameters);                        
             output = new Output(in simulationParameters, in configuration);
             topdriveController = new TopdriveController(in configuration, in simulationParameters);
-            IBitRock bitRockModel = configuration.BitRockModelEnum switch
+            bitRockModel = configuration.BitRockModelEnum switch
             {
                 BitRockModelEnum.Detournay => new Detournay(
                                                     simulationParameters.Drillstring,
@@ -97,16 +98,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                     state.PreviousCalculatedBitDepth = state.BitDepth;
                 }
 
-                // if the top most element has traveled more than the distance between
-                // elements, we create a new lumped element and corresponding distributed section;
+                // if the top most element has traveled more than the length of the top axial-torsional
+                // element, we create a new axial-torsional element and its lateral elements;
                 // we also need to reconstruct the parameter and state vectors to include the new elements
-                if (state.ZDisplacement[0] > parameters.Drillstring.ElementLength[0])
+                if (state.ZDisplacement[0] > parameters.Drillstring.AxialElementLength[0])
                 {
                     AddNewLumpedElement();
-                    parameters.Trajectory.UpdateTrajectory(parameters.Drillstring);
-                    parameters.Flow.UpdateBuoyancy(parameters.Trajectory, parameters.Drillstring, parameters.UseBuoyancyFactor);
-                    parameters.Wellbore.UpdateWellbore(parameters.Drillstring);
-                    parameters.Drillstring.IndexSensor = parameters.Drillstring.IndexSensor + 1;
                 }
             }
             InnerStep();
@@ -172,7 +169,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 {
                     state.MudStatorAngularVelocity = state.WhirlVelocity[state.WhirlVelocity.Count - 1];
                     state.MudRotorAngularVelocity = state.MudRotorAngularVelocity + parameters.InnerLoopTimeStep / (parameters.MudMotor.I_rotor + parameters.MudMotor.M_rotor * Math.Pow(parameters.MudMotor.delta_rotor, 2) * Math.Pow(parameters.MudMotor.N_rotor, 2)) *
-                        (state.AngularAcceleration[state.WhirlVelocity.Count - 1] * parameters.MudMotor.M_rotor * Math.Pow(parameters.MudMotor.delta_rotor, 2) * parameters.MudMotor.N_stator * parameters.MudMotor.N_rotor + state.MudTorque - state.TorqueOnBit);
+                        (state.AngularAcceleration[state.AngularAcceleration.Count - 1] * parameters.MudMotor.M_rotor * Math.Pow(parameters.MudMotor.delta_rotor, 2) * parameters.MudMotor.N_stator * parameters.MudMotor.N_rotor + state.MudTorque - state.TorqueOnBit);
                 }
             }            
             // Bending moments
@@ -182,16 +179,22 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             
         }
 
-        public void AddNewLumpedElement() // TODO sjekk
+        public void AddNewLumpedElement()
         {
-            parameters.AddNewElement();
+            (int lateralElementsAdded, double addedLength) = parameters.AddNewElement();
+            if (lateralElementsAdded == 0)
+                return;
+            state.AddNewLumpedElement(lateralElementsAdded, addedLength);
+            solverODE.AddNewLumpedElement(lateralElementsAdded, addedLength);
+            // The reference positions of the nodes moved down by the new element length
+            parameters.Input.InitialBitDepth += addedLength;
+            parameters.Input.InitialTopOfStringPosition += addedLength;
 
-            state.AddNewLumpedElement();
-
-            solverODE.AddNewLumpedElement();        
-
-            //axialTorsionalModel = new AxialTorsionalModel(state, simulationParameters, axialTorsionalModel);            
-            //lateralModel = new LateralModel(simulationParameters, state);
+            parameters.Trajectory.UpdateTrajectory(parameters.Drillstring);
+            parameters.Flow.UpdateBuoyancy(parameters.Trajectory, parameters.Drillstring, parameters.UseBuoyancyFactor);
+            parameters.Wellbore.UpdateWellbore(parameters.Drillstring);
+            // The model arrays depend on the discretization and on the flow properties
+            drillStringModel = new LumpedElementModel(in parameters, in bitRockModel);
         }
     }
 }

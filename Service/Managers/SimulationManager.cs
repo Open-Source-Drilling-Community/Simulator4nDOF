@@ -1157,16 +1157,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor
-                    ? Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
+                    ? Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity, state.AngularVelocityL).Append(output.BitRotationInRPM).ToList()
                     : Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity,
-                        Utilities.ToVector(state.AngularVelocity.SubVector(1, state.AngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
+                        Utilities.ToVector(state.AngularVelocityL.SubVector(1, state.AngularVelocityL.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
                 SleevesAngularVelocity = state.SleeveAngularVelocity.ToList(),
                 RadialClearance = parameters.Wellbore.DrillStringClearance.Append(0).ToList(),
                 LateralDisplacement = output.RadialDisplacement.Append(0).ToList(),
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.AxialVelocity, state.ZVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.AxialVelocity, state.ZVelocityL).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
                 Inclination = parameters.Trajectory.InterpolatedThetaAtNode.Append(parameters.Trajectory.InterpolatedThetaAtNode.LastOrDefault<double>()).ToList(),
                 Azimuth = parameters.Trajectory.InterpolatedPhiAtNode.Append(parameters.Trajectory.InterpolatedPhiAtNode.LastOrDefault<double>()).ToList(),
