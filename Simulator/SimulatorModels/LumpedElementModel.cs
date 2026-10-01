@@ -61,11 +61,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         /// Total tension at each lateral node updated at every inner step, used for the
         /// tension-induced geometric stiffness
         /// </summary>
-        private Vector<double> tensionLateral;
+        private Vector<double> tensionAtLateralNodes;
         /// <summary>
         /// Torque at each lateral node updated at every inner step
         /// </summary>
-        private Vector<double> torqueLateral;
+        private Vector<double> torqueAtLateralNodes;
         /// <summary>
         /// Rayleigh proportional damping with mass-only coefficient
         /// for the lateral direction
@@ -137,15 +137,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
         /// <summary>
         /// Trial axial acceleration interpolated to the lateral nodes, used for the static friction check
         /// </summary>
-        private double[] trialAxialAccelerationLateral;
+        private double[] trialAxialAccelerationAtLateralNodes;
         /// <summary>
         /// Axial friction force at each lateral node
         /// </summary>
-        private double[] axialFrictionLateral;
+        private double[] axialFrictionAtLateralNodes;
         /// <summary>
         /// Friction (or sleeve braking) torque at each lateral node
         /// </summary>
-        private double[] frictionTorqueLateral;
+        private double[] frictionTorqueAtLateralNodes;
         #endregion
 
         #region Axial-torsional grid properties
@@ -381,11 +381,11 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             torque = Vector<double>.Build.Dense(numberOfLateralNodes);
             torqueDerivative = Vector<double>.Build.Dense(numberOfLateralNodes);
             staticTension = Vector<double>.Build.Dense(numberOfLateralNodes);
-            tensionLateral = Vector<double>.Build.Dense(numberOfLateralNodes);
-            torqueLateral = Vector<double>.Build.Dense(numberOfLateralNodes);
-            trialAxialAccelerationLateral = new double[numberOfLateralNodes];
-            axialFrictionLateral = new double[numberOfLateralNodes];
-            frictionTorqueLateral = new double[numberOfLateralNodes];
+            tensionAtLateralNodes = Vector<double>.Build.Dense(numberOfLateralNodes);
+            torqueAtLateralNodes = Vector<double>.Build.Dense(numberOfLateralNodes);
+            trialAxialAccelerationAtLateralNodes = new double[numberOfLateralNodes];
+            axialFrictionAtLateralNodes = new double[numberOfLateralNodes];
+            frictionTorqueAtLateralNodes = new double[numberOfLateralNodes];
             axialElasticForce = new double[numberOfAxialNodes];
             torsionalElasticTorque = new double[numberOfAxialNodes];
             nodalElasticTension = new double[numberOfAxialNodes];
@@ -682,17 +682,17 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             #endregion
 
             #region 2 - Linear interpolation to the lateral nodes
-            drillString.InterpolateToLateral(state.ZDisplacement, state.ZDisplacementL);
-            drillString.InterpolateToLateral(state.ZVelocity, state.ZVelocityL);
-            drillString.InterpolateToLateral(state.ZAcceleration, state.ZAccelerationL);
-            drillString.InterpolateToLateral(state.AngularDisplacement, state.AngularDisplacementL);
-            drillString.InterpolateToLateral(state.AngularVelocity, state.AngularVelocityL);
-            drillString.InterpolateToLateral(state.AngularAcceleration, state.AngularAccelerationL);
-            drillString.InterpolateToLateral(trialAxialAcceleration, trialAxialAccelerationLateral);
-            drillString.InterpolateToLateral(nodalTorque, torqueLateral);
+            drillString.InterpolateToLateral(state.ZDisplacement, state.AxialDisplacementAtLateralNodes);
+            drillString.InterpolateToLateral(state.ZVelocity, state.AxialVelocityAtLateralNodes);
+            drillString.InterpolateToLateral(state.ZAcceleration, state.AxialAccelerationAtLateralNodes);
+            drillString.InterpolateToLateral(state.AngularDisplacement, state.AngularDisplacementAtLateralNodes);
+            drillString.InterpolateToLateral(state.AngularVelocity, state.AngularVelocityAtLateralNodes);
+            drillString.InterpolateToLateral(state.AngularAcceleration, state.AngularAccelerationAtLateralNodes);
+            drillString.InterpolateToLateral(trialAxialAcceleration, trialAxialAccelerationAtLateralNodes);
+            drillString.InterpolateToLateral(nodalTorque, torqueAtLateralNodes);
             for (int i = 0; i < numberOfLateralNodes; i++)
             {
-                tensionLateral[i] = staticTension[i] + drillString.InterpolateToLateral(nodalElasticTension, i);
+                tensionAtLateralNodes[i] = staticTension[i] + drillString.InterpolateToLateral(nodalElasticTension, i);
             }
             #endregion
 
@@ -738,9 +738,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //  The geometric stiffness of each lateral element uses the tension at its mid-point,
                 // which is the average of the linear tension profile at its nodes
                 double leftGeometricStiffness = (i == 0) ? 0.0 :
-                        0.5 * (tensionLateral[i - 1] + tensionLateral[i]) * lateralGeometricStiffnessCoefficient[i - 1] + lateralPressureInducedStiffness[i - 1];
+                        0.5 * (tensionAtLateralNodes[i - 1] + tensionAtLateralNodes[i]) * lateralGeometricStiffnessCoefficient[i - 1] + lateralPressureInducedStiffness[i - 1];
                 double rightGeometricStiffness = (i == numberOfLateralNodes - 1) ? 0.0 :
-                        0.5 * (tensionLateral[i] + tensionLateral[i + 1]) * lateralGeometricStiffnessCoefficient[i] + lateralPressureInducedStiffness[i];
+                        0.5 * (tensionAtLateralNodes[i] + tensionAtLateralNodes[i + 1]) * lateralGeometricStiffnessCoefficient[i] + lateralPressureInducedStiffness[i];
                 //  Corrects the lateral stiffness with information from the pressure gradient and from the tension distribution
                 //The NegativeStiffnessTreatment function breakes the connection between elements in case of buckling, as in a string model
                 double equivalentLeftStiffness = NegativeStiffnessTreatment(lateralStiffnessLeft[i] - leftGeometricStiffness, centerElement: false);
@@ -761,7 +761,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 //If it is not used properly, it should crash the code.
                 int sleeveIndex = hasSleeve ?  state.SleeveToLumpedIndex[i] : -1;
                 //  Mask between sleeve and non-sleeve nodes. The pipe speed comes from the torsional model, interpolated to the lateral node
-                double rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocityL[i];
+                double rotationSpeed = hasSleeve ? state.SleeveAngularVelocity[sleeveIndex] : state.AngularVelocityAtLateralNodes[i];
                 double rotationSpeedSquared = rotationSpeed * rotationSpeed;
                 double fluidForceX =  addedLateralFluidMass[i] *
                                 (
@@ -783,28 +783,28 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 // The imbalance force comes from the assumption that the pipe element center of mass i slocated at a distance from its geometric center,
                 // which causes a lateral force and a torque as the pipe is displaced
                 // The unbalance uses the pipe properties, not the sleeve. This is because the pipe is still rotating withing the sleeve.
-                double pipeAngularVelocity = state.AngularVelocityL[i];
+                double pipeAngularVelocity = state.AngularVelocityAtLateralNodes[i];
                 double unbalanceForceX = nodeEccentricity[i] *
                     (
-                        pipeAngularVelocity * pipeAngularVelocity * Math.Cos(state.AngularDisplacementL[i])
-                        + state.AngularAccelerationL[i] * Math.Sin(state.AngularDisplacementL[i])
+                        pipeAngularVelocity * pipeAngularVelocity * Math.Cos(state.AngularDisplacementAtLateralNodes[i])
+                        + state.AngularAccelerationAtLateralNodes[i] * Math.Sin(state.AngularDisplacementAtLateralNodes[i])
                     );
                 double unbalanceForceY = nodeEccentricity[i] *
                     (
-                        pipeAngularVelocity * pipeAngularVelocity * Math.Sin(state.AngularDisplacementL[i])
-                        - state.AngularAccelerationL[i] * Math.Cos(state.AngularDisplacementL[i])
+                        pipeAngularVelocity * pipeAngularVelocity * Math.Sin(state.AngularDisplacementAtLateralNodes[i])
+                        - state.AngularAccelerationAtLateralNodes[i] * Math.Cos(state.AngularDisplacementAtLateralNodes[i])
                     );
                 #endregion
                 #region Coulomb Friction
                 // Axial velocity
-                double axialVelocity = state.ZVelocityL[i];
+                double axialVelocity = state.AxialVelocityAtLateralNodes[i];
                 // "Masks" sleeve or non-sleeve variables if hasSleeve = true
                 double outerRadius = hasSleeve ? parameters.Drillstring.SleeveOuterRadius : parameters.Drillstring.NodeOuterRadius[i];
                 // The total normal force is the sum of elastic, pre-stress, fluid, unbalance forces, damping and colission forces
                 double sumForcesX = elasticForceX + PreStressForceX + fluidForceX + unbalanceForceX - massProportionalDampingLateral[i] * state.XVelocity[i] - normalCollisionForce * cosWhirlAngle;
                 double sumForcesY = elasticForceY + PreStressForceY + fluidForceY + unbalanceForceY - massProportionalDampingLateral[i] * state.YVelocity[i] - normalCollisionForce * sinWhirlAngle;
                 // Axial force acting at the lateral node: lumped mass times the linearly interpolated trial axial acceleration
-                double sumForcesZ = lateralLumpedMass[i] * trialAxialAccelerationLateral[i];
+                double sumForcesZ = lateralLumpedMass[i] * trialAxialAccelerationAtLateralNodes[i];
                 double coulombFrictionX = 0.0;
                 double coulombFrictionY = 0.0;
                 double coulombFrictionZ = 0.0;
@@ -908,8 +908,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 }
                 #endregion
                 // Loads returned to the axial-torsional nodes
-                axialFrictionLateral[i] = coulombFrictionZ;
-                frictionTorqueLateral[i] = frictionTorque;
+                axialFrictionAtLateralNodes[i] = coulombFrictionZ;
+                frictionTorqueAtLateralNodes[i] = frictionTorque;
                 #region Lateral accelerations
                 if (hasSleeve)
                 {
@@ -926,8 +926,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
                 state.WhirlVelocity[i] = whirlVelocity;
                 state.XAcceleration[i] = xAcceleration;
                 state.YAcceleration[i] = yAcceleration;
-                state.Tension[i+1] = tensionLateral[i];
-                state.Torque[i+1] = torqueLateral[i];
+                state.Tension[i+1] = tensionAtLateralNodes[i];
+                state.Torque[i+1] = torqueAtLateralNodes[i];
                 #endregion
 
                 #region  Debbugging Outputs
@@ -950,8 +950,8 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels
             #endregion
 
             #region 4 - Consistent nodal loads and axial-torsional accelerations
-            drillString.ConsistentNodalLoad(axialFrictionLateral, axialFrictionNodal);
-            drillString.ConsistentNodalLoad(frictionTorqueLateral, frictionTorqueNodal);
+            drillString.ConsistentNodalLoad(axialFrictionAtLateralNodes, axialFrictionNodal);
+            drillString.ConsistentNodalLoad(frictionTorqueAtLateralNodes, frictionTorqueNodal);
             for (int j = 0; j < numberOfAxialNodes; j++)
             {
                 double elasticForceZ = axialElasticForce[j];

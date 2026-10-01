@@ -129,23 +129,23 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
                                 state.YAcceleration[sensorIndex] * cosWhirlAngle + 2 * state.WhirlVelocity[sensorIndex] * radialVelocity) / state.RadialDisplacement[sensorIndex];
             
                 initialRadialPosition = 0.5 * (parameters.Drillstring.NodeInnerRadius[sensorIndex] + parameters.Drillstring.NodeOuterRadius[sensorIndex]); 
-                torsionalAcceleration = state.SlipCondition[sensorIndex] * state.AngularAccelerationL[sensorIndex] + (1 - state.SlipCondition[sensorIndex]) * state.ThetaDotNoSlipSensor;
-                xDisplacement = state.XDisplacement[sensorIndex] + initialRadialPosition * Math.Cos(state.AngularDisplacementL[sensorIndex]) - initialTangentialPosition * Math.Sin(state.AngularDisplacementL[sensorIndex]);
-                yDisplacement = state.YDisplacement[sensorIndex] + initialTangentialPosition * Math.Cos(state.AngularDisplacementL[sensorIndex]) + initialRadialPosition * Math.Sin(state.AngularDisplacementL[sensorIndex]);
-                xAcceleration = state.XAcceleration[sensorIndex] + initialRadialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Cos(state.AngularDisplacementL[sensorIndex]) - state.AngularAccelerationL[sensorIndex] * Math.Sin(state.AngularDisplacementL[sensorIndex])) +
-                    initialTangentialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Sin(state.AngularDisplacementL[sensorIndex]) -
-                    state.AngularAccelerationL[sensorIndex] * Math.Sin(state.AngularDisplacementL[sensorIndex]));
-                uAcceleration = state.YAcceleration[sensorIndex] + initialTangentialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Cos(state.AngularDisplacementL[sensorIndex]) - state.AngularAccelerationL[sensorIndex] * Math.Sin(state.AngularDisplacementL[sensorIndex])) -
-                    initialRadialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Sin(state.AngularDisplacementL[sensorIndex]) - state.AngularAccelerationL[sensorIndex] * Math.Cos(state.AngularDisplacementL[sensorIndex]));
+                torsionalAcceleration = state.SlipCondition[sensorIndex] * state.AngularAccelerationAtLateralNodes[sensorIndex] + (1 - state.SlipCondition[sensorIndex]) * state.ThetaDotNoSlipSensor;
+                xDisplacement = state.XDisplacement[sensorIndex] + initialRadialPosition * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex]) - initialTangentialPosition * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex]);
+                yDisplacement = state.YDisplacement[sensorIndex] + initialTangentialPosition * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex]) + initialRadialPosition * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex]);
+                xAcceleration = state.XAcceleration[sensorIndex] + initialRadialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex]) - state.AngularAccelerationAtLateralNodes[sensorIndex] * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex])) +
+                    initialTangentialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex]) -
+                    state.AngularAccelerationAtLateralNodes[sensorIndex] * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex]));
+                uAcceleration = state.YAcceleration[sensorIndex] + initialTangentialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex]) - state.AngularAccelerationAtLateralNodes[sensorIndex] * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex])) -
+                    initialRadialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex], 2) * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex]) - state.AngularAccelerationAtLateralNodes[sensorIndex] * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex]));
             
                 initialRadialPosition = 0.5 * (parameters.Drillstring.NodeInnerRadius[sensorIndex - 1] + parameters.Drillstring.NodeOuterRadius[sensorIndex - 1]);
-                previousXDisplacement = state.XDisplacement[sensorIndex - 1] + initialRadialPosition * Math.Cos(state.AngularDisplacementL[sensorIndex - 1]) - initialTangentialPosition * Math.Sin(state.AngularDisplacementL[sensorIndex - 1]);
-                previousYDisplacement = state.YDisplacement[sensorIndex - 1] + initialTangentialPosition * Math.Cos(state.AngularDisplacementL[sensorIndex - 1]) + initialRadialPosition * Math.Sin(state.AngularDisplacementL[sensorIndex - 1]);
-                previousXAcceleration = state.XAcceleration[sensorIndex - 1] + initialRadialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Cos(state.AngularDisplacementL[sensorIndex - 1]) -
-                    state.AngularAccelerationL[sensorIndex - 1] * Math.Sin(state.AngularDisplacementL[sensorIndex - 1])) + initialTangentialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Sin(state.AngularDisplacementL[sensorIndex - 1]) -
-                    state.AngularAccelerationL[sensorIndex - 1] * Math.Sin(state.AngularDisplacementL[sensorIndex - 1]));
-                previousYAcceleration = state.YAcceleration[sensorIndex - 1] + initialTangentialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Cos(state.AngularDisplacementL[sensorIndex - 1]) - state.AngularAccelerationL[sensorIndex - 1] * Math.Sin(state.AngularDisplacementL[sensorIndex - 1])) -
-                   initialRadialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Sin(state.AngularDisplacementL[sensorIndex - 1]) - state.AngularAccelerationL[sensorIndex - 1] * Math.Cos(state.AngularDisplacementL[sensorIndex - 1]));
+                previousXDisplacement = state.XDisplacement[sensorIndex - 1] + initialRadialPosition * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]) - initialTangentialPosition * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]);
+                previousYDisplacement = state.YDisplacement[sensorIndex - 1] + initialTangentialPosition * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]) + initialRadialPosition * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]);
+                previousXAcceleration = state.XAcceleration[sensorIndex - 1] + initialRadialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]) -
+                    state.AngularAccelerationAtLateralNodes[sensorIndex - 1] * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1])) + initialTangentialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]) -
+                    state.AngularAccelerationAtLateralNodes[sensorIndex - 1] * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]));
+                previousYAcceleration = state.YAcceleration[sensorIndex - 1] + initialTangentialPosition * (-Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]) - state.AngularAccelerationAtLateralNodes[sensorIndex - 1] * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1])) -
+                   initialRadialPosition * (Math.Pow(state.WhirlVelocity[sensorIndex - 1], 2) * Math.Sin(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]) - state.AngularAccelerationAtLateralNodes[sensorIndex - 1] * Math.Cos(state.AngularDisplacementAtLateralNodes[sensorIndex - 1]));
           
                 // Bending angles
                 bendingAngleX = -(yDisplacement - previousYDisplacement) / parameters.Drillstring.ElementLength[parameters.Drillstring.IndexSensor - 1]; // Bending angle x-component
@@ -156,10 +156,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 
             if (Depth.Count != parameters.NumberOfElements)
                 Depth = Vector<double>.Build.Dense(parameters.NumberOfElements);
-            Depth[0] = state.ZDisplacementL[0] + state.TopDrive.AxialPosition;
+            Depth[0] = state.AxialDisplacementAtLateralNodes[0] + state.TopDrive.AxialPosition;
             for (int i = 1; i < parameters.NumberOfElements; i ++)
             {
-                Depth[i] = state.ZDisplacementL[i] + parameters.Drillstring.RelativeNodeDepth[i];   
+                Depth[i] = state.AxialDisplacementAtLateralNodes[i] + parameters.Drillstring.RelativeNodeDepth[i];   
             }
             BitVelocity = state.ZVelocity[state.ZVelocity.Count - 1];//Bit Velocity
             // Parse outputs
@@ -184,16 +184,16 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
 
             if (parameters.UsePipeMovementReconstruction)
             {
-                SensorAxialVelocity = state.ZVelocityL[parameters.Drillstring.IndexSensor]; // sleeve angular displacement;
+                SensorAxialVelocity = state.AxialVelocityAtLateralNodes[parameters.Drillstring.IndexSensor]; // sleeve angular displacement;
                 SensorAxialDisplacement = SensorAxialDisplacement + SensorAxialVelocity * parameters.OuterLoopTimeStep;
-                SensorAngularPosition = state.AngularDisplacementL[sensorIndex]; //pipe angular displacement
-                SensorAngularVelocity = state.AngularVelocityL[sensorIndex]; //pipe angular velocity
+                SensorAngularPosition = state.AngularDisplacementAtLateralNodes[sensorIndex]; //pipe angular displacement
+                SensorAngularVelocity = state.AngularVelocityAtLateralNodes[sensorIndex]; //pipe angular velocity
                 
                 SensorRadialPosition = state.RadialDisplacement[parameters.Drillstring.IndexSensor]; //radial position
                 SensorWhirlAngle = state.WhirlAngle[parameters.Drillstring.IndexSensor]; //whirl angle
                 SensorRadialSpeed =state.RadialVelocity[parameters.Drillstring.IndexSensor]; //radial velocity
                 SensorWhirlSpeed = state.WhirlVelocity[parameters.Drillstring.IndexSensor]; //whirl velocity
-                SensorAxialAcceleration = state.ZAccelerationL[parameters.Drillstring.IndexSensor]; //axial acceleration
+                SensorAxialAcceleration = state.AxialAccelerationAtLateralNodes[parameters.Drillstring.IndexSensor]; //axial acceleration
                 SensorAngularAcceleration = torsionalAcceleration; // angular acceleration
                 SensorRadialAcceleration = radialAcceleration; // radial acceleration
                 SensorWhirlAcceleration = tangentialAcceleration; // whirl acceleration
