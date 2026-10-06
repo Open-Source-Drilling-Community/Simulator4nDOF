@@ -5,12 +5,1105 @@
     "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
     "version": "1.0"
   },
-  "servers": [
-    {
-      "url": "https://dev.digiwells.no/DrillingFluid/api/swagger/merged/swagger.json"
-    }
-  ],
   "paths": {
+    "/BaseOil": {
+      "get": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "GetAllBaseOilId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "PostBaseOil",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseOil"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseOil"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseOil"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/BaseOil/MetaInfo": {
+      "get": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "GetAllBaseOilMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/BaseOil/{id}": {
+      "get": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "GetBaseOilById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseOil"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "PutBaseOilById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseOil"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseOil"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseOil"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "DeleteBaseOilById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/BaseOil/HeavyData": {
+      "get": {
+        "tags": [
+          "BaseOil"
+        ],
+        "operationId": "GetAllBaseOil",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BaseOil"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Brine": {
+      "get": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "GetAllBrineId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "PostBrine",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brine"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brine"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brine"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Brine/MetaInfo": {
+      "get": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "GetAllBrineMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Brine/{id}": {
+      "get": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "GetBrineById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Brine"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "PutBrineById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brine"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brine"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brine"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "DeleteBrineById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Brine/HeavyData": {
+      "get": {
+        "tags": [
+          "Brine"
+        ],
+        "operationId": "GetAllBrine",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Brine"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillingFluid": {
+      "get": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "GetAllDrillingFluidId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "PostDrillingFluid",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluid"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluid"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillingFluid/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "GetAllDrillingFluidMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillingFluid/{id}": {
+      "get": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "GetDrillingFluidById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillingFluid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "PutDrillingFluidById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluid"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluid"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "DeleteDrillingFluidById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillingFluid/LightData": {
+      "get": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "GetAllDrillingFluidLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillingFluidLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillingFluid/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillingFluid"
+        ],
+        "operationId": "GetAllDrillingFluid",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillingFluid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillingFluidDescription": {
+      "get": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "GetAllDrillingFluidDescriptionId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "PostDrillingFluidDescription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidDescription"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidDescription"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidDescription"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillingFluidDescription/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "GetAllDrillingFluidDescriptionMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillingFluidDescription/{id}": {
+      "get": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "GetDrillingFluidDescriptionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillingFluidDescription"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "PutDrillingFluidDescriptionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidDescription"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidDescription"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidDescription"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "DeleteDrillingFluidDescriptionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillingFluidDescription/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillingFluidDescription"
+        ],
+        "operationId": "GetAllDrillingFluidDescription",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillingFluidDescription"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/DrillingFluidOrder": {
+      "get": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "GetAllDrillingFluidOrderId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "post": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "PostDrillingFluidOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidOrder"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidOrder"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:immediate-calculation-submission",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
+    "/DrillingFluidOrder/MetaInfo": {
+      "get": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "GetAllDrillingFluidOrderMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
+    "/DrillingFluidOrder/{id}": {
+      "get": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "GetDrillingFluidOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillingFluidOrder"
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "put": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "PutDrillingFluidOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidOrder"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidOrder"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillingFluidOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:immediate-calculation-replacement",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "delete": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "DeleteDrillingFluidOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/DrillingFluidOrder/HeavyData": {
+      "get": {
+        "tags": [
+          "DrillingFluidOrder"
+        ],
+        "operationId": "GetAllDrillingFluidOrder",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrillingFluidOrder"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
     "/DrillString": {
       "get": {
         "tags": [
@@ -2707,1006 +3800,921 @@
           }
         }
       }
-    },
-    "/BaseOil": {
-      "get": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "GetAllBaseOilId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "PostBaseOil",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BaseOil"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BaseOil"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/BaseOil"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/BaseOil/MetaInfo": {
-      "get": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "GetAllBaseOilMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/BaseOil/{id}": {
-      "get": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "GetBaseOilById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BaseOil"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "PutBaseOilById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BaseOil"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BaseOil"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/BaseOil"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "DeleteBaseOilById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/BaseOil/HeavyData": {
-      "get": {
-        "tags": [
-          "BaseOil"
-        ],
-        "operationId": "GetAllBaseOil",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BaseOil"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Brine": {
-      "get": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "GetAllBrineId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "PostBrine",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Brine"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Brine"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Brine"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/Brine/MetaInfo": {
-      "get": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "GetAllBrineMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Brine/{id}": {
-      "get": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "GetBrineById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Brine"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "PutBrineById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Brine"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Brine"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Brine"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "DeleteBrineById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/Brine/HeavyData": {
-      "get": {
-        "tags": [
-          "Brine"
-        ],
-        "operationId": "GetAllBrine",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Brine"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluid": {
-      "get": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "GetAllDrillingFluidId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "PostDrillingFluid",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluid"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluid"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluid"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillingFluid/MetaInfo": {
-      "get": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "GetAllDrillingFluidMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluid/{id}": {
-      "get": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "GetDrillingFluidById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DrillingFluid"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "PutDrillingFluidById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluid"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluid"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluid"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "DeleteDrillingFluidById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillingFluid/LightData": {
-      "get": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "GetAllDrillingFluidLight",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillingFluidLight"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluid/HeavyData": {
-      "get": {
-        "tags": [
-          "DrillingFluid"
-        ],
-        "operationId": "GetAllDrillingFluid",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillingFluid"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluidDescription": {
-      "get": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "GetAllDrillingFluidDescriptionId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "PostDrillingFluidDescription",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidDescription"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidDescription"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidDescription"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillingFluidDescription/MetaInfo": {
-      "get": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "GetAllDrillingFluidDescriptionMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluidDescription/{id}": {
-      "get": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "GetDrillingFluidDescriptionById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DrillingFluidDescription"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "PutDrillingFluidDescriptionById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidDescription"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidDescription"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidDescription"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "DeleteDrillingFluidDescriptionById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillingFluidDescription/HeavyData": {
-      "get": {
-        "tags": [
-          "DrillingFluidDescription"
-        ],
-        "operationId": "GetAllDrillingFluidDescription",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillingFluidDescription"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluidOrder": {
-      "get": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "GetAllDrillingFluidOrderId",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "PostDrillingFluidOrder",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidOrder"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidOrder"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidOrder"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillingFluidOrder/MetaInfo": {
-      "get": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "GetAllDrillingFluidOrderMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DrillingFluidOrder/{id}": {
-      "get": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "GetDrillingFluidOrderById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DrillingFluidOrder"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "PutDrillingFluidOrderById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidOrder"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidOrder"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DrillingFluidOrder"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "DeleteDrillingFluidOrderById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/DrillingFluidOrder/HeavyData": {
-      "get": {
-        "tags": [
-          "DrillingFluidOrder"
-        ],
-        "operationId": "GetAllDrillingFluidOrder",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DrillingFluidOrder"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
+      "BaseCompositionProperties": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          }
+        }
+      },
+      "BaseOil": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "PVTParameters": {
+            "$ref": "#/components/schemas/BaseOilPVTParameters"
+          }
+        }
+      },
+      "BaseOilPVTParameters": {
+        "type": "object",
+        "properties": {
+          "A0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "B0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "C0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "D0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "E0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "F0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "Brine": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "PVTParameters": {
+            "$ref": "#/components/schemas/BrinePVTParameters"
+          },
+          "SaltContent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaltContent"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "BrinePVTParameters": {
+        "type": "object",
+        "properties": {
+          "S0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "S1": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "S2": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "S3": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Bw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Cw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Dw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Ew": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Fw": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "CompletedDrillingFluid": {
+        "type": "object",
+        "properties": {
+          "GellingProperties": {
+            "$ref": "#/components/schemas/GellingProperties"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "PostProcessedFlowCurve": {
+            "$ref": "#/components/schemas/FlowCurve"
+          },
+          "FluidPVTParameters": {
+            "$ref": "#/components/schemas/FluidPVTParameters"
+          },
+          "RheologicalModelProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericRheologicalModel"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluid": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidDescription": {
+            "$ref": "#/components/schemas/DrillingFluidDescription"
+          },
+          "DrillStringID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "OutputParam": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidComposition": {
+        "type": "object",
+        "properties": {
+          "BrineProperies": {
+            "$ref": "#/components/schemas/Brine"
+          },
+          "BaseOilProperies": {
+            "$ref": "#/components/schemas/BaseOil"
+          },
+          "WaterOilRatio": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "HighGravitySolid": {
+            "$ref": "#/components/schemas/BaseCompositionProperties"
+          },
+          "LowGravitySolid": {
+            "$ref": "#/components/schemas/BaseCompositionProperties"
+          },
+          "LostCirculationMaterials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LostCirculationMaterial"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidDescription": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidComposition": {
+            "$ref": "#/components/schemas/DrillingFluidComposition"
+          },
+          "FluidPVTParameters": {
+            "$ref": "#/components/schemas/FluidPVTParameters"
+          },
+          "FluidMassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ReferenceTemperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "GellingProperties": {
+            "$ref": "#/components/schemas/GellingProperties"
+          },
+          "FlowCurve": {
+            "$ref": "#/components/schemas/FlowCurve"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          }
+        }
+      },
+      "DrillingFluidLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "DrillingFluidOrder": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "DrillingFluidDescriptionID": {
+            "type": "string",
+            "format": "uuid",
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-specification",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:calculation-input",
+              "requiredContext": [ ],
+              "constraints": [
+                "It excludes lifecycle facts and server-derived results unless a narrower calculation contract explicitly makes them caller-controlled."
+              ]
+            }
+          },
+          "DrillingFluidDescription": {
+            "$ref": "#/components/schemas/DrillingFluidDescription"
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "PTModelExtrapolation": {
+            "$ref": "#/components/schemas/PTModelExtrapolation"
+          },
+          "RheologicalModelsEnum": {
+            "$ref": "#/components/schemas/RheologicalModelsEnum"
+          },
+          "Options": {
+            "$ref": "#/components/schemas/ParticleSwarmSolverOptions"
+          },
+          "CompletedDrillingFluid": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CompletedDrillingFluid"
+              }
+            ],
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-result",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:server-derived-calculation-result",
+              "requiredContext": [ ],
+              "constraints": [
+                "A result may be embedded in its calculation case or exposed through focused result retrieval operations."
+              ]
+            }
+          },
+          "OutputParam": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-result",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:server-derived-calculation-result",
+              "requiredContext": [ ],
+              "constraints": [
+                "A result may be embedded in its calculation case or exposed through focused result retrieval operations."
+              ]
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "FlowCurve": {
+        "type": "object",
+        "properties": {
+          "CouetteRheometer": {
+            "$ref": "#/components/schemas/CouetteRheometer"
+          },
+          "TableValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowCurveTable"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "FlowCurveTable": {
+        "type": "object",
+        "properties": {
+          "Temperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Pressure": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "RheometerMeasurements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RheometerMeasurement"
+            },
+            "nullable": true
+          },
+          "ShearRateReference": {
+            "$ref": "#/components/schemas/MeasurementTypesShearRate"
+          },
+          "ShearStressReference": {
+            "$ref": "#/components/schemas/MeasurementTypesShearStress"
+          }
+        }
+      },
+      "FluidPVTParameters": {
+        "type": "object",
+        "properties": {
+          "A0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "B0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "C0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "D0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "E0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "F0": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "GelData": {
+        "type": "object",
+        "properties": {
+          "GelDuration": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "GelStrength": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "Temperature": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "GellingProperties": {
+        "type": "object",
+        "properties": {
+          "GelPropertiesTable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GelData"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "GenericRheologicalModel": {
+        "type": "object",
+        "properties": {
+          "RheologicalModelUsed": {
+            "$ref": "#/components/schemas/RheologicalModelsEnum"
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "Pressure": {
+            "type": "number",
+            "format": "double"
+          },
+          "PowerLawViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "PowerLawConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BinghamViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "BinghamYieldStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HerschelBulkleyViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HerschelBulkleyYieldStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "HerschelBulkleyConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaViscosityInfty": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaCharacteristicShearRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "QuemadaXi": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RobertsonStiffYieldStress": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RobertsonStiffCharacteristicShearRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "RobertsonStiffConsistencyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "LostCirculationMaterial": {
+        "type": "object",
+        "properties": {
+          "MassDensity": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "MassFraction": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SpecificHeatCapacity": {
+            "$ref": "#/components/schemas/SpecificHeatCapacity"
+          },
+          "ThermalConductivity": {
+            "$ref": "#/components/schemas/ThermalConductivity"
+          },
+          "GrainSize": {
+            "$ref": "#/components/schemas/LostCiruclationMaterialGrainType"
+          }
+        }
+      },
+      "LostCiruclationMaterialGrainType": {
+        "enum": [
+          "UltraFine",
+          "Fine",
+          "Medium",
+          "Coarse"
+        ],
+        "type": "string"
+      },
+      "MeasurementTypesShearRate": {
+        "enum": [
+          "Rotation",
+          "IsoNewtonianShearRate",
+          "BobNewtonianShearRate"
+        ],
+        "type": "string"
+      },
+      "MeasurementTypesShearStress": {
+        "enum": [
+          "Torque",
+          "IsoNewtonianShearStress",
+          "BobNewtonianShearStress"
+        ],
+        "type": "string"
+      },
+      "PTModelExtrapolation": {
+        "enum": [
+          "Unkown",
+          "StandardWaterBasedMud",
+          "StandardOilBasedMud",
+          "MicronizedOilBasedMud"
+        ],
+        "type": "string"
+      },
+      "RheologicalModelsEnum": {
+        "enum": [
+          "Unkown",
+          "Bingham",
+          "PowerLaw",
+          "HerschelBulkley",
+          "Quemada",
+          "RobertsonStiff"
+        ],
+        "type": "string"
+      },
+      "SaltContent": {
+        "type": "object",
+        "properties": {
+          "Salt": {
+            "$ref": "#/components/schemas/SaltOptions"
+          },
+          "WeightPerCubicMeter": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          }
+        }
+      },
+      "SaltOptions": {
+        "enum": [
+          "NaCl",
+          "NaBr",
+          "KCl",
+          "KBr",
+          "CaCl2",
+          "CaBr2",
+          "ZnCl2",
+          "ZnBr2"
+        ],
+        "type": "string"
+      },
+      "SpecificHeatCapacity": {
+        "type": "object",
+        "properties": {
+          "Slope": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "HeatCapacityAtZeroKelvin": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TemperatureRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "CoefficientRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          }
+        }
+      },
+      "ThermalConductivity": {
+        "type": "object",
+        "properties": {
+          "Slope": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "ThermalConductivityAtZeroKelvin": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "TemperatureRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "CoefficientRange": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "nullable": true
+          }
+        }
+      },
+      "CouetteRheometer": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rheometerType": {
+            "$ref": "#/components/schemas/RheometerTypeEnum"
+          },
+          "bobRadius": {
+            "type": "number",
+            "format": "double"
+          },
+          "gap": {
+            "type": "number",
+            "format": "double"
+          },
+          "newtonianEndEffectCorrection": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobLength": {
+            "type": "number",
+            "format": "double"
+          },
+          "conicalAngle": {
+            "type": "number",
+            "format": "double"
+          },
+          "measurementPrecision": {
+            "type": "number",
+            "format": "double"
+          },
+          "useISOConvention": {
+            "type": "boolean"
+          },
+          "fixedSpeedList": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "RheometerMeasurement": {
+        "type": "object",
+        "properties": {
+          "rotationalSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "torque": {
+            "type": "number",
+            "format": "double"
+          },
+          "isoNewtonianShearRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "isoNewtonianShearStress": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobNewtonianShearRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "bobNewtonianShearStress": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": { }
+      },
+      "RheometerTypeEnum": {
+        "enum": [
+          "_0",
+          "_1"
+        ],
+        "type": "string"
+      },
+      "ParticleSwarmSolverOptions": {
+        "type": "object"
+      },
+      "GaussianDrillingProperty": {
+        "type": "object",
+        "properties": {
+          "GaussianValue": {
+            "$ref": "#/components/schemas/GaussianDistribution"
+          }
+        }
+      },
+      "MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GaussianDistribution": {
+        "type": "object",
+        "properties": {
+          "MinValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaxValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "Mean": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "StandardDeviation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
       "DrillStringComponentTypes": {
         "enum": [
           "DrillPipe",
@@ -4093,27 +5101,6 @@
           },
           "SensorType": {
             "$ref": "#/components/schemas/DrillStringSensorTypes"
-          }
-        }
-      },
-      "MetaInfo": {
-        "type": "object",
-        "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "HttpHostName": {
-            "type": "string",
-            "nullable": true
-          },
-          "HttpHostBasePath": {
-            "type": "string",
-            "nullable": true
-          },
-          "HttpEndPoint": {
-            "type": "string",
-            "nullable": true
           }
         }
       },
@@ -5492,37 +6479,6 @@
           }
         }
       },
-      "GaussianDrillingProperty": {
-        "type": "object",
-        "properties": {
-          "GaussianValue": {
-            "$ref": "#/components/schemas/GaussianDistribution"
-          }
-        }
-      },
-      "GaussianDistribution": {
-        "type": "object",
-        "properties": {
-          "MinValue": {
-            "type": "number",
-            "format": "double"
-          },
-          "MaxValue": {
-            "type": "number",
-            "format": "double"
-          },
-          "Mean": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "StandardDeviation": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
       "SidetrackType": {
         "enum": [
           "Undefined",
@@ -5689,809 +6645,6 @@
             "type": "boolean"
           }
         }
-      },
-      "BaseCompositionProperties": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          }
-        }
-      },
-      "BaseOil": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "PVTParameters": {
-            "$ref": "#/components/schemas/BaseOilPVTParameters"
-          }
-        }
-      },
-      "BaseOilPVTParameters": {
-        "type": "object",
-        "properties": {
-          "A0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "B0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "C0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "D0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "E0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "F0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "Brine": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "PVTParameters": {
-            "$ref": "#/components/schemas/BrinePVTParameters"
-          },
-          "SaltContent": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SaltContent"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "BrinePVTParameters": {
-        "type": "object",
-        "properties": {
-          "S0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "S1": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "S2": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "S3": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Bw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Cw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Dw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Ew": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Fw": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "CompletedDrillingFluid": {
-        "type": "object",
-        "properties": {
-          "GellingProperties": {
-            "$ref": "#/components/schemas/GellingProperties"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "PostProcessedFlowCurve": {
-            "$ref": "#/components/schemas/FlowCurve"
-          },
-          "FluidPVTParameters": {
-            "$ref": "#/components/schemas/FluidPVTParameters"
-          },
-          "RheologicalModelProperties": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GenericRheologicalModel"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluid": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "DrillingFluidDescription": {
-            "$ref": "#/components/schemas/DrillingFluidDescription"
-          },
-          "DrillStringID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "OutputParam": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluidComposition": {
-        "type": "object",
-        "properties": {
-          "BrineProperies": {
-            "$ref": "#/components/schemas/Brine"
-          },
-          "BaseOilProperies": {
-            "$ref": "#/components/schemas/BaseOil"
-          },
-          "WaterOilRatio": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "HighGravitySolid": {
-            "$ref": "#/components/schemas/BaseCompositionProperties"
-          },
-          "LowGravitySolid": {
-            "$ref": "#/components/schemas/BaseCompositionProperties"
-          },
-          "LostCirculationMaterials": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LostCirculationMaterial"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluidDescription": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "DrillingFluidComposition": {
-            "$ref": "#/components/schemas/DrillingFluidComposition"
-          },
-          "FluidPVTParameters": {
-            "$ref": "#/components/schemas/FluidPVTParameters"
-          },
-          "FluidMassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "ReferenceTemperature": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "GellingProperties": {
-            "$ref": "#/components/schemas/GellingProperties"
-          },
-          "FlowCurve": {
-            "$ref": "#/components/schemas/FlowCurve"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          }
-        }
-      },
-      "DrillingFluidLight": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        }
-      },
-      "DrillingFluidOrder": {
-        "type": "object",
-        "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "DrillingFluidDescriptionID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "DrillingFluidDescription": {
-            "$ref": "#/components/schemas/DrillingFluidDescription"
-          },
-          "Temperature": {
-            "type": "number",
-            "format": "double"
-          },
-          "PTModelExtrapolation": {
-            "$ref": "#/components/schemas/PTModelExtrapolation"
-          },
-          "RheologicalModelsEnum": {
-            "$ref": "#/components/schemas/RheologicalModelsEnum"
-          },
-          "Options": {
-            "$ref": "#/components/schemas/ParticleSwarmSolverOptions"
-          },
-          "CompletedDrillingFluid": {
-            "$ref": "#/components/schemas/CompletedDrillingFluid"
-          },
-          "OutputParam": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "FlowCurve": {
-        "type": "object",
-        "properties": {
-          "CouetteRheometer": {
-            "$ref": "#/components/schemas/CouetteRheometer"
-          },
-          "TableValues": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FlowCurveTable"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "FlowCurveTable": {
-        "type": "object",
-        "properties": {
-          "Temperature": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Pressure": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "RheometerMeasurements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RheometerMeasurement"
-            },
-            "nullable": true
-          },
-          "ShearRateReference": {
-            "$ref": "#/components/schemas/MeasurementTypesShearRate"
-          },
-          "ShearStressReference": {
-            "$ref": "#/components/schemas/MeasurementTypesShearStress"
-          }
-        }
-      },
-      "FluidPVTParameters": {
-        "type": "object",
-        "properties": {
-          "A0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "B0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "C0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "D0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "E0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "F0": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "GelData": {
-        "type": "object",
-        "properties": {
-          "GelDuration": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "GelStrength": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "Temperature": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "GellingProperties": {
-        "type": "object",
-        "properties": {
-          "GelPropertiesTable": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GelData"
-            },
-            "nullable": true
-          }
-        }
-      },
-      "GenericRheologicalModel": {
-        "type": "object",
-        "properties": {
-          "RheologicalModelUsed": {
-            "$ref": "#/components/schemas/RheologicalModelsEnum"
-          },
-          "Temperature": {
-            "type": "number",
-            "format": "double"
-          },
-          "Pressure": {
-            "type": "number",
-            "format": "double"
-          },
-          "PowerLawViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "PowerLawConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "BinghamViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "BinghamYieldStress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "HerschelBulkleyViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "HerschelBulkleyYieldStress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "HerschelBulkleyConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaViscosityInfty": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaCharacteristicShearRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "QuemadaXi": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RobertsonStiffYieldStress": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RobertsonStiffCharacteristicShearRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "RobertsonStiffConsistencyIndex": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "LostCirculationMaterial": {
-        "type": "object",
-        "properties": {
-          "MassDensity": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "MassFraction": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "SpecificHeatCapacity": {
-            "$ref": "#/components/schemas/SpecificHeatCapacity"
-          },
-          "ThermalConductivity": {
-            "$ref": "#/components/schemas/ThermalConductivity"
-          },
-          "GrainSize": {
-            "$ref": "#/components/schemas/LostCiruclationMaterialGrainType"
-          }
-        }
-      },
-      "LostCiruclationMaterialGrainType": {
-        "enum": [
-          "UltraFine",
-          "Fine",
-          "Medium",
-          "Coarse"
-        ],
-        "type": "string"
-      },
-      "MeasurementTypesShearRate": {
-        "enum": [
-          "Rotation",
-          "IsoNewtonianShearRate",
-          "BobNewtonianShearRate"
-        ],
-        "type": "string"
-      },
-      "MeasurementTypesShearStress": {
-        "enum": [
-          "Torque",
-          "IsoNewtonianShearStress",
-          "BobNewtonianShearStress"
-        ],
-        "type": "string"
-      },
-      "PTModelExtrapolation": {
-        "enum": [
-          "Unkown",
-          "StandardWaterBasedMud",
-          "StandardOilBasedMud",
-          "MicronizedOilBasedMud"
-        ],
-        "type": "string"
-      },
-      "RheologicalModelsEnum": {
-        "enum": [
-          "Unkown",
-          "Bingham",
-          "PowerLaw",
-          "HerschelBulkley",
-          "Quemada",
-          "RobertsonStiff"
-        ],
-        "type": "string"
-      },
-      "SaltContent": {
-        "type": "object",
-        "properties": {
-          "Salt": {
-            "$ref": "#/components/schemas/SaltOptions"
-          },
-          "WeightPerCubicMeter": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          }
-        }
-      },
-      "SaltOptions": {
-        "enum": [
-          "NaCl",
-          "NaBr",
-          "KCl",
-          "KBr",
-          "CaCl2",
-          "CaBr2",
-          "ZnCl2",
-          "ZnBr2"
-        ],
-        "type": "string"
-      },
-      "SpecificHeatCapacity": {
-        "type": "object",
-        "properties": {
-          "Slope": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "HeatCapacityAtZeroKelvin": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TemperatureRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          },
-          "CoefficientRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          }
-        }
-      },
-      "ThermalConductivity": {
-        "type": "object",
-        "properties": {
-          "Slope": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "ThermalConductivityAtZeroKelvin": {
-            "$ref": "#/components/schemas/GaussianDrillingProperty"
-          },
-          "TemperatureRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          },
-          "CoefficientRange": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double",
-              "nullable": true
-            },
-            "nullable": true
-          }
-        }
-      },
-      "CouetteRheometer": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "rheometerType": {
-            "$ref": "#/components/schemas/RheometerTypeEnum"
-          },
-          "bobRadius": {
-            "type": "number",
-            "format": "double"
-          },
-          "gap": {
-            "type": "number",
-            "format": "double"
-          },
-          "newtonianEndEffectCorrection": {
-            "type": "number",
-            "format": "double"
-          },
-          "bobLength": {
-            "type": "number",
-            "format": "double"
-          },
-          "conicalAngle": {
-            "type": "number",
-            "format": "double"
-          },
-          "measurementPrecision": {
-            "type": "number",
-            "format": "double"
-          },
-          "useISOConvention": {
-            "type": "boolean"
-          },
-          "fixedSpeedList": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": { }
-      },
-      "RheometerMeasurement": {
-        "type": "object",
-        "properties": {
-          "rotationalSpeed": {
-            "type": "number",
-            "format": "double"
-          },
-          "torque": {
-            "type": "number",
-            "format": "double"
-          },
-          "isoNewtonianShearRate": {
-            "type": "number",
-            "format": "double"
-          },
-          "isoNewtonianShearStress": {
-            "type": "number",
-            "format": "double"
-          },
-          "bobNewtonianShearRate": {
-            "type": "number",
-            "format": "double"
-          },
-          "bobNewtonianShearStress": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "additionalProperties": { }
-      },
-      "RheometerTypeEnum": {
-        "enum": [
-          "_0",
-          "_1"
-        ],
-        "type": "string"
-      },
-      "ParticleSwarmSolverOptions": {
-        "type": "object"
       }
     }
   }

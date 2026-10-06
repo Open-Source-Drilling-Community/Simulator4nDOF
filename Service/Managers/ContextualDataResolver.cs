@@ -14,7 +14,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         public required DrillingFluidDescription DrillingFluidDescription { get; init; }
         public Trajectory? Trajectory { get; init; }
         public SurveyRun? SurveyRun { get; init; }
-        public required Rig Rig { get; init; }
+        public required RigReadResponse Rig { get; init; }
         public GeothermalProperties? GeothermalProperties { get; init; }
         public required double FluidDensity { get; init; }
         public required double BitRadius { get; init; }
@@ -67,7 +67,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             };
         }
 
-        private static async Task<Rig> LoadRigAsync(Simulation simulation)
+        private static async Task<RigReadResponse> LoadRigAsync(Simulation simulation)
         {
             if (simulation.ContextualData?.RigID is Guid rigId && rigId != Guid.Empty)
             {

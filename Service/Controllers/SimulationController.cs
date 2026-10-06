@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OSDC.DotnetLibraries.General.DataManagement;
 using NORCE.Drilling.Simulator4nDOF.Service.Managers;
 using System.Threading.Tasks;
+using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
 
 namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
 {
@@ -28,6 +29,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// </summary>
         /// <returns>the list of Guid of all Simulation present in the microservice database at endpoint Simulator4nDOF/api/Simulation</returns>
         [HttpGet(Name = "GetAllSimulationId")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationCaseRetrieval)]
         public ActionResult<IEnumerable<Guid>> GetAllSimulationId()
         {
             var ids = _simulationManager.GetAllSimulationId();
@@ -46,6 +48,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// </summary>
         /// <returns>the list of MetaInfo of all Simulation present in the microservice database, at endpoint Simulator4nDOF/api/Simulation/MetaInfo</returns>
         [HttpGet("MetaInfo", Name = "GetAllSimulationMetaInfo")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationCaseRetrieval)]
         public ActionResult<IEnumerable<MetaInfo>> GetAllSimulationMetaInfo()
         {
             var vals = _simulationManager.GetAllSimulationMetaInfo();
@@ -66,6 +69,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="guid"></param>
         /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Light/id</returns>
         [HttpGet("Light/{id}\"", Name = "GetSimulatioLightById")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationStatusRetrieval)]
         public ActionResult<Model.SimulationLight?> GetSimulatioLightById(Guid id)
         {
             if (!id.Equals(Guid.Empty))
@@ -92,6 +96,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="guid"></param>
         /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Heavy/id</returns>
         [HttpGet("Heavy/{id}\"", Name = "GetSimulationById")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationCaseRetrieval)]
         public ActionResult<Model.Simulation?> GetSimulationById(Guid id)
         {
             if (!id.Equals(Guid.Empty))
@@ -118,6 +123,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="guid"></param>
         /// <returns>the Simulation identified by its Guid from the microservice database, at endpoint Simulator4nDOF/api/Simulation/Results/id/page/sequenceNumber</returns>
         [HttpGet("Results/{id}/page/{sequenceNumber}\"", Name = "GetSimulationResultById")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationResultChunkRetrieval)]
         public ActionResult<Model.Results?> GetSimulationResultById(Guid id, uint sequenceNumber)
         {
             if (!id.Equals(Guid.Empty))
@@ -144,6 +150,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// </summary>
         /// <returns>the list of all SimulationLight present in the microservice database, at endpoint Simulator4nDOF/api/Simulation/LightData</returns>
         [HttpGet("LightData", Name = "GetAllSimulationLight")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationStatusRetrieval)]
         public ActionResult<IEnumerable<Model.SimulationLight>> GetAllSimulationLight()
         {
             var vals = _simulationManager.GetAllSimulationLight();
@@ -162,6 +169,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// </summary>
         /// <returns>the list of all Simulation present in the microservice database, at endpoint Simulator4nDOF/api/Simulation/HeavyData</returns>
         [HttpGet("HeavyData", Name = "GetAllSimulation")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationCaseRetrieval)]
         public ActionResult<IEnumerable<Model.Simulation?>> GetAllSimulation()
         {
             var vals = _simulationManager.GetAllSimulation();
@@ -181,6 +189,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="simulation"></param>
         /// <returns>true if the given Simulation has been added successfully to the microservice database, at the endpoint Simulator4nDOF/api/Simulation</returns>
         [HttpPost(Name = "PostSimulation")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.QueuedCalculationSubmission)]
         public async Task<ActionResult> PostSimulation([FromBody] Model.Simulation? data)
         {
             // Check if simulation exists in the database through ID
@@ -219,6 +228,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="simulation"></param>
         /// <returns>true if the given Simulation has been updated successfully to the microservice database, at the endpoint Simulator4nDOF/api/Simulation/id</returns>
         [HttpPut("{id}", Name = "PutSimulationById")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.QueuedCalculationReplacement)]
         public async Task<ActionResult> PutSimulationById(Guid id, [FromBody] Model.Simulation? data)
         {
             // Check if Simulation is in the data base

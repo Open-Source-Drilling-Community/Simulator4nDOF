@@ -26,6 +26,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       },
       "post": {
@@ -56,6 +73,23 @@
           "200": {
             "description": "OK"
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:queued-calculation-submission",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -79,6 +113,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -110,6 +161,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-status-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -141,6 +209,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -181,6 +266,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-result-chunk-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -204,6 +306,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-status-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -227,6 +346,23 @@
               }
             }
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     },
@@ -270,6 +406,23 @@
           "200": {
             "description": "OK"
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:queued-calculation-replacement",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       },
       "delete": {
@@ -597,7 +750,19 @@
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-result",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:server-derived-calculation-result",
+          "requiredContext": [ ],
+          "constraints": [
+            "A result may be embedded in its calculation case or exposed through focused result retrieval operations."
+          ]
+        }
       },
       "NORCE.Drilling.Simulator4nDOF.Model.Scalars": {
         "type": "object",
@@ -851,7 +1016,23 @@
             "nullable": true
           },
           "Config": {
-            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Config"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Config"
+              }
+            ],
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-specification",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:calculation-input",
+              "requiredContext": [ ],
+              "constraints": [
+                "It excludes lifecycle facts and server-derived results unless a narrower calculation contract explicitly makes them caller-controlled."
+              ]
+            }
           },
           "InitialValues": {
             "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.InitialValues"
@@ -870,18 +1051,81 @@
           "Progress": {
             "type": "number",
             "format": "double",
-            "nullable": true
+            "nullable": true,
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-progress",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "siUnit": "1",
+              "physicalQuantityStatus": "resolved",
+              "physicalQuantity": {
+                "catalogue": "Conversion",
+                "id": "97555d61-9fc3-4769-9143-6bc2bf51b2d7",
+                "name": "ProportionStandard",
+                "siUnitName": "proportion"
+              },
+              "requiredContext": [ ],
+              "constraints": [
+                "Values range from zero to one and are informational rather than an optimistic-concurrency token.",
+                "A service need not expose progress for a calculation that completes in the submission or replacement response."
+              ]
+            }
           },
           "TerminationState": {
             "type": "integer",
             "format": "int32",
-            "nullable": true
+            "nullable": true,
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-state",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "requiredContext": [ ],
+              "constraints": [
+                "An immediate calculation may enter a terminal state during submission without exposing intermediate states."
+              ]
+            }
           },
           "Results": {
-            "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Results"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NORCE.Drilling.Simulator4nDOF.Model.Results"
+              }
+            ],
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-result",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:server-derived-calculation-result",
+              "requiredContext": [ ],
+              "constraints": [
+                "A result may be embedded in its calculation case or exposed through focused result retrieval operations."
+              ]
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
       },
       "NORCE.Drilling.Simulator4nDOF.Model.SimulationLight": {
         "type": "object",
@@ -914,14 +1158,62 @@
           },
           "Progress": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-progress",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "siUnit": "1",
+              "physicalQuantityStatus": "resolved",
+              "physicalQuantity": {
+                "catalogue": "Conversion",
+                "id": "97555d61-9fc3-4769-9143-6bc2bf51b2d7",
+                "name": "ProportionStandard",
+                "siUnitName": "proportion"
+              },
+              "requiredContext": [ ],
+              "constraints": [
+                "Values range from zero to one and are informational rather than an optimistic-concurrency token.",
+                "A service need not expose progress for a calculation that completes in the submission or replacement response."
+              ]
+            }
           },
           "TerminationState": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-state",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "requiredContext": [ ],
+              "constraints": [
+                "An immediate calculation may enter a terminal state during submission without exposing intermediate states."
+              ]
+            }
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-status-projection",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
       },
       "NORCE.Drilling.Simulator4nDOF.Model.SolverType": {
         "enum": [

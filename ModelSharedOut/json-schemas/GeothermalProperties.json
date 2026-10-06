@@ -5,12 +5,538 @@
     "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
     "version": "1.0"
   },
-  "servers": [
-    {
-      "url": "https://app.digiwells.no/GeothermalProperties/api/swagger/merged/swagger.json"
-    }
-  ],
   "paths": {
+    "/GeothermalProperties": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetAllGeothermalPropertiesId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "PostGeothermalProperties",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeothermalProperties/MetaInfo": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetAllGeothermalPropertiesMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeothermalProperties/{id}": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetGeothermalPropertiesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeothermalProperties"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "PutGeothermalPropertiesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "DeleteGeothermalPropertiesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeothermalProperties/HeavyData": {
+      "get": {
+        "tags": [
+          "GeothermalProperties"
+        ],
+        "operationId": "GetAllGeothermalProperties",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeothermalProperties"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeothermalPropertiesCompletionOrder": {
+      "get": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "GetAllGeothermalPropertiesCompletionOrderId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "post": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "PostGeothermalPropertiesCompletionOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:immediate-calculation-submission",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
+    "/GeothermalPropertiesCompletionOrder/MetaInfo": {
+      "get": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "GetAllGeothermalPropertiesCompletionOrderMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
+    "/GeothermalPropertiesCompletionOrder/{id}": {
+      "get": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "GetGeothermalPropertiesCompletionOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "put": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "PutGeothermalPropertiesCompletionOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:immediate-calculation-replacement",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "delete": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "DeleteGeothermalPropertiesCompletionOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeothermalPropertiesCompletionOrder/LightData": {
+      "get": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "GetAllGeothermalPropertiesCompletionOrderLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrderLight"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
+    "/GeothermalPropertiesCompletionOrder/HeavyData": {
+      "get": {
+        "tags": [
+          "GeothermalPropertiesCompletionOrder"
+        ],
+        "operationId": "GetAllGeothermalPropertiesCompletionOrder",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-retrieval",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      }
+    },
     "/Trajectory": {
       "get": {
         "tags": [
@@ -2544,12 +3070,405 @@
         }
       }
     },
-    "/GeothermalProperties": {
+    "/WellBore/Search": {
       "get": {
         "tags": [
-          "GeothermalProperties"
+          "WellBore"
         ],
-        "operationId": "GetAllGeothermalPropertiesId",
+        "operationId": "SearchWellBores",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "wellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rigId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "parentWellBoreId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "isSidetrack",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "identityId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "identityValue",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "featureCategoryId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "featureOptionId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "modifiedFromUtc",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "modifiedToUtc",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreSearchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/{id}/ExternalReferences": {
+      "get": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "ValidateWellBoreExternalReferences",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreExternalReferenceValidation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/ExternalReferenceAudit": {
+      "post": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "AuditWellBoreExternalReferences",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreExternalReferenceAuditRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreExternalReferenceAuditRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreExternalReferenceAuditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreExternalReferenceAuditResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/BatchExport": {
+      "post": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "BatchExportWellBores",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreBatchExportRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreBatchExportRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreBatchExportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchExportDocument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/BatchRestore": {
+      "post": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "BatchRestoreWellBores",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreBatchRestoreRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreBatchRestoreRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreBatchRestoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchRestoreResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreBatchErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/ByWellID": {
+      "get": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "GetAllWellBoreByWellID",
+        "parameters": [
+          {
+            "name": "wellID",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -2558,36 +3477,155 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "format": "uuid",
-                    "nullable": true
+                    "$ref": "#/components/schemas/WellBore"
                   }
                 }
               }
             }
           }
         }
-      },
-      "post": {
+      }
+    },
+    "/WellBore/ByRigID": {
+      "get": {
         "tags": [
-          "GeothermalProperties"
+          "WellBore"
         ],
-        "operationId": "PostGeothermalProperties",
+        "operationId": "GetAllWellBoreByRigId",
+        "parameters": [
+          {
+            "name": "rigID",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WellBore"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/ByParentID": {
+      "get": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "GetAllWellBoreByParentWellBoreId",
+        "parameters": [
+          {
+            "name": "parentID",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WellBore"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/IsSidetracked": {
+      "get": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "GetAllSidetrackedWellBore",
+        "parameters": [
+          {
+            "name": "parentID",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WellBore"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBore/{id}/Details": {
+      "put": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "PutWellBoreDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalProperties"
+                "$ref": "#/components/schemas/WellBoreDetailsUpdate"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalProperties"
+                "$ref": "#/components/schemas/WellBoreDetailsUpdate"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalProperties"
+                "$ref": "#/components/schemas/WellBoreDetailsUpdate"
               }
             }
           }
@@ -2599,64 +3637,12 @@
         }
       }
     },
-    "/GeothermalProperties/MetaInfo": {
-      "get": {
-        "tags": [
-          "GeothermalProperties"
-        ],
-        "operationId": "GetAllGeothermalPropertiesMetaInfo",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MetaInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/GeothermalProperties/{id}": {
-      "get": {
-        "tags": [
-          "GeothermalProperties"
-        ],
-        "operationId": "GetGeothermalPropertiesById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GeothermalProperties"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/WellBore/{id}/Topology": {
       "put": {
         "tags": [
-          "GeothermalProperties"
+          "WellBore"
         ],
-        "operationId": "PutGeothermalPropertiesById",
+        "operationId": "PutWellBoreTopology",
         "parameters": [
           {
             "name": "id",
@@ -2665,6 +3651,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         ],
@@ -2672,17 +3667,130 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalProperties"
+                "$ref": "#/components/schemas/WellBoreTopologyUpdate"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalProperties"
+                "$ref": "#/components/schemas/WellBoreTopologyUpdate"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalProperties"
+                "$ref": "#/components/schemas/WellBoreTopologyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/WellBore/{wellBoreId}/IdentityAssignments": {
+      "post": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "PostWellBoreIdentityAssignment",
+        "parameters": [
+          {
+            "name": "wellBoreId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentityAssignment"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentityAssignment"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentityAssignment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/WellBore/{wellBoreId}/IdentityAssignments/{assignmentId}": {
+      "put": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "PutWellBoreIdentityAssignment",
+        "parameters": [
+          {
+            "name": "wellBoreId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "assignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentityAssignment"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentityAssignment"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentityAssignment"
               }
             }
           }
@@ -2695,17 +3803,35 @@
       },
       "delete": {
         "tags": [
-          "GeothermalProperties"
+          "WellBore"
         ],
-        "operationId": "DeleteGeothermalPropertiesById",
+        "operationId": "DeleteWellBoreIdentityAssignment",
         "parameters": [
           {
-            "name": "id",
+            "name": "wellBoreId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "assignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         ],
@@ -2716,35 +3842,165 @@
         }
       }
     },
-    "/GeothermalProperties/HeavyData": {
-      "get": {
+    "/WellBore/{wellBoreId}/FeatureAssignments": {
+      "post": {
         "tags": [
-          "GeothermalProperties"
+          "WellBore"
         ],
-        "operationId": "GetAllGeothermalProperties",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GeothermalProperties"
-                  }
-                }
+        "operationId": "PostWellBoreFeatureAssignment",
+        "parameters": [
+          {
+            "name": "wellBoreId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreFeatureAssignment"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreFeatureAssignment"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreFeatureAssignment"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
     },
-    "/GeothermalPropertiesCompletionOrder": {
+    "/WellBore/{wellBoreId}/FeatureAssignments/{assignmentId}": {
+      "put": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "PutWellBoreFeatureAssignment",
+        "parameters": [
+          {
+            "name": "wellBoreId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "assignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreFeatureAssignment"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreFeatureAssignment"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreFeatureAssignment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "WellBore"
+        ],
+        "operationId": "DeleteWellBoreFeatureAssignment",
+        "parameters": [
+          {
+            "name": "wellBoreId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "assignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/WellBoreFeatureCategory": {
       "get": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "GetAllGeothermalPropertiesCompletionOrderId",
+        "operationId": "GetAllWellBoreFeatureCategoryId",
         "responses": {
           "200": {
             "description": "OK",
@@ -2764,41 +4020,48 @@
       },
       "post": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "PostGeothermalPropertiesCompletionOrder",
+        "operationId": "PostWellBoreFeatureCategory",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                "$ref": "#/components/schemas/WellBoreFeatureCategory"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                "$ref": "#/components/schemas/WellBoreFeatureCategory"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                "$ref": "#/components/schemas/WellBoreFeatureCategory"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreFeatureCategory"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/GeothermalPropertiesCompletionOrder/MetaInfo": {
+    "/WellBoreFeatureCategory/MetaInfo": {
       "get": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "GetAllGeothermalPropertiesCompletionOrderMetaInfo",
+        "operationId": "GetAllWellBoreFeatureCategoryMetaInfo",
         "responses": {
           "200": {
             "description": "OK",
@@ -2816,12 +4079,12 @@
         }
       }
     },
-    "/GeothermalPropertiesCompletionOrder/{id}": {
+    "/WellBoreFeatureCategory/{id}": {
       "get": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "GetGeothermalPropertiesCompletionOrderById",
+        "operationId": "GetWellBoreFeatureCategoryById",
         "parameters": [
           {
             "name": "id",
@@ -2839,7 +4102,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                  "$ref": "#/components/schemas/WellBoreFeatureCategory"
                 }
               }
             }
@@ -2848,9 +4111,9 @@
       },
       "put": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "PutGeothermalPropertiesCompletionOrderById",
+        "operationId": "PutWellBoreFeatureCategoryById",
         "parameters": [
           {
             "name": "id",
@@ -2859,6 +4122,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         ],
@@ -2866,32 +4138,49 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                "$ref": "#/components/schemas/WellBoreFeatureCategory"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                "$ref": "#/components/schemas/WellBoreFeatureCategory"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                "$ref": "#/components/schemas/WellBoreFeatureCategory"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreFeatureCategory"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "DeleteGeothermalPropertiesCompletionOrderById",
+        "operationId": "DeleteWellBoreFeatureCategoryById",
         "parameters": [
           {
             "name": "id",
@@ -2900,6 +4189,15 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         ],
@@ -2910,12 +4208,12 @@
         }
       }
     },
-    "/GeothermalPropertiesCompletionOrder/LightData": {
+    "/WellBoreFeatureCategory/HeavyData": {
       "get": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreFeatureCategory"
         ],
-        "operationId": "GetAllGeothermalPropertiesCompletionOrderLight",
+        "operationId": "GetAllWellBoreFeatureCategory",
         "responses": {
           "200": {
             "description": "OK",
@@ -2924,7 +4222,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrderLight"
+                    "$ref": "#/components/schemas/WellBoreFeatureCategory"
                   }
                 }
               }
@@ -2933,12 +4231,12 @@
         }
       }
     },
-    "/GeothermalPropertiesCompletionOrder/HeavyData": {
+    "/WellBoreIdentity": {
       "get": {
         "tags": [
-          "GeothermalPropertiesCompletionOrder"
+          "WellBoreIdentity"
         ],
-        "operationId": "GetAllGeothermalPropertiesCompletionOrder",
+        "operationId": "GetAllWellBoreIdentityId",
         "responses": {
           "200": {
             "description": "OK",
@@ -2947,7 +4245,220 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GeothermalPropertiesCompletionOrder"
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "WellBoreIdentity"
+        ],
+        "operationId": "PostWellBoreIdentity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentity"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentity"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentity"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreIdentity"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBoreIdentity/MetaInfo": {
+      "get": {
+        "tags": [
+          "WellBoreIdentity"
+        ],
+        "operationId": "GetAllWellBoreIdentityMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WellBoreIdentity/{id}": {
+      "get": {
+        "tags": [
+          "WellBoreIdentity"
+        ],
+        "operationId": "GetWellBoreIdentityById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreIdentity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "WellBoreIdentity"
+        ],
+        "operationId": "PutWellBoreIdentityById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentity"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentity"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WellBoreIdentity"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreIdentity"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellBoreMutationErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "WellBoreIdentity"
+        ],
+        "operationId": "DeleteWellBoreIdentityById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expectedModifiedUtc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/WellBoreIdentity/HeavyData": {
+      "get": {
+        "tags": [
+          "WellBoreIdentity"
+        ],
+        "operationId": "GetAllWellBoreIdentity",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WellBoreIdentity"
                   }
                 }
               }
@@ -2959,6 +4470,247 @@
   },
   "components": {
     "schemas": {
+      "CompletionMethod": {
+        "enum": [
+          "LinearInterpolation",
+          "LinearExtrapolation"
+        ],
+        "type": "string"
+      },
+      "GeothermalData": {
+        "type": "object",
+        "properties": {
+          "RegionType": {
+            "$ref": "#/components/schemas/GeothermalPropertiesType"
+          },
+          "VerticalDepth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Temperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "TemperatureGradient": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "GeothermalProperties": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TrajectoryID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "TableType": {
+            "$ref": "#/components/schemas/TableType"
+          },
+          "GeothermalDataList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeothermalData"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "GeothermalPropertiesCompletionOrder": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ReferenceGeothermalProperties": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            ],
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-specification",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:calculation-input",
+              "requiredContext": [ ],
+              "constraints": [
+                "It excludes lifecycle facts and server-derived results unless a narrower calculation contract explicitly makes them caller-controlled."
+              ]
+            }
+          },
+          "CompletedGeothermalProperties": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GeothermalProperties"
+              }
+            ],
+            "x-osdc-semantic": {
+              "catalogue": "urn:osdc:semantic-catalogue",
+              "catalogueVersion": "0.15.0",
+              "concept": "urn:osdc:semantic:calculation-result",
+              "curationStatus": "Reviewed",
+              "assertionSource": "provider-model-attribute",
+              "role": "urn:osdc:semantic:server-derived-calculation-result",
+              "requiredContext": [ ],
+              "constraints": [
+                "A result may be embedded in its calculation case or exposed through focused result retrieval operations."
+              ]
+            }
+          },
+          "InterpolationStep": {
+            "type": "number",
+            "format": "double"
+          },
+          "CompletionMethod": {
+            "$ref": "#/components/schemas/CompletionMethod"
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "GeothermalPropertiesCompletionOrderLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.15.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
+        }
+      },
+      "GeothermalPropertiesType": {
+        "enum": [
+          "Air",
+          "Water",
+          "RockFormation"
+        ],
+        "type": "string"
+      },
+      "TableType": {
+        "enum": [
+          "RawData",
+          "Interpolated"
+        ],
+        "type": "string"
+      },
+      "MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "Trajectory": {
         "type": "object",
         "properties": {
@@ -3526,27 +5278,6 @@
           "BoreholeRadius": {
             "type": "number",
             "format": "double",
-            "nullable": true
-          }
-        }
-      },
-      "MetaInfo": {
-        "type": "object",
-        "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "HttpHostName": {
-            "type": "string",
-            "nullable": true
-          },
-          "HttpHostBasePath": {
-            "type": "string",
-            "nullable": true
-          },
-          "HttpEndPoint": {
-            "type": "string",
             "nullable": true
           }
         }
@@ -5045,6 +6776,18 @@
           "GetAllWellBorePerDay": {
             "$ref": "#/components/schemas/History"
           },
+          "GetAllWellBoreByWellIDPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllWellBoreByRigIDPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllWellBoreByParentIDPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllSidetrackedWellBorePerDay": {
+            "$ref": "#/components/schemas/History"
+          },
           "PostWellBorePerDay": {
             "$ref": "#/components/schemas/History"
           },
@@ -5088,6 +6831,14 @@
           "RigID": {
             "type": "string",
             "format": "uuid",
+            "nullable": true,
+            "deprecated": true
+          },
+          "RigJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RigJob"
+            },
             "nullable": true
           },
           "IsSidetrack": {
@@ -5103,6 +6854,20 @@
           },
           "SidetrackType": {
             "$ref": "#/components/schemas/SidetrackType"
+          },
+          "WellBoreIdentityAssignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreIdentityAssignment"
+            },
+            "nullable": true
+          },
+          "WellBoreFeatureAssignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreFeatureAssignment"
+            },
+            "nullable": true
           }
         }
       },
@@ -5179,83 +6944,436 @@
           }
         }
       },
-      "CompletionMethod": {
+      "DrillFloorDepthSource": {
         "enum": [
-          "LinearInterpolation",
-          "LinearExtrapolation"
+          "Undefined",
+          "Rig",
+          "RigJob"
         ],
         "type": "string"
       },
-      "GeothermalData": {
+      "RigJob": {
         "type": "object",
         "properties": {
-          "RegionType": {
-            "$ref": "#/components/schemas/GeothermalPropertiesType"
+          "RigJobID": {
+            "type": "string",
+            "format": "uuid"
           },
-          "VerticalDepth": {
-            "type": "number",
-            "format": "double",
+          "RigID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "StartDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "EndDate": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           },
-          "Temperature": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
+          "DrillFloorDepthSource": {
+            "$ref": "#/components/schemas/DrillFloorDepthSource"
           },
-          "TemperatureGradient": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
+          "DrillFloorDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
           }
         }
       },
-      "GeothermalProperties": {
+      "WellBoreBatchCatalogDependencies": {
         "type": "object",
         "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
-            "type": "string",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "nullable": true
-          },
-          "WellBoreID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "TrajectoryID": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "TableType": {
-            "$ref": "#/components/schemas/TableType"
-          },
-          "GeothermalDataList": {
+          "Identities": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GeothermalData"
+              "$ref": "#/components/schemas/WellBoreIdentity"
+            },
+            "nullable": true
+          },
+          "FeatureCategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreFeatureCategory"
             },
             "nullable": true
           }
         }
       },
-      "GeothermalPropertiesCompletionOrder": {
+      "WellBoreBatchCatalogMapping": {
+        "type": "object",
+        "properties": {
+          "Catalog": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "SourceID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "LocalID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Resolution": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreBatchCatalogRestorePolicy": {
+        "enum": [
+          "Unspecified",
+          "MapExisting",
+          "MapOrCreateMissing"
+        ],
+        "type": "string"
+      },
+      "WellBoreBatchError": {
+        "type": "object",
+        "properties": {
+          "PositionIndex": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Property": {
+            "type": "string",
+            "nullable": true
+          },
+          "Code": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreBatchErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "Error": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreBatchError"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreBatchExportDocument": {
+        "type": "object",
+        "properties": {
+          "FormatIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "SchemaVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ExportedAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CatalogDependencies": {
+            "$ref": "#/components/schemas/WellBoreBatchCatalogDependencies"
+          },
+          "WellBores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBore"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreBatchExportRequest": {
+        "type": "object",
+        "properties": {
+          "Scope": {
+            "$ref": "#/components/schemas/WellBoreBatchExportScope"
+          },
+          "WellBoreIDs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreBatchExportScope": {
+        "enum": [
+          "Unspecified",
+          "All",
+          "Selected"
+        ],
+        "type": "string"
+      },
+      "WellBoreBatchRestoreConflictPolicy": {
+        "enum": [
+          "Unspecified",
+          "FailIfExists",
+          "ReplaceExisting"
+        ],
+        "type": "string"
+      },
+      "WellBoreBatchRestoreRequest": {
+        "type": "object",
+        "properties": {
+          "ConflictPolicy": {
+            "$ref": "#/components/schemas/WellBoreBatchRestoreConflictPolicy"
+          },
+          "CatalogPolicy": {
+            "$ref": "#/components/schemas/WellBoreBatchCatalogRestorePolicy"
+          },
+          "Document": {
+            "$ref": "#/components/schemas/WellBoreBatchExportDocument"
+          }
+        }
+      },
+      "WellBoreBatchRestoreResponse": {
+        "type": "object",
+        "properties": {
+          "RestoredAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CreatedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ReplacedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CreatedCatalogDefinitionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CreatedCatalogOptionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CatalogMappings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreBatchCatalogMapping"
+            },
+            "nullable": true
+          },
+          "WellBoreIDs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreDetailsUpdate": {
+        "required": [
+          "Description",
+          "Name"
+        ],
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreExternalReferenceAuditRequest": {
+        "required": [
+          "Scope"
+        ],
+        "type": "object",
+        "properties": {
+          "Scope": {
+            "$ref": "#/components/schemas/WellBoreExternalReferenceAuditScope"
+          },
+          "WellBoreIDs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "Offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Limit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "WellBoreExternalReferenceAuditResult": {
+        "type": "object",
+        "properties": {
+          "CheckedAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Limit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ValidCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "InvalidCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnavailableCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreExternalReferenceValidation"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreExternalReferenceAuditScope": {
+        "enum": [
+          "All",
+          "Selected"
+        ],
+        "type": "string"
+      },
+      "WellBoreExternalReferenceIssue": {
+        "type": "object",
+        "properties": {
+          "Property": {
+            "type": "string",
+            "nullable": true
+          },
+          "Code": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreExternalReferenceValidation": {
+        "type": "object",
+        "properties": {
+          "WellBoreID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "WellID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "RigID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "WellExists": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "RigExists": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "Status": {
+            "$ref": "#/components/schemas/WellBoreExternalReferenceValidationStatus"
+          },
+          "CheckedAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreExternalReferenceIssue"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreExternalReferenceValidationStatus": {
+        "enum": [
+          "Valid",
+          "Invalid",
+          "Unavailable"
+        ],
+        "type": "string"
+      },
+      "WellBoreFeatureAssignment": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "FeatureCategoryID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "FeatureOptionID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "FromDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ToDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreFeatureCategory": {
         "type": "object",
         "properties": {
           "MetaInfo": {
@@ -5265,7 +7383,51 @@
             "type": "string",
             "nullable": true
           },
-          "Description": {
+          "IsExclusive": {
+            "type": "boolean"
+          },
+          "HasValidityPeriod": {
+            "type": "boolean"
+          },
+          "Options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreFeatureOption"
+            },
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreFeatureOption": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreIdentity": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
             "type": "string",
             "nullable": true
           },
@@ -5278,62 +7440,140 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
-          },
-          "ReferenceGeothermalProperties": {
-            "$ref": "#/components/schemas/GeothermalProperties"
-          },
-          "CompletedGeothermalProperties": {
-            "$ref": "#/components/schemas/GeothermalProperties"
-          },
-          "InterpolationStep": {
-            "type": "number",
-            "format": "double"
-          },
-          "CompletionMethod": {
-            "$ref": "#/components/schemas/CompletionMethod"
           }
         }
       },
-      "GeothermalPropertiesCompletionOrderLight": {
+      "WellBoreIdentityAssignment": {
         "type": "object",
         "properties": {
-          "MetaInfo": {
-            "$ref": "#/components/schemas/MetaInfo"
-          },
-          "Name": {
+          "ID": {
             "type": "string",
+            "format": "uuid"
+          },
+          "IdentityID": {
+            "type": "string",
+            "format": "uuid",
             "nullable": true
           },
-          "Description": {
+          "Value": {
             "type": "string",
-            "nullable": true
-          },
-          "CreationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "LastModificationDate": {
-            "type": "string",
-            "format": "date-time",
             "nullable": true
           }
         }
       },
-      "GeothermalPropertiesType": {
-        "enum": [
-          "Air",
-          "Water",
-          "RockFormation"
-        ],
-        "type": "string"
+      "WellBoreMutationError": {
+        "type": "object",
+        "properties": {
+          "Property": {
+            "type": "string",
+            "nullable": true
+          },
+          "Code": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          },
+          "ReferencingWellBoreIDs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        }
       },
-      "TableType": {
-        "enum": [
-          "RawData",
-          "Interpolated"
+      "WellBoreMutationErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "Error": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBoreMutationError"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "WellBoreSearchResult": {
+        "type": "object",
+        "properties": {
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WellBore"
+            },
+            "nullable": true
+          },
+          "Total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Limit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "WellBoreTopologyUpdate": {
+        "required": [
+          "IsSidetrack",
+          "ParentWellBoreID",
+          "RigID",
+          "SidetrackType",
+          "TieInPointAlongHoleDepth",
+          "WellID"
         ],
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "WellID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "RigID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "deprecated": true
+          },
+          "RigJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RigJob"
+            },
+            "nullable": true
+          },
+          "IsSidetrack": {
+            "type": "boolean"
+          },
+          "ParentWellBoreID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "TieInPointAlongHoleDepth": {
+            "$ref": "#/components/schemas/GaussianDrillingProperty"
+          },
+          "SidetrackType": {
+            "$ref": "#/components/schemas/SidetrackType"
+          }
+        }
       }
     }
   }

@@ -168,7 +168,7 @@
                 <MudSelect T="RigLight" @bind-Value="SelectedRig" Label="Rig for simulation case" Variant="Variant.Text">
                     @if (Rigs != null)
                     {
-                        @foreach (var rig in Rigs.Where(rig => rig != null && !rig.IsFixedPlatform))
+                        @foreach (var rig in Rigs.Where(rig => rig != null))
                         {
                             @if (rig != null && !string.IsNullOrEmpty(rig.Name))
                             {
@@ -571,9 +571,9 @@
             {
                 TopWaterDepthSource.SeaWaterLevelDepthReference = -_selectedCluster.TopWaterDepth.GaussianValue.Mean;
             }
-            if (WellHeadDepthSource != null && _selectedCluster.ReferenceDepth != null && _selectedCluster.ReferenceDepth.GaussianValue != null)
+            if (WellHeadDepthSource != null && _selectedCluster.ReferencePoint?.TVD is double clusterReferenceDepth)
             {
-                WellHeadDepthSource.WellHeadDepthReference = -_selectedCluster.ReferenceDepth.GaussianValue.Mean;
+                WellHeadDepthSource.WellHeadDepthReference = -clusterReferenceDepth;
             }
         }
     }

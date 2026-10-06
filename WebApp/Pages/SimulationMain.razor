@@ -449,7 +449,7 @@
                     try
                     {
                         rigList = ((List<RigLight>)await rigTask)
-                            .Where(rig => rig != null && !rig.IsFixedPlatform)
+                            .Where(rig => rig != null)
                             .ToList();
                         if (rigList != null)
                         {

@@ -72,6 +72,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required ModelShared.DrillString DrillString;
         public required ModelShared.DrillingFluidDescription DrillingFluidDescription;        
         public ModelShared.CasingSection CasingSection;
+        public ModelShared.OpenHoleSection? OpenHoleSection;
         public ModelShared.GeothermalProperties? GeothermalProperties;
         public required double BitRadius;
         public BitRockModelEnum BitRockModelEnum { get; set; } = BitRockModelEnum.Detournay;

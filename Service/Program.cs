@@ -31,6 +31,8 @@ builder.Services.AddControllers()
 builder.Services.AddSwaggerGen(config =>
 {
     config.CustomSchemaIds(type => type.FullName);
+    config.SchemaFilter<CalculationCaseSemanticFilter>();
+    config.OperationFilter<CalculationCaseSemanticFilter>();
 });
 
 // MCP server registrations

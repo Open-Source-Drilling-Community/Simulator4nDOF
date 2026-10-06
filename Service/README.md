@@ -32,5 +32,9 @@ The current work has been funded by the [Research Council of Norway](https://www
 
 **Eric Cayeux**, *NORCE Energy Modelling and Automation*
 
+## Calculation lifecycle semantics
+
+OpenAPI publishes SemanticCatalogue 0.15.0 metadata for the queued simulation lifecycle: case retrieval, light status retrieval, queued submission/replacement, progress and state fields, and paged server-derived results. The existing MCP host currently exposes no simulation calculation tool, so there is no parallel calculation MCP contract to annotate.
+
 
 
