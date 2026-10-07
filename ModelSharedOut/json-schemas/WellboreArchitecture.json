@@ -8407,7 +8407,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:gaussian-uncertain-value",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-binding-registry",
@@ -8436,7 +8436,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -8469,7 +8469,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:resource-metadata",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-binding-registry",
@@ -20438,7 +20438,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:scalar-value-representation",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-binding-registry",
@@ -20483,7 +20483,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -20506,7 +20506,7 @@
             "description": "Diameter of the borehole over the applicable interval. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -20528,7 +20528,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:borehole-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20552,7 +20552,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20582,7 +20582,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:borehole-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20606,7 +20606,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:borehole-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20639,7 +20639,7 @@
             "description": "Additive geometric extent of a physical interval; distinct from a position coordinate. Extent of the interval to which a borehole diameter applies. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -20662,7 +20662,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20690,7 +20690,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20720,7 +20720,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20748,7 +20748,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20779,7 +20779,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:borehole-size-interval",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -20799,7 +20799,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -20822,7 +20822,7 @@
             "description": "Curvilinear abscissa along an oriented wellbore path, expressed as accumulated arc length from the origin established by the applicable reference convention. It may be planned, calculated, interpolated or measured. Along-hole location of the casing top; bind to AlongHoleDepth under the canonical drilling profile. Physical quantity: DepthDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. Zero along-hole depth is the intersection of the oriented wellbore path, or its defined extension, with the WGS84 ellipsoid. The coordinate is signed accumulated arc length from that intersection along the declared path orientation. It is not obtained by adding or subtracting a vertical elevation offset. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -20845,7 +20845,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:along-hole-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20891,7 +20891,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20919,7 +20919,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:along-hole-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -20965,7 +20965,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:along-hole-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21020,7 +21020,7 @@
             "description": "Additive geometric extent of a physical interval; distinct from a position coordinate. Extent of the specified construction section or component interval. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21043,7 +21043,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21071,7 +21071,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21101,7 +21101,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21129,7 +21129,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21166,7 +21166,7 @@
             "description": "Curvilinear abscissa along an oriented wellbore path, expressed as accumulated arc length from the origin established by the applicable reference convention. It may be planned, calculated, interpolated or measured. Along-hole location of the top of cement; bind to AlongHoleDepth under the canonical drilling profile. Physical quantity: DepthDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. Zero along-hole depth is the intersection of the oriented wellbore path, or its defined extension, with the WGS84 ellipsoid. The coordinate is signed accumulated arc length from that intersection along the declared path orientation. It is not obtained by adding or subtracting a vertical elevation offset. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21189,7 +21189,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:along-hole-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21235,7 +21235,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21263,7 +21263,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:along-hole-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21309,7 +21309,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:along-hole-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21372,7 +21372,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:casing-section",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -21392,7 +21392,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -21415,7 +21415,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Diameter of the exterior body. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21438,7 +21438,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21463,7 +21463,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21493,7 +21493,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21518,7 +21518,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21552,7 +21552,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Diameter of the interior opening; SideElement.ID denotes this dimension, not an identifier. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21575,7 +21575,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21600,7 +21600,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21630,7 +21630,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21655,7 +21655,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21689,7 +21689,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Exterior diameter at the collar. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21712,7 +21712,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21737,7 +21737,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21767,7 +21767,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21792,7 +21792,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21826,7 +21826,7 @@
             "description": "Additive geometric extent of a physical interval; distinct from a position coordinate. Extent of a casing joint. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21849,7 +21849,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21877,7 +21877,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21907,7 +21907,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21935,7 +21935,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -21972,7 +21972,7 @@
             "description": "Additive geometric extent of a physical interval; distinct from a position coordinate. Extent of the specified construction section or component interval. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -21995,7 +21995,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22023,7 +22023,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22053,7 +22053,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22081,7 +22081,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22118,7 +22118,7 @@
             "description": "Maximum allowable path curvature for the applicable component, not a survey angle or observed curvature. Physical quantity: CurvatureDrilling; SI unit: radians per metre (rad/m). The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22138,7 +22138,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:maximum-permitted-dogleg-severity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22164,7 +22164,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:maximum-permitted-dogleg-severity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22191,7 +22191,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:maximum-permitted-dogleg-severity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22224,7 +22224,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:connection-thread-description",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -22241,7 +22241,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:material-grade",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -22261,7 +22261,7 @@
             "description": "Mass density of component material; not inferred from an environmental fluid classification. Physical quantity: MassDensityDrilling; SI unit: kg/m³. GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22283,7 +22283,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22309,7 +22309,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:mass-density-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22339,7 +22339,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22365,7 +22365,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22400,7 +22400,7 @@
             "description": "Young modulus describing elastic stiffness of material, not absolute pressure. Physical quantity: ElasticModulus; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22422,7 +22422,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:young-modulus",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22449,7 +22449,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:elastic-modulus-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22479,7 +22479,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:young-modulus",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22506,7 +22506,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:young-modulus",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22542,7 +22542,7 @@
             "description": "Mass per unit length, including collars where specified; not force per length. Physical quantity: MassGradientPerLengthDrilling; SI unit: kilograms per metre (kg/m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22564,7 +22564,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22590,7 +22590,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22620,7 +22620,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22646,7 +22646,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22681,7 +22681,7 @@
             "description": "Material tensile strength expressed as stress, distinct from component axial force capacity. Physical quantity: DrillStemMaterialStrengthDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22703,7 +22703,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:tensile-strength",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22730,7 +22730,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-strength-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22760,7 +22760,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:tensile-strength",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22787,7 +22787,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:tensile-strength",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22823,7 +22823,7 @@
             "description": "Torque limit of a specified component or connection; not shear stress. Physical quantity: TorqueDrilling; SI unit: N·m. GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22845,7 +22845,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:torsional-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22872,7 +22872,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:torque-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22902,7 +22902,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:torsional-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22929,7 +22929,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:torsional-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -22965,7 +22965,7 @@
             "description": "Limiting internal-minus-external pressure difference for the specified component and burst criterion. Physical quantity: PressureDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -22987,7 +22987,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:burst-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23015,7 +23015,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pressure-difference-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23045,7 +23045,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:burst-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23073,7 +23073,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:burst-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23110,7 +23110,7 @@
             "description": "Limiting external-minus-internal pressure difference for the specified component and collapse criterion. Physical quantity: PressureDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -23132,7 +23132,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:collapse-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23160,7 +23160,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pressure-difference-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23190,7 +23190,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:collapse-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23218,7 +23218,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:collapse-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23255,7 +23255,7 @@
             "description": "Material stress at the stated yield criterion; distinct from ultimate tensile strength. Physical quantity: DrillStemMaterialStrengthDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -23277,7 +23277,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:yield-stress",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23304,7 +23304,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-strength-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23334,7 +23334,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:yield-stress",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23361,7 +23361,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:yield-stress",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23397,7 +23397,7 @@
             "description": "Recommended assembly make-up torque for the specified connection; not torsional failure capacity. Physical quantity: TorqueDrilling; SI unit: N·m. The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -23417,7 +23417,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:recommended-make-up-torque",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23443,7 +23443,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:recommended-make-up-torque",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23470,7 +23470,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:recommended-make-up-torque",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23500,7 +23500,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:casing-element-specification",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -23520,7 +23520,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -23543,7 +23543,7 @@
             "description": "Pipe, hose, valve, choke or pump forming part of a side-circuit network.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:side-circuit-element",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -23564,7 +23564,7 @@
             "description": "Pipe, hose, valve, choke or pump forming part of a side-circuit network.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:side-circuit-element",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -23579,7 +23579,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:side-circuit-connectivity",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -23600,7 +23600,7 @@
         "type": "string",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:environmental-fluid-kind",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-binding-registry",
@@ -23624,7 +23624,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -23648,7 +23648,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:open-hole-section",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -23668,7 +23668,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -23691,7 +23691,7 @@
             "description": "Curvilinear position along the host component from its top, increasing downward along the host; not a global wellbore depth. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. Zero is the top of the identified host component; the coordinate increases downward along its path. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -23713,7 +23713,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:host-component-abscissa",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23755,7 +23755,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23785,7 +23785,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:host-component-abscissa",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23827,7 +23827,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:host-component-abscissa",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23878,7 +23878,7 @@
             "description": "Negative ellipsoidal height measured along the ellipsoid normal: positive inward from the reference ellipsoid. Vertical location of a side connector; bind to EllipsoidalDepth under the canonical drilling profile. Physical quantity: DepthDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -23901,7 +23901,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23933,7 +23933,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23961,7 +23961,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -23993,7 +23993,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24038,7 +24038,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:side-connector",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -24058,7 +24058,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -24078,7 +24078,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -24095,7 +24095,7 @@
             "description": "Finite classification of side circuit element kind.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:side-circuit-element-kind",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24119,7 +24119,7 @@
             "description": "Additive geometric extent of a physical interval; distinct from a position coordinate. Extent of the specified construction section or component interval. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24142,7 +24142,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24170,7 +24170,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24200,7 +24200,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24228,7 +24228,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24265,7 +24265,7 @@
             "description": "Negative ellipsoidal height measured along the ellipsoid normal: positive inward from the reference ellipsoid. Role of the shallower vertical depth limit of a delineated domain; distinct from measured depth along a borehole. Physical quantity: DepthDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24288,7 +24288,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24320,7 +24320,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24348,7 +24348,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24380,7 +24380,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24421,7 +24421,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Diameter of the exterior body. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24444,7 +24444,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24469,7 +24469,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24499,7 +24499,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24524,7 +24524,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24558,7 +24558,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Diameter of the interior opening; SideElement.ID denotes this dimension, not an identifier. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24581,7 +24581,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24606,7 +24606,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24636,7 +24636,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24661,7 +24661,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24689,7 +24689,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:side-circuit-element",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -24712,7 +24712,7 @@
         "type": "string",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:side-circuit-element-kind",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-binding-registry",
@@ -24736,7 +24736,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -24759,7 +24759,7 @@
             "description": "Finite classification of surface section kind.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:surface-section-kind",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24783,7 +24783,7 @@
             "description": "Additive geometric extent of a physical interval; distinct from a position coordinate. Extent of the specified construction section or component interval. Physical quantity: LengthStandard; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24806,7 +24806,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24834,7 +24834,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24864,7 +24864,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24892,7 +24892,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:physical-length-extent",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24929,7 +24929,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Diameter of the exterior body. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -24952,7 +24952,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -24977,7 +24977,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25007,7 +25007,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25032,7 +25032,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25066,7 +25066,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Diameter of the interior opening; SideElement.ID denotes this dimension, not an identifier. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25089,7 +25089,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25114,7 +25114,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:dimensional-length-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25144,7 +25144,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25169,7 +25169,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25200,7 +25200,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:connection-thread-description",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -25217,7 +25217,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:material-grade",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -25237,7 +25237,7 @@
             "description": "Mass density of component material; not inferred from an environmental fluid classification. Physical quantity: MassDensityDrilling; SI unit: kg/m³. GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25259,7 +25259,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25285,7 +25285,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:mass-density-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25315,7 +25315,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25341,7 +25341,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25376,7 +25376,7 @@
             "description": "Young modulus describing elastic stiffness of material, not absolute pressure. Physical quantity: ElasticModulus; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25398,7 +25398,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:young-modulus",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25425,7 +25425,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:elastic-modulus-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25455,7 +25455,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:young-modulus",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25482,7 +25482,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:young-modulus",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25518,7 +25518,7 @@
             "description": "Mass per unit length, including collars where specified; not force per length. Physical quantity: MassGradientPerLengthDrilling; SI unit: kilograms per metre (kg/m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25540,7 +25540,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25566,7 +25566,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25596,7 +25596,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25622,7 +25622,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-mass-density",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25657,7 +25657,7 @@
             "description": "Material tensile strength expressed as stress, distinct from component axial force capacity. Physical quantity: DrillStemMaterialStrengthDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25679,7 +25679,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:tensile-strength",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25706,7 +25706,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-strength-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25736,7 +25736,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:tensile-strength",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25763,7 +25763,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:tensile-strength",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25799,7 +25799,7 @@
             "description": "Limiting internal-minus-external pressure difference for the specified component and burst criterion. Physical quantity: PressureDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25821,7 +25821,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:burst-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25849,7 +25849,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pressure-difference-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25879,7 +25879,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:burst-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25907,7 +25907,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:burst-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25944,7 +25944,7 @@
             "description": "Limiting external-minus-internal pressure difference for the specified component and collapse criterion. Physical quantity: PressureDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -25966,7 +25966,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:collapse-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -25994,7 +25994,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pressure-difference-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26024,7 +26024,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:collapse-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26052,7 +26052,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:collapse-pressure-capacity",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26089,7 +26089,7 @@
             "description": "Material stress at the stated yield criterion; distinct from ultimate tensile strength. Physical quantity: DrillStemMaterialStrengthDrilling; SI unit: pascals (Pa). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -26111,7 +26111,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:yield-stress",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26138,7 +26138,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:material-strength-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26168,7 +26168,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:yield-stress",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26195,7 +26195,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:yield-stress",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26231,7 +26231,7 @@
             "description": "Recommended assembly make-up torque for the specified connection; not torsional failure capacity. Physical quantity: TorqueDrilling; SI unit: N·m. The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -26251,7 +26251,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:recommended-make-up-torque",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26277,7 +26277,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:recommended-make-up-torque",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26304,7 +26304,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:recommended-make-up-torque",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -26341,7 +26341,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:surface-construction-section",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -26367,7 +26367,7 @@
         "type": "string",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:surface-section-kind",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-binding-registry",
@@ -26431,7 +26431,7 @@
             "description": "Identity and service-location metadata accompanying a managed resource; a locator is not the semantic identity.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-metadata",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -26445,7 +26445,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -26459,7 +26459,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-description",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -26474,7 +26474,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -26496,7 +26496,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -26532,7 +26532,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -26576,7 +26576,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:wellbore-architecture",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -26940,7 +26940,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -26965,7 +26965,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -26990,7 +26990,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27015,7 +27015,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27041,7 +27041,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27063,7 +27063,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:feature-assignment",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27090,7 +27090,7 @@
             "description": "Identity and service-location metadata accompanying a managed resource; a locator is not the semantic identity.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-metadata",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27108,7 +27108,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27125,7 +27125,7 @@
             "description": "Boolean rule declaring that at most one category assignment may be active on a resource at the same instant.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:category-exclusivity",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27148,7 +27148,7 @@
             "description": "Boolean rule indicating whether assignments in a category may carry validity bounds.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:category-validity-period-enabled",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27176,7 +27176,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27202,7 +27202,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27224,7 +27224,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:feature-category",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27244,7 +27244,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27268,7 +27268,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27283,7 +27283,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:feature-option",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27305,7 +27305,7 @@
             "description": "Finite classification of environmental fluid kind.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:environmental-fluid-kind",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27329,7 +27329,7 @@
             "description": "Negative ellipsoidal height measured along the ellipsoid normal: positive inward from the reference ellipsoid. Top boundary of an environmental fluid layer, represented by vertical EllipsoidalDepth. Physical quantity: DepthDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27352,7 +27352,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27384,7 +27384,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27412,7 +27412,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27444,7 +27444,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27479,7 +27479,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:environmental-fluid-layer",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27502,7 +27502,7 @@
             "description": "Identity and service-location metadata accompanying a managed resource; a locator is not the semantic identity.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-metadata",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27520,7 +27520,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27539,7 +27539,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27565,7 +27565,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27587,7 +27587,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:resource-identity-definition",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27609,7 +27609,7 @@
             "format": "uuid",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27634,7 +27634,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27658,7 +27658,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-identity-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27678,7 +27678,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:resource-identity-assignment",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27703,7 +27703,7 @@
             "description": "Identity and service-location metadata accompanying a managed resource; a locator is not the semantic identity.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-metadata",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -27717,7 +27717,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -27731,7 +27731,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:resource-description",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -27746,7 +27746,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -27768,7 +27768,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -27786,7 +27786,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:wellbore-architecture",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -27811,7 +27811,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Maximum outside diameter of the wellhead geometric envelope, not a statistical upper bound. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27832,7 +27832,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27857,7 +27857,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27882,7 +27882,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27916,7 +27916,7 @@
             "description": "Diameter of a tubular or component body with an explicit inner, outer or envelope role. Minimum outside diameter of the wellhead geometric envelope, not a statistical lower bound. Physical quantity: DiameterPipeDrilling; SI unit: metres (m). The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -27937,7 +27937,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27962,7 +27962,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -27987,7 +27987,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:pipe-diameter",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28021,7 +28021,7 @@
             "description": "Negative ellipsoidal height measured along the ellipsoid normal: positive inward from the reference ellipsoid. Vertical location of the wellhead; bind to EllipsoidalDepth under the canonical drilling profile. Physical quantity: DepthDrilling; SI unit: metres (m). GaussianValue.Mean is the expected value; StandardDeviation is nonnegative uncertainty in the same SI unit, with no origin offset. Null deviation is unspecified, not zero. MinValue/MaxValue are domain bounds in the mean's unit and reference, not confidence limits or truncation instructions. WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:gaussian-uncertain-value",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -28044,7 +28044,7 @@
             "x-osdc-semantic-bindings": {
               "/GaussianValue/Mean": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28076,7 +28076,7 @@
               },
               "/GaussianValue/StandardDeviation": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:linear-standard-uncertainty",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28104,7 +28104,7 @@
               },
               "/GaussianValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28136,7 +28136,7 @@
               },
               "/GaussianValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28177,7 +28177,7 @@
             "description": "Negative ellipsoidal height measured along the ellipsoid normal: positive inward from the reference ellipsoid. Vertical location of the casing hanger; bind to EllipsoidalDepth under the canonical drilling profile. Physical quantity: DepthDrilling; SI unit: metres (m). The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference. WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -28198,7 +28198,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28230,7 +28230,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28262,7 +28262,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28303,7 +28303,7 @@
             "description": "Negative ellipsoidal height measured along the ellipsoid normal: positive inward from the reference ellipsoid. Vertical location of the tubing hanger; bind to EllipsoidalDepth under the canonical drilling profile. Physical quantity: DepthDrilling; SI unit: metres (m). The SI value is stored at DiracDistributionValue.Value; MinValue/MaxValue are domain bounds in the same unit and reference. WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch. This reference applies to canonical storage and APIs; supported user-selected presentation references remain allowed.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:scalar-value-representation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-binding-registry",
@@ -28324,7 +28324,7 @@
             "x-osdc-semantic-bindings": {
               "/DiracDistributionValue/Value": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28356,7 +28356,7 @@
               },
               "/DiracDistributionValue/MinValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28388,7 +28388,7 @@
               },
               "/DiracDistributionValue/MaxValue": {
                 "catalogue": "urn:osdc:semantic-catalogue",
-                "catalogueVersion": "0.15.0",
+                "catalogueVersion": "0.16.0",
                 "concept": "urn:osdc:semantic:ellipsoidal-depth",
                 "curationStatus": "Reviewed",
                 "assertionSource": "provider-binding-registry",
@@ -28423,7 +28423,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:wellhead",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",

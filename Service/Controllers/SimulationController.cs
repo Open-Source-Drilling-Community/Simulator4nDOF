@@ -273,6 +273,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Controllers
         /// <param name="guid"></param>
         /// <returns>true if the Simulation was deleted from the microservice database, at the endpoint Simulator4nDOF/api/Simulation/id</returns>
         [HttpDelete("{id}", Name = "DeleteSimulationById")]
+        [Semantic(Concepts.CalculationCase, Role = Concepts.CalculationCaseDeletion)]
         public ActionResult DeleteSimulationById(Guid id)
         {
             if (_simulationManager.DeleteSimulationById(id))

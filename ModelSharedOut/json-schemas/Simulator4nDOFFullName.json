@@ -29,7 +29,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -76,7 +76,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -116,7 +116,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -164,7 +164,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -212,7 +212,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -269,7 +269,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -309,7 +309,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -349,7 +349,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -409,7 +409,7 @@
         },
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -445,6 +445,23 @@
           "200": {
             "description": "OK"
           }
+        },
+        "x-osdc-semantic": {
+          "catalogue": "urn:osdc:semantic-catalogue",
+          "catalogueVersion": "0.16.0",
+          "concept": "urn:osdc:semantic:calculation-case",
+          "curationStatus": "Reviewed",
+          "assertionSource": "provider-model-attribute",
+          "role": "urn:osdc:semantic:calculation-case-deletion",
+          "requiredContext": [
+            "owning service",
+            "resource type"
+          ],
+          "constraints": [
+            "Callers supply the calculation specification; lifecycle facts and results are derived by the service unless a narrower contract explicitly states otherwise.",
+            "An immediate calculation need not expose polling or progress when it completes in the submission or replacement response.",
+            "A queued calculation should expose a lightweight status projection until it reaches a terminal state."
+          ]
         }
       }
     }
@@ -753,7 +770,7 @@
         "additionalProperties": false,
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-result",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -1023,7 +1040,7 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:calculation-specification",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1054,7 +1071,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:calculation-progress",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1079,7 +1096,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:calculation-state",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1097,7 +1114,7 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:calculation-result",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1112,7 +1129,7 @@
         "additionalProperties": false,
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -1161,7 +1178,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:calculation-progress",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1185,7 +1202,7 @@
             "format": "int32",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.15.0",
+              "catalogueVersion": "0.16.0",
               "concept": "urn:osdc:semantic:calculation-state",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1199,7 +1216,7 @@
         "additionalProperties": false,
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.15.0",
+          "catalogueVersion": "0.16.0",
           "concept": "urn:osdc:semantic:calculation-case",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",

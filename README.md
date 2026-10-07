@@ -86,4 +86,4 @@ The current work has been funded by the [Research Council of Norway](https://www
 
 ## Persisted calculation-case lifecycle
 
-`Simulation` is a persisted queued calculation case. SemanticCatalogue 0.15.0 metadata distinguishes its specification, progress, state and server-derived results. Light endpoints are status retrieval operations, while the paged-results endpoint is result-chunk retrieval; POST and PUT are queued submission and replacement operations.
+`Simulation` is a persisted queued calculation case. SemanticCatalogue 0.16.0 metadata distinguishes its specification, progress, state and server-derived results. Light endpoints are status retrieval operations, while the paged-results endpoint is result-chunk retrieval; POST and PUT are queued submission and replacement operations, and DELETE is calculation-case deletion.
