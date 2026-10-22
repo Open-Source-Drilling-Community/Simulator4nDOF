@@ -448,10 +448,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
         {
             if (wellBoreArchitecture?.CasingSections == null || casingID == null)
             {
-                return null;
+                throw new InvalidOperationException("A wellbore architecture with a selected casing section is required for the simulation.");
             }
             var casingSections = wellBoreArchitecture.CasingSections.ToList();
-            return casingSections[(int) casingID];
+            if (casingID < 0 || casingID >= casingSections.Count)
+            {
+                throw new InvalidOperationException($"Casing section index {casingID} is outside the {casingSections.Count} casing sections of the selected architecture.");
+            }
+            return casingSections[casingID.Value];
         }
 
         /// <summary>

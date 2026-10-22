@@ -490,6 +490,9 @@
             if (Simulation?.ContextualData != null)
             {
                 Simulation.ContextualData.WellBoreArchitectureID = selectedArchitcture?.MetaInfo?.ID;
+                // The dropdown shows the first section by default, but only writes CasingID when the value changes.
+                casingID = 0;
+                Simulation.ContextualData.CasingID = casingSections.Count > 0 ? 0 : null;
             }
         }
     }
