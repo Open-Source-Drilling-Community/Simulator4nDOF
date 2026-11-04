@@ -1,0 +1,258 @@
+@using NORCE.Drilling.Simulator4nDOF.WebApp
+@inject ILogger<SimulationNew> logger
+@inject ISnackbar Snackbar
+
+@if (Simulation != null)
+{
+    <MudPaper Elevation="1" Class="pa-0">
+        <!-- Header toolbar -->
+        <MudToolBar Dense="false" Class="pa-3" Style="gap:8px;">
+            <MudIcon Icon="@Icons.Material.Filled.Science" Color="Color.Primary" Class="mr-1" />
+            <MudText Typo="Typo.h6" Style="font-weight:500;">New Simulation</MudText>
+            <MudSpacer />
+            <MudButton OnClick="@CloseViewSimulationPanelOnClick"
+                       Variant="Variant.Outlined"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.ArrowBackIosNew"
+                       Size="Size.Medium">
+                Back
+            </MudButton>
+            @{ var missingInputs = GetMissingInputs(); }
+            <MudTooltip Text="@(missingInputs.Count > 0 ? "Missing: " + string.Join(", ", missingInputs) : "All required inputs are set")">
+                <MudButton OnClick="@AddSimulation"
+                           Disabled="@(missingInputs.Count > 0)"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Medium">
+                    <img src="images/BitIconContour.svg" style="height:20px;width:auto;margin-right:8px;filter:brightness(0) invert(1);vertical-align:middle;" />
+                    Run Simulation
+                </MudButton>
+            </MudTooltip>
+        </MudToolBar>
+        <MudDivider />
+
+        <MudStepper NonLinear="true" Color="Color.Primary" Class="pa-2">
+
+            <MudStep Title="General" Icon="@Icons.Material.Filled.Info">
+                <MudGrid Spacing="3" Class="mt-2">
+                    <MudItem xs="12" sm="4" md="3">
+                        <MudTextField @bind-Value=Simulation.Name Label="Name" Variant="Variant.Outlined"
+                                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Label" />
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="9">
+                        <MudTextField @bind-Value=Simulation.Description Label="Description" Variant="Variant.Outlined"
+                                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Notes" />
+                    </MudItem>
+                </MudGrid>
+            </MudStep>
+
+            <MudStep Title="Contextual Data" Icon="@Icons.Material.Filled.Dataset">
+                @if (Simulation?.ContextualData != null)
+                {
+                    <SimulationContextualData
+                        Simulation="@Simulation"
+                        Fields="@Fields"
+                        Clusters="@Clusters"
+                        Wells="@Wells"
+                        WellBores="@WellBores"
+                        DrillStrings="@DrillStrings"
+                        Rigs="@Rigs"
+                        Trajectories="@Trajectories"
+                        WellBoreArchitectures="@WellBoreArchitectures"
+                        FluidDescriptions="@FluidDescriptions"
+                        GeothermalProperties="@GeothermalProperties"
+                        OnContextualDataChanged="@StateHasChanged"/>
+                }
+            </MudStep>
+
+            <MudStep Title="Configuration" Icon="@Icons.Material.Filled.Settings">
+                @if (Simulation?.Config != null)
+                {
+                    <SimulationConfiguration Simulation="@Simulation" />
+                }
+            </MudStep>
+
+            <MudStep Title="Initial Values" Icon="@Icons.Material.Filled.DataObject">
+                @if (Simulation?.InitialValues != null)
+                {
+                    <SimulationInitialValues Simulation="@Simulation" />
+                }
+            </MudStep>
+
+            <MudStep Title="Set Points" Icon="@Icons.Material.Filled.Timeline">
+                @if (Simulation?.SetPointsList != null)
+                {
+                    <div class="d-flex align-center mb-3" style="gap:8px;">
+                        <MudSpacer />
+                        <MudButton OnClick="@AddSetPoint"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Size="Size.Small">
+                            Add row
+                        </MudButton>
+                    </div>
+                    <SetPointsEditor Simulation="@Simulation" OnSetPointsChanged="@StateHasChanged" />
+                }
+            </MudStep>
+
+        </MudStepper>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public Simulation? Simulation { get; set; } = null;
+
+    [Parameter]
+    public List<Field>? Fields { get; set; } = null;
+
+    [Parameter]
+    public List<Cluster>? Clusters { get; set; } = null;
+
+    [Parameter]
+    public List<Well>? Wells { get; set; } = null;
+
+    [Parameter]
+    public List<WellBore>? WellBores { get; set; } = null;
+    [Parameter]
+    public List<DrillStringLight>? DrillStrings { get; set; } = null;
+    [Parameter]
+    public List<RigReadResponse>? Rigs { get; set; } = null;
+    [Parameter]
+    public List<Trajectory>? Trajectories { get; set; } = null;
+    [Parameter]
+    public List<WellBoreArchitecture>? WellBoreArchitectures { get; set; } = null;
+    [Parameter]
+    public List<DrillingFluidDescription>? FluidDescriptions { get; set; } = null;
+    [Parameter]
+    public List<GeothermalProperties>? GeothermalProperties { get; set; } = null;
+
+    [Parameter]
+    public MainPanelLogic? MainPanelLogic { get; set; } = null;
+
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
+    [CascadingParameter]
+    public MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    private void UpdateUnitSystemName(string val)
+    {
+        DataUtils.UnitAndReferenceParameters.UnitSystemName = (string)val;
+    }
+
+    private async Task AddSimulation()
+    {
+        if (Simulation != null)
+        {
+            var missingInputs = GetMissingInputs();
+            if (missingInputs.Count > 0)
+            {
+                Snackbar.Add("Please select: " + string.Join(", ", missingInputs), Severity.Warning);
+                return;
+            }
+            try
+            {
+                MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameSimulator4nDOF, HttpHostBasePath = APIUtils.HostBasePathSimulator4nDOF, HttpEndPoint = "Simulations/" };
+                DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+                Simulation.MetaInfo = metaInfo;
+                Simulation.CreationDate = creationDate;
+                Simulation.LastModificationDate = creationDate;
+                await APIUtils.ClientSimulator4nDOF.PostSimulationAsync(this.Simulation);
+                logger.LogInformation("Simulation posted successfully");
+                Snackbar.Add("Simulation posted successfully", Severity.Success);
+                await OnInitializedAsync();
+                if (MainPanelLogic != null)
+                {
+                    MainPanelLogic.AutoUpdate = true;
+                    await OnRefresh.InvokeAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Impossible to add a new Simulation");
+                Snackbar.Add("Impossible to add a new Simulation", Severity.Warning);
+            }
+        }
+    }
+
+    private async Task CloseViewSimulationPanelOnClick()
+    {
+        if (MainPanelLogic != null)
+        {
+            Simulation = null;
+            MainPanelLogic.PanelState = PanelState.MainVisible;
+            MainPanelLogic.AutoUpdate = true;
+            await OnRefresh.InvokeAsync(null);
+        }
+    }
+
+    private void AddSetPoint()
+    {
+        if (Simulation != null && Simulation.SetPointsList != null)
+        {
+            Simulation.SetPointsList.Add(new SetPoints() { TimeDuration = 1, SurfaceRPM = 0, TopOfStringVelocity = 0 });
+        }
+    }
+
+    /// <summary>
+    /// Lists the inputs that the service needs before it can run the simulation
+    /// </summary>
+    private List<string> GetMissingInputs()
+    {
+        var missing = new List<string>();
+        var contextualData = Simulation?.ContextualData;
+        if (contextualData == null)
+        {
+            missing.Add("Contextual data");
+            return missing;
+        }
+        if (IsEmpty(contextualData.DrillStringID))
+            missing.Add("Drill string");
+        if (IsEmpty(contextualData.TrajectoryID))
+            missing.Add("Trajectory");
+        if (IsEmpty(contextualData.DrillingFluidDescriptionID))
+            missing.Add("Fluid");
+        if (IsEmpty(contextualData.WellBoreArchitectureID))
+            missing.Add("Wellbore architecture");
+        else if (contextualData.CasingID == null)
+            missing.Add("Casing section");
+        // Without a rig, the service finds it from the wellbore
+        if (IsEmpty(contextualData.RigID))
+        {
+            if (IsEmpty(Simulation!.WellBoreID))
+                missing.Add("Wellbore");
+            else if (RequiresRigSelection())
+                missing.Add("Rig");
+        }
+        if (Simulation!.SetPointsList == null || Simulation.SetPointsList.Count == 0)
+            missing.Add("Set points");
+        return missing;
+    }
+
+    private static bool IsEmpty(Guid? id) => id == null || id == Guid.Empty;
+
+    private bool RequiresRigSelection()
+    {
+        if (Simulation?.WellBoreID == null || Simulation.WellBoreID == Guid.Empty || WellBores == null || Wells == null || Clusters == null)
+        {
+            return false;
+        }
+
+        var wellBore = WellBores.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.WellBoreID);
+        if (wellBore?.WellID == null || wellBore.WellID == Guid.Empty)
+        {
+            return false;
+        }
+
+        var well = Wells.FirstOrDefault(x => x.MetaInfo?.ID == wellBore.WellID);
+        if (well?.ClusterID == null || well.ClusterID == Guid.Empty)
+        {
+            return false;
+        }
+
+        var cluster = Clusters.FirstOrDefault(x => x.MetaInfo?.ID == well.ClusterID);
+        return cluster != null && !cluster.IsFixedPlatform;
+    }
+}

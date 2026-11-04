@@ -11,64 +11,41 @@
 
     @if (activeTab == 0 || activeTab == 2)
     {
-        <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
-            <div class="d-flex align-center gap-4 flex-wrap">
-                <MudGrid Class="d-flex align-center gap-4 flex-wrap">
-                    <!-- Start Index -->
-                    <MudItem xs = "3">
-                        <MudText Typo="Typo.body1">Start time:</MudText>                           
-                        <MudNumericField 
-                            T="double"
-                            Value="@timeStart"
-                            ValueChanged="UpdateStartTimeIndex" 
-                            HideSpinButtons="true"
-                            />  
-                    </MudItem>
-                    <MudItem xs = "3">
-                        <MudText Typo="Typo.body1">Start: @timeStart.ToString("F2") s</MudText>                    
-                        <MudSlider T="double"
-                               Value="@startIndex"
-                               ValueChanged="OnStartIndexChanged"
-                               Min="0"
-                               Max="@maxIndex"
-                               Step="1"
-                               Immediate="true"
-                               Color="Color.Primary"
-                               />      
-                    </MudItem>                                                 
-                </MudGrid>
-                <!-- End Index -->
-                <MudGrid Class="d-flex align-center gap-4 flex-wrap">
-                        <MudItem xs = "3">
-                            <MudText Typo="Typo.body1">End time:</MudText>
-                            <MudNumericField
-                                T="double" 
-                                Value="@timeEnd"
-                                ValueChanged="UpdateFinalTimeIndex" 
-                                HideSpinButtons="true"/>  
-                        </MudItem>
-                        <MudItem xs = "3">
-                            <MudText Typo="Typo.body1">End: @timeEnd.ToString("F2") s</MudText>                            
-                             <MudSlider T="double"
-                                   Value="@endIndex"
-                                   ValueChanged="OnEndIndexChanged"
-                                   Min="@startIndex"
-                                   Max="@maxIndex"
-                                   Step="1"
-                                   Immediate="true"
-                                   Color="Color.Secondary"/>
-                        </MudItem>
-                </MudGrid>
-            </div>
+        <MudPaper Elevation="1" Class="pa-3 mb-2">
+            <MudGrid AlignItems="AlignItems.Center" Spacing="2">
+                <MudItem xs="6" sm="3" md="1">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Start (s)</MudText>
+                    <MudNumericField T="double" Value="@timeStart" ValueChanged="UpdateStartTimeIndex"
+                                     HideSpinButtons="true" Variant="Variant.Outlined" Margin="MudBlazor.Margin.Dense" />
+                </MudItem>
+                <MudItem xs="6" sm="9" md="5">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@timeStart.ToString("F2") s</MudText>
+                    <MudSlider T="double" Value="@startIndex" ValueChanged="OnStartIndexChanged"
+                               Min="0" Max="@maxIndex" Step="1" Immediate="true" Color="Color.Primary" />
+                </MudItem>
+                <MudItem xs="6" sm="3" md="1">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">End (s)</MudText>
+                    <MudNumericField T="double" Value="@timeEnd" ValueChanged="UpdateFinalTimeIndex"
+                                     HideSpinButtons="true" Variant="Variant.Outlined" Margin="MudBlazor.Margin.Dense" />
+                </MudItem>
+                <MudItem xs="6" sm="9" md="5">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@timeEnd.ToString("F2") s</MudText>
+                    <MudSlider T="double" Value="@endIndex" ValueChanged="OnEndIndexChanged"
+                               Min="@startIndex" Max="@maxIndex" Step="1" Immediate="true" Color="Color.Secondary" />
+                </MudItem>
+            </MudGrid>
         </MudPaper>
     }
 
 
     @if (activeTab == 1)
     {
-        <MudPaper Elevation="2" Class="pa-2 mb-2" Outlined="true">
-            <MudGrid Class="pa-0 ma-0" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                <MudItem xs="8" sm="2" md="2" lg="2" xl="2">
+        <MudPaper Elevation="1" Class="pa-3 mb-2">
+            <MudGrid AlignItems="AlignItems.Center" Spacing="2">
+                <MudItem xs="8" sm="4" md="3">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Time: @selectedProfileTime.ToString("F2") s
+                    </MudText>
                     <MudSlider T="double"
                                Value="@selectedProfileIndex"
                                ValueChanged="OnProfileIndexChanged"
@@ -78,13 +55,10 @@
                                Immediate="true"
                                Color="Color.Primary" />
                 </MudItem>
-
-                <MudItem xs="4" sm="2" md="2" lg="1" xl="1">
-                    <MudText Typo="Typo.subtitle2" Class="ml-2">
-                        Time (s): @selectedProfileTime.ToString("F2")
+                <MudItem xs="8" sm="4" md="3">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Start depth (@depthUnit): @selectedStartDepthString
                     </MudText>
-                </MudItem>
-                <MudItem xs="8" sm="2" md="2" lg="2" xl="2">
                     <MudSlider T="double"
                                Value="@selectedStartDepthInUserUnit"
                                ValueChanged="OnProfileStartDepthChanged"
@@ -94,12 +68,10 @@
                                Immediate="true"
                                Color="Color.Primary" />
                 </MudItem>
-                <MudItem xs="4" sm="2" md="2" lg="1" xl="1">
-                    <MudText Typo="Typo.subtitle2" Class="ml-2">
-                        Start Depth ( @depthUnit ): @selectedStartDepthString
+                <MudItem xs="8" sm="4" md="3">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        End depth (@depthUnit): @selectedEndDepthString
                     </MudText>
-                </MudItem>
-                <MudItem xs="8" sm="2" md="2" lg="2" xl="2">
                     <MudSlider T="double"
                                Value="@selectedEndDepthInUserUnit"
                                ValueChanged="OnProfileEndDepthChanged"
@@ -108,11 +80,6 @@
                                Step="@depthStepInUserUnit"
                                Immediate="true"
                                Color="Color.Primary" />
-                </MudItem>
-                <MudItem xs="4" sm="2" md="2" lg="1" xl="1">
-                    <MudText Typo="Typo.subtitle2" Class="ml-2">
-                        End Depth ( @depthUnit ): @selectedEndDepthString
-                    </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="12" md="12" lg="3" xl="3">
                     <MudStack Row AlignItems="_align" Spacing="1">
@@ -185,34 +152,34 @@
         <div id="gridToSnap">
             <MudTabPanel Text="Along String Depth graphs ">
                 <MudGrid Class="pa-0 ma-0" Style="flex-wrap: nowrap; overflow-x: auto;" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_angularVelocityLayout" @bind-Data="_angularVelocityTraces" @ref="_angularVelocityChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_axialVelocityLayout" @bind-Data="_axialVelocityTraces" @ref="_axialVelocityChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispLayout" @bind-Data="_lateralDispTraces" @ref="_lateralDispChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_lateralDispALayout" @bind-Data="_lateralDispATraces" @ref="_lateralDispAChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_bendingMomentLayout" @bind-Data="_bendingMomentTraces" @ref="_bendingMomentChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_sideForceLayout" @bind-Data="_sideForceTraces" @ref="_sideForceChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_torqueDLayout" @bind-Data="_torqueDTraces" @ref="_torqueDChart" />
                     </MudItem>
-@*                     <MudItem Style="flex: 0 0 10%;">
+@*                     <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_tensionLayout" @bind-Data="_tensionTraces" @ref="_tensionChart" />
                     </MudItem>
- *@                    <MudItem Style="flex: 0 0 10%;">
+ *@                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreAnglesLayout" @bind-Data="_wellBoreAnglesTraces" @ref="_wellBoreAnglesChart" />
                     </MudItem>
-                    <MudItem Style="flex: 0 0 10%;">
+                    <MudItem Style="flex: 0 0 220px; min-width: 220px;">
                         <PlotlyChart style="height: 50vh; min-height: 200px; width: 100%" @bind-Config="_config" @bind-Layout="_wellBoreCurvaturesLayout" @bind-Data="_wellBoreCurvaturesTraces" @ref="_wellBoreCurvaturesChart" />
                     </MudItem>
                 </MudGrid>
@@ -221,28 +188,28 @@
         <MudTabPanel Text="Sensor measurements">
             <MudGrid>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityALayout" @bind-Data="_sensorVelocityATraces" @ref="_sensorVelocityAChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityALayout" @bind-Data="_sensorVelocityATraces" @ref="_sensorVelocityAChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityLayout" @bind-Data="_sensorVelocityTraces" @ref="_sensorVelocityChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorVelocityLayout" @bind-Data="_sensorVelocityTraces" @ref="_sensorVelocityChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorRadialAccLayout" @bind-Data="_sensorRadialAccTraces" @ref="_sensorRadialAccChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorRadialAccLayout" @bind-Data="_sensorRadialAccTraces" @ref="_sensorRadialAccChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorTangentialAccLayout" @bind-Data="_sensorTangentialAccTraces" @ref="_sensorTangentialAccChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTangentialAccLayout" @bind-Data="_sensorTangentialAccTraces" @ref="_sensorTangentialAccChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorAxialAccLayout" @bind-Data="_sensorAxialAccTraces" @ref="_sensorAxialAccChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorAxialAccLayout" @bind-Data="_sensorAxialAccTraces" @ref="_sensorAxialAccChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorBendingMomentLayout" @bind-Data="_sensorBendingMomentTraces" @ref="_sensorBendingMomentChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorBendingMomentLayout" @bind-Data="_sensorBendingMomentTraces" @ref="_sensorBendingMomentChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorTensionLayout" @bind-Data="_sensorTensionTraces" @ref="_sensorTensionChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTensionLayout" @bind-Data="_sensorTensionTraces" @ref="_sensorTensionChart" />
                 </MudItem>
                 <MudItem xs="6">
-                    <PlotlyChart style="height: 20vh;" @bind-Config="_config" @bind-Layout="_sensorTorqueLayout" @bind-Data="_sensorTorqueTraces" @ref="_sensorTorqueChart" />
+                    <PlotlyChart style="height: 25vh;" @bind-Config="_config" @bind-Layout="_sensorTorqueLayout" @bind-Data="_sensorTorqueTraces" @ref="_sensorTorqueChart" />
                 </MudItem>
             </MudGrid>
         </MudTabPanel>
@@ -275,19 +242,8 @@
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
 
-    public MudTheme MyCustomTheme = new MudTheme
-    {
-        PaletteLight = new PaletteLight
-        //Palette = new Palette()
-        {
-            Primary = new MudBlazor.Utilities.MudColor("#2E888D"), // DigiWells green-blue
-            Secondary = new MudBlazor.Utilities.MudColor("#222742"), // DigiWells dark-blue
-            AppbarBackground = "#DAD7E0",
-            Background = "#DAD7E0",
-        },
-    };
-
     private object _lock = new object();
+    private CancellationTokenSource _runCts = new();
     private AlignItems _align = AlignItems.Center;
     private bool IsRunning { get; set; }
     private bool IsPaused { get; set; }
@@ -553,8 +509,6 @@
     Annotation CreateAnnotation(double y, object x, string text, int ax, int ay) =>
     new Annotation { Y = y, X = x, Text = text, Ax = ax, Ay = ay };
 
-    private MudTheme Theme = new MudTheme();
-
     private Plotly.Blazor.Config _config;
 
     IList<ITrace> _rpmTraces = new List<ITrace>();
@@ -726,7 +680,9 @@
                 endIndex = maxIndex;
             }
             CreateLayouts();
-            _ = Run();
+            _runCts.Cancel();
+            _runCts = new CancellationTokenSource();
+            _ = Run(_runCts.Token);
             await AfterSetValueAsync();
         }
     }
@@ -1375,7 +1331,7 @@
     {
         if (firstRender)
         {
-            _ = Run();
+            _ = Run(_runCts.Token);
         }
         return base.OnAfterRenderAsync(firstRender);
     }
@@ -1387,10 +1343,12 @@
         await Task.Yield();
     }
 
-    private Task Run()
+    private Task Run(CancellationToken ct = default)
     {
         return Task.Run(async () =>
         {
+            if (ct.IsCancellationRequested) return;
+
             if (Results?.Scalars?.Time?.Count > 0)
             {
                 try
@@ -1535,6 +1493,7 @@
                                 -40, -30)
                         };
 
+                        if (ct.IsCancellationRequested) return;
                         if (_rpmChart != null)
                             await InvokeAsync(async () => await _rpmChart.React());
                         if (_depthChart != null)
@@ -1670,17 +1629,17 @@
                         var depthssleeves = new List<object>();
                         var SleevesAngularVelocity = new List<object>();
 
-
                         for (int i = 0; i < profile.SleevesDepth.Count; i++)
                         {
                             double depth = profile.SleevesDepth.ElementAt(i);
                             if (depth >= selectedStartDepth && depth <= selectedEndDepth)
                             {
-
                                 depthssleeves.Add(Parent.FromSI(depth, DrillingPhysicalQuantity.QuantityEnum.DepthDrilling));
                                 SleevesAngularVelocity.Add(Parent.FromSI(profile.SleevesAngularVelocity.ElementAt(i), DrillingPhysicalQuantity.QuantityEnum.AngularVelocityDrilling));
                             }
                         }
+                        ((Plotly.Blazor.Traces.Scatter)_sleevesAngularVelocityTrace).X = SleevesAngularVelocity;
+                        ((Plotly.Blazor.Traces.Scatter)_sleevesAngularVelocityTrace).Y = depthssleeves;
 
                         var RadialClearanceL = new List<object>();
                         var RadialClearanceR = new List<object>();
@@ -2155,6 +2114,7 @@
                                 _wellBoreCurvaturesLayout.Annotations.Add(CreateAnnotation(dsensor, dsf, "Sensor: " + ssensor, -40, -30));
                             }
                         }
+                        if (ct.IsCancellationRequested) return;
                         if (_sideForceChart != null)
                             await InvokeAsync(async () => await _sideForceChart.React());
                         if (_angularVelocityChart != null)
@@ -2319,6 +2279,7 @@
                             CreateAnnotation(latestTorque, time, "Trq: " + latestTorqueString, -40, -20),
                         };
 
+                        if (ct.IsCancellationRequested) return;
                         if (_sensorVelocityAChart != null)
                             await InvokeAsync(async () => await _sensorVelocityAChart.React());
                         if (_sensorAxialAccChart != null)
@@ -2338,14 +2299,16 @@
                     }
 
                 }
+                catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
                 }
 
-                InvokeAsync(() => StateHasChanged());
+                if (!ct.IsCancellationRequested)
+                    InvokeAsync(() => StateHasChanged());
             }
-        });
+        }, ct);
     }
 
 }

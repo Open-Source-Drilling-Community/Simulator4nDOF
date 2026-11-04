@@ -17,10 +17,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
         private Vector<double> boreholeRadius;                   // [m] Wellbore radius calculation
 
         public SimulatorWellbore(
-                in SimulatorDrillString drillString,
-                in LumpedCells lumpedCells,
-                in CasingSection casingSection
-            )
+            in SimulatorDrillString drillString,
+            in CasingSection casingSection,
+            OpenHoleSection? openHoleSection = null)
         {
             
             List<SimulatorBoreHole> boreHoleSizes = new();
@@ -37,9 +36,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 );
                 depth += boreHoleSize.Length.GaussianValue.Mean ?? 0.0;
             }
-            if (casingSection.OpenHoleSection != null)
+            if (openHoleSection?.HoleSizes != null)
             {
-                foreach (BoreHoleSize boreHoleSize in casingSection.OpenHoleSection.HoleSizes)
+                foreach (BoreHoleSize boreHoleSize in openHoleSection.HoleSizes)
                 {
                     boreHoleSizes.Add(
                         new SimulatorBoreHole
@@ -52,35 +51,35 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel.ParametersModel
                 } 
             }
             BoreHoleSizes = boreHoleSizes;
-            DrillStringClearance = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
+            DrillStringClearance = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
 
-            UpdateWellbore(drillString, lumpedCells);
+            UpdateWellbore(drillString);
         }
         
-        public void UpdateWellbore(in SimulatorDrillString drillString, in LumpedCells lumpedElement)
+        public void UpdateWellbore(in SimulatorDrillString drillString)
         {
-            // Wellbore radius calculation
-            boreholeRadius = Vector<double>.Build.Dense(drillString.OuterRadius.Count);
+            // Wellbore radius calculation at each node
+            boreholeRadius = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
+            if (DrillStringClearance == null || DrillStringClearance.Count != drillString.RelativeNodeDepth.Count)
+                DrillStringClearance = Vector<double>.Build.Dense(drillString.RelativeNodeDepth.Count);
             int index = 0;
             double localRadius;
-            for (int i = 1; i < lumpedElement.ElementLength.Count(); i++)
+            for (int i = 0; i < drillString.RelativeNodeDepth.Count; i++)
             {
 
-                // If the element depth is greater than the borehole, go to the next one
+                // If the node depth is greater than the borehole, go to the next one
                 if (index < BoreHoleSizes.Count)
-                    index += (lumpedElement.ElementLength[i] > BoreHoleSizes[index].Depth) ? 1 : 0; 
+                    index += (drillString.RelativeNodeDepth[i] > (BoreHoleSizes[index].Depth + BoreHoleSizes[index].Length)) ? 1 : 0; 
                 // Switch between borehole radius and bit radius
                 localRadius = index < BoreHoleSizes.Count ? 0.5 * BoreHoleSizes[index].Diameter : drillString.BitRadius;
                 //Update radius list
-                boreholeRadius[i - 1] = localRadius;            
+                boreholeRadius[i] = localRadius;            
             }
-
-            DrillStringClearance = boreholeRadius - drillString.OuterRadius;
-            foreach (int i in drillString.SleeveIndexPosition)
+            for (int i = 0; i < drillString.RelativeNodeDepth.Count; i++)
             {
-                DrillStringClearance[i] = boreholeRadius[i] - drillString.SleeveOuterRadius;
-            }
+                double outerRadius = drillString.SleeveIndexPosition.Contains(i) ? drillString.SleeveOuterRadius : drillString.NodeOuterRadius[i];
+                DrillStringClearance[i] = boreholeRadius[i] - outerRadius;                
+            }        
         }
     }
 }
- 

@@ -24,16 +24,21 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public double BitRockFrictionCoeff = 0.9;           // [-] Bit - rock friction coefficient(used in both Detournay and MSE model), br.mu
         public double PdcBladeNo = 5;                       // [-] Number of blades of the PDC bit(Detournay model), br.N
 
-        public double LengthBetweenLumpedElements = 5;      // [m] Length between two lumped elements, lc.dxL. 5 originally, may becompe unstable if increased to 30
-        public double DrillPipeLumpedElementLength = 1.3;   // [m] Drill pipe lumped element length, lc.l_dp
+        public double ElementLength = 5;      // [m] Length between two lumped elements, lc.dxL. 5 originally, may becompe unstable if increased to 30
+        public int LateralElementsPerAxialElement = 5; // [-] Number of lateral elements per axial-torsional element (1 - same discretization for all DoF)
+        public double MinimumAxialElementLength = 10; // [m] Shorter axial-torsional elements are merged with their neighbours (0 - no merging)
 
         public required double SensorDistanceFromBit = 63;  // [m] axial distance(relative to bit depth) of an IMU measuring downhole RPM and accelerations
         public required Vector<double> SleeveDistancesFromBit; // [m] Sleeve distances from bit
         public double SleeveDamping = 2.0e2;                // [N.s/rad] Sleeve torsional damping coefficient, ds.k_ec
 
-        public double TorsionalDamping = 1.0;               //[N.m.s/rad] Torsional damping, ds.kt_factor
-        public double AxialDamping = 1.0;                   //[N.s/m] Axial damping, ds.ka_factor
-        public double LateralDamping = 0.0;                 //[N.s/m] Lateral damping, ds.kl_factor
+        // Rayleigh damping C = a·M + b·K, with a the mass-proportional and b the stiffness-proportional coefficient
+        public double MassProportionalTorsional = 0.35;         // [1/s] Torsional mass-proportional damping coefficient
+        public double StiffnessProportionalTorsional = 0.006;   // [s] Torsional stiffness-proportional damping coefficient
+        public double MassProportionalAxial = 0.35;             // [1/s] Axial mass-proportional damping coefficient
+        public double StiffnessProportionalAxial = 0.006;       // [s] Axial stiffness-proportional damping coefficient
+        public double MassProportionalLateral = 0.0;            // [1/s] Lateral mass-proportional damping coefficient
+        public double StiffnessProportionalLateral = 0.0;       // [s] Lateral stiffness-proportional damping coefficient
 
         public double TopDriveMomentOfInertia = 2900;       // [kg.m^2] Top drive mass moment of inertia
         public double FluidDamping = 3000.0;                // [N.s/m] Fluid damping coefficient for lateral dynamics
@@ -68,10 +73,12 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.DataModel
         public required double TopOfStringPosition;
         public required double SurfaceRPM;
         public required double TopOfStringVelocity;
-        public required ModelShared.Trajectory Trajectory;
+        public ModelShared.Trajectory? Trajectory;
+        public ModelShared.SurveyRun? SurveyRun;
         public required ModelShared.DrillString DrillString;
         public required ModelShared.DrillingFluidDescription DrillingFluidDescription;        
         public ModelShared.CasingSection CasingSection;
+        public ModelShared.OpenHoleSection? OpenHoleSection;
         public ModelShared.GeothermalProperties? GeothermalProperties;
         public required double BitRadius;
         public BitRockModelEnum BitRockModelEnum { get; set; } = BitRockModelEnum.Detournay;

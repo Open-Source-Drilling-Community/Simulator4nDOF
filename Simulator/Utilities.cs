@@ -45,6 +45,19 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             return Vector<double>.Build.DenseOfArray(new double[] { scalar }.Concat(array).ToArray());
         }
 
+        /// <summary>
+        /// Prepends <paramref name="count"/> copies of <paramref name="scalar"/> to <paramref name="array"/>.
+        /// </summary>
+        public static Vector<double> ExtendVectorStart(double scalar, Vector<double> array, int count)
+        {
+            double[] extended = new double[array.Count + count];
+            for (int i = 0; i < count; i++)
+                extended[i] = scalar;
+            for (int i = 0; i < array.Count; i++)
+                extended[count + i] = array[i];
+            return Vector<double>.Build.DenseOfArray(extended);
+        }
+
         public static double[] MaxArray(double[] array, double minValue)
         {
             return array.Select(x => Math.Max(x, minValue)).ToArray();
@@ -180,7 +193,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             var yInterpolated = xTarget.Map(xNew => interpolator.Interpolate(xNew));
             return yInterpolated;
         }
-
+        
 
         // Manual fast linear interpolation
         public static double LinearInterpolate2(double[] x, double[] y, double xTarget)
@@ -214,6 +227,24 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         {
             return ToVector(ComputeDerivative(values.ToArray(),dx));
         }
+        public static Vector<double> ComputeDerivative(Vector<double> values, List<double> dx)
+        {
+            // Adapted to non-uniform grids
+            int n = values.Count;
+            Vector<double> derivative = Vector<double>.Build.Dense(n);
+            double step1;
+            double step2;
+            for (int i = 1; i < n - 1; i++)
+            {
+                step1 = dx[i - 1];
+                step2 = dx[i];
+                derivative[i] = (values[i + 1] - values[i - 1]) / (step1 + step2);
+            }
+            // Use first order approximation at the boundaries
+            derivative[0] = (values[1] - values[0]) / dx[0];
+            derivative[n - 1] = (values[n - 1] - values[n - 2]) / dx[n - 2];
+            return derivative;
+        }
 
         public static double[] ComputeDerivative(double[] values, double dx)
         {
@@ -225,10 +256,39 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             derivative[n - 1] = (values[n - 1] - values[n - 2]) / dx;
             return derivative;
         }
+       
+
 
         public static Vector<double> ComputeSecondDerivative(Vector<double> values, double dx)
         {
             return ToVector(ComputeSecondDerivative(values.ToArray(), dx));
+        }
+        public static Vector<double> ComputeSecondDerivative(Vector<double> values, List<double> dx)
+        {
+            // Adapted to non-uniform grids            
+            int n = values.Count;
+            Vector<double> secondDerivative = Vector<double>.Build.Dense(n);
+            double step1;
+            double step2;
+            double weight;
+            for (int i = 1; i < n - 1; i++)
+            {   
+                step1 = dx[i - 1];
+                step2 = dx[i];
+                weight = step1 + step2;
+                secondDerivative[i] = (step2 * values[i + 1] - weight * values[i] + step1 * values[i - 1]) / (step2 * step1 * weight);                
+            }
+            //Use the second order forward
+            step1 = dx[0];
+            step2 = dx[1];
+            weight = step1 + step2;                
+            secondDerivative[0] = (step2 * values[2]  - weight * values[1] + step1 * values[0]) / (step2 * step1 * weight);
+            //Use the second order backward
+            step1 = dx[n - 3];
+            step2 = dx[n - 2];
+            weight = step1 + step2;        
+            secondDerivative[n - 1] = (step2 * values[n - 1] - weight * values[n - 2] + step1 * values[n - 3]) / (step2 * step1 * weight);          
+            return secondDerivative;        
         }
 
         public static double[] ComputeSecondDerivative(double[] values, double dx)

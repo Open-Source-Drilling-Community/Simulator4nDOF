@@ -5,76 +5,184 @@ using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
+    /// <summary>
+    /// This is a 4th-5th order Runge-Kutta-Fehlberg solver. The core algorithm computes the 5th order RKF and 
+    /// compares with the error that would be achieved by using the 4th order at the same steps. The 
+    /// step is corrected accordingly
+    /// </summary>
     public class RKF45
     {
     // Rk5 //
-    private double c51 = 16.0 / 135.0;
-    private double c52 = 6656.0 / 12825.0;
-    private double c53 = 28561.0 / 56430.0;
-    private double c54 = -9.0 / 50.0;
-    private double c55 = 2.0 / 55.0;
-    // Rk4 //
-    //private double c41 = 25.0 / 216.0;
-    //private double c42 = 1408.0 / 2656.0;
-    //private double c43 = 2197.0 / 4104.0;
-    //private double c44 = -1.0 / 5.0;
+    /// <summary>
+    /// Runge-Kutta 5th order constant number 1 
+    /// </summary>
+    private double rfkConstant51 = 16.0 / 135.0;
+    /// <summary>
+    /// Runge-Kutta 5th order constant number 2 
+    /// </summary>
+    private double rfkConstant52 = 6656.0 / 12825.0;
+    /// <summary>
+    /// Runge-Kutta 5th order constant number 3 
+    /// </summary>
+    private double rfkConstant53 = 28561.0 / 56430.0;
+    /// <summary>
+    /// Runge-Kutta 5th order constant number 4 
+    /// </summary>
+    private double rfkConstant54 = -9.0 / 50.0;
+    /// <summary>
+    /// Runge-Kutta 5th order constant number 5 
+    /// </summary>
+    private double rfkConstant55 = 2.0 / 55.0;
     // Error constants //
-    private double ce1 = 1.0 / 360.0;
-    private double ce3 = -128.0 / 4275.0;
-    private double ce4 = -2197.0 / 75240.0;
-    private double ce5 = 1.0 / 50.0;
-    private double ce6 = 2.0 / 55.0;
+    /// <summary>
+    /// Runge-Kutta 5th minus Runge-Kutta 4th order constant number 1 
+    /// </summary>
+    private double errorConstant1 = 1.0 / 360.0;
+    /// <summary>
+    /// Runge-Kutta 5th minus Runge-Kutta 4th order constant number 3 
+    /// </summary>
+    private double errorConstant3 = -128.0 / 4275.0;
+    /// <summary>
+    /// Runge-Kutta 5th minus Runge-Kutta 4th order constant number 4 
+    /// </summary>
+    private double errorConstant4 = -2197.0 / 75240.0;
+    /// <summary>
+    /// Runge-Kutta 5th minus Runge-Kutta 4th order constant number 5 
+    /// </summary>
+    private double errorConstant5 = 1.0 / 50.0;
+    /// <summary>
+    /// Runge-Kutta 5th minus Runge-Kutta 4th order constant number 6 
+    /// </summary>
+    private double errorConstant6 = 2.0 / 55.0;
 
     //  Ks //
     // K2 //
-    private double ck21 = 1.0 / 4.0;
-    private double ck22 = 1.0 / 4.0;
+    /// <summary>
+    /// Slope at the component 2, term 1 
+    /// </summary>
+    private double slope21 = 1.0 / 4.0;
+    /// <summary>
+    /// Slope at the component 2, term 2
+    /// </summary>
+    private double slope22 = 1.0 / 4.0;
 
     // K3 //
-    private double ck31 = 3.0 / 8.0;
-    private double ck32 = 3.0 / 32.0;
-    private double ck33 = 9.0 / 32.0;
+    /// <summary>
+    /// Slope at the component 3, term 1
+    /// </summary>
+    private double slope31 = 3.0 / 8.0;
+    /// <summary>
+    /// Slope at the component 3, term 2
+    /// </summary>
+    private double slope32 = 3.0 / 32.0;
+    /// <summary>
+    /// Slope at the component 3, term 3
+    /// </summary>
+    private double slope33 = 9.0 / 32.0;
     // K4 //
-    private double ck41 = 12.0 / 13.0;
-    private double ck42 = 1932.0 / 2197.0;
-    private double ck43 = -7200.0 / 2197.0;
-    private double ck44 = 7296.0 / 2197.0;
+    /// <summary>
+    /// Slope at the component 4, term 1
+    /// </summary>
+    private double slope41 = 12.0 / 13.0;
+    /// <summary>
+    /// Slope at the component 4, term 2
+    /// </summary>
+    private double slope42 = 1932.0 / 2197.0;
+    /// <summary>
+    /// Slope at the component 4, term 3
+    /// </summary>
+    private double slope43 = -7200.0 / 2197.0;
+    /// <summary>
+    /// Slope at the component 4, term 4
+    /// </summary>
+    private double slope44 = 7296.0 / 2197.0;
     // K5 //
-    private double ck51 = 1.0;
-    private double ck52 = 439.0 / 216.0;
-    private double ck53 = -8.0;
-    private double ck54 = 3680.0 / 513.0;
-    private double ck55 = -845.0 / 4104.0;
+    /// <summary>
+    /// Slope at the component 5, term 1
+    /// </summary>
+    private double slope51 = 1.0;
+    /// <summary>
+    /// Slope at the component 5, term 2
+    /// </summary>
+    private double slope52 = 439.0 / 216.0;
+    /// <summary>
+    /// Slope at the component 5, term 3
+    /// </summary>
+    private double slope53 = -8.0;
+    /// <summary>
+    /// Slope at the component 5, term 4
+    /// </summary>
+    private double slope54 = 3680.0 / 513.0;
+    /// <summary>
+    /// Slope at the component 5, term 5
+    /// </summary>
+    private double slope55 = -845.0 / 4104.0;
     // K6 //
-    private double ck61 = 1.0 / 2.0;
-    private double ck62 = -8.0 / 27.0;
-    private double ck63 = 2.0;
-    private double ck64 = -3544.0 / 2565.0;
-    private double ck65 = 1859.0 / 4104.0;
-    private double ck66 = -11.0 / 40.0;
+    /// <summary>
+    /// Slope at the component 6, term 1
+    /// </summary>
+    private double slope61 = 1.0 / 2.0;
+    /// <summary>
+    /// Slope at the component 6, term 2
+    /// </summary>
+    private double slope62 = -8.0 / 27.0;
+    /// <summary>
+    /// Slope at the component 6, term 3
+    /// </summary>
+    private double slope63 = 2.0;
+    /// <summary>
+    /// Slope at the component 6, term 4
+    /// </summary>
+    private double slope64 = -3544.0 / 2565.0;
+    /// <summary>
+    /// Slope at the component 6, term 5
+    /// </summary>
+    private double slope65 = 1859.0 / 4104.0;
+    /// <summary>
+    /// Slope at the component 6, term 6
+    /// </summary>
+    private double slope66 = -11.0 / 40.0;
     // Smaller time-step
     //private double δx;
     private double δxAux = 0.0;
     private double ΔxRef {get; set;}
     
-    private double tolerance;
-    private double auxiliarTolerance;
+    private double toleranceErrorConstant;
+    private double auxiliarToleranceErrorConstant;
     private int currentIteration = 0;
     private int maxIteration;
     //Solver variables
+    /// <summary>
+    /// Integration Estimation #1
+    /// </summary>
     private Vector<double> K1;
+    /// <summary>
+    /// Integration Estimation #2
+    /// </summary>
     private Vector<double> K2;
+    /// <summary>
+    /// Integration Estimation #3
+    /// </summary>
     private Vector<double> K3;
+    /// <summary>
+    /// Integration Estimation #4
+    /// </summary>
     private Vector<double> K4;
+    /// <summary>
+    /// Integration Estimation #5
+    /// </summary>
     private Vector<double> K5;
+    /// <summary>
+    /// Integration Estimation #6
+    /// </summary>
     private Vector<double> K6;
     
-    public RKF45(double ΔxRef = 1e-3, double tolerance = 1E-3, int size = 3, int itMax = 10000)
+    public RKF45(double ΔxRef = 1e-3, double toleranerrorConstant = 1E-3, int size = 3, int itMax = 10000)
     {
-        this.δxAux = ΔxRef;
+        δxAux = ΔxRef;
         this.ΔxRef = ΔxRef;
-        this.tolerance = tolerance;
-        auxiliarTolerance = tolerance;
+        toleranceErrorConstant = toleranerrorConstant;
+        auxiliarToleranceErrorConstant = toleranerrorConstant;
         K1 = Vector<double>.Build.Dense(size);
         K2 = Vector<double>.Build.Dense(size);
         K3 = Vector<double>.Build.Dense(size);
@@ -92,21 +200,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
         while (δxAux < Δx && currentIteration < maxIteration)
         {
             double localStep = currentStep + δxAux;
+            // Estimate the states at the respective Runge-Kutta steps
             K1 = δx * ordinaryDifferentialEquation1stOrder(localStep, stateStep);
-            K2 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck21 * δx, stateStep + ck22 * K1);
-            K3 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck31 * δx, stateStep + ck32 * K1 + ck33 * K2);
-            K4 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck41 * δx, stateStep + ck42 * K1 + ck43 * K2 + ck44 * K3);
-            K5 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck51 * δx, stateStep + ck52 * K1 + ck53 * K2 + ck54 * K3 + ck55 * K4);
-            K6 = δx * ordinaryDifferentialEquation1stOrder(localStep + ck61 * δx, stateStep + ck62 * K1 + ck63 * K2 + ck64 * K3 + ck65 * K4 + ck66 * K5);
-            //Get the norm of the difference betwewn Runge-Kutta 4 and 5.
-            double error = (ce1 * K1 + ce3 * K3 + ce4 * K4 + ce5 * K5 + ce6 * K6).Norm(2);
-            double tolstep = tolerance * stateStep.Norm(2) + auxiliarTolerance;
-            if (error <= tolerance)
+            K2 = δx * ordinaryDifferentialEquation1stOrder(localStep + slope21 * δx, stateStep + slope22 * K1);
+            K3 = δx * ordinaryDifferentialEquation1stOrder(localStep + slope31 * δx, stateStep + slope32 * K1 + slope33 * K2);
+            K4 = δx * ordinaryDifferentialEquation1stOrder(localStep + slope41 * δx, stateStep + slope42 * K1 + slope43 * K2 + slope44 * K3);
+            K5 = δx * ordinaryDifferentialEquation1stOrder(localStep + slope51 * δx, stateStep + slope52 * K1 + slope53 * K2 + slope54 * K3 + slope55 * K4);
+            K6 = δx * ordinaryDifferentialEquation1stOrder(localStep + slope61 * δx, stateStep + slope62 * K1 + slope63 * K2 + slope64 * K3 + slope65 * K4 + slope66 * K5);
+            //Get the norm of the differenerrorConstant betwewn Runge-Kutta 4 and 5.
+            double error = (errorConstant1 * K1 + errorConstant3 * K3 + errorConstant4 * K4 + errorConstant5 * K5 + errorConstant6 * K6).Norm(2);
+            double tolstep = toleranceErrorConstant * stateStep.Norm(2) + auxiliarToleranceErrorConstant;
+            // Evaluate if the error is within the user-defined tolerance
+            if (error <= toleranceErrorConstant)
             {
-                stateStep += c51 * K1 + c52 * K3 + c53 * K4 + c54 * K5 + c55 * K6;
+                //If so, march step-wise
+                stateStep += rfkConstant51 * K1 + rfkConstant52 * K3 + rfkConstant53 * K4 + rfkConstant54 * K5 + rfkConstant55 * K6;
                 δxAux += δx;       
             }
-            δx = 0.9 * δx * Math.Pow(tolerance / error, 0.2);            
+            // Correct the new step, either increasing or decreasing it
+            δx = 0.9 * δx * Math.Pow(toleranceErrorConstant / error, 0.2);            
             // Correct integration step to be within the desired range.
             if (δx > Δx)
             {
@@ -116,8 +228,10 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
             {
                 δx = Δx - δxAux;
             }    
+            // Update step count
             currentIteration += 1;        
         }
+        // Convergence warning that it did not converge within the max number of iterations
         if (currentIteration > maxIteration)
         {
             Console.WriteLine("Integration did not converge!");        

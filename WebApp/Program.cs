@@ -21,8 +21,8 @@ builder.Services.AddMudServices(config =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
-// This needs to match with what is defined in "charts/<helm-chart-name>/templates/values.yaml ingress.Path
-app.UsePathBase("/Simulator4nDOF/webapp");
+var basePath = "/simulator4ndof/webapp";
+app.UsePathBase(basePath);
 
 if (!String.IsNullOrEmpty(builder.Configuration["Simulator4nDOFHostURL"]))
     NORCE.Drilling.Simulator4nDOF.WebApp.Configuration.Simulator4nDOFHostURL = builder.Configuration["Simulator4nDOFHostURL"];
@@ -69,3 +69,4 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+

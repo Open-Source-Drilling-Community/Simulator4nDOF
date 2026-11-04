@@ -140,7 +140,9 @@ class Program
                         };
 
                         // Reading locally stored dependencies
-                        IEnumerable<string> files = Directory.EnumerateFiles(jsonDirectory, "*.json");
+                        IEnumerable<string> files = Directory.EnumerateFiles(jsonDirectory, "*.json")
+                            .OrderBy(file => string.Equals(Path.GetFileName(file), "WellBore.json", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+                            .ThenBy(file => file, StringComparer.OrdinalIgnoreCase);
                         foreach (string file in files)
                         {
                             PrettyPrint(file, "Processing Open Api doc into API client...");
@@ -150,7 +152,7 @@ class Program
                             // Merge paths
                             foreach (var p in doc.Paths)
                             {
-                                document.Paths.TryAdd(p.Key, p.Value);
+                                document.Paths[p.Key] = p.Value;
                             }
 
                             // Merge and normalize schemas (centralized in updater)

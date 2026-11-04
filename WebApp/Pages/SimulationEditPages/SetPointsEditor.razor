@@ -82,6 +82,12 @@
     [Parameter]
     public Simulation Simulation { get; set; }
 
+    /// <summary>
+    /// Raised when a set point is removed, so the parent can re-render
+    /// </summary>
+    [Parameter]
+    public EventCallback OnSetPointsChanged { get; set; }
+
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
 
@@ -109,5 +115,6 @@
 
         // Optional UI refresh
         await InvokeAsync(StateHasChanged);
+        await OnSetPointsChanged.InvokeAsync();
     }
 }

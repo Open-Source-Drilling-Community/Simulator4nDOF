@@ -96,8 +96,8 @@
             </MudSelect>
         </MudItem>
 
-        <MudItem xs="12">
-            <MudSelect T="Trajectory" Label="Trajectory source" @bind-Value="SelectedTrajectory" Variant="Variant.Text">
+        <MudItem xs="4">
+            <MudSelect T="Trajectory" Label="Trajectory source" Value="SelectedTrajectory" ValueChanged="OnTrajectoryChangedAsync" Variant="Variant.Text">
                 @if (Trajectories != null)
                 {
                     @foreach (Trajectory trajectory in Trajectories)
@@ -107,6 +107,26 @@
                             <MudSelectItem Value="@trajectory">@trajectory.Name</MudSelectItem>
                         }
                     }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="4">
+            <MudSelect T="SurveyRun" Label="Survey run (optional)" @bind-Value="SelectedSurveyRun" Variant="Variant.Text"
+                       Clearable="true" Placeholder="Use trajectory" Disabled="@(SelectedTrajectory == null)"
+                       ToStringFunc="@(s => s?.Name)"
+                       HelperText="If selected, the survey run is used instead of the trajectory">
+                @foreach (SurveyRun surveyRun in FilteredSurveyRuns)
+                {
+                    <MudSelectItem Value="@surveyRun">@surveyRun.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="4">
+            <MudSelect T="TrajectoryCalculationType" Label="Trajectory calculation method" @bind-Value="Simulation.ContextualData.TrajectoryCalculationType" Variant="Variant.Text"
+                       HelperText="Recalculated if the stored trajectory or survey run uses a different method">
+                @foreach (TrajectoryCalculationType calculationType in Enum.GetValues<TrajectoryCalculationType>())
+                {
+                    <MudSelectItem Value="@calculationType">@calculationType</MudSelectItem>
                 }
             </MudSelect>
         </MudItem>
@@ -145,10 +165,10 @@
         @if (SelectedCluster != null && !SelectedCluster.IsFixedPlatform)
         {
             <MudItem xs="12">
-                <MudSelect T="RigLight" @bind-Value="SelectedRig" Label="Rig for simulation case" Variant="Variant.Text">
+                <MudSelect T="RigReadResponse" @bind-Value="SelectedRig" Label="Rig for simulation case" Variant="Variant.Text">
                     @if (Rigs != null)
                     {
-                        @foreach (var rig in Rigs.Where(rig => rig != null && !rig.IsFixedPlatform))
+                        @foreach (var rig in Rigs.Where(rig => rig != null))
                         {
                             @if (rig != null && !string.IsNullOrEmpty(rig.Name))
                             {
@@ -233,7 +253,7 @@
     public List<DrillStringLight>? DrillStrings { get; set; } = null;
 
     [Parameter]
-    public List<RigLight>? Rigs { get; set; } = null;
+    public List<RigReadResponse>? Rigs { get; set; } = null;
 
     [Parameter]
     public List<Trajectory>? Trajectories { get; set; } = null;
@@ -257,6 +277,12 @@
     public RotaryTableDepthReferenceSource? RotaryTableDepthSource { get; set; }
     [Parameter]
     public List<GeothermalProperties>? GeothermalProperties { get; set; }
+
+    /// <summary>
+    /// Raised when a selection that the simulation requires changes, so the parent can re-render
+    /// </summary>
+    [Parameter]
+    public EventCallback OnContextualDataChanged { get; set; }
 
     [CascadingParameter]
     public MudUnitAndReferenceChoiceTag? Parent { get; set; }
@@ -289,7 +315,7 @@
 
     private Field? _selectedField = null;
     private Cluster? _selectedCluster = null;
-    private Cluster? SelectedCluster { get { return _selectedCluster; } set { _selectedCluster = value; ProcessSelectedCluster(); } }
+    private Cluster? SelectedCluster { get { return _selectedCluster; } set { _selectedCluster = value; ProcessSelectedCluster(); NotifyContextualDataChanged(); } }
     private Well? _selectedWell = null;
     private Well? SelectedWell
     {
@@ -321,6 +347,7 @@
             {
                 Simulation.WellBoreID = null;
             }
+            NotifyContextualDataChanged();
         }
     }
     private DrillStringLight? _selectedDrillString = null;
@@ -337,6 +364,7 @@
             {
                 Simulation.ContextualData.DrillStringID = _selectedDrillString?.MetaInfo?.ID;
             }
+            NotifyContextualDataChanged();
         }
     }
     private Trajectory? _selectedTrajectory = null;
@@ -353,8 +381,74 @@
             {
                 Simulation.ContextualData.TrajectoryID = _selectedTrajectory?.MetaInfo?.ID;
             }
+            NotifyContextualDataChanged();
         }
     }
+    private List<SurveyRun> FilteredSurveyRuns { get; set; } = new List<SurveyRun>();
+    private SurveyRun? _selectedSurveyRun = null;
+    private SurveyRun? SelectedSurveyRun
+    {
+        get
+        {
+            return _selectedSurveyRun;
+        }
+        set
+        {
+            _selectedSurveyRun = value;
+            if (Simulation?.ContextualData != null)
+            {
+                Simulation.ContextualData.SurveyRunID = _selectedSurveyRun?.MetaInfo?.ID;
+            }
+        }
+    }
+
+    private async Task OnTrajectoryChangedAsync(Trajectory? trajectory)
+    {
+        SelectedTrajectory = trajectory;
+        // The previous survey run may not belong to the new trajectory
+        SelectedSurveyRun = null;
+        await LoadFilteredSurveyRunsAsync();
+    }
+
+    /// <summary>
+    /// Lists the survey runs referenced by the sections of the selected trajectory. Returns false if loading failed.
+    /// </summary>
+    private async Task<bool> LoadFilteredSurveyRunsAsync()
+    {
+        FilteredSurveyRuns = new List<SurveyRun>();
+        var trajectory = _selectedTrajectory;
+        if (trajectory?.MetaInfo == null)
+        {
+            return true;
+        }
+        try
+        {
+            var sections = trajectory.SurveyRunSectionList;
+            if (sections == null)
+            {
+                sections = (await APIUtils.ClientTrajectory.GetTrajectoryByIdAsync(trajectory.MetaInfo.ID))?.SurveyRunSectionList;
+            }
+            if (sections == null || sections.Count == 0)
+            {
+                return true;
+            }
+            var orderedIDs = sections.OrderBy(section => section.StartAbscissa).Select(section => section.SurveyRunID).Distinct().ToList();
+            var surveyRuns = await APIUtils.GetByIdsAsync(orderedIDs, id => APIUtils.ClientTrajectory.GetSurveyRunByIdAsync(id, includeMeasurements: false, includeCalculatedStations: false));
+            FilteredSurveyRuns = orderedIDs
+                .Select(id => surveyRuns.FirstOrDefault(surveyRun => surveyRun.MetaInfo?.ID == id))
+                .Where(surveyRun => surveyRun != null)
+                .Select(surveyRun => surveyRun!)
+                .ToList();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem loading the survey runs of the selected trajectory");
+            Snackbar.Add("Problem loading the survey runs of the selected trajectory", Severity.Error);
+            return false;
+        }
+    }
+
     private DrillingFluidDescription? _selectedFluid = null;
     private DrillingFluidDescription? SelectedFluid 
     {
@@ -374,10 +468,11 @@
                     Simulation.ContextualData.DrillingFluidDescriptionID = null;
                 }
             }
+            NotifyContextualDataChanged();
         }
     }
-    private RigLight? _selectedRig = null;
-    private RigLight? SelectedRig
+    private RigReadResponse? _selectedRig = null;
+    private RigReadResponse? SelectedRig
     {
         get
         {
@@ -390,6 +485,7 @@
             {
                 Simulation.ContextualData.RigID = _selectedRig?.MetaInfo?.ID;
             }
+            NotifyContextualDataChanged();
         }
     }
     private WellBoreArchitecture? SelectedArchitecture
@@ -402,10 +498,14 @@
         {
             selectedArchitcture = value;
             casingSections = selectedArchitcture?.CasingSections?.ToList() ?? new List<CasingSection>();
+            // The casing section selector shows the first section by default, so store it as well
+            casingID = 0;
             if (Simulation?.ContextualData != null)
             {
                 Simulation.ContextualData.WellBoreArchitectureID = selectedArchitcture?.MetaInfo?.ID;
+                Simulation.ContextualData.CasingID = casingSections.Count > 0 ? 0 : null;
             }
+            NotifyContextualDataChanged();
         }
     }
     private string? _fieldSearchText = null;
@@ -417,6 +517,11 @@
     {
         casingID = val;
         Simulation!.ContextualData.CasingID = val;
+        NotifyContextualDataChanged();
+    }
+    private void NotifyContextualDataChanged()
+    {
+        _ = OnContextualDataChanged.InvokeAsync();
     }
     private string ProcessCasingOption(CasingSection casingSection)
     {
@@ -480,15 +585,15 @@
         {
             if (GroundMudLineDepthSource != null && _selectedCluster.GroundMudLineDepth != null && _selectedCluster.GroundMudLineDepth.GaussianValue != null)
             {
-                GroundMudLineDepthSource.GroundMudLineDepthReference = _selectedCluster.GroundMudLineDepth.GaussianValue.Mean;
+                GroundMudLineDepthSource.GroundMudLineDepthReference = -_selectedCluster.GroundMudLineDepth.GaussianValue.Mean;
             }
             if (TopWaterDepthSource != null && _selectedCluster.TopWaterDepth != null && _selectedCluster.TopWaterDepth.GaussianValue != null)
             {
-                TopWaterDepthSource.SeaWaterLevelDepthReference = _selectedCluster.TopWaterDepth.GaussianValue.Mean;
+                TopWaterDepthSource.SeaWaterLevelDepthReference = -_selectedCluster.TopWaterDepth.GaussianValue.Mean;
             }
-            if (WellHeadDepthSource != null && _selectedCluster.ReferenceDepth != null && _selectedCluster.ReferenceDepth.GaussianValue != null)
+            if (WellHeadDepthSource != null && _selectedCluster.ReferencePoint.TVD != null)
             {
-                WellHeadDepthSource.WellHeadDepthReference = _selectedCluster.ReferenceDepth.GaussianValue.Mean;
+                WellHeadDepthSource.WellHeadDepthReference = -_selectedCluster.ReferencePoint?.TVD;
             }
         }
     }
@@ -590,6 +695,7 @@
             {
                 selectedArchitcture = WellBoreArchitectures.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.WellBoreArchitectureID);
                 casingSections = selectedArchitcture?.CasingSections?.ToList() ?? new List<CasingSection>();
+                casingID = Simulation.ContextualData.CasingID ?? 0;
             }
             if (Simulation?.ContextualData?.DrillStringID != null && DrillStrings != null)
             {
@@ -598,6 +704,12 @@
             if (Simulation?.ContextualData?.TrajectoryID != null && Trajectories != null)
             {
                 _selectedTrajectory = Trajectories.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.TrajectoryID);
+                bool surveyRunsLoaded = await LoadFilteredSurveyRunsAsync();
+                if (surveyRunsLoaded && Simulation.ContextualData.SurveyRunID != null)
+                {
+                    // Clears the saved survey run if it no longer belongs to the trajectory
+                    SelectedSurveyRun = FilteredSurveyRuns.FirstOrDefault(x => x.MetaInfo?.ID == Simulation.ContextualData.SurveyRunID);
+                }
             }
             if (Simulation?.ContextualData?.GeothermalPropertiesID != null && GeothermalProperties != null)
             {

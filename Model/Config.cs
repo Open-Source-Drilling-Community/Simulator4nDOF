@@ -22,5 +22,6 @@ namespace NORCE.Drilling.Simulator4nDOF.Model
         public double TopDriveStartupTime { get; set; } = 0;            // [s] time for starting top drive after connection
 
         public double LengthBetweenLumpedElements { get; set; } = 30;
+        public double MinimumAxialElementLength { get; set; } = 10;     // [m] shorter axial-torsional elements are merged with their neighbours (0 - no merging)
     }
 }

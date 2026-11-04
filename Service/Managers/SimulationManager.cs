@@ -698,7 +698,9 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                         }
                         else
                         {
-                            _logger.LogWarning("Background simulation failed");
+                            _logger.LogWarning("Background simulation failed: simulation diverged.");
+                            simulation.TerminationState = 2;
+                            FinalUpdateSimulatorById(simulation.MetaInfo.ID, simulation);
                         }
                     }
                     catch (Exception ex)
@@ -1101,6 +1103,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             {
                 DrillingFluidDescription = resolvedContext.DrillingFluidDescription,
                 Trajectory = resolvedContext.Trajectory,
+                SurveyRun = resolvedContext.SurveyRun,
                 DrillString = resolvedContext.DrillString,
                 PumpPressure = contextualData.SurfacePipePressure,
                 BitDepth = simulation.InitialValues.BitDepth,                             // [m]
@@ -1110,12 +1113,14 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
                 SurfaceRPM = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].SurfaceRPM : 0,            // [rad/s]
                 TopOfStringVelocity = simulation.SetPointsList?.Count > 0 ? simulation.SetPointsList[0].TopOfStringVelocity : 0,         // [m/s] 
                 CasingSection = resolvedContext.CasingSection,
+                OpenHoleSection = resolvedContext.OpenHoleSection,
                 BitRadius = resolvedContext.BitRadius,                     // [m]
                 //SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700 }),
                 SleeveDistancesFromBit = Vector<double>.Build.DenseOfArray(new double[] { }),
                 SensorDistanceFromBit = simulation.Config.VirtualSensorPositionFromBit,
                 FluidDensity = resolvedContext.FluidDensity,                       // [kg/m3] Density of drilling mud
-                LengthBetweenLumpedElements = simulation.Config.LengthBetweenLumpedElements,
+                ElementLength = simulation.Config.LengthBetweenLumpedElements,
+                MinimumAxialElementLength = simulation.Config.MinimumAxialElementLength,
                 CoulombKineticFriction = simulation.Config.CoulombKineticFriction,
                 CoulombStaticFriction = simulation.Config.CoulombStaticFriction,
                 UseHeave = simulation.Config.UseHeave,
@@ -1143,32 +1148,32 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             return config;
         }
 
-        private Profiles CreateProfile(double time, Output output, State state, SimulationParameters parameters, Input u, Simulator.DataModel.Configuration config)
+        private Profiles CreateProfile(double time, Output output, State state, SimulationParameters parameters, Input input, Configuration config)
         {
             return new Profiles
             {
                 Time = time,
                 Depth = output.Depth.ToList(),
-                DepthAll = parameters.DistributedCells.x.ToList(),
-                SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.LumpedCells.ElementLength[(int)index]).ToList(),
+                DepthAll = output.Depth.ToList(),
+                SleevesDepth = parameters.Drillstring.SleeveIndexPosition.Select(index => parameters.Drillstring.ElementDepth[(int)index]).ToList(),
                 SideForce = Utilities.ExtendVectorStart(0, output.NormalForceProfileStiffString).ToList(),
                 SideForceSoftString = Utilities.ExtendVectorStart(0, output.NormalForceProfileSoftString).ToList(),
                 PipeAngularVelocity = !config.UseMudMotor
-                    ? Utilities.ExtendVectorStart(state.TopDrive.TopDriveAngularVelocity, state.AngularVelocity).Append(output.BitRotationInRPM).ToList()
-                    : Utilities.ExtendVectorStart(state.TopDrive.TopDriveAngularVelocity,
-                        Utilities.ToVector(state.AngularVelocity.SubVector(1, state.AngularVelocity.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
+                    ? Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity, state.AngularVelocityAtLateralNodes).Append(output.BitRotationInRPM).ToList()
+                    : Utilities.ExtendVectorStart(state.TopDrive.AngularVelocity,
+                        Utilities.ToVector(state.AngularVelocityAtLateralNodes.SubVector(1, state.AngularVelocityAtLateralNodes.Count - 1).Append(output.BitRotationInRPM).ToArray())).ToList(),
                 SleevesAngularVelocity = state.SleeveAngularVelocity.ToList(),
                 RadialClearance = parameters.Wellbore.DrillStringClearance.Append(0).ToList(),
                 LateralDisplacement = output.RadialDisplacement.Append(0).ToList(),
                 BendingMoment = output.BendingMoment.Append(0).ToList(),
                 Torque = output.Torque.ToList(),
                 Tension = output.TensionProfile.ToList(),
-                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.CalculateSurfaceAxialVelocity, state.AxialVelocity).ToList(),
+                AxialVelocityD = Utilities.ExtendVectorStart(state.TopDrive.AxialVelocity, state.AxialVelocityAtLateralNodes).ToList(),
                 LateralDisplacementAngle = output.WhirlAngle.Append(0).ToList(),
-                Inclination = parameters.Trajectory.InterpolatedTheta.Append(parameters.Trajectory.InterpolatedTheta.LastOrDefault<double>()).ToList(),
-                Azimuth = parameters.Trajectory.InterpolatedPhi.Append(parameters.Trajectory.InterpolatedPhi.LastOrDefault<double>()).ToList(),
+                Inclination = parameters.Trajectory.InterpolatedThetaAtNode.Append(parameters.Trajectory.InterpolatedThetaAtNode.LastOrDefault<double>()).ToList(),
+                Azimuth = parameters.Trajectory.InterpolatedPhiAtNode.Append(parameters.Trajectory.InterpolatedPhiAtNode.LastOrDefault<double>()).ToList(),
                 Curvature = parameters.Trajectory.Curvature.Append(parameters.Trajectory.Curvature.LastOrDefault<double>()).ToList(),
-                BuildUpRate = parameters.Trajectory.DiffThetaInterpolated.Append(parameters.Trajectory.DiffThetaInterpolated.LastOrDefault<double>()).ToList()
+                BuildUpRate = parameters.Trajectory.DiffThetaInterpolatedAtNode.Append(parameters.Trajectory.DiffThetaInterpolatedAtNode.LastOrDefault<double>()).ToList()
             };
         }
 
@@ -1184,7 +1189,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Service.Managers
             scalars.HoleDepth.Add(state.HoleDepth);
             scalars.SurfaceTorque.Add(state.TopDrive.TopDriveMotorTorque);
             scalars.BitTorque.Add(output.TorqueOnBit);
-            scalars.TopOfStringAxialVelocity.Add(state.TopDrive.CalculateSurfaceAxialVelocity);
+            scalars.TopOfStringAxialVelocity.Add(state.TopDrive.AxialVelocity);
             scalars.BitAxialVelocity.Add(output.BitVelocity);
             scalars.WOB.Add(output.WeightOnBit);
             scalars.SSI.Add(output.SSI);

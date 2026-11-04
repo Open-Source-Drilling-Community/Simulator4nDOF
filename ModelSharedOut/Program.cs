@@ -158,7 +158,16 @@ class Program
                     };
 
                     // Reading locally stored dependencies
-                    IEnumerable<string> files = Directory.EnumerateFiles(jsonInputsDirectory, "*.json");
+                    IEnumerable<string> files = Directory.EnumerateFiles(jsonInputsDirectory, "*.json")
+                        .OrderBy(file => Path.GetFileName(file) switch
+                        {
+                            "Simulator4nDOFFullName.json" => 900,
+                            // WellBoreArchitecture and other bundles can carry stale transitive
+                            // WellBore definitions. The owning schema must win that collision.
+                            "WellBore.json" => 1000,
+                            _ => 0
+                        })
+                        .ThenBy(file => file, StringComparer.OrdinalIgnoreCase);
                     foreach (string file in files)
                     {
                         PrettyPrint(file, "Processing Open Api doc into API client...");
@@ -168,7 +177,7 @@ class Program
                         // Merge paths
                         foreach (var p in doc.Paths)
                         {
-                            document.Paths.TryAdd(p.Key, p.Value);
+                            document.Paths[p.Key] = p.Value;
                         }
 
                         // Merge and normalize schemas (centralized in updater)

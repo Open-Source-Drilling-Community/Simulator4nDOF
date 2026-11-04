@@ -35,7 +35,15 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
         double Torque0LowPass;
 
         double PreviousTopDriveAngularSpeed;                                 // Previous TopDriveAngularVelocity (top drive angular velocity) 
+        // Connection properties
+        private double torqueConnectionStart = 0;               // [s] connection start time
+        private double torqueTopdriveStartup = 0;               // [s] top drive start up time
 
+        // variables for rig activity state machine
+        private bool makeConnection = false;
+        private bool pullOutOfHoleBeforeConnectionBoolean = false;
+
+        private double DrillStringImpedance;
         public TopdriveController(in DataModel.Configuration configuration, in SimulationParameters simulationParameters)
         {
             KpSoftTorqueSpeed = configuration.KpSoftTorqueSpeed;
@@ -51,23 +59,25 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             TorqueTuningFactor = configuration.AdditionalTuningFactorZTorque;
             IntertiaCorrectionFactor = configuration.InertiaCorrectionFactorZTorque;
 
+            DrillStringImpedance = simulationParameters.Drillstring.ElementPolarInertia[0] 
+                * Math.Sqrt(simulationParameters.Drillstring.ElementShearModuli[0] * simulationParameters.Drillstring.ElementDensity[0]);
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 2)
             {
                 //Tuned PI controller simulationParameters
                 InertiaCompensation = KiSoftTorqueSpeed * simulationParameters.TopDriveDrawwork.TopDriveInertia; // [kg.m ^ 2] inertia compensation
-                KpFactor = KpSoftTorqueSpeed * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // top drive controller P gain
+                KpFactor = KpSoftTorqueSpeed * DrillStringImpedance; // top drive controller P gain
                 KiFactor = Math.Pow(2 * Math.PI * TuningFrequenceySoftTorqueSpeed, 2) * (simulationParameters.TopDriveDrawwork.TopDriveInertia - InertiaCompensation); // top drive controller I gain
             }
             else
             {    // Stiff PI controller simulationParameters
-                KpFactor = KpFactor * simulationParameters.Drillstring.CharacteristicDrillPipeImpedance;
+                KpFactor = KpFactor * DrillStringImpedance;
                 KiFactor = KiFactor * simulationParameters.TopDriveDrawwork.TopDriveInertia;
             }
 
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 3)
             {
                 //TODO move
-                TorqueFactor = 1.0 / simulationParameters.Drillstring.CharacteristicDrillPipeImpedance; // ZTorque factor
+                TorqueFactor = 1.0 / DrillStringImpedance; // ZTorque factor
             }
 
             Omega0Torque = 0.0;
@@ -78,11 +88,55 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
             Torque0LowPass = 0.0;
             PreviousTopDriveAngularSpeed = 0.0; // Previous TopDriveAngularVelocity (top drive angular velocity)  
         }
-
-        public void Step(State state, in SimulationParameters simulationParameters)
+        public void StateStep(State state, in SimulationParameters parameters)
         {
-            double deltaTopDriveSpeed = state.TopDrive.TopDriveAngularVelocity - PreviousTopDriveAngularSpeed;
-            PreviousTopDriveAngularSpeed = state.TopDrive.TopDriveAngularVelocity;
+            double Vdf; //[m/s] drillfloor velocity
+            if (parameters.TopDriveDrawwork.UseHeave)
+                Vdf = parameters.TopDriveDrawwork.HeaveAmplitude * 2 * Math.PI / parameters.TopDriveDrawwork.HeavePeriod * Math.Cos(2 * Math.PI / parameters.TopDriveDrawwork.HeavePeriod * state.Step * parameters.OuterLoopTimeStep); // [m / s] drillfloor velocity
+            else
+                Vdf = 0;
+
+            if (state.Step * parameters.OuterLoopTimeStep - torqueTopdriveStartup > parameters.TopDriveDrawwork.TopDriveStartupTime && !makeConnection && !pullOutOfHoleBeforeConnectionBoolean)
+                state.TopDrive.AxialVelocity = parameters.TopDriveDrawwork.SurfaceAxialVelocity;
+            else if (pullOutOfHoleBeforeConnectionBoolean)
+                state.TopDrive.AxialVelocity = parameters.TopDriveDrawwork.PullingOutOfHoleTopVelocity;
+            else
+                state.TopDrive.AxialVelocity = 0.0;
+
+            // add drilfloor velocity to top of string velocity setpoint
+            state.TopDrive.AxialVelocity = state.TopDrive.AxialVelocity + Vdf;
+
+            if (state.TopDrive.AxialPosition < 1 && !pullOutOfHoleBeforeConnectionBoolean)
+            {
+                pullOutOfHoleBeforeConnectionBoolean = true;
+                state.OnBottomStart = -1;
+            }
+
+            if (state.TopDrive.AxialPosition > 2 && pullOutOfHoleBeforeConnectionBoolean)
+            {
+                pullOutOfHoleBeforeConnectionBoolean = false;
+                makeConnection = true;
+                torqueConnectionStart = state.Step * parameters.OuterLoopTimeStep;
+            }
+
+            if (makeConnection && state.Step * parameters.OuterLoopTimeStep - torqueConnectionStart > parameters.TopDriveDrawwork.ConnectionTime)
+            {
+                makeConnection = false;
+                state.TopDrive.AxialPosition = 31; // [m]
+                torqueTopdriveStartup = state.Step * parameters.OuterLoopTimeStep;
+            }
+
+            if (makeConnection)
+                state.TopDrive.TopDriveRPMSetPoint = state.TopDrive.TopDriveRPMSetPoint + 2 * parameters.OuterLoopTimeStep * (0 - state.TopDrive.TopDriveRPMSetPoint);
+            else
+                state.TopDrive.TopDriveRPMSetPoint = state.TopDrive.TopDriveRPMSetPoint + 2 * parameters.OuterLoopTimeStep * (parameters.TopDriveDrawwork.SurfaceRotation - state.TopDrive.TopDriveRPMSetPoint);
+        }
+
+        public void ControllerStep(State state, in SimulationParameters simulationParameters)
+        {
+            // Update top drive speed setpoint based on rig state (connection, pulling out of hole, etc.)
+            double deltaTopDriveSpeed = state.TopDrive.AngularVelocity - PreviousTopDriveAngularSpeed;
+            PreviousTopDriveAngularSpeed = state.TopDrive.AngularVelocity;
             double e_PI;
 
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 3)
@@ -90,7 +144,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 if (state.Step > 0)
                 {
                     Omega0Torque = Omega0Torque * Math.Exp(-2 * Math.PI * simulationParameters.OuterLoopTimeStep / EnconderTimeConstant) +
-                        state.TopDrive.TopDriveAngularVelocity * (1 - Math.Exp(-2 * Math.PI * simulationParameters.OuterLoopTimeStep / EnconderTimeConstant));                    
+                        state.TopDrive.AngularVelocity * (1 - Math.Exp(-2 * Math.PI * simulationParameters.OuterLoopTimeStep / EnconderTimeConstant));                    
 
                     TorqueVFD = TorqueVFD * Math.Exp(-2 * Math.PI * simulationParameters.OuterLoopTimeStep / VFDTimeFilterConstant) +
                         state.TopDrive.TopDriveMotorTorque * (1 - Math.Exp(-2 * Math.PI * simulationParameters.OuterLoopTimeStep / VFDTimeFilterConstant));
@@ -118,7 +172,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
                 e_PI = state.TopDrive.TopDriveRPMSetPoint - Omega0Torque - TorqueTuningFactor * TorqueFactor * Torque0LowPass;
             }
             else
-                e_PI = state.TopDrive.TopDriveRPMSetPoint - state.TopDrive.TopDriveAngularVelocity;
+                e_PI = state.TopDrive.TopDriveRPMSetPoint - state.TopDrive.AngularVelocity;
 
             if (simulationParameters.TopDriveDrawwork.TopDriveControllerType == 2)
                 state.TopDrive.TopDriveMotorTorque = e_PI * KpFactor + IntegralError * KiFactor + InertiaCompensation * deltaTopDriveSpeed / simulationParameters.OuterLoopTimeStep;
@@ -127,7 +181,7 @@ namespace NORCE.Drilling.Simulator4nDOF.Simulator
 
             state.TopDrive.TopDriveMotorTorque = Math.Min(state.TopDrive.TopDriveMotorTorque, state.TopDrive.MaximumTopDriveTorque);
             state.TopDrive.TopDriveMotorTorque = Math.Max(state.TopDrive.TopDriveMotorTorque, 0);
-
+            
             IntegralError = IntegralError + simulationParameters.OuterLoopTimeStep * e_PI; // if configuration.dt is too large, controller may be too aggressive
         }
     }

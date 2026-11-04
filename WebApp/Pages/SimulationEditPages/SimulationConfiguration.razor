@@ -29,6 +29,13 @@
                               SIValue="Simulation.Config.LengthBetweenLumpedElements"
                               SIValueNullableChanged="val => { if (val != null) Simulation.Config.LengthBetweenLumpedElements = (double)val; }" />
         </MudItem>
+        <MudItem xs="3">
+            <MudInputWithUnit VariantType="Variant.Text"
+                              QuantityLabel="Minimum axial-torsional element length"
+                              QuantityName="LengthStandard"
+                              SIValue="Simulation.Config.MinimumAxialElementLength"
+                              SIValueNullableChanged="val => { if (val != null) Simulation.Config.MinimumAxialElementLength = (double)val; }" />
+        </MudItem>
     </MudGrid>
     <MudGrid RowSpacing="0" Style="margin-top:-0px;">
         <MudItem Style="width:250px;">

@@ -1,4 +1,4 @@
-using MathNet.Numerics.Distributions;
+﻿using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using NORCE.Drilling.Simulator4nDOF.Simulator.DataModel;
@@ -11,42 +11,80 @@ using static NORCE.Drilling.Simulator4nDOF.Simulator.Utilities;
 using NORCE.Drilling.Simulator4nDOF.Simulator.SimulatorModels;
 namespace NORCE.Drilling.Simulator4nDOF.Simulator.NumericalIntegrationMethods
 {
-    public class EulerMethod : ISolverODE<LateralModel>
+    public class EulerMethod : ISolverODE<LumpedElementModel>
     {     
-        public bool IntegrationStep(State state, LateralModel lateralModel, in SimulationParameters simulationParameters)
+        private double timeStep;
+        public EulerMethod(in SimulationParameters simulationParameters)        
+        {
+            timeStep = simulationParameters.InnerLoopTimeStep;
+        }
+        public bool SimulationDivergedCheck(in State state, in int i)
+        {         
+            return double.IsNaN(state.ZVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]);
+        }
+        public bool LateralSimulationDivergedCheck(in State state, in int i)
+        {         
+            return double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]);
+        }
+        public bool IntegrationStep(State state, LumpedElementModel drillStringModel, in SimulationParameters simulationParameters)
         {   
             // Use the lateral model instance to estimate the accelerations
-            lateralModel.CalculateAccelerations(state, simulationParameters);
-            for (int i = 0; i < state.XDisplacement.Count; i++)
+            drillStringModel.CalculateAccelerations(state, simulationParameters);
+            // Axial-torsional nodes
+            for (int i = 0; i < state.ZDisplacement.Count; i++)
             {
                 //Angular DoF
-                state.AngularDisplacement[i] = state.AngularDisplacement[i] + state.AngularVelocity[i] * simulationParameters.InnerLoopTimeStep; 
-                state.AngularVelocity[i]     = state.AngularVelocity[i]     + state.AngularAcceleration[i] * simulationParameters.InnerLoopTimeStep;           
+                state.AngularDisplacement[i] = state.AngularDisplacement[i] + state.AngularVelocity[i] * timeStep; 
+                state.AngularVelocity[i]     = state.AngularVelocity[i]     + state.AngularAcceleration[i] * timeStep;                           
                 //Axial DoF
-                state.AxialVelocity[i] = state.AxialVelocity[i] + state.AxialAcceleration[i] * simulationParameters.InnerLoopTimeStep;
-                //X DoF
-                state.XDisplacement[i] = state.XDisplacement[i] + state.XVelocity[i] * simulationParameters.InnerLoopTimeStep;
-                state.XVelocity[i]     = state.XVelocity[i] + state.XAcceleration[i] * simulationParameters.InnerLoopTimeStep;
-                //Y DoF
-                state.YDisplacement[i] = state.YDisplacement[i] + state.YVelocity[i] * simulationParameters.InnerLoopTimeStep;
-                state.YVelocity[i]     = state.YVelocity[i] + state.YAcceleration[i] * simulationParameters.InnerLoopTimeStep;    
-                if (double.IsNaN(state.XVelocity[i]) || double.IsNaN(state.YVelocity[i]) || double.IsNaN(state.AxialVelocity[i]) || double.IsNaN(state.AngularAcceleration[i]))
+                state.ZDisplacement[i] = state.ZDisplacement[i] + state.ZVelocity[i] * timeStep;
+                state.ZVelocity[i] = state.ZVelocity[i] + state.ZAcceleration[i] * timeStep;
+                if (SimulationDivergedCheck(in state, in i))
                 {
                     return false;
                 }      
             }
-
-            for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
+            // Lateral nodes
+            for (int i = 0; i < state.XDisplacement.Count; i++)
             {
-                //Sleeve DoF
-                state.SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i] + state.SleeveAngularVelocity[i] * simulationParameters.InnerLoopTimeStep;
-                state.SleeveAngularVelocity[i]     = state.SleeveAngularVelocity[i] + state.SleeveAngularAcceleration[i] * simulationParameters.InnerLoopTimeStep;
+                //X DoF
+                state.XDisplacement[i] = state.XDisplacement[i] + state.XVelocity[i] * timeStep;
+                state.XVelocity[i]     = state.XVelocity[i] + state.XAcceleration[i] * timeStep;
+                //Y DoF
+                state.YDisplacement[i] = state.YDisplacement[i] + state.YVelocity[i] * timeStep;
+                state.YVelocity[i]     = state.YVelocity[i] + state.YAcceleration[i] * timeStep;    
+                if (LateralSimulationDivergedCheck(in state, in i))
+                {
+                    return false;
+                }      
             }
             return true;
         }
-        public void AddNewLumpedElement()
+        public bool IntegrationSleeve(State state, LumpedElementModel model, in SimulationParameters simulationParameters)
+        {      
+            for (int i = 0; i < state.SleeveAngularDisplacement.Count; i++)
+            {
+                //Sleeve DoF
+                state.SleeveAngularDisplacement[i] = state.SleeveAngularDisplacement[i] + state.SleeveAngularVelocity[i] * timeStep;
+                state.SleeveAngularVelocity[i]     = state.SleeveAngularVelocity[i] + state.SleeveAngularAcceleration[i] * timeStep;
+                if ( double.IsNaN(state.SleeveAngularVelocity[i]) || double.IsNaN(state.SleeveAngularDisplacement[i]) )
+                {
+                    return false;
+                }
+            }  
+            return true;
+        }
+        public bool IntegrationSurfacePosition(State state, LumpedElementModel model, in SimulationParameters simulationParameters)
         {
+            //Calculate the top of string position based on the calculated speed        
+            state.TopDrive.RelativeAxialPosition = state.TopDrive.RelativeAxialPosition + state.TopDrive.AxialVelocity * timeStep;     
+            state.TopDrive.AngularDisplacement = state.TopDrive.AngularDisplacement + state.TopDrive.AngularVelocity * timeStep;     
+            return !double.IsNaN(state.TopDrive.RelativeAxialPosition);
+        }
 
+        public void AddNewLumpedElement(int lateralNodesAdded, double addedLength)
+        {
+            // Euler method has no history to extend
         }
     }
 }

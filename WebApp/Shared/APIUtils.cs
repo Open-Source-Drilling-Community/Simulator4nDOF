@@ -76,6 +76,39 @@ public static class APIUtils
         httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         return httpClient;
     }
+
+    /// <summary>
+    /// Retrieves all instances of a class by first listing their IDs and then fetching each instance by ID, in parallel.
+    /// Replaces the deprecated GetAll{Class}Async / GetAll{Class}LightAsync endpoints. Instances that fail to load are skipped.
+    /// </summary>
+    public static async Task<List<T>> GetAllByIdAsync<T>(Func<Task<ICollection<Guid>>> getAllIds, Func<Guid, Task<T>> getById) where T : class
+    {
+        ICollection<Guid>? ids = await getAllIds();
+        return await GetByIdsAsync(ids, getById);
+    }
+
+    /// <summary>
+    /// Fetches each instance of the given IDs in parallel. Instances that fail to load are skipped.
+    /// </summary>
+    public static async Task<List<T>> GetByIdsAsync<T>(IEnumerable<Guid>? ids, Func<Guid, Task<T>> getById) where T : class
+    {
+        if (ids == null)
+        {
+            return new List<T>();
+        }
+        T?[] instances = await Task.WhenAll(ids.Distinct().Select(async id =>
+        {
+            try
+            {
+                return await getById(id);
+            }
+            catch (NORCE.Drilling.Simulator4nDOF.ModelShared.ApiException)
+            {
+                return null;
+            }
+        }));
+        return instances.Where(instance => instance != null).Select(instance => instance!).ToList();
+    }
 }
 
 public class GroundMudLineDepthReferenceSource : IGroundMudLineDepthReferenceSource
